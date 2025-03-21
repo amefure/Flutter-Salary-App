@@ -7,17 +7,16 @@ import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/salary_list_view.dart';
 
 void main() {
-  runApp(MyApp());
-  // runApp(
-  //   MultiProvider(
-  //     providers: [
-  //       ChangeNotifierProvider(
-  //         create: (_) => SalaryViewModel(repository),
-  //       ),
-  //     ],
-  //     child: MyApp(),
-  //   ),
-  // );
+  final _repository = RealmRepository();
+  // runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SalaryViewModel(_repository)),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SalaryListView()
+      home: SalaryListView(),
     );
   }
 }
