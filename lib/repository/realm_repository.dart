@@ -1,5 +1,5 @@
 import 'package:realm/realm.dart';
-import 'package:salary/Models/salary.dart';
+import 'package:salary/models/salary.dart';
 
 class RealmRepository {
   static final RealmRepository _instance = RealmRepository._internal();
@@ -8,12 +8,11 @@ class RealmRepository {
   factory RealmRepository() => _instance;
 
   RealmRepository._internal() {
-    List<SchemaObject> models = [
+    final config = Configuration.local([
       Salary.schema,
+      PaymentSource.schema,
       AmountItem.schema,
-      PaymentSource.schema
-    ];
-    final config = Configuration.local(models);
+    ]);
     _realm = Realm(config);
   }
 
