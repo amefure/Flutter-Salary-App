@@ -6,9 +6,10 @@ import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/salary_list_view.dart';
 
+/// アプリのルート
 void main() {
   final _repository = RealmRepository();
-  // runApp(MyApp());
+  // SalaryViewModelをProviderとしてセットする
   runApp(
     MultiProvider(
       providers: [
@@ -19,6 +20,8 @@ void main() {
   );
 }
 
+/// アプリのルートWidget
+/// テーマ用
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

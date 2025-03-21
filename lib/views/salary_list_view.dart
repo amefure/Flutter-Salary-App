@@ -13,7 +13,6 @@ class SalaryListView extends StatefulWidget {
 }
 
 class _SalaryListViewState extends State<SalaryListView> {
-  final RealmRepository _realmService = RealmRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +34,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    _realmService.delete(salary);
-                    setState(() {}); // UIを更新
+                    viewModel.delete(salary);
                   },
                 ),
               );
@@ -83,7 +81,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                   // source: PaymentSource('123', '副業'),
                 );
   
-                context.read<SalaryViewModel>().addSalary(newSalary);
+                context.read<SalaryViewModel>().add(newSalary);
                 Navigator.of(context).pop();
               },
               child: const Text("Add"),
