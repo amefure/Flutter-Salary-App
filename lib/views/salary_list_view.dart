@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:realm/realm.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/input_salary_view.dart';
 import '../repository/realm_repository.dart';
 import '../models/salary.dart';
 
@@ -13,10 +13,8 @@ class SalaryListView extends StatefulWidget {
 }
 
 class _SalaryListViewState extends State<SalaryListView> {
-
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
       appBar: AppBar(title: const Text('Shop List')),
       body: Consumer<SalaryViewModel>(
@@ -43,52 +41,23 @@ class _SalaryListViewState extends State<SalaryListView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddShopDialog(context),
+        onPressed: () {
+          showModalView(context);
+        },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _showAddShopDialog(BuildContext context) {
-    final TextEditingController _controller = TextEditingController();
-
-    showDialog(
+  /// モーダル画面を表示
+  void showModalView(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Add Shop"),
-          content: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(hintText: "Enter shop name"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                final newSalary = Salary(
-                  Uuid.v4().toString(),
-                  500000,
-                  100000,
-                  400000,
-                  DateTime.now(),
-                  // paymentAmountItems: [
-                  //   AmountItem('基本給', 400000),
-                  //   AmountItem('手当', 100000),
-                  // ],
-                  // deductionAmountItems: [
-                  //   AmountItem('税金', 50000),
-                  //   AmountItem('保険', 50000),
-                  // ],
-                  // source: PaymentSource('123', '副業'),
-                );
-  
-                context.read<SalaryViewModel>().add(newSalary);
-                Navigator.of(context).pop();
-              },
-              child: const Text("Add"),
-            ),
-          ],
-        );
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return InputSalaryView();
       },
     );
   }
+
 }
