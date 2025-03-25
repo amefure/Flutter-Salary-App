@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
@@ -159,15 +157,15 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   void add(BuildContext context) {
-    int _paymentAmount = int.tryParse(_paymentAmountController.text) ?? 0;
-    int _deductionAmount = int.tryParse(_deductionAmountController.text) ?? 0;
-    int _netSalary = int.tryParse(_netSalaryController.text) ?? 0;
+    int paymentAmount = int.tryParse(_paymentAmountController.text) ?? 0;
+    int deductionAmount = int.tryParse(_deductionAmountController.text) ?? 0;
+    int netSalary = int.tryParse(_netSalaryController.text) ?? 0;
 
     final newSalary = Salary(
       Uuid.v4().toString(),
-      _paymentAmount,
-      _deductionAmount,
-      _netSalary,
+      paymentAmount,
+      deductionAmount,
+      netSalary,
       DateTime.now(),
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/viewmodels/salary_viewmodel.dart';
 
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
@@ -10,7 +9,7 @@ class DetailInputView extends StatefulWidget {
   final String title;
 
   @override
-  _DetailInputViewState createState() => _DetailInputViewState();
+  State<DetailInputView> createState() => _DetailInputViewState();
 }
 
 class _DetailInputViewState extends State<DetailInputView> {

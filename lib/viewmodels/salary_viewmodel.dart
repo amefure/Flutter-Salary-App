@@ -18,7 +18,9 @@ class SalaryViewModel extends ChangeNotifier {
 
   /// 全データ取得
   void fetchAll() {
-    salaries = _repository.fetchAll<Salary>() ?? [];
+    salaries = _repository.fetchAll<Salary>();
+    // 日付の降順
+    salaries.sort((a, b) => b.createdAt.compareTo(a.createdAt)); 
     notifyListeners();
   }
   /// 追加

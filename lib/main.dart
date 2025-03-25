@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:realm/realm.dart';
-import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
+import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/salary_list_view.dart';
 
@@ -28,9 +27,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '給料MEMO App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.thema),
       ),
       home: SalaryListView(),
     );
