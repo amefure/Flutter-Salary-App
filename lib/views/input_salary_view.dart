@@ -19,6 +19,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   final TextEditingController _deductionAmountController =
       TextEditingController();
   final TextEditingController _netSalaryController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   /// 総支給詳細アイテム
   List<AmountItem> _paymentAmountItems = [];
@@ -47,6 +48,19 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     _deductionAmountController.text = total.toString();
   }
 
+  /// **控除額の合計金額を計算しUI反映**
+  void _selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      _dateController.text = "${picked.year}/${picked.month}/${picked.day}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +79,19 @@ class _InputSalaryViewState extends State<InputSalaryView> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            // TextField の実装
+            TextField(
+              controller: _dateController,
+              decoration: InputDecoration(
+                labelText: "日付を選択",
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
+              readOnly: true,
+              onTap: () => _selectDate(context),
+            ),
+
             SizedBox(height: 20),
+
             TextField(
               controller: _paymentAmountController,
               keyboardType: TextInputType.number,

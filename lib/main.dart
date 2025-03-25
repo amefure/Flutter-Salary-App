@@ -4,6 +4,7 @@ import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/salary_list_view.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 /// アプリのルート
 void main() {
@@ -28,6 +29,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '給料MEMO App',
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('ja', 'JP'), // 日本語
+      ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.thema),
       ),
