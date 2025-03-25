@@ -42,22 +42,12 @@ class _SalaryListViewState extends State<SalaryListView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalView(context);
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => InputSalaryView()));
         },
         child: const Icon(Icons.add),
       ),
     );
   }
-
-  /// モーダル画面を表示
-  void showModalView(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return InputSalaryView();
-      },
-    );
-  }
-
 }
