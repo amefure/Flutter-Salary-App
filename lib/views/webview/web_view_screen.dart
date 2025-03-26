@@ -40,7 +40,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
         ),
       ),
-      child: WebViewWidget(controller: _controller),
+      child: SafeArea(child: WebViewWidget(controller: _controller)),
     );
   }
 }

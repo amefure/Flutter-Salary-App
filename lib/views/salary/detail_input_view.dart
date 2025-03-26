@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/views/components/custom_text_field_view.dart';
 
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
@@ -45,50 +47,47 @@ class _DetailInputViewState extends State<DetailInputView> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.9,
       child: CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
           middle: Text("${widget.title}：詳細入力"),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-
-              SizedBox(height: 60),
-
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                CustomTextField(
+                  controller: _nameController,
                   labelText: "項目名",
-                  prefixIcon: Icon(CupertinoIcons.signature),
-                  border: OutlineInputBorder(),
+                  prefixIcon: CupertinoIcons.signature,
+                  keyboardType: TextInputType.text,
                 ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _amountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "金額",
-                  prefixIcon: Icon(CupertinoIcons.money_yen),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  String name = _nameController.text;
-                  int amount = int.tryParse(_amountController.text) ?? 0;
 
-                  if (name.isNotEmpty && amount > 0) {
-                    // Navigator経由でデータを返す
-                    Navigator.of(context).pop(AmountItem(name, amount));
-                  } else {
-                    _showErrorDialog(context);
-                  }
-                },
-                child: Text("追加"),
-              ),
-            ],
+                SizedBox(height: 10),
+
+                CustomTextField(
+                  controller: _amountController,
+                  labelText: "金額",
+                  prefixIcon: CupertinoIcons.money_yen,
+                ),
+
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    String name = _nameController.text;
+                    int amount = int.tryParse(_amountController.text) ?? 0;
+
+                    if (name.isNotEmpty && amount > 0) {
+                      // Navigator経由でデータを返す
+                      Navigator.of(context).pop(AmountItem(name, amount));
+                    } else {
+                      _showErrorDialog(context);
+                    }
+                  },
+                  child: Text("追加"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/salary/detail_input_view.dart';
 
 /// 給料入力画面
@@ -28,7 +30,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 控除額詳細アイテム
   List<AmountItem> _deductionAmountItems = [];
-
 
   @override
   void initState() {
@@ -167,7 +168,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.foundation,
       body: CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
           middle: const Text('給料MEMO'),
           trailing: CupertinoButton(
@@ -178,111 +181,101 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             },
           ),
         ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              SizedBox(height: 120),
-
-              // TextField の実装
-              TextField(
-                controller: _dateController,
-                decoration: InputDecoration(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                
+                // 日付ピッカー
+                CustomTextField(
+                  controller: _dateController,
                   labelText: "日付を選択",
-                  suffixIcon: Icon(CupertinoIcons.calendar),
-                  border: OutlineInputBorder(),
+                  prefixIcon: CupertinoIcons.calendar,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
                 ),
-                readOnly: true,
-                onTap: () => _selectDate(context),
-              ),
 
-              SizedBox(height: 20),
+                SizedBox(height: 20),
 
-              TextField(
-                controller: _paymentAmountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                CustomTextField(
+                  controller: _paymentAmountController,
                   labelText: "総支給額",
-                  prefixIcon: Icon(CupertinoIcons.money_yen),
-                  border: OutlineInputBorder(),
+                  prefixIcon: CupertinoIcons.money_yen,
                 ),
-              ),
-              SizedBox(height: 10),
 
-              Row(
-                children: [
-                  Spacer(),
-                  TextButton(
-                    onPressed: () async {
-                      // 詳細画面入力モーダルを表示
-                      _showInputAmountItemModal(context, true);
-                    },
-                    child: Row(
-                      children: [Text("総支給額：詳細入力"), Icon(Icons.chevron_right)],
+                SizedBox(height: 10),
+
+                Row(
+                  children: [
+                    Spacer(),
+                    TextButton(
+                      onPressed: () async {
+                        // 詳細画面入力モーダルを表示
+                        _showInputAmountItemModal(context, true);
+                      },
+                      child: Row(
+                        children: [
+                          Text("総支給額：詳細入力"),
+                          Icon(Icons.chevron_right),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              // 追加された AmountItem を表示
-              Column(
-                children:
-                    _paymentAmountItems.map((item) {
-                      return ListTile(
-                        title: Text(item.key),
-                        trailing: Text("${item.value}円"),
-                      );
-                    }).toList(),
-              ),
+                // 追加された AmountItem を表示
+                Column(
+                  children:
+                      _paymentAmountItems.map((item) {
+                        return ListTile(
+                          title: Text(item.key),
+                          trailing: Text("${item.value}円"),
+                        );
+                      }).toList(),
+                ),
 
-              SizedBox(height: 10),
-              TextField(
-                controller: _deductionAmountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                SizedBox(height: 10),
+                CustomTextField(
+                  controller: _deductionAmountController,
                   labelText: "控除額",
-                  prefixIcon: Icon(CupertinoIcons.money_yen),
-                  border: OutlineInputBorder(),
+                  prefixIcon: CupertinoIcons.money_yen,
                 ),
-              ),
 
-              Row(
-                children: [
-                  Spacer(),
-                  TextButton(
-                    onPressed: () async {
-                      // 詳細画面入力モーダルを表示
-                      _showInputAmountItemModal(context, false);
-                    },
-                    child: Row(
-                      children: [Text("控除額：詳細入力"), Icon(Icons.chevron_right)],
+                Row(
+                  children: [
+                    Spacer(),
+                    TextButton(
+                      onPressed: () async {
+                        // 詳細画面入力モーダルを表示
+                        _showInputAmountItemModal(context, false);
+                      },
+                      child: Row(
+                        children: [Text("控除額：詳細入力"), Icon(Icons.chevron_right)],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              // 追加された AmountItem を表示
-              Column(
-                children:
-                    _deductionAmountItems.map((item) {
-                      return ListTile(
-                        title: Text(item.key),
-                        trailing: Text("${item.value}円"),
-                      );
-                    }).toList(),
-              ),
-
-              SizedBox(height: 10),
-              TextField(
-                controller: _netSalaryController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "手取り額",
-                  prefixIcon: Icon(CupertinoIcons.money_yen),
-                  border: OutlineInputBorder(),
+                  ],
                 ),
-              ),
-            ],
+
+                // 追加された AmountItem を表示
+                Column(
+                  children:
+                      _deductionAmountItems.map((item) {
+                        return ListTile(
+                          title: Text(item.key),
+                          trailing: Text("${item.value}円"),
+                        );
+                      }).toList(),
+                ),
+
+                SizedBox(height: 10),
+                CustomTextField(
+                  controller: _netSalaryController,
+                  labelText: "手取り額",
+                  prefixIcon: CupertinoIcons.money_yen,
+                ),
+              ],
+            ),
           ),
         ),
       ),

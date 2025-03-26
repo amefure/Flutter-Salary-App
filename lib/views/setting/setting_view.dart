@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/utilitys/custom_colors.dart';
-import 'package:salary/views/components/text_view.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,6 +31,7 @@ class SettingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: CustomColors.foundation,
       navigationBar: const CupertinoNavigationBar(middle: Text("設定")),
       child: SafeArea(
         child: ListView(

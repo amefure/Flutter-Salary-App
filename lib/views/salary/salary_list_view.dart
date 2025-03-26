@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
-import 'package:salary/views/components/text_view.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/salary/input_salary_view.dart';
 
 class SalaryListView extends StatefulWidget {
@@ -21,6 +21,7 @@ class _SalaryListViewState extends State<SalaryListView> {
     // Textのスタイルが黄色い下線になってしまう
     return Scaffold(
       body: CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
           middle: const Text('給料MEMO'),
           trailing: CupertinoButton(
@@ -51,8 +52,8 @@ class _SalaryListViewState extends State<SalaryListView> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
-                    spacing: 20,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 年月UI
                       Container(
@@ -65,9 +66,10 @@ class _SalaryListViewState extends State<SalaryListView> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             CustomText(
-                              text: salary.createdAt.year.toString(),
+                              text: salary.createdAt.year.toString() + "年",
                               textSize: TextSize.S,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -75,76 +77,23 @@ class _SalaryListViewState extends State<SalaryListView> {
 
                             CustomText(
                               text: salary.createdAt.month.toString() + "月",
-                              textSize: TextSize.L,
+                              textSize: TextSize.ML,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ],
                         ),
                       ),
-                      Spacer(),
 
                       // 給料詳細UI
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           // 総支給
-                          Row(
-                            children: [
-                              CustomText(text: "総支給", textSize: TextSize.S),
-
-                              SizedBox(width: 20),
-
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  CustomText(
-                                    text: NumberUtils.formatWithComma(
-                                      salary.paymentAmount,
-                                    ),
-                                    textSize: TextSize.L,
-                                    color: CustomColors.thema,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  SizedBox(width: 5),
-
-                                  CustomText(
-                                    text: "円",
-                                    textSize: TextSize.S,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
+                          _buildSalaryRow("総支給", salary.paymentAmount),
                           // 手取り
-                          Row(
-                            children: [
-                              CustomText(text: "手取り", textSize: TextSize.S),
-
-                              SizedBox(width: 20),
-
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  CustomText(
-                                    text: NumberUtils.formatWithComma(
-                                      salary.netSalary,
-                                    ),
-                                    textSize: TextSize.L,
-                                    color: CustomColors.thema,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  SizedBox(width: 5),
-
-                                  CustomText(
-                                    text: "円",
-                                    textSize: TextSize.S,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                          _buildSalaryRow("手取り", salary.netSalary),
                         ],
                       ),
                     ],
@@ -155,6 +104,29 @@ class _SalaryListViewState extends State<SalaryListView> {
           },
         ),
       ),
+    );
+  }
+
+  /// ラベルと金額表示UI
+  Widget _buildSalaryRow(String label, int amount) {
+    return Row(
+      children: [
+        CustomText(text: label, textSize: TextSize.S),
+        const SizedBox(width: 20),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            CustomText(
+              text: NumberUtils.formatWithComma(amount),
+              textSize: TextSize.L,
+              color: CustomColors.thema,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(width: 5),
+            const CustomText(text: "円", textSize: TextSize.S),
+          ],
+        ),
+      ],
     );
   }
 }
