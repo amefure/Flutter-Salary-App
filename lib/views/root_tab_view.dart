@@ -10,31 +10,46 @@ class RootTabViewView extends StatefulWidget {
 }
 
 class _RootTabViewViewState extends State<RootTabViewView> {
-  int _currentIndex = 0;
-
-  final _pages = [
-    const SalaryListView(),
-    const SalaryListView(),
-    const SalaryListView(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
+    return CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        height: 60,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "HOME"),
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "HOME"),
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "HOME"),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.house_fill),
+            label: "HOME",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.chart_bar_fill),
+            label: "STATS",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.gear_alt_fill),
+            label: "SETTINGS",
+          ),
         ],
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
       ),
-      body: _pages.elementAt(_currentIndex),
+      tabBuilder: (context, index) {
+        return CupertinoTabView(
+          builder: (context) {
+            return _getPage(index);
+          },
+        );
+      },
     );
+  }
+
+  Widget _getPage(int index) {
+    switch (index) {
+      case 0:
+        return const SalaryListView();
+      case 1:
+        return const SalaryListView();
+      case 2:
+        return const SalaryListView();
+      default:
+        return const SalaryListView();
+    }
   }
 }
