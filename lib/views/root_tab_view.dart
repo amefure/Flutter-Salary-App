@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salary/views/salary_list_view.dart';
+import 'package:salary/views/salary/salary_list_view.dart';
+import 'package:salary/views/setting/setting_view.dart';
 
 class RootTabViewView extends StatefulWidget {
   const RootTabViewView({super.key});
@@ -47,7 +48,7 @@ class _RootTabViewViewState extends State<RootTabViewView> {
       case 1:
         return const SalaryListView();
       case 2:
-        return const SalaryListView();
+        return const SettingView();
       default:
         return const SalaryListView();
     }

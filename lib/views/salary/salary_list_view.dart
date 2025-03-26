@@ -68,14 +68,14 @@ class _SalaryListViewState extends State<SalaryListView> {
                           children: [
                             CustomText(
                               text: salary.createdAt.year.toString(),
-                              textSize: TextSize.small,
+                              textSize: TextSize.S,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
 
                             CustomText(
                               text: salary.createdAt.month.toString() + "月",
-                              textSize: TextSize.large,
+                              textSize: TextSize.L,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -91,7 +91,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                           // 総支給
                           Row(
                             children: [
-                              CustomText(text: "総支給", textSize: TextSize.small),
+                              CustomText(text: "総支給", textSize: TextSize.S),
 
                               SizedBox(width: 20),
 
@@ -102,7 +102,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                                     text: NumberUtils.formatWithComma(
                                       salary.paymentAmount,
                                     ),
-                                    textSize: TextSize.large,
+                                    textSize: TextSize.L,
                                     color: CustomColors.thema,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -110,7 +110,7 @@ class _SalaryListViewState extends State<SalaryListView> {
 
                                   CustomText(
                                     text: "円",
-                                    textSize: TextSize.small,
+                                    textSize: TextSize.S,
                                   ),
                                 ],
                               ),
@@ -120,7 +120,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                           // 手取り
                           Row(
                             children: [
-                              CustomText(text: "手取り", textSize: TextSize.small),
+                              CustomText(text: "手取り", textSize: TextSize.S),
 
                               SizedBox(width: 20),
 
@@ -131,7 +131,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                                     text: NumberUtils.formatWithComma(
                                       salary.netSalary,
                                     ),
-                                    textSize: TextSize.large,
+                                    textSize: TextSize.L,
                                     color: CustomColors.thema,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -139,7 +139,7 @@ class _SalaryListViewState extends State<SalaryListView> {
 
                                   CustomText(
                                     text: "円",
-                                    textSize: TextSize.small,
+                                    textSize: TextSize.S,
                                   ),
                                 ],
                               ),
