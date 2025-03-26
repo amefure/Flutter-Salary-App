@@ -7,6 +7,7 @@ import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/salary/detail_input_view.dart';
 
 /// 給料入力画面
@@ -186,7 +187,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
-                
                 // 日付ピッカー
                 CustomTextField(
                   controller: _dateController,
@@ -216,7 +216,12 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                       },
                       child: Row(
                         children: [
-                          Text("総支給額：詳細入力"),
+                          CustomText(
+                            text: "総支給額：詳細入力",
+                            color: CustomColors.thema,
+                            textSize: TextSize.S,
+                            fontWeight: FontWeight.bold,
+                          ),
                           Icon(Icons.chevron_right),
                         ],
                       ),
@@ -251,7 +256,15 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                         _showInputAmountItemModal(context, false);
                       },
                       child: Row(
-                        children: [Text("控除額：詳細入力"), Icon(Icons.chevron_right)],
+                        children: [
+                          CustomText(
+                            text: "控除額：詳細入力",
+                            color: CustomColors.thema,
+                            textSize: TextSize.S,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          Icon(Icons.chevron_right),
+                        ],
                       ),
                     ),
                   ],

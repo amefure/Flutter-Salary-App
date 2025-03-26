@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
@@ -84,7 +85,23 @@ class _DetailInputViewState extends State<DetailInputView> {
                       _showErrorDialog(context);
                     }
                   },
-                  child: Text("追加"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColors.thema, // 背景色
+                    elevation: 5, // 影の濃さ
+                    padding: EdgeInsets.symmetric(
+                      // 内側の余白
+                      horizontal: 100,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // 角の丸み
+                    ),
+                  ),
+                  child: const CustomText(
+                    text: "追加",
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    ),
                 ),
               ],
             ),
