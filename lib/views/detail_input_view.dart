@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/models/salary.dart';
 
@@ -21,11 +22,11 @@ class _DetailInputViewState extends State<DetailInputView> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return CupertinoAlertDialog(
           title: Text("Error"),
           content: Text("項目名と金額を入力してください。"),
           actions: [
-            ElevatedButton(
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -43,17 +44,22 @@ class _DetailInputViewState extends State<DetailInputView> {
       padding: EdgeInsets.all(8),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.9,
-      child: Scaffold(
-        appBar: AppBar(title: Text(widget.title + "詳細入力")),
-        body: Padding(
+      child: CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text("${widget.title}：詳細入力"),
+        ),
+        child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
             children: [
+
+              SizedBox(height: 60),
+
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: "項目名",
-                  prefixIcon: Icon(Icons.money),
+                  prefixIcon: Icon(CupertinoIcons.signature),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -63,7 +69,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "金額",
-                  prefixIcon: Icon(Icons.money),
+                  prefixIcon: Icon(CupertinoIcons.money_yen),
                   border: OutlineInputBorder(),
                 ),
               ),

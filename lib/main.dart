@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
-import 'package:salary/views/salary_list_view.dart';
+import 'package:salary/views/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 /// アプリのルート
@@ -30,8 +30,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '給料MEMO App',
       localizationsDelegates: [
+        // マテリアル Widget(Android)
         GlobalMaterialLocalizations.delegate,
+        // 共通 Widget
         GlobalWidgetsLocalizations.delegate,
+        // クパチーノ Widget(iOS)
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
@@ -39,8 +42,14 @@ class MyApp extends StatelessWidget {
       ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.thema),
+        // Scaffoldの背景色を白に設定
+        scaffoldBackgroundColor: Colors.white,
+        bottomSheetTheme: BottomSheetThemeData(
+          // // BottomSheetの背景色を白に設定
+          backgroundColor: Colors.white,
+        ),
       ),
-      home: SalaryListView(),
+      home: RootTabViewView(),
     );
   }
 }
