@@ -5,7 +5,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
-import 'package:salary/views/detail_input_view.dart';
+import 'package:salary/views/salary/detail_input_view.dart';
 
 /// 給料入力画面
 class InputSalaryView extends StatefulWidget {
