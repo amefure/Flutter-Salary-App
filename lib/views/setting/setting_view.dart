@@ -19,11 +19,11 @@ class SettingView extends StatelessWidget {
   }
 
   /// WebViewで対象URLを起動する
-  void _openWebView(BuildContext context, String url, String title) {
+  void _openWebView(BuildContext context, String url) {
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => WebViewScreen(url: url, title: title),
+        builder: (context) => WebViewScreen(url: url),
       ),
     );
   }
@@ -77,7 +77,6 @@ class SettingView extends StatelessWidget {
                       () => _openWebView(
                         context,
                         "https://appdev-room.com/contact",
-                        "アプリの不具合はこちら",
                       ),
                 ),
                 CupertinoListTile(
@@ -96,7 +95,6 @@ class SettingView extends StatelessWidget {
                       () => _openWebView(
                         context,
                         "https://appdev-room.com/",
-                        "利用規約とプライバシーポリシー",
                       ),
                 ),
               ],

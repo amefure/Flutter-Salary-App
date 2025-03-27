@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 
@@ -73,35 +74,18 @@ class _DetailInputViewState extends State<DetailInputView> {
                 ),
 
                 SizedBox(height: 20),
-                ElevatedButton(
+                CustomElevatedButton(
+                  text: "追加",
                   onPressed: () {
                     String name = _nameController.text;
                     int amount = int.tryParse(_amountController.text) ?? 0;
 
                     if (name.isNotEmpty && amount > 0) {
-                      // Navigator経由でデータを返す
                       Navigator.of(context).pop(AmountItem(name, amount));
                     } else {
                       _showErrorDialog(context);
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColors.thema, // 背景色
-                    elevation: 5, // 影の濃さ
-                    padding: EdgeInsets.symmetric(
-                      // 内側の余白
-                      horizontal: 100,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // 角の丸み
-                    ),
-                  ),
-                  child: const CustomText(
-                    text: "追加",
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    ),
                 ),
               ],
             ),

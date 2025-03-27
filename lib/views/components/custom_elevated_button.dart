@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/views/components/custom_text_view.dart';
+
+class CustomElevatedButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const CustomElevatedButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: CustomColors.thema, // 背景色
+        elevation: 5, // 影の濃さ
+        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: CustomText(
+        text: text,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}
