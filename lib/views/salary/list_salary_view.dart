@@ -27,7 +27,7 @@ class _SalaryListViewState extends State<SalaryListView> {
           middle: const Text('給料MEMO'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.add, size: 28),
+            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
             onPressed: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(builder: (context) => InputSalaryView()),

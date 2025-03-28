@@ -23,7 +23,7 @@ class _DetailInputViewState extends State<DetailInputView> {
 
   /// エラーダイアログを表示
   void _showErrorDialog(BuildContext context) {
-    showDialog(
+    showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
@@ -45,9 +45,12 @@ class _DetailInputViewState extends State<DetailInputView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.9,
+      padding: EdgeInsets.only(top: 20),
+      decoration: BoxDecoration(
+        color: CustomColors.foundation,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), 
+      ),
+      height: MediaQuery.of(context).size.height * 0.8,
       child: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(

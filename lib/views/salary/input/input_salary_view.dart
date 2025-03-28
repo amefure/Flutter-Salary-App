@@ -26,6 +26,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   final TextEditingController _netSalaryController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
+  /// 作成日(給料支給日)
+  DateTime _createdAt = DateTime.now();
+
   /// 総支給詳細アイテム
   List<AmountItem> _paymentAmountItems = [];
 
@@ -37,6 +40,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     super.initState();
     DateTime now = DateTime.now();
     _dateController.text = "${now.year}/${now.month}/${now.day}";
+    _paymentAmountController.text = "0";
+    _deductionAmountController.text = "0";
+    _netSalaryController.text = "0";
   }
 
   @override
@@ -61,22 +67,58 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     _deductionAmountController.text = total.toString();
   }
 
-  /// **控除額の合計金額を計算しUI反映**
-  void _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
+  /// **iOS風の日付ホイールピッカーを表示**
+  void _selectDate(BuildContext context) {
+    showCupertinoModalPopup(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          padding: EdgeInsets.only(top: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            children: [
+              // Doneボタン
+              CupertinoButton(
+                child: Text("完了"),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              // iOSスタイルの日付ピッカー
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: _createdAt,
+                  minimumDate: DateTime(DateTime.now().year - 100),
+                  maximumDate: DateTime(DateTime.now().year + 100),
+                  onDateTimeChanged: (DateTime newDate) {
+                    setState(() {
+                      _dateController.text = _formatDate(newDate);
+                      _createdAt = DateTimeUtils.parse(
+                        dateString: _dateController.text,
+                        pattern: "yyyy/M/d",
+                      ) ?? DateTime.now();
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (picked != null) {
-      _dateController.text = "${picked.year}/${picked.month}/${picked.day}";
-    }
+  }
+
+  /// **DateTime を "YYYY/MM/DD" 形式に変換**
+  String _formatDate(DateTime date) {
+    return "${date.year}/${date.month}/${date.day}";
   }
 
   /// エラーダイアログを表示
   void _showErrorDialog(BuildContext context) {
-    showDialog(
+    showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
@@ -100,16 +142,11 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     int? paymentAmount = int.tryParse(_paymentAmountController.text);
     int? deductionAmount = int.tryParse(_deductionAmountController.text);
     int? netSalary = int.tryParse(_netSalaryController.text);
-    DateTime? createdAt = DateTimeUtils.parse(
-      dateString: _dateController.text,
-      pattern: "yyyy/M/d",
-    );
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
     if (paymentAmount == null ||
         deductionAmount == null ||
-        netSalary == null ||
-        createdAt == null) {
+        netSalary == null) {
       _showErrorDialog(context);
       return;
     }
@@ -119,7 +156,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       paymentAmount,
       deductionAmount,
       netSalary,
-      createdAt,
+      _createdAt,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
       // source: PaymentSource('123', '副業'),
@@ -176,10 +213,10 @@ class _InputSalaryViewState extends State<InputSalaryView> {
           middle: const Text('給料MEMO'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.add, size: 28),
             onPressed: () {
               add(context);
             },
+            child: const Icon(CupertinoIcons.check_mark_circled_solid, size: 28),
           ),
         ),
         child: SafeArea(

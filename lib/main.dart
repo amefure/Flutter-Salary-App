@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/repository/realm_repository.dart';
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // IOS デザインアプリ
+    return CupertinoApp(
       title: '給料MEMO App',
       localizationsDelegates: [
         // マテリアル Widget(Android)
@@ -40,14 +42,12 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         Locale('ja', 'JP'), // 日本語
       ],
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.thema),
+      theme: CupertinoThemeData(
+        primaryColor: CustomColors.thema,
         // Scaffoldの背景色を白に設定
         scaffoldBackgroundColor: Colors.white,
-        bottomSheetTheme: BottomSheetThemeData(
-          // // BottomSheetの背景色を白に設定
-          backgroundColor: Colors.white,
-        ),
+        // タブバー
+        barBackgroundColor: Colors.white,
       ),
       home: RootTabViewView(),
     );
