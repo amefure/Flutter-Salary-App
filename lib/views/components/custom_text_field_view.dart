@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -21,24 +22,45 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      readOnly: readOnly, // readOnlyの設定
-      onTap: onTap, // onTapの設定
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        labelText: labelText,
-        prefixIcon: Icon(prefixIcon),
-        border: OutlineInputBorder(
-          // 角丸を指定
-          borderRadius: BorderRadius.circular(8),
-          // 枠線を消す
-          borderSide: BorderSide.none,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(CupertinoIcons.circle, size: 15),
+
+            SizedBox(width: 8),
+
+            CustomText(
+              text: labelText,
+              textSize: TextSize.MS,
+              fontWeight: FontWeight.bold,
+            ),
+          ],
         ),
-      ),
+
+        SizedBox(height: 8),
+
+        CupertinoTextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          readOnly: readOnly,
+          onTap: onTap,
+          placeholder: labelText,
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          prefix:
+              prefixIcon != null
+                  ? Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Icon(prefixIcon, color: CupertinoColors.systemGrey),
+                  )
+                  : null,
+          decoration: BoxDecoration(
+            color: CupertinoColors.white, // 背景色
+            borderRadius: BorderRadius.circular(5), // 角丸
+          ),
+        ),
+      ],
     );
   }
 }
