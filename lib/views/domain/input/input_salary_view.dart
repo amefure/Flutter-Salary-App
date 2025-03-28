@@ -9,6 +9,7 @@ import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/detail_input_view.dart';
+import 'package:salary/views/domain/input/input_payment_source.dart';
 
 /// 給料入力画面
 class InputSalaryView extends StatefulWidget {
@@ -25,6 +26,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       TextEditingController();
   final TextEditingController _netSalaryController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _paymentSourceController =
+      TextEditingController();
 
   /// 作成日(給料支給日)
   DateTime _createdAt = DateTime.now();
@@ -96,10 +99,12 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   onDateTimeChanged: (DateTime newDate) {
                     setState(() {
                       _dateController.text = _formatDate(newDate);
-                      _createdAt = DateTimeUtils.parse(
-                        dateString: _dateController.text,
-                        pattern: "yyyy/M/d",
-                      ) ?? DateTime.now();
+                      _createdAt =
+                          DateTimeUtils.parse(
+                            dateString: _dateController.text,
+                            pattern: "yyyy/M/d",
+                          ) ??
+                          DateTime.now();
                     });
                   },
                 ),
@@ -144,9 +149,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     int? netSalary = int.tryParse(_netSalaryController.text);
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
-    if (paymentAmount == null ||
-        deductionAmount == null ||
-        netSalary == null) {
+    if (paymentAmount == null || deductionAmount == null || netSalary == null) {
       _showErrorDialog(context);
       return;
     }
@@ -185,7 +188,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
         return DetailInputView(title: title);
       },
     );
-
     if (newItem != null) {
       setState(() {
         if (isPayment) {
@@ -203,6 +205,49 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     }
   }
 
+  // 金額詳細アイテム追加画面を表示
+  Future<void> _showInputPaymentSourceModal(BuildContext context) async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return InputPaymentSourceView();
+      },
+    );
+  }
+
+  final List<String> options = ["オプション1", "オプション2", "オプション3"];
+  String selectedOption = "選択してください"; // 初期選択値
+
+  /// 選択肢のボタン
+  CupertinoActionSheetAction _buildAction(BuildContext context, String option) {
+    return CupertinoActionSheetAction(
+      onPressed: () {
+        _paymentSourceController.text = option;
+        setState(() => selectedOption = option);
+        Navigator.pop(context);
+      },
+      child: Text(option),
+    );
+  }
+
+  /// ピッカーを表示
+  void _showPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          title: const Text("選択してください"),
+          actions:
+              options.map((option) => _buildAction(context, option)).toList(),
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("キャンセル"),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,13 +255,16 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
-          middle: const Text('給料MEMO'),
+          middle: const Text('収入登録画面'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () {
               add(context);
             },
-            child: const Icon(CupertinoIcons.check_mark_circled_solid, size: 28),
+            child: const Icon(
+              CupertinoIcons.check_mark_circled_solid,
+              size: 28,
+            ),
           ),
         ),
         child: SafeArea(
@@ -224,6 +272,31 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Expanded を追加して CustomTextField のサイズを適切に制約しないとエラーになる
+                    Expanded(
+                      child: CustomTextField(
+                        controller: _paymentSourceController,
+                        labelText: "支払い元",
+                        prefixIcon: CupertinoIcons.building_2_fill,
+                        readOnly: true,
+                        onTap: () => _showPicker(context),
+                      ),
+                    ),
+
+                    SizedBox(
+                      child: IconButton(
+                        onPressed: () => _showInputPaymentSourceModal(context),
+                        icon: Icon(CupertinoIcons.add_circled_solid, size: 28),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 20),
+
                 // 日付ピッカー
                 CustomTextField(
                   controller: _dateController,

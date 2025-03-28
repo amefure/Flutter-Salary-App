@@ -4,7 +4,6 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
-import 'package:salary/views/components/custom_text_view.dart';
 
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
