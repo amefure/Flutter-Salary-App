@@ -5,6 +5,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
+import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -29,6 +30,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   final TextEditingController _paymentSourceController =
       TextEditingController();
 
+  /// 支払い元一覧
+  List<PaymentSource> _paymentSources = [];
+
   /// 作成日(給料支給日)
   DateTime _createdAt = DateTime.now();
 
@@ -46,6 +50,10 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     _paymentAmountController.text = "0";
     _deductionAmountController.text = "0";
     _netSalaryController.text = "0";
+
+    _paymentSources = context.read<PaymentSourceViewModel>().paymentSources;
+    // 存在するなら一番最初のものを指定
+    _paymentSourceController.text = _paymentSources.firstOrNull?.name ?? "未設定";
   }
 
   @override
@@ -144,14 +152,25 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 給料情報新規追加
   void add(BuildContext context) {
-    int? paymentAmount = int.tryParse(_paymentAmountController.text);
-    int? deductionAmount = int.tryParse(_deductionAmountController.text);
-    int? netSalary = int.tryParse(_netSalaryController.text);
+    final int? paymentAmount = int.tryParse(_paymentAmountController.text);
+    final int? deductionAmount = int.tryParse(_deductionAmountController.text);
+    final int? netSalary = int.tryParse(_netSalaryController.text);
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
     if (paymentAmount == null || deductionAmount == null || netSalary == null) {
       _showErrorDialog(context);
       return;
+    }
+
+    final selectName = _paymentSourceController.text;
+    PaymentSource? paymentSource;
+    try {
+      paymentSource = _paymentSources.firstWhere(
+        (source) => source.name == selectName,
+      );
+    } catch (e) {
+      // 一致しない場合はnullを代入
+      paymentSource = null;
     }
 
     final newSalary = Salary(
@@ -162,7 +181,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _createdAt,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
-      // source: PaymentSource('123', '副業'),
+      source: paymentSource,
     );
 
     context.read<SalaryViewModel>().add(newSalary);
@@ -207,45 +226,58 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   // 金額詳細アイテム追加画面を表示
   Future<void> _showInputPaymentSourceModal(BuildContext context) async {
-    showCupertinoModalPopup(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return InputPaymentSourceView();
       },
     );
   }
 
-  final List<String> options = ["オプション1", "オプション2", "オプション3"];
-  String selectedOption = "選択してください"; // 初期選択値
+  // 初期選択値
+  String selectedOption = "選択してください";
 
   /// 選択肢のボタン
   CupertinoActionSheetAction _buildAction(BuildContext context, String option) {
     return CupertinoActionSheetAction(
       onPressed: () {
         _paymentSourceController.text = option;
-        setState(() => selectedOption = option);
         Navigator.pop(context);
       },
       child: Text(option),
     );
   }
 
-  /// ピッカーを表示
-  void _showPicker(BuildContext context) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoActionSheet(
-          title: const Text("選択してください"),
-          actions:
-              options.map((option) => _buildAction(context, option)).toList(),
-          cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("キャンセル"),
-          ),
-        );
-      },
-    );
+  /// 支払い元ピッカーを表示
+  void _showPaymentSourcePicker(
+    BuildContext context,
+    List<PaymentSource> paymentSource,
+  ) {
+    if (paymentSource.isEmpty) {
+      // 未登録なら新規登録を促す
+      _showInputPaymentSourceModal(context);
+    } else {
+      // 更新されている可能性があるので上書きしておく
+      _paymentSources = paymentSource;
+      // 登録済みのリストをピッカーで表示
+      showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: const Text("支払い元を選択してください"),
+            actions:
+                paymentSource
+                    .map((option) => _buildAction(context, option.name))
+                    .toList(),
+            cancelButton: CupertinoActionSheetAction(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("キャンセル"),
+            ),
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -272,27 +304,39 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // Expanded を追加して CustomTextField のサイズを適切に制約しないとエラーになる
-                    Expanded(
-                      child: CustomTextField(
-                        controller: _paymentSourceController,
-                        labelText: "支払い元",
-                        prefixIcon: CupertinoIcons.building_2_fill,
-                        readOnly: true,
-                        onTap: () => _showPicker(context),
-                      ),
-                    ),
+                Consumer<PaymentSourceViewModel>(
+                  builder: (context, viewModel, child) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // ExpandedでCustomTextFieldのサイズを適切に制約しないとエラーになる
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _paymentSourceController,
+                            labelText: "支払い元",
+                            prefixIcon: CupertinoIcons.building_2_fill,
+                            readOnly: true,
+                            onTap:
+                                () => _showPaymentSourcePicker(
+                                  context,
+                                  viewModel.paymentSources,
+                                ),
+                          ),
+                        ),
 
-                    SizedBox(
-                      child: IconButton(
-                        onPressed: () => _showInputPaymentSourceModal(context),
-                        icon: Icon(CupertinoIcons.add_circled_solid, size: 28),
-                      ),
-                    ),
-                  ],
+                        SizedBox(
+                          child: IconButton(
+                            onPressed:
+                                () => _showInputPaymentSourceModal(context),
+                            icon: Icon(
+                              CupertinoIcons.add_circled_solid,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
 
                 SizedBox(height: 20),
@@ -343,10 +387,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _paymentAmountItems.map((item) {
-                        return ListTile(
-                          title: Text(item.key),
-                          trailing: Text("${item.value}円"),
-                        );
+                        return amountItemListRowView(item);
                       }).toList(),
                 ),
 
@@ -384,10 +425,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _deductionAmountItems.map((item) {
-                        return ListTile(
-                          title: Text(item.key),
-                          trailing: Text("${item.value}円"),
-                        );
+                        return amountItemListRowView(item);
                       }).toList(),
                 ),
 
@@ -400,6 +438,54 @@ class _InputSalaryViewState extends State<InputSalaryView> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// AmountItemのリスト行単位のView
+  Widget amountItemListRowView(AmountItem item) {
+    return Dismissible(
+      key: Key(item.id),
+      onDismissed: (direction) {
+        // 削除処理(どちらかにはあるので削除)
+        _paymentAmountItems.remove(item);
+        _deductionAmountItems.remove(item);
+        _updateTotalPaymentAmount();
+        _updateTotalDeductionAmount();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        height: 40,
+        child: Row(
+          children: [
+            Icon(CupertinoIcons.circle_fill, size: 8),
+            SizedBox(width: 12),
+            Expanded(
+              child: CustomText(
+                text: item.key,
+                fontWeight: FontWeight.bold,
+                textSize: TextSize.S,
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomText(
+                  text: "${item.value}",
+                  fontWeight: FontWeight.bold,
+                  textSize: TextSize.M,
+                  color: CustomColors.thema,
+                ),
+                SizedBox(width: 2),
+                CustomText(
+                  text: "円",
+                  fontWeight: FontWeight.bold,
+                  textSize: TextSize.SS,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

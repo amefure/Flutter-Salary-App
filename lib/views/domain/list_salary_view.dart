@@ -92,6 +92,9 @@ class _SalaryListViewState extends State<SalaryListView> {
                           ),
                         ),
 
+                        if (salary.source?.name case String name)
+                          CustomText(text: name),
+
                         // 給料詳細UI
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
