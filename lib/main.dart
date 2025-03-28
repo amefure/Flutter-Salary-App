@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,11 +11,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 /// アプリのルート
 void main() {
   final _repository = RealmRepository();
-  // SalaryViewModelをProviderとしてセットする
+  // 各ViewModelをProviderとしてセットする
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SalaryViewModel(_repository)),
+        ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(_repository)),
       ],
       child: MyApp(),
     ),
