@@ -5,8 +5,8 @@ import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_view.dart';
-import 'package:salary/views/salary/detail_salary_view.dart';
-import 'package:salary/views/salary/input/input_salary_view.dart';
+import 'package:salary/views/domain/detail_salary_view.dart';
+import 'package:salary/views/domain/input/input_salary_view.dart';
 
 class SalaryListView extends StatefulWidget {
   const SalaryListView({super.key});
