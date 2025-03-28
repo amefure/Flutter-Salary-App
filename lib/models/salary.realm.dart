@@ -160,14 +160,21 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
 class AmountItem extends _AmountItem
     with RealmEntity, RealmObjectBase, RealmObject {
   AmountItem(
+    String id,
     String key,
     int value,
   ) {
+    RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'key', key);
     RealmObjectBase.set(this, 'value', value);
   }
 
   AmountItem._();
+
+  @override
+  String get id => RealmObjectBase.get<String>(this, 'id') as String;
+  @override
+  set id(String value) => RealmObjectBase.set(this, 'id', value);
 
   @override
   String get key => RealmObjectBase.get<String>(this, 'key') as String;
@@ -192,6 +199,7 @@ class AmountItem extends _AmountItem
 
   EJsonValue toEJson() {
     return <String, dynamic>{
+      'id': id.toEJson(),
       'key': key.toEJson(),
       'value': value.toEJson(),
     };
@@ -202,10 +210,12 @@ class AmountItem extends _AmountItem
     if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
       {
+        'id': EJsonValue id,
         'key': EJsonValue key,
         'value': EJsonValue value,
       } =>
         AmountItem(
+          fromEJson(id),
           fromEJson(key),
           fromEJson(value),
         ),
@@ -218,6 +228,7 @@ class AmountItem extends _AmountItem
     register(_toEJson, _fromEJson);
     return const SchemaObject(
         ObjectType.realmObject, AmountItem, 'AmountItem', [
+      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('key', RealmPropertyType.string),
       SchemaProperty('value', RealmPropertyType.int),
     ]);

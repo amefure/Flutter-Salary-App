@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
@@ -83,7 +84,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                     int amount = int.tryParse(_amountController.text) ?? 0;
 
                     if (name.isNotEmpty && amount > 0) {
-                      Navigator.of(context).pop(AmountItem(name, amount));
+                      Navigator.of(context).pop(AmountItem(Uuid.v4().toString() ,name, amount));
                     } else {
                       _showErrorDialog(context);
                     }

@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 part 'salary.realm.dart';
 
 // RealmModelクラスは_(プライベート)なので同一ファイルに定義する
+// テーブル情報を変更したら $ dart run realm generate を実行
 
 // 給料
 @RealmModel()
@@ -29,6 +30,8 @@ class _Salary {
 // 金額項目
 @RealmModel()
 class _AmountItem {
+  @PrimaryKey()
+  late String id;
   late String key;
   late int value;
 }
