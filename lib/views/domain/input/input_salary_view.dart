@@ -110,8 +110,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       builder: (BuildContext context) {
         return Container(
           height: 300,
-          padding: EdgeInsets.only(top: 6),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.only(top: 6),
+          decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
@@ -119,7 +119,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             children: [
               // Doneボタン
               CupertinoButton(
-                child: Text("完了"),
+                child: const Text("完了"),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               // iOSスタイルの日付ピッカー
@@ -160,14 +160,14 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text("Error"),
-          content: Text("総支給額と手取り額を入力してください。"),
+          title: const Text("Error"),
+          content: const Text("総支給額と手取り額を入力してください。"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -176,7 +176,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   /// 給料情報新規追加
-  void add(BuildContext context) {
+  void addOrUpdate(BuildContext context) {
     final int? paymentAmount = int.tryParse(_paymentAmountController.text);
     final int? deductionAmount = int.tryParse(_deductionAmountController.text);
     final int? netSalary = int.tryParse(_netSalaryController.text);
@@ -210,10 +210,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     );
 
     if (widget.salary case Salary salary) {
-      print("update");
       context.read<SalaryViewModel>().update(salary, newSalary);
     } else {
-      print("add");
       context.read<SalaryViewModel>().add(newSalary);
     }
 
@@ -268,7 +266,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   // 初期選択値
-  String selectedOption = "選択してください";
+  final String selectedOption = "選択してください";
 
   /// 選択肢のボタン
   CupertinoActionSheetAction _buildAction(BuildContext context, String option) {
@@ -319,11 +317,11 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
-          middle: const Text('収入登録画面'),
+          middle: widget.salary == null ? const Text('収入登録画面') : const Text('収入更新画面'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () {
-              add(context);
+              addOrUpdate(context);
             },
             child: const Icon(
               CupertinoIcons.check_mark_circled_solid,
@@ -371,7 +369,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   },
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 // 日付ピッカー
                 CustomTextField(
@@ -382,7 +380,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   onTap: () => _selectDate(context),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 CustomTextField(
                   controller: _paymentAmountController,
@@ -390,7 +388,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   prefixIcon: CupertinoIcons.money_yen,
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 Row(
                   children: [
@@ -423,7 +421,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                       }).toList(),
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 CustomTextField(
                   controller: _deductionAmountController,
                   labelText: "控除額",
@@ -432,7 +430,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     TextButton(
                       onPressed: () async {
                         // 詳細画面入力モーダルを表示
@@ -461,7 +459,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                       }).toList(),
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 CustomTextField(
                   controller: _netSalaryController,
                   labelText: "手取り額",
@@ -491,8 +489,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
         height: 40,
         child: Row(
           children: [
-            Icon(CupertinoIcons.circle_fill, size: 8),
-            SizedBox(width: 12),
+            const Icon(CupertinoIcons.circle_fill, size: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: CustomText(
                 text: item.key,
@@ -509,7 +507,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   textSize: TextSize.M,
                   color: CustomColors.thema,
                 ),
-                SizedBox(width: 2),
+                const SizedBox(width: 2),
                 CustomText(
                   text: "円",
                   fontWeight: FontWeight.bold,

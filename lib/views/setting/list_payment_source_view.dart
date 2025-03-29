@@ -72,6 +72,20 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
     );
   }
 
+  // 金額詳細アイテム追加画面を表示
+  Future<void> _showUpdatePaymentSourceModal(
+    BuildContext context,
+    PaymentSource paymentSource,
+  ) async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return InputPaymentSourceView(paymentSource: paymentSource);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,14 +110,10 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
               return ListView.builder(
                 itemCount: viewModel.paymentSources.length,
                 itemBuilder: (context, index) {
-                  final paymentSources = viewModel.paymentSources[index];
+                  final paymentSource = viewModel.paymentSources[index];
                   return InkWell(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   CupertinoPageRoute(
-                      //     builder: (context) => DetailSalaryView(salary: salary),
-                      //   ),
-                      // );
+                      _showUpdatePaymentSourceModal(context, paymentSource);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
@@ -119,13 +129,11 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
                           Icon(CupertinoIcons.building_2_fill),
                           SizedBox(width: 20),
 
-                          Expanded(
-                            child: CustomText(text: paymentSources.name),
-                          ),
+                          Expanded(child: CustomText(text: paymentSource.name)),
 
                           IconButton(
                             onPressed: () {
-                              _showConfirmDeleteAlert(context, paymentSources);
+                              _showConfirmDeleteAlert(context, paymentSource);
                             },
                             icon: Icon(
                               CupertinoIcons.trash_fill,

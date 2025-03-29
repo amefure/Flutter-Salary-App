@@ -9,7 +9,9 @@ import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 
 class InputPaymentSourceView extends StatefulWidget {
-  const InputPaymentSourceView({super.key});
+  const InputPaymentSourceView({super.key, this.paymentSource});
+
+  final PaymentSource? paymentSource;
 
   @override
   State<InputPaymentSourceView> createState() => _InputPaymentSourceViewState();
@@ -17,6 +19,15 @@ class InputPaymentSourceView extends StatefulWidget {
 
 class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.paymentSource case PaymentSource paymentSource) {
+      _nameController.text = paymentSource.name;
+    }
+    ;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -48,18 +59,23 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 20),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.only(top: 20),
+      decoration: const BoxDecoration(
         color: CustomColors.foundation,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      height: MediaQuery.of(context).size.height * 0.8,
+      height:  MediaQuery.of(context).size.height * 0.8,
       child: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
-        navigationBar: CupertinoNavigationBar(middle: Text("支払い元登録画面")),
+        navigationBar: CupertinoNavigationBar(
+          middle:
+              widget.paymentSource == null
+                  ? const Text("支払い元登録画面")
+                  : const Text("支払い元更新画面"),
+        ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 CustomTextField(
@@ -71,12 +87,24 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
 
                 SizedBox(height: 20),
                 CustomElevatedButton(
-                  text: "追加",
+                  text: widget.paymentSource == null ? "追加" : "更新",
                   onPressed: () {
                     String name = _nameController.text;
                     if (name.isNotEmpty) {
-                      final payment = PaymentSource(Uuid.v4().toString(), name);
-                      context.read<PaymentSourceViewModel>().add(payment);
+                      if (widget.paymentSource
+                          case PaymentSource paymentSource) {
+                        context.read<PaymentSourceViewModel>().update(
+                          paymentSource.id,
+                          name,
+                        );
+                      } else {
+                        final payment = PaymentSource(
+                          Uuid.v4().toString(),
+                          name,
+                        );
+                        context.read<PaymentSourceViewModel>().add(payment);
+                      }
+
                       Navigator.of(context).pop();
                     } else {
                       _showErrorDialog(context);

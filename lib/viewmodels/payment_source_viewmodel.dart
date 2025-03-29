@@ -30,10 +30,19 @@ class PaymentSourceViewModel extends ChangeNotifier {
     fetchAll();
   }
 
+  /// 更新
+  void update(String id, String name) {
+    // 更新処理
+    _repository.updateById(id, (PaymentSource paymentSource) {
+      // 名称
+      paymentSource.name = name;
+    });
+    fetchAll();
+  }
+
   /// 削除
   void delete(PaymentSource paymentSource) {
     _repository.delete<PaymentSource>(paymentSource);
     fetchAll();
   }
-
 }
