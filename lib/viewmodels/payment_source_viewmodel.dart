@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
 import '../models/salary.dart';
 
@@ -31,11 +32,13 @@ class PaymentSourceViewModel extends ChangeNotifier {
   }
 
   /// 更新
-  void update(String id, String name) {
+  void update(String id, String name, ThemaColor color) {
     // 更新処理
     _repository.updateById(id, (PaymentSource paymentSource) {
       // 名称
       paymentSource.name = name;
+      // カラー
+      paymentSource.themaColor = color.value;
     });
     fetchAll();
   }

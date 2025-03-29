@@ -62,12 +62,12 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       },
     );
   }
-  
+
   /// 編集画面表示
   void _editSalary(Salary salary) {
-    Navigator.of(
-      context,
-    ).push(CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)));
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)),
+    );
   }
 
   void _deleteSalary(
@@ -108,28 +108,35 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
         backgroundColor: CustomColors.foundation,
         body: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(width: MediaQuery.of(context).size.width),
+            child: Consumer<SalaryViewModel>(
+              builder: (context, viewModel, child) {
+                if (viewModel.salaries.isEmpty) {
+                  return Center(child: Text('データがありません'));
+                }
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: MediaQuery.of(context).size.width),
 
-                CustomText(text: targetSalary?.netSalary.toString() ?? ""),
+                    CustomText(text: targetSalary?.netSalary.toString() ?? ""),
 
-                const SizedBox(height: 700), 
+                    const SizedBox(height: 700),
 
-                CustomElevatedButton(
-                  text: "削除",
-                  backgroundColor: CustomColors.negative,
-                  onPressed: () {
-                    // nullでないなら
-                    if (targetSalary case Salary salary) {
-                      _showDeleteConfirmDialog(context, salary);
-                    }
-                  },
-                ),
-                const SizedBox(height: 500), 
-              ],
+                    CustomElevatedButton(
+                      text: "削除",
+                      backgroundColor: CustomColors.negative,
+                      onPressed: () {
+                        // nullでないなら
+                        if (targetSalary case Salary salary) {
+                          _showDeleteConfirmDialog(context, salary);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 500),
+                  ],
+                );
+              },
             ),
           ),
         ),

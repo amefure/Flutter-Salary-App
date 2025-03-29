@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
+import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/detail_salary_view.dart';
@@ -30,24 +31,28 @@ class _SalaryListViewState extends State<SalaryListView> {
             child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
             onPressed: () {
               Navigator.of(context).push(
-                CupertinoPageRoute(builder: (context) => InputSalaryView(salary: null)),
+                CupertinoPageRoute(
+                  builder: (context) => InputSalaryView(salary: null),
+                ),
               );
             },
           ),
         ),
-        child: Consumer<SalaryViewModel>(
-          builder: (context, viewModel, child) {
-            if (viewModel.salaries.isEmpty) {
+        child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
+          builder: (context, salaryViewModel, paymentSourceViewModel, child) {
+            if (salaryViewModel.salaries.isEmpty) {
               return Center(child: Text('データがありません'));
             }
             return ListView.builder(
-              itemCount: viewModel.salaries.length,
+              itemCount: salaryViewModel.salaries.length,
               itemBuilder: (context, index) {
-                final salary = viewModel.salaries[index];
+                final salary = salaryViewModel.salaries[index];
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (context) => DetailSalaryView(salary: salary)),
+                      CupertinoPageRoute(
+                        builder: (context) => DetailSalaryView(salary: salary),
+                      ),
                     );
                   },
                   child: Container(
@@ -68,7 +73,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(
-                            color: CustomColors.thema,
+                            color: salary.source?.themaColorEnum.color ?? CustomColors.thema,
                             // 角丸
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -92,8 +97,16 @@ class _SalaryListViewState extends State<SalaryListView> {
                           ),
                         ),
 
-                        if (salary.source?.name case String name)
-                          CustomText(text: name),
+                        const SizedBox(width: 10),
+
+                        CustomText(
+                          text: switch (salary.source?.name) {
+                            String name => name,
+                            _ => "未設定",
+                          },
+                        ),
+
+                        const Spacer(),
 
                         // 給料詳細UI
                         Column(

@@ -105,7 +105,7 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
           child: Consumer<PaymentSourceViewModel>(
             builder: (context, viewModel, child) {
               if (viewModel.paymentSources.isEmpty) {
-                return Center(child: Text('登録された支払い元データがありません'));
+                return Center(child: const Text('登録された支払い元データがありません'));
               }
               return ListView.builder(
                 itemCount: viewModel.paymentSources.length,
@@ -116,8 +116,8 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
                       _showUpdatePaymentSourceModal(context, paymentSource);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(10),
-                      margin: EdgeInsets.only(left: 20, right: 20, top: 1),
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         // 角丸
@@ -126,8 +126,8 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(CupertinoIcons.building_2_fill),
-                          SizedBox(width: 20),
+                          Icon(CupertinoIcons.building_2_fill, color: paymentSource.themaColorEnum.color),
+                          const SizedBox(width: 20),
 
                           Expanded(child: CustomText(text: paymentSource.name)),
 

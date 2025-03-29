@@ -34,6 +34,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 支払い元一覧
   List<PaymentSource> _paymentSources = [];
+  PaymentSource? selectPaymentSource;
 
   /// 作成日(給料支給日)
   DateTime _createdAt = DateTime.now();
@@ -187,17 +188,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       return;
     }
 
-    final selectName = _paymentSourceController.text;
-    PaymentSource? paymentSource;
-    try {
-      paymentSource = _paymentSources.firstWhere(
-        (source) => source.name == selectName,
-      );
-    } catch (e) {
-      // 一致しない場合はnullを代入
-      paymentSource = null;
-    }
-
     final newSalary = Salary(
       Uuid.v4().toString(),
       paymentAmount,
@@ -206,7 +196,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _createdAt,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
-      source: paymentSource,
+      source: selectPaymentSource,
     );
 
     if (widget.salary case Salary salary) {
@@ -273,6 +263,14 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     return CupertinoActionSheetAction(
       onPressed: () {
         _paymentSourceController.text = option;
+        try {
+          selectPaymentSource = _paymentSources.firstWhere(
+            (source) => source.name == option,
+          );
+        } catch (e) {
+          // 一致しない場合はnullを代入
+          selectPaymentSource = null;
+        }
         Navigator.pop(context);
       },
       child: Text(option),
@@ -317,7 +315,10 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
-          middle: widget.salary == null ? const Text('収入登録画面') : const Text('収入更新画面'),
+          middle:
+              widget.salary == null
+                  ? const Text('収入登録画面')
+                  : const Text('収入更新画面'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () {
@@ -345,6 +346,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                             controller: _paymentSourceController,
                             labelText: "支払い元",
                             prefixIcon: CupertinoIcons.building_2_fill,
+                            prefixIconColor:
+                                selectPaymentSource?.themaColorEnum.color ??
+                                CupertinoColors.systemGrey,
                             readOnly: true,
                             onTap:
                                 () => _showPaymentSourcePicker(

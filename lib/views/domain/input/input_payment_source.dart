@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
@@ -19,6 +20,7 @@ class InputPaymentSourceView extends StatefulWidget {
 
 class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   final TextEditingController _nameController = TextEditingController();
+  ThemaColor selectedColor = ThemaColor.gray;
 
   @override
   void initState() {
@@ -64,7 +66,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
         color: CustomColors.foundation,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      height:  MediaQuery.of(context).size.height * 0.8,
+      height: MediaQuery.of(context).size.height * 0.8,
       child: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
@@ -86,6 +88,15 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                 ),
 
                 SizedBox(height: 20),
+
+                _ThemaColorPicker(
+                  onColorSelected: (color) {
+                    setState(() {
+                      selectedColor = color;
+                    });
+                  },
+                ),
+
                 CustomElevatedButton(
                   text: widget.paymentSource == null ? "追加" : "更新",
                   onPressed: () {
@@ -96,11 +107,13 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                         context.read<PaymentSourceViewModel>().update(
                           paymentSource.id,
                           name,
+                          selectedColor
                         );
                       } else {
                         final payment = PaymentSource(
                           Uuid.v4().toString(),
                           name,
+                          selectedColor.value,
                         );
                         context.read<PaymentSourceViewModel>().add(payment);
                       }
@@ -116,6 +129,57 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// カラーピッカー UI
+class _ThemaColorPicker extends StatefulWidget {
+  final Function(ThemaColor) onColorSelected;
+
+  const _ThemaColorPicker({
+    Key? key,
+    required this.onColorSelected,
+  }) : super(key: key);
+
+  @override
+  _ThemaColorPickerState createState() => _ThemaColorPickerState();
+}
+
+class _ThemaColorPickerState extends State<_ThemaColorPicker> {
+  late ThemaColor selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedColor = ThemaColor.blue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<ThemaColor>(
+      value: selectedColor,
+      items:
+          ThemaColor.values.map((color) {
+            return DropdownMenuItem(
+              value: color,
+              child: Row(
+                children: [
+                  Container(width: 20, height: 20, color: color.color),
+                  const SizedBox(width: 8),
+                  Text(color.toName()),
+                ],
+              ),
+            );
+          }).toList(),
+      onChanged: (color) {
+        if (color != null) {
+          setState(() {
+            selectedColor = color;
+          });
+          widget.onColorSelected(color);
+        }
+      },
     );
   }
 }
