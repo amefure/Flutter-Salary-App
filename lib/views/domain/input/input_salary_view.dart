@@ -199,7 +199,14 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       source: paymentSource,
     );
 
-    context.read<SalaryViewModel>().add(newSalary);
+    if (widget.salary case Salary salary) {
+      print("update");
+      context.read<SalaryViewModel>().update(salary.id, newSalary);
+    } else {
+      print("add");
+      context.read<SalaryViewModel>().add(newSalary);
+    }
+
     Navigator.of(context).pop();
   }
 

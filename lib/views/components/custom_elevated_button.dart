@@ -4,11 +4,13 @@ import 'package:salary/views/components/custom_text_view.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String text;
+  final Color backgroundColor;
   final VoidCallback onPressed;
 
   const CustomElevatedButton({
     super.key,
     required this.text,
+    this.backgroundColor = CustomColors.thema,
     required this.onPressed,
   });
 
@@ -17,7 +19,7 @@ class CustomElevatedButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: CustomColors.thema, // 背景色
+        backgroundColor: backgroundColor,
         elevation: 5, // 影の濃さ
         padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

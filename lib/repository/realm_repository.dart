@@ -10,6 +10,7 @@ import 'package:salary/models/salary.dart';
 class RealmRepository {
   /// シングルトンインスタンスを保持
   static final RealmRepository _instance = RealmRepository._internal();
+
   /// factory constructor
   factory RealmRepository() => _instance;
 
@@ -39,12 +40,27 @@ class RealmRepository {
     });
   }
 
+  /// ID を指定してデータを更新
+  void updateById<T extends RealmObject>(
+    String id,
+    void Function(T) updateCallback,
+  ) {
+    final item = _realm.find<T>(id); // ID で検索
+    if (item != null) {
+      _realm.write(() {
+        updateCallback(item);
+        _realm.add(item, update: true); // 既存データを更新
+      });
+    }
+  }
+
   /// ジェネリクスで指定したデータを削除
   void delete<T extends RealmObject>(T item) {
     _realm.write(() {
       _realm.delete(item);
     });
   }
+
   /// Realmを終了
   void dispose() {
     _realm.close();

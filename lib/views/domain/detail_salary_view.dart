@@ -120,6 +120,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
                 CustomElevatedButton(
                   text: "削除",
+                  backgroundColor: CustomColors.negative,
                   onPressed: () {
                     // nullでないなら
                     if (targetSalary case Salary salary) {

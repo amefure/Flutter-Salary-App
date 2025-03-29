@@ -32,6 +32,30 @@ class SalaryViewModel extends ChangeNotifier {
     fetchAll();
   }
 
+  /// 更新
+  void update(String id, Salary updateSalary) {
+    // 更新処理
+    _repository.updateById(id, (Salary salary) {
+      // 総支給
+      salary.paymentAmount = updateSalary.paymentAmount;
+      // 控除額
+      salary.deductionAmount = updateSalary.deductionAmount;
+      // 手取り額
+      salary.netSalary = updateSalary.netSalary;
+      // 登録日
+      salary.createdAt = updateSalary.createdAt;
+      // 総支給構成要素(リストは一度クリアにしてから追加しないと更新できない)
+      salary.paymentAmountItems.clear();
+      salary.paymentAmountItems.addAll(updateSalary.paymentAmountItems);
+      // 控除額構成要素
+      salary.deductionAmountItems.clear();
+      salary.deductionAmountItems.addAll(updateSalary.deductionAmountItems);
+      // 支払い元
+      salary.source = updateSalary.source;
+    });
+    fetchAll();
+  }
+
   /// 削除
   void delete(Salary salary) {
     _repository.delete<Salary>(salary);

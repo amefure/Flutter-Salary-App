@@ -48,13 +48,10 @@ class CustomTextField extends StatelessWidget {
           onTap: onTap,
           placeholder: labelText,
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          prefix:
-              prefixIcon != null
-                  ? Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Icon(prefixIcon, color: CupertinoColors.systemGrey),
-                  )
-                  : null,
+          prefix: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Icon(prefixIcon, color: CupertinoColors.systemGrey),
+          ),
           decoration: BoxDecoration(
             color: CupertinoColors.white, // 背景色
             borderRadius: BorderRadius.circular(5), // 角丸
