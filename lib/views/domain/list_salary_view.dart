@@ -30,7 +30,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
             onPressed: () {
               Navigator.of(context).push(
-                CupertinoPageRoute(builder: (context) => InputSalaryView()),
+                CupertinoPageRoute(builder: (context) => InputSalaryView(salary: null)),
               );
             },
           ),

@@ -7,6 +7,7 @@ import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/domain/input/input_salary_view.dart';
 
 class DetailSalaryView extends StatefulWidget {
   const DetailSalaryView({super.key, required this.salary});
@@ -52,7 +53,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
               child: CustomText(
                 text: "削除",
                 fontWeight: FontWeight.bold,
-                color: CustomColors.thema,
+                color: CustomColors.negative,
                 textSize: TextSize.MS,
               ),
             ),
@@ -61,11 +62,12 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       },
     );
   }
-
-  void _editSalary() {
-    // 編集処理（モーダルを開く or 画面遷移）
-    print("編集ボタンが押されました");
-    Navigator.of(context).pop();
+  
+  /// 編集画面表示
+  void _editSalary(Salary salary) {
+    Navigator.of(
+      context,
+    ).push(CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)));
   }
 
   void _deleteSalary(
@@ -97,7 +99,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
         backgroundColor: CustomColors.foundation,
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: _editSalary,
+          onPressed: () => _editSalary(widget.salary),
           child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
         ),
       ),

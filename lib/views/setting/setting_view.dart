@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/setting/list_payment_source_view.dart';
 import 'package:salary/views/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +37,35 @@ class SettingView extends StatelessWidget {
       child: SafeArea(
         child: ListView(
           children: [
+
+            CupertinoListSection.insetGrouped(
+              header: const CustomText(text: "App"),
+              children: [
+                CupertinoListTile(
+                  padding: EdgeInsets.all(20),
+                  title: const CustomText(
+                    text: "支払い元管理",
+                    textSize: TextSize.MS,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  leading: const Icon(
+                    CupertinoIcons.building_2_fill,
+                    color: CustomColors.thema,
+                  ),
+                  trailing: const CupertinoListTileChevron(),
+                  onTap:
+                      () {
+                        Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => ListPaymentSourceView(),
+                      ),
+                    );
+                      },
+                ),
+            
+              ],
+            ),
+
             CupertinoListSection.insetGrouped(
               header: const CustomText(text: "LINK"),
               footer: const Padding(

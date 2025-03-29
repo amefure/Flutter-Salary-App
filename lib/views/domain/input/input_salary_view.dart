@@ -14,7 +14,9 @@ import 'package:salary/views/domain/input/input_payment_source.dart';
 
 /// 給料入力画面
 class InputSalaryView extends StatefulWidget {
-  const InputSalaryView({super.key});
+  const InputSalaryView({super.key, required this.salary});
+
+  final Salary? salary;
 
   @override
   State<StatefulWidget> createState() => _InputSalaryViewState();
@@ -45,15 +47,28 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   @override
   void initState() {
     super.initState();
-    DateTime now = DateTime.now();
-    _dateController.text = "${now.year}/${now.month}/${now.day}";
-    _paymentAmountController.text = "0";
-    _deductionAmountController.text = "0";
-    _netSalaryController.text = "0";
 
     _paymentSources = context.read<PaymentSourceViewModel>().paymentSources;
-    // 存在するなら一番最初のものを指定
-    _paymentSourceController.text = _paymentSources.firstOrNull?.name ?? "未設定";
+
+    if (widget.salary case Salary salary) {
+      DateTime now = salary.createdAt;
+      _dateController.text = "${now.year}/${now.month}/${now.day}";
+      _paymentAmountController.text = salary.paymentAmount.toString();
+      _deductionAmountController.text = salary.deductionAmount.toString();
+      _netSalaryController.text = salary.netSalary.toString();
+      _paymentAmountItems = salary.paymentAmountItems;
+      _deductionAmountItems = salary.deductionAmountItems;
+      _paymentSourceController.text = salary.source?.name ?? "未設定";
+    } else {
+      DateTime now = DateTime.now();
+      _dateController.text = "${now.year}/${now.month}/${now.day}";
+      _paymentAmountController.text = "0";
+      _deductionAmountController.text = "0";
+      _netSalaryController.text = "0";
+      // 存在するなら一番最初のものを指定
+      _paymentSourceController.text =
+          _paymentSources.firstOrNull?.name ?? "未設定";
+    }
   }
 
   @override
