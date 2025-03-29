@@ -33,9 +33,20 @@ class SalaryViewModel extends ChangeNotifier {
   }
 
   /// 更新
-  void update(String id, Salary updateSalary) {
+  void update(Salary oldSalary, Salary updateSalary) {
+    // 後続でコピーオブジェクトで更新するため
+    // 旧SalaryのpaymentAmountItems/deductionAmountItemsの中身を一度完全に削除する
+    // forEachで実行すると管理下リストオブジェクト内での操作違反でエラーになるため
+    // fromでコピーを作成してからループさせる
+    for (var item in List.from(oldSalary.paymentAmountItems)) {
+      _repository.delete(item);
+    }
+    for (var item in List.from(oldSalary.deductionAmountItems)) {
+      _repository.delete(item);
+    }
+
     // 更新処理
-    _repository.updateById(id, (Salary salary) {
+    _repository.updateById(oldSalary.id, (Salary salary) {
       // 総支給
       salary.paymentAmount = updateSalary.paymentAmount;
       // 控除額

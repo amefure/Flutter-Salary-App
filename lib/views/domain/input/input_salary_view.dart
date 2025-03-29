@@ -56,8 +56,18 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _paymentAmountController.text = salary.paymentAmount.toString();
       _deductionAmountController.text = salary.deductionAmount.toString();
       _netSalaryController.text = salary.netSalary.toString();
-      _paymentAmountItems = salary.paymentAmountItems;
-      _deductionAmountItems = salary.deductionAmountItems;
+      // mapでコピーを作成しておかないと参照渡しでRealm管理下オブジェクトがわたり
+      // write内でないので書き込み権限エラーになる
+      // しかしコピーしたものでそのまま更新しようとするとエラーになるので注意
+      _paymentAmountItems =
+          salary.paymentAmountItems
+              .map((item) => AmountItem(item.id, item.key, item.value))
+              .toList();
+
+      _deductionAmountItems =
+          salary.deductionAmountItems
+              .map((item) => AmountItem(item.id, item.key, item.value))
+              .toList();
       _paymentSourceController.text = salary.source?.name ?? "未設定";
     } else {
       DateTime now = DateTime.now();
@@ -201,7 +211,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
     if (widget.salary case Salary salary) {
       print("update");
-      context.read<SalaryViewModel>().update(salary.id, newSalary);
+      context.read<SalaryViewModel>().update(salary, newSalary);
     } else {
       print("add");
       context.read<SalaryViewModel>().add(newSalary);
