@@ -243,9 +243,11 @@ class PaymentSource extends _PaymentSource
   PaymentSource(
     String id,
     String name,
+    int themaColor,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'themaColor', themaColor);
   }
 
   PaymentSource._();
@@ -259,6 +261,11 @@ class PaymentSource extends _PaymentSource
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  int get themaColor => RealmObjectBase.get<int>(this, 'themaColor') as int;
+  @override
+  set themaColor(int value) => RealmObjectBase.set(this, 'themaColor', value);
 
   @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
@@ -276,6 +283,7 @@ class PaymentSource extends _PaymentSource
     return <String, dynamic>{
       'id': id.toEJson(),
       'name': name.toEJson(),
+      'themaColor': themaColor.toEJson(),
     };
   }
 
@@ -286,10 +294,12 @@ class PaymentSource extends _PaymentSource
       {
         'id': EJsonValue id,
         'name': EJsonValue name,
+        'themaColor': EJsonValue themaColor,
       } =>
         PaymentSource(
           fromEJson(id),
           fromEJson(name),
+          fromEJson(themaColor),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -302,6 +312,7 @@ class PaymentSource extends _PaymentSource
         ObjectType.realmObject, PaymentSource, 'PaymentSource', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('themaColor', RealmPropertyType.int),
     ]);
   }();
 

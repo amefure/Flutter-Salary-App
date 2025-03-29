@@ -1,4 +1,5 @@
 import 'package:realm/realm.dart';
+import 'package:salary/models/thema_color.dart';
 
 // 自動生成コード
 part 'salary.realm.dart';
@@ -42,6 +43,14 @@ class _AmountItem {
 class _PaymentSource {
   @PrimaryKey()
   late String id;
-
+  // 名称
   late String name;
+  // カラー
+  late int themaColor;
+
+    // ThemaColor に変換
+  ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
+
+  // ThemaColor を設定
+  set themaColorEnum(ThemaColor color) => themaColor = color.value;
 }
