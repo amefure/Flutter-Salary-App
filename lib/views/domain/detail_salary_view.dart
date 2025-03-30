@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
+import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
+import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
 
@@ -20,7 +23,7 @@ class DetailSalaryView extends StatefulWidget {
 
 class _DetailSalaryViewState extends State<DetailSalaryView> {
   /// この画面で表示対象のSalary
-  /// initStateでDetailSalaryViewから受けっとったものをコピーしておく
+  /// initStateでDetailSalaryViewから受けとったものをコピーしておく
   /// 削除前にnullにしてsetStateをしないと画面が真っ赤でエラーになる
   Salary? targetSalary;
 
@@ -107,36 +110,96 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       child: Scaffold(
         backgroundColor: CustomColors.foundation,
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Consumer<SalaryViewModel>(
-              builder: (context, viewModel, child) {
-                if (viewModel.salaries.isEmpty) {
-                  return Center(child: Text('データがありません'));
-                }
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(width: MediaQuery.of(context).size.width),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
+                builder: (
+                  context,
+                  salaryViewModel,
+                  paymentSourceViewModel,
+                  child,
+                ) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 支払い元ラベル
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color:
+                              targetSalary?.source?.themaColorEnum.color ??
+                              ThemaColor.blue.color,
+                          // 角丸
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            // 影
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 5,
+                              spreadRadius: 1,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 8),
 
-                    CustomText(text: targetSalary?.netSalary.toString() ?? ""),
+                            const Icon(
+                              CupertinoIcons.building_2_fill,
+                              color: Colors.white,
+                            ),
 
-                    const SizedBox(height: 700),
+                            const SizedBox(width: 8),
 
-                    CustomElevatedButton(
-                      text: "削除",
-                      backgroundColor: CustomColors.negative,
-                      onPressed: () {
-                        // nullでないなら
-                        if (targetSalary case Salary salary) {
-                          _showDeleteConfirmDialog(context, salary);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 500),
-                  ],
-                );
-              },
+                            Expanded(
+                              child: CustomText(
+                                text: targetSalary?.source?.name ?? "未設定",
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                textSize: TextSize.S,
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ),
+
+                      const CustomLabelView(labelText: "総支給額"),
+                      CustomText(
+                        text: targetSalary?.paymentAmount.toString() ?? "",
+                      ),
+
+                      const CustomLabelView(labelText: "控除額"),
+                      CustomText(
+                        text: targetSalary?.deductionAmount.toString() ?? "",
+                      ),
+
+                      const CustomLabelView(labelText: "手取り額"),
+                      CustomText(
+                        text: targetSalary?.netSalary.toString() ?? "",
+                      ),
+
+                      const SizedBox(height: 700),
+
+                      CustomElevatedButton(
+                        text: "削除",
+                        backgroundColor: CustomColors.negative,
+                        onPressed: () {
+                          // nullでないなら
+                          if (targetSalary case Salary salary) {
+                            _showDeleteConfirmDialog(context, salary);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 500),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

@@ -73,7 +73,9 @@ class _SalaryListViewState extends State<SalaryListView> {
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(
-                            color: salary.source?.themaColorEnum.color ?? CustomColors.thema,
+                            color:
+                                salary.source?.themaColorEnum.color ??
+                                CustomColors.thema,
                             // 角丸
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -99,25 +101,25 @@ class _SalaryListViewState extends State<SalaryListView> {
 
                         const SizedBox(width: 10),
 
-                        CustomText(
-                          text: switch (salary.source?.name) {
-                            String name => name,
-                            _ => "未設定",
-                          },
-                        ),
-
-                        const Spacer(),
-
-                        // 給料詳細UI
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            // 総支給
-                            _buildSalaryRow("総支給", salary.paymentAmount),
-                            // 手取り
-                            _buildSalaryRow("手取り", salary.netSalary),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                text: switch (salary.source?.name) {
+                                  String name => name,
+                                  _ => "未設定",
+                                },
+                                textSize: TextSize.S,
+                                color: CustomColors.text.withValues(alpha: 0.7),
+                              ),
+                              // 給料詳細UI
+                              // 総支給
+                              _buildSalaryRow("総支給", salary.paymentAmount),
+                              // 手取り
+                              _buildSalaryRow("手取り", salary.netSalary),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -135,8 +137,9 @@ class _SalaryListViewState extends State<SalaryListView> {
   Widget _buildSalaryRow(String label, int amount) {
     return Row(
       children: [
+        const Spacer(),
         CustomText(text: label, textSize: TextSize.S),
-        const SizedBox(width: 20),
+        const SizedBox(width: 15),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [

@@ -45,11 +45,16 @@ class CustomText extends StatelessWidget {
 
     return Text(
       text,
+      // 最大行数
+      maxLines: 1,
+      // 文字溢れ時の挙動
+      overflow: TextOverflow.ellipsis,
+      // 改行するか否か
+      softWrap: false,
       style: TextStyle(
         fontSize: fontSize,
         color: color,
         fontWeight: fontWeight,
-        
       ),
     );
   }

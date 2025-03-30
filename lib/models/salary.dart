@@ -22,7 +22,7 @@ class _Salary {
   late DateTime createdAt;
   // 総支給構成要素
   late List<_AmountItem> paymentAmountItems;
-   // 控除額構成要素
+  // 控除額構成要素
   late List<_AmountItem> deductionAmountItems;
   // 支払い元
   late _PaymentSource? source;
@@ -48,7 +48,7 @@ class _PaymentSource {
   // カラー
   late int themaColor;
 
-    // ThemaColor に変換
+  // ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
 
   // ThemaColor を設定

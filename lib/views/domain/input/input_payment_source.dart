@@ -7,6 +7,7 @@ import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
+import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 
 class InputPaymentSourceView extends StatefulWidget {
@@ -26,6 +27,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   void initState() {
     if (widget.paymentSource case PaymentSource paymentSource) {
       _nameController.text = paymentSource.name;
+      selectedColor = paymentSource.themaColorEnum;
     }
     ;
     super.initState();
@@ -87,15 +89,20 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                   keyboardType: TextInputType.text,
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
+                const CustomLabelView(labelText: "カラー"),
 
                 _ThemaColorPicker(
+                  selectedColor: selectedColor,
                   onColorSelected: (color) {
                     setState(() {
                       selectedColor = color;
                     });
                   },
                 ),
+
+                const SizedBox(height: 20),
 
                 CustomElevatedButton(
                   text: widget.paymentSource == null ? "追加" : "更新",
@@ -107,7 +114,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                         context.read<PaymentSourceViewModel>().update(
                           paymentSource.id,
                           name,
-                          selectedColor
+                          selectedColor,
                         );
                       } else {
                         final payment = PaymentSource(
@@ -135,12 +142,16 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
 
 // カラーピッカー UI
 class _ThemaColorPicker extends StatefulWidget {
+  // 選択済みカラー
+  final ThemaColor selectedColor;
+  // カラー選択後のアクション
   final Function(ThemaColor) onColorSelected;
 
   const _ThemaColorPicker({
-    Key? key,
+    super.key,
+    this.selectedColor = ThemaColor.blue,
     required this.onColorSelected,
-  }) : super(key: key);
+  });
 
   @override
   _ThemaColorPickerState createState() => _ThemaColorPickerState();
@@ -152,7 +163,7 @@ class _ThemaColorPickerState extends State<_ThemaColorPicker> {
   @override
   void initState() {
     super.initState();
-    selectedColor = ThemaColor.blue;
+    selectedColor = widget.selectedColor;
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/components/custom_label_view.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -27,21 +27,9 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(CupertinoIcons.circle, size: 15),
+        CustomLabelView(labelText: labelText),
 
-            SizedBox(width: 8),
-
-            CustomText(
-              text: labelText,
-              textSize: TextSize.MS,
-              fontWeight: FontWeight.bold,
-            ),
-          ],
-        ),
-
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
 
         CupertinoTextField(
           controller: controller,
@@ -49,7 +37,7 @@ class CustomTextField extends StatelessWidget {
           readOnly: readOnly,
           onTap: onTap,
           placeholder: labelText,
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           prefix: Padding(
             padding: const EdgeInsets.only(left: 8),
             child: Icon(prefixIcon, color: prefixIconColor),

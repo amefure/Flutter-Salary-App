@@ -378,7 +378,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 // 日付ピッカー
                 CustomTextField(
                   controller: _dateController,
-                  labelText: "日付を選択",
+                  labelText: "支給日",
                   prefixIcon: CupertinoIcons.calendar,
                   readOnly: true,
                   onTap: () => _selectDate(context),
