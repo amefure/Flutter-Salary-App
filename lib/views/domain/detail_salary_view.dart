@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
@@ -8,7 +9,6 @@ import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
-import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
 
@@ -122,7 +122,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                 ) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 支払い元ラベル
                       Container(
@@ -146,15 +146,11 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                         ),
                         child: Row(
                           children: [
-                            const SizedBox(width: 8),
-
                             const Icon(
                               CupertinoIcons.building_2_fill,
                               color: Colors.white,
                             ),
-
                             const SizedBox(width: 8),
-
                             Expanded(
                               child: CustomText(
                                 text: targetSalary?.source?.name ?? "未設定",
@@ -163,28 +159,12 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                                 textSize: TextSize.S,
                               ),
                             ),
-
                           ],
                         ),
                       ),
-
-                      const CustomLabelView(labelText: "総支給額"),
-                      CustomText(
-                        text: targetSalary?.paymentAmount.toString() ?? "",
-                      ),
-
-                      const CustomLabelView(labelText: "控除額"),
-                      CustomText(
-                        text: targetSalary?.deductionAmount.toString() ?? "",
-                      ),
-
-                      const CustomLabelView(labelText: "手取り額"),
-                      CustomText(
-                        text: targetSalary?.netSalary.toString() ?? "",
-                      ),
-
-                      const SizedBox(height: 700),
-
+                      const SizedBox(height: 16),
+                      _buildSalaryTable(),
+                      const SizedBox(height: 40),
                       CustomElevatedButton(
                         text: "削除",
                         backgroundColor: CustomColors.negative,
@@ -195,7 +175,6 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                           }
                         },
                       ),
-                      const SizedBox(height: 500),
                     ],
                   );
                 },
@@ -204,6 +183,104 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSalaryTable() {
+    return Table(
+      border: TableBorder.all(color: Colors.grey),
+      columnWidths: {0: FlexColumnWidth(2), 1: FlexColumnWidth(3)},
+      children: [
+        TableRow(
+          decoration: BoxDecoration(color: Colors.grey[300]),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomText(
+                text: "項目",
+                textSize: TextSize.M,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: CustomText(
+                  text: "金額",
+                  textSize: TextSize.M,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        _buildTableRow("総支給額", targetSalary?.paymentAmount),
+        _buildExpandableRow("支給項目詳細", targetSalary?.paymentAmountItems),
+        _buildTableRow("総支給額の合計", targetSalary?.paymentAmount, isTotal: true),
+        _buildTableRow("控除額", targetSalary?.deductionAmount),
+        _buildExpandableRow("控除項目詳細", targetSalary?.deductionAmountItems),
+        _buildTableRow("控除額の合計", targetSalary?.deductionAmount, isTotal: true),
+        _buildTableRow("手取り額", targetSalary?.netSalary),
+      ],
+    );
+  }
+
+  // 展開可能な行を作成
+  TableRow _buildExpandableRow(String title, RealmList<AmountItem>? items) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomText(text: title, textSize: TextSize.M),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ExpansionTile(
+              title: CustomText(
+                text: "詳細を見る",
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+              ),
+              children: [
+                for (var item in items ?? [])
+                CustomText(text: "・${item.key} ${item.value}", )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  TableRow _buildTableRow(String label, int? amount, {bool isTotal = false}) {
+    return TableRow(
+      decoration: BoxDecoration(
+        color: isTotal ? Colors.blue[100] : null, // 合計行に色を付ける
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomText(
+            text: label,
+            textSize: TextSize.M,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: CustomText(
+              text: amount?.toString() ?? "-",
+              textSize: TextSize.M,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
