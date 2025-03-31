@@ -1,14 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
+import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
+import 'package:salary/views/components/custom_label_view.dart';
+import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
 
@@ -27,10 +31,13 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   /// 削除前にnullにしてsetStateをしないと画面が真っ赤でエラーになる
   Salary? targetSalary;
 
+  final _memoController = TextEditingController();
+
   @override
   void initState() {
     // 最初にコピーしておく
     targetSalary = widget.salary;
+    _memoController.text = widget.salary.memo;
     super.initState();
   }
 
@@ -40,20 +47,20 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: Text("確認"),
-          content: Text("給料情報を本当に削除しますか？"),
+          title: const Text("確認"),
+          content: const Text("給料情報を本当に削除しますか？"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: Text("キャンセル"),
+              child: const Text("キャンセル"),
             ),
             TextButton(
               onPressed: () {
                 _deleteSalary(context, dialogContext, salary);
               },
-              child: CustomText(
+              child: const CustomText(
                 text: "削除",
                 fontWeight: FontWeight.bold,
                 color: CustomColors.negative,
@@ -95,15 +102,39 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       dateTime: targetSalary?.createdAt ?? DateTime.now(),
     );
 
+    String createdAtDay = DateTimeUtils.format(
+      dateTime: targetSalary?.createdAt ?? DateTime.now(),
+      pattern: "yyyy年M月d日",
+    );
+
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(
         middle: CustomText(text: createdAt, fontWeight: FontWeight.bold),
         backgroundColor: CustomColors.foundation,
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => _editSalary(widget.salary),
-          child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // nullでないなら
+                if (targetSalary case Salary salary) {
+                  _showDeleteConfirmDialog(context, salary);
+                }
+              },
+              child: const Icon(
+                CupertinoIcons.trash_circle_fill,
+                size: 28,
+                color: CustomColors.negative,
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => _editSalary(widget.salary),
+              child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
+            ),
+          ],
         ),
       ),
       // Scaffold を使うことでスタイルが適用される
@@ -111,7 +142,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
         backgroundColor: CustomColors.foundation,
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
                 builder: (
@@ -124,56 +155,53 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 支払い元ラベル
+                      Row(
+                        children: [
+                          // 支払い元ラベル
+                          _sourceLabel(),
+                          const Spacer(),
+
+                          Column(
+                            children: [
+                              const CustomText(text: "支払い日"),
+                              CustomText(text: createdAtDay),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+                      // テーマカラーで色を変えたい場合
+                      // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
+                      // 給料テーブル
+                      _buildSalaryTable(ThemaColor.black.color),
+
+                      const SizedBox(height: 24),
+
+
+                      // MEMO
+                      const CustomLabelView(labelText: "MEMO"),
+                      const SizedBox(height: 10),
                       Container(
-                        padding: EdgeInsets.all(10),
-                        width: 180,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color:
-                              targetSalary?.source?.themaColorEnum.color ??
-                              ThemaColor.blue.color,
-                          // 角丸
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            // 影
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              blurRadius: 5,
-                              spreadRadius: 1,
-                              offset: Offset(2, 2),
-                            ),
-                          ],
+                          color: CupertinoColors.white, // 背景色
+                          borderRadius: BorderRadius.circular(8), // 角丸
                         ),
                         child: Row(
                           children: [
-                            const Icon(
-                              CupertinoIcons.building_2_fill,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: CustomText(
-                                text: targetSalary?.source?.name ?? "未設定",
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                textSize: TextSize.S,
-                              ),
+                            const Icon(Icons.comment),
+                            const SizedBox(width: 10), // アイコンとテキストの間隔
+
+                            CustomText(
+                              text: widget.salary.memo,
+                              maxLines: null,
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildSalaryTable(),
-                      const SizedBox(height: 40),
-                      CustomElevatedButton(
-                        text: "削除",
-                        backgroundColor: CustomColors.negative,
-                        onPressed: () {
-                          // nullでないなら
-                          if (targetSalary case Salary salary) {
-                            _showDeleteConfirmDialog(context, salary);
-                          }
-                        },
                       ),
                     ],
                   );
@@ -186,79 +214,84 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
     );
   }
 
-  Widget _buildSalaryTable() {
-    return Table(
-      border: TableBorder.all(color: Colors.grey),
-      columnWidths: {0: FlexColumnWidth(2), 1: FlexColumnWidth(3)},
-      children: [
-        TableRow(
-          decoration: BoxDecoration(color: Colors.grey[300]),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CustomText(
-                text: "項目",
-                textSize: TextSize.M,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: CustomText(
-                  text: "金額",
-                  textSize: TextSize.M,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        _buildTableRow("総支給額", targetSalary?.paymentAmount),
-        _buildExpandableRow("支給項目詳細", targetSalary?.paymentAmountItems),
-        _buildTableRow("総支給額の合計", targetSalary?.paymentAmount, isTotal: true),
-        _buildTableRow("控除額", targetSalary?.deductionAmount),
-        _buildExpandableRow("控除項目詳細", targetSalary?.deductionAmountItems),
-        _buildTableRow("控除額の合計", targetSalary?.deductionAmount, isTotal: true),
-        _buildTableRow("手取り額", targetSalary?.netSalary),
-      ],
-    );
-  }
-
-  // 展開可能な行を作成
-  TableRow _buildExpandableRow(String title, RealmList<AmountItem>? items) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CustomText(text: title, textSize: TextSize.M),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ExpansionTile(
-              title: CustomText(
-                text: "詳細を見る",
-                textSize: TextSize.S,
-                fontWeight: FontWeight.bold,
-              ),
-              children: [
-                for (var item in items ?? [])
-                CustomText(text: "・${item.key} ${item.value}", )
-              ],
+  /// 支払い元UIラベル
+  Widget _sourceLabel() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      width: 180,
+      decoration: BoxDecoration(
+        color:
+            targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color,
+        // 角丸
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          // 影
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 5,
+            spreadRadius: 1,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(CupertinoIcons.building_2_fill, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(
+            child: CustomText(
+              text: targetSalary?.source?.name ?? "未設定",
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.S,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// 給料テーブル
+  Widget _buildSalaryTable(Color headerColor) {
+    return Table(
+      border: TableBorder.all(color: Colors.grey),
+      columnWidths: {0: FlexColumnWidth(1), 1: FlexColumnWidth(3)},
+      children: [
+        _buildTableRow(
+          "総支給額",
+          targetSalary?.paymentAmount,
+          headerColor,
+          isTotal: true,
+        ),
+        _buildExpandableRow("支給項目詳細", targetSalary?.paymentAmountItems),
+        _buildTableRow(
+          "控除額",
+          targetSalary?.deductionAmount,
+          headerColor,
+          isTotal: true,
+        ),
+        _buildExpandableRow("控除項目詳細", targetSalary?.deductionAmountItems),
+        _buildTableRow(
+          "手取り額",
+          targetSalary?.netSalary,
+          headerColor,
+          isTotal: true,
         ),
       ],
     );
   }
 
-  TableRow _buildTableRow(String label, int? amount, {bool isTotal = false}) {
+  /// 1行単位のUI
+  TableRow _buildTableRow(
+    String label,
+    int? amount,
+    Color headerColor, {
+    bool isTotal = false,
+  }) {
     return TableRow(
       decoration: BoxDecoration(
-        color: isTotal ? Colors.blue[100] : null, // 合計行に色を付ける
+        // ヘッダーカラー
+        color: isTotal ? headerColor : null,
       ),
       children: [
         Padding(
@@ -267,20 +300,107 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             text: label,
             textSize: TextSize.M,
             fontWeight: FontWeight.bold,
+            color: isTotal ? Colors.white : CustomColors.text,
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Align(
             alignment: Alignment.centerRight,
-            child: CustomText(
-              text: amount?.toString() ?? "-",
-              textSize: TextSize.M,
-              fontWeight: FontWeight.bold,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CustomText(
+                  text: NumberUtils.formatWithComma(amount ?? 0),
+                  textSize: TextSize.ML,
+                  fontWeight: FontWeight.bold,
+                  color: isTotal ? Colors.white : CustomColors.text,
+                ),
+
+                const SizedBox(width: 3),
+
+                CustomText(
+                  text: "円",
+                  textSize: TextSize.SS,
+                  fontWeight: FontWeight.bold,
+                  color: isTotal ? Colors.white : CustomColors.text,
+                ),
+              ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+  /// 展開可能な行(項目詳細)
+  TableRow _buildExpandableRow(String title, RealmList<AmountItem>? items) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomText(
+            text: title,
+            textSize: TextSize.S,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: ExpansionTile(
+            title: const CustomText(
+              text: "詳細を見る",
+              textSize: TextSize.S,
+              fontWeight: FontWeight.bold,
+            ),
+            children: [
+              if (items is RealmList<AmountItem> && items.isNotEmpty)
+                for (var item in items) _buildAmountItemRow(item)
+              else
+                _buildNoItemsMessage(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 展開時に表示されるAmountItem行
+  Widget _buildAmountItemRow(AmountItem item) {
+    return Padding(
+      padding: EdgeInsets.all(3.0),
+      child: Row(
+        children: [
+          const Icon(CupertinoIcons.circle, size: 15),
+          const SizedBox(width: 5),
+          Expanded(child: CustomText(text: item.key)),
+          const Spacer(),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight, // 右寄せ
+              child: CustomText(
+                text: "${NumberUtils.formatWithComma(item.value)}円",
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// AmountItemが存在しなかった場合のメッセージ
+  Widget _buildNoItemsMessage() {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.center,
+        child: CustomText(
+          text: "項目がありません。",
+          textSize: TextSize.M,
+          color: Colors.grey,
+        ),
+      ),
     );
   }
 }

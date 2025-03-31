@@ -31,6 +31,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _paymentSourceController =
       TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
 
   /// 支払い元一覧
   List<PaymentSource> _paymentSources = [];
@@ -70,6 +71,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
               .map((item) => AmountItem(item.id, item.key, item.value))
               .toList();
       _paymentSourceController.text = salary.source?.name ?? "未設定";
+      _memoController.text = salary.memo;
     } else {
       DateTime now = DateTime.now();
       _dateController.text = "${now.year}/${now.month}/${now.day}";
@@ -89,6 +91,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     _deductionAmountController.dispose();
     _netSalaryController.dispose();
     _dateController.dispose();
+    _memoController.dispose();
     super.dispose();
   }
 
@@ -156,13 +159,13 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   /// エラーダイアログを表示
-  void _showErrorDialog(BuildContext context) {
+  void _showErrorDialog(BuildContext context, String title) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: const Text("Error"),
-          content: const Text("総支給額と手取り額を入力してください。"),
+          content: Text(title),
           actions: [
             TextButton(
               onPressed: () {
@@ -178,13 +181,25 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 給料情報新規追加
   void addOrUpdate(BuildContext context) {
+    // 桁数バリデーション
+    // int は 64ビット整数 であり、以下の範囲の値を保持できます。
+    // 最小値: -9,223,372,036,854,775,808 (-2^63)
+    // 最大値: 9,223,372,036,854,775,807 (2^63 - 1)
+    if (_paymentAmountController.text.length > 19 ||
+        _deductionAmountController.text.length > 19 ||
+        _netSalaryController.text.length > 19) {
+      _showErrorDialog(context, "19桁以上は入力できません。");
+      return;
+    }
+
     final int? paymentAmount = int.tryParse(_paymentAmountController.text);
     final int? deductionAmount = int.tryParse(_deductionAmountController.text);
     final int? netSalary = int.tryParse(_netSalaryController.text);
+    final String memo = _memoController.text;
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
     if (paymentAmount == null || deductionAmount == null || netSalary == null) {
-      _showErrorDialog(context);
+      _showErrorDialog(context, "総支給額と手取り額を入力してください。");
       return;
     }
 
@@ -194,6 +209,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       deductionAmount,
       netSalary,
       _createdAt,
+      memo,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
       source: selectPaymentSource,
@@ -332,7 +348,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Consumer<PaymentSourceViewModel>(
@@ -396,13 +412,13 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     TextButton(
                       onPressed: () async {
                         // 詳細画面入力モーダルを表示
                         _showInputAmountItemModal(context, true);
                       },
-                      child: Row(
+                      child: const Row(
                         children: [
                           CustomText(
                             text: "総支給額：詳細入力",
@@ -421,7 +437,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _paymentAmountItems.map((item) {
-                        return amountItemListRowView(item);
+                        return amountItemListRowView(item, true);
                       }).toList(),
                 ),
 
@@ -440,7 +456,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                         // 詳細画面入力モーダルを表示
                         _showInputAmountItemModal(context, false);
                       },
-                      child: Row(
+                      child: const Row(
                         children: [
                           CustomText(
                             text: "控除額：詳細入力",
@@ -459,7 +475,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _deductionAmountItems.map((item) {
-                        return amountItemListRowView(item);
+                        return amountItemListRowView(item, false);
                       }).toList(),
                 ),
 
@@ -468,6 +484,16 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   controller: _netSalaryController,
                   labelText: "手取り額",
                   prefixIcon: CupertinoIcons.money_yen,
+                ),
+
+                const SizedBox(height: 20),
+
+                CustomTextField(
+                  controller: _memoController,
+                  labelText: "MEMO",
+                  prefixIcon: Icons.comment,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                 ),
               ],
             ),
@@ -478,48 +504,84 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   /// AmountItemのリスト行単位のView
-  Widget amountItemListRowView(AmountItem item) {
+  Widget amountItemListRowView(AmountItem item, bool isPayment) {
     return Dismissible(
       key: Key(item.id),
       onDismissed: (direction) {
-        // 削除処理(どちらかにはあるので削除)
+        // 削除処理
         _paymentAmountItems.remove(item);
         _deductionAmountItems.remove(item);
         _updateTotalPaymentAmount();
         _updateTotalDeductionAmount();
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        height: 40,
-        child: Row(
-          children: [
-            const Icon(CupertinoIcons.circle_fill, size: 8),
-            const SizedBox(width: 12),
-            Expanded(
-              child: CustomText(
-                text: item.key,
-                fontWeight: FontWeight.bold,
-                textSize: TextSize.S,
+      child: GestureDetector(
+        onTap: () async {
+          String title = "";
+          if (isPayment) {
+            title = "総支給額";
+          } else {
+            title = "控除額";
+          }
+          _paymentAmountItems.remove(item);
+          _deductionAmountItems.remove(item);
+          // 結果をawaitで同期的に取得する
+          final AmountItem? newItem = await showModalBottomSheet<AmountItem?>(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return DetailInputView(title: title, amountItem: item);
+            },
+          );
+
+          if (newItem != null) {
+            setState(() {
+              if (isPayment) {
+                // 総支給額に追加
+                _paymentAmountItems.add(newItem);
+                // UIを更新
+                _updateTotalPaymentAmount();
+              } else {
+                // 控除額に追加
+                _deductionAmountItems.add(newItem);
+                // UIを更新
+                _updateTotalDeductionAmount();
+              }
+            });
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          height: 40,
+          child: Row(
+            children: [
+              const Icon(CupertinoIcons.circle_fill, size: 8),
+              const SizedBox(width: 12),
+              Expanded(
+                child: CustomText(
+                  text: item.key,
+                  fontWeight: FontWeight.bold,
+                  textSize: TextSize.S,
+                ),
               ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CustomText(
-                  text: "${item.value}",
-                  fontWeight: FontWeight.bold,
-                  textSize: TextSize.M,
-                  color: CustomColors.thema,
-                ),
-                const SizedBox(width: 2),
-                CustomText(
-                  text: "円",
-                  fontWeight: FontWeight.bold,
-                  textSize: TextSize.SS,
-                ),
-              ],
-            ),
-          ],
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomText(
+                    text: "${item.value}",
+                    fontWeight: FontWeight.bold,
+                    textSize: TextSize.M,
+                    color: CustomColors.thema,
+                  ),
+                  const SizedBox(width: 2),
+                  CustomText(
+                    text: "円",
+                    fontWeight: FontWeight.bold,
+                    textSize: TextSize.SS,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

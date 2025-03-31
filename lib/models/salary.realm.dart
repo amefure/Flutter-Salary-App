@@ -13,7 +13,8 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
     int paymentAmount,
     int deductionAmount,
     int netSalary,
-    DateTime createdAt, {
+    DateTime createdAt,
+    String memo, {
     Iterable<AmountItem> paymentAmountItems = const [],
     Iterable<AmountItem> deductionAmountItems = const [],
     PaymentSource? source,
@@ -28,6 +29,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set<RealmList<AmountItem>>(this, 'deductionAmountItems',
         RealmList<AmountItem>(deductionAmountItems));
     RealmObjectBase.set(this, 'source', source);
+    RealmObjectBase.set(this, 'memo', memo);
   }
 
   Salary._();
@@ -87,6 +89,11 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'source', value);
 
   @override
+  String get memo => RealmObjectBase.get<String>(this, 'memo') as String;
+  @override
+  set memo(String value) => RealmObjectBase.set(this, 'memo', value);
+
+  @override
   Stream<RealmObjectChanges<Salary>> get changes =>
       RealmObjectBase.getChanges<Salary>(this);
 
@@ -107,6 +114,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
       'paymentAmountItems': paymentAmountItems.toEJson(),
       'deductionAmountItems': deductionAmountItems.toEJson(),
       'source': source.toEJson(),
+      'memo': memo.toEJson(),
     };
   }
 
@@ -120,6 +128,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
         'deductionAmount': EJsonValue deductionAmount,
         'netSalary': EJsonValue netSalary,
         'createdAt': EJsonValue createdAt,
+        'memo': EJsonValue memo,
       } =>
         Salary(
           fromEJson(id),
@@ -127,6 +136,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
           fromEJson(deductionAmount),
           fromEJson(netSalary),
           fromEJson(createdAt),
+          fromEJson(memo),
           paymentAmountItems: fromEJson(ejson['paymentAmountItems']),
           deductionAmountItems: fromEJson(ejson['deductionAmountItems']),
           source: fromEJson(ejson['source']),
@@ -150,6 +160,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
           linkTarget: 'AmountItem', collectionType: RealmCollectionType.list),
       SchemaProperty('source', RealmPropertyType.object,
           optional: true, linkTarget: 'PaymentSource'),
+      SchemaProperty('memo', RealmPropertyType.string),
     ]);
   }();
 

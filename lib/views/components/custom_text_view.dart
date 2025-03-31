@@ -9,6 +9,7 @@ class CustomText extends StatelessWidget {
   final TextSize textSize; // サイズを指定
   final Color color; // テキストカラー
   final FontWeight fontWeight; // フォントの太さ
+  final int? maxLines; // 行数
 
   const CustomText({
     Key? key,
@@ -16,6 +17,7 @@ class CustomText extends StatelessWidget {
     this.textSize = TextSize.M,
     this.color = CustomColors.text,
     this.fontWeight = FontWeight.normal,
+    this.maxLines = 1
   }) : super(key: key);
 
   @override
@@ -26,7 +28,7 @@ class CustomText extends StatelessWidget {
       case TextSize.SS:
         fontSize = 12.0;
         break;
-              case TextSize.S:
+      case TextSize.S:
         fontSize = 14.0;
         break;
       case TextSize.MS:
@@ -46,7 +48,7 @@ class CustomText extends StatelessWidget {
     return Text(
       text,
       // 最大行数
-      maxLines: 1,
+      maxLines: maxLines,
       // 文字溢れ時の挙動
       overflow: TextOverflow.ellipsis,
       // 改行するか否か

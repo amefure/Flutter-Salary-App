@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final Color prefixIconColor;
   final TextInputType keyboardType;
   final bool readOnly;
+  final int? maxLines;
   final Function()? onTap;
 
   const CustomTextField({
@@ -19,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.prefixIconColor = CupertinoColors.systemGrey,
     this.keyboardType = TextInputType.number,
     this.readOnly = false,
+    this.maxLines = 1,
     this.onTap,
   });
 
@@ -36,6 +38,7 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           readOnly: readOnly,
           onTap: onTap,
+          maxLines: maxLines,
           placeholder: labelText,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           prefix: Padding(

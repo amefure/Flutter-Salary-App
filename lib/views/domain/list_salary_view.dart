@@ -56,8 +56,8 @@ class _SalaryListViewState extends State<SalaryListView> {
                     );
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(left: 20, right: 20, top: 1),
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       // 角丸
@@ -69,7 +69,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                       children: [
                         // 年月UI
                         Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(

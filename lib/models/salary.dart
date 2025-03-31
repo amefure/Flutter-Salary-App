@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:realm/realm.dart';
 import 'package:salary/models/thema_color.dart';
 
@@ -18,7 +20,7 @@ class _Salary {
   late int deductionAmount;
   // 手取り額
   late int netSalary;
-  // 登録日
+  // 登録(支払い)日
   late DateTime createdAt;
   // 総支給構成要素
   late List<_AmountItem> paymentAmountItems;
@@ -26,6 +28,8 @@ class _Salary {
   late List<_AmountItem> deductionAmountItems;
   // 支払い元
   late _PaymentSource? source;
+    // メモ
+  late String memo;
 }
 
 // 金額項目

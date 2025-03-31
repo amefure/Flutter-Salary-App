@@ -63,6 +63,8 @@ class SalaryViewModel extends ChangeNotifier {
       salary.deductionAmountItems.addAll(updateSalary.deductionAmountItems);
       // 支払い元
       salary.source = updateSalary.source;
+      // MEMO
+      salary.memo = updateSalary.memo;
     });
     fetchAll();
   }
