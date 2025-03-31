@@ -5,6 +5,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
+import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
@@ -567,7 +568,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomText(
-                    text: "${item.value}",
+                    text: NumberUtils.formatWithComma(item.value),
                     fontWeight: FontWeight.bold,
                     textSize: TextSize.M,
                     color: CustomColors.thema,

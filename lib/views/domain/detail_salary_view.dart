@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
@@ -10,9 +9,7 @@ import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
-import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_label_view.dart';
-import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
 
@@ -37,7 +34,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   void initState() {
     // 最初にコピーしておく
     targetSalary = widget.salary;
-    _memoController.text = widget.salary.memo;
+    _memoController.text = targetSalary?.memo ?? "";
     super.initState();
   }
 
@@ -131,7 +128,11 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             ),
             CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: () => _editSalary(widget.salary),
+              onPressed: () {
+                if (targetSalary case Salary salary) {
+                  _editSalary(salary);
+                }
+              },
               child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
             ),
           ],
@@ -197,7 +198,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                             const SizedBox(width: 10), // アイコンとテキストの間隔
 
                             CustomText(
-                              text: widget.salary.memo,
+                              text: targetSalary?.memo ?? "",
                               maxLines: null,
                             ),
                           ],

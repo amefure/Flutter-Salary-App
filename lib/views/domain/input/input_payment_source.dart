@@ -148,7 +148,6 @@ class _ThemaColorPicker extends StatefulWidget {
   final Function(ThemaColor) onColorSelected;
 
   const _ThemaColorPicker({
-    super.key,
     this.selectedColor = ThemaColor.blue,
     required this.onColorSelected,
   });
