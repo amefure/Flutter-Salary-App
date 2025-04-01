@@ -100,12 +100,28 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   void _updateTotalPaymentAmount() {
     int total = _paymentAmountItems.fold(0, (sum, item) => sum + item.value);
     _paymentAmountController.text = total.toString();
+    _calcNetSalaryAmount();
   }
 
   /// **控除額の合計金額を計算しUI反映**
   void _updateTotalDeductionAmount() {
     int total = _deductionAmountItems.fold(0, (sum, item) => sum + item.value);
     _deductionAmountController.text = total.toString();
+    _calcNetSalaryAmount();
+  }
+
+  /// **手取りの合計金額を計算しUI反映**
+  void _calcNetSalaryAmount() {
+    final int? paymentAmount = int.tryParse(_paymentAmountController.text);
+    final int? deductionAmount = int.tryParse(_deductionAmountController.text);
+
+    // どれかが null（不正な入力値）の場合はエラーダイアログを表示
+    if (paymentAmount == null || deductionAmount == null) {
+      return;
+    }
+
+    final int netSalary = paymentAmount - deductionAmount;
+    _netSalaryController.text = netSalary.toString();
   }
 
   /// **iOS風の日付ホイールピッカーを表示**
@@ -180,8 +196,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     );
   }
 
-  /// 給料情報新規追加
-  void addOrUpdate(BuildContext context) {
+  /// **桁数バリデーション**
+  void _validationLength() {
     // 桁数バリデーション
     // int は 64ビット整数 であり、以下の範囲の値を保持できます。
     // 最小値: -9,223,372,036,854,775,808 (-2^63)
@@ -192,6 +208,12 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _showErrorDialog(context, "19桁以上は入力できません。");
       return;
     }
+  }
+
+  /// 給料情報新規追加
+  void _addOrUpdate(BuildContext context) {
+    // 桁数バリデーション
+    _validationLength();
 
     final int? paymentAmount = int.tryParse(_paymentAmountController.text);
     final int? deductionAmount = int.tryParse(_deductionAmountController.text);
@@ -200,7 +222,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
     if (paymentAmount == null || deductionAmount == null || netSalary == null) {
-      _showErrorDialog(context, "総支給額と手取り額を入力してください。");
+      _showErrorDialog(context, "総支給額、控除額、手取り額を入力してください。");
       return;
     }
 
@@ -339,7 +361,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () {
-              addOrUpdate(context);
+              _addOrUpdate(context);
             },
             child: const Icon(
               CupertinoIcons.check_mark_circled_solid,
@@ -407,6 +429,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   controller: _paymentAmountController,
                   labelText: "総支給額",
                   prefixIcon: CupertinoIcons.money_yen,
+                  onSubmitted: (_) => _calcNetSalaryAmount(),
                 ),
 
                 const SizedBox(height: 10),
@@ -447,6 +470,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   controller: _deductionAmountController,
                   labelText: "控除額",
                   prefixIcon: CupertinoIcons.money_yen,
+                  onSubmitted: (_) => _calcNetSalaryAmount(),
                 ),
 
                 Row(

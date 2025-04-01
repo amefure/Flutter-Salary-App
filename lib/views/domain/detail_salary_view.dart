@@ -370,18 +370,21 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   /// 展開時に表示されるAmountItem行
   Widget _buildAmountItemRow(AmountItem item) {
     return Padding(
-      padding: EdgeInsets.all(3.0),
+      padding: EdgeInsets.all(4.0),
       child: Row(
         children: [
+          // ⚪︎ アイコン
           const Icon(CupertinoIcons.circle, size: 15),
           const SizedBox(width: 5),
-          Expanded(child: CustomText(text: item.key)),
-          const Spacer(),
+          // 項目名
+          Expanded(child: CustomText(text: item.key, textSize: TextSize.MS)),
+          // 金額
           Expanded(
             child: Align(
               alignment: Alignment.centerRight, // 右寄せ
               child: CustomText(
                 text: "${NumberUtils.formatWithComma(item.value)}円",
+                textSize: TextSize.MS
               ),
             ),
           ),
