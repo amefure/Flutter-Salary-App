@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/domain/charts/chart_salary_view.dart';
 import 'package:salary/views/domain/list_salary_view.dart';
 import 'package:salary/views/setting/setting_view.dart';
 
@@ -46,7 +49,11 @@ class _RootTabViewViewState extends State<RootTabViewView> {
       case 0:
         return const SalaryListView();
       case 1:
-        return const SalaryListView();
+        return  Consumer<SalaryViewModel>(
+              builder: (context, viewModel, child) {
+                return ChartSalaryView(salaryList: viewModel.salaries);
+              },
+            );
       case 2:
         return const SettingView();
       default:
