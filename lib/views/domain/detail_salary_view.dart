@@ -95,19 +95,19 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   @override
   Widget build(BuildContext context) {
-    String createdAt = DateTimeUtils.format(
-      dateTime: targetSalary?.createdAt ?? DateTime.now(),
-    );
-
-    String createdAtDay = DateTimeUtils.format(
-      dateTime: targetSalary?.createdAt ?? DateTime.now(),
-      pattern: "yyyy年M月d日",
-    );
-
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(
-        middle: CustomText(text: createdAt, fontWeight: FontWeight.bold),
+        middle: Consumer<SalaryViewModel>(
+          builder: (context, salaryViewModel, child) {
+            return CustomText(
+              text: DateTimeUtils.format(
+                dateTime: targetSalary?.createdAt ?? DateTime.now(),
+              ),
+              fontWeight: FontWeight.bold,
+            );
+          },
+        ),
         backgroundColor: CustomColors.foundation,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -165,7 +165,13 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                           Column(
                             children: [
                               const CustomText(text: "支払い日"),
-                              CustomText(text: createdAtDay),
+                              CustomText(
+                                text: DateTimeUtils.format(
+                                  dateTime:
+                                      targetSalary?.createdAt ?? DateTime.now(),
+                                  pattern: "yyyy年M月d日",
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -178,7 +184,6 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                       _buildSalaryTable(ThemaColor.black.color),
 
                       const SizedBox(height: 24),
-
 
                       // MEMO
                       const CustomLabelView(labelText: "MEMO"),
@@ -384,7 +389,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
               alignment: Alignment.centerRight, // 右寄せ
               child: CustomText(
                 text: "${NumberUtils.formatWithComma(item.value)}円",
-                textSize: TextSize.MS
+                textSize: TextSize.MS,
               ),
             ),
           ),

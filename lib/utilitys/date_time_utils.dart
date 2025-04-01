@@ -6,7 +6,7 @@ class DateTimeUtils {
     required DateTime dateTime,
     String pattern = "yyyy年M月",
   }) {
-    return DateFormat(pattern).format(dateTime);
+    return DateFormat(pattern, 'ja_JP').format(dateTime);
   }
 
   // 指定フォーマットの文字列を DateTime に変換
@@ -15,7 +15,7 @@ class DateTimeUtils {
     String pattern = "yyyy年M月",
   }) {
     try {
-      return DateFormat(pattern).parse(dateString);
+      return DateFormat(pattern, 'ja_JP').parse(dateString);
     } catch (e) {
       return null;
     }

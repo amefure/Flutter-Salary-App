@@ -36,7 +36,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 支払い元一覧
   List<PaymentSource> _paymentSources = [];
-  PaymentSource? selectPaymentSource;
+  PaymentSource? _selectPaymentSource;
 
   /// 作成日(給料支給日)
   DateTime _createdAt = DateTime.now();
@@ -72,6 +72,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
               .map((item) => AmountItem(item.id, item.key, item.value))
               .toList();
       _paymentSourceController.text = salary.source?.name ?? "未設定";
+      _selectPaymentSource = salary.source;
+      _createdAt = salary.createdAt;
+      print("=----_createdAt" + _createdAt.toString());
       _memoController.text = salary.memo;
     } else {
       DateTime now = DateTime.now();
@@ -153,12 +156,16 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   onDateTimeChanged: (DateTime newDate) {
                     setState(() {
                       _dateController.text = _formatDate(newDate);
-                      _createdAt =
+                      final selectYearAndMonth =
                           DateTimeUtils.parse(
                             dateString: _dateController.text,
                             pattern: "yyyy/M/d",
                           ) ??
                           DateTime.now();
+                      // selectYearAndMonthは時間は0:00になっている
+                      // JTCの9時間の差分保存後にずれてしまうので
+                      // 先に12時間ほどずらしておく
+                      _createdAt = selectYearAndMonth.add(const Duration(hours: 12));
                     });
                   },
                 ),
@@ -235,7 +242,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       memo,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
-      source: selectPaymentSource,
+      source: _selectPaymentSource,
     );
 
     if (widget.salary case Salary salary) {
@@ -303,12 +310,12 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       onPressed: () {
         _paymentSourceController.text = option;
         try {
-          selectPaymentSource = _paymentSources.firstWhere(
+          _selectPaymentSource = _paymentSources.firstWhere(
             (source) => source.name == option,
           );
         } catch (e) {
           // 一致しない場合はnullを代入
-          selectPaymentSource = null;
+          _selectPaymentSource = null;
         }
         Navigator.pop(context);
       },
@@ -386,7 +393,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                             labelText: "支払い元",
                             prefixIcon: CupertinoIcons.building_2_fill,
                             prefixIconColor:
-                                selectPaymentSource?.themaColorEnum.color ??
+                                _selectPaymentSource?.themaColorEnum.color ??
                                 CupertinoColors.systemGrey,
                             readOnly: true,
                             onTap:
