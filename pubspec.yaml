@@ -22,6 +22,7 @@ dependencies:
   url_launcher: ^6.3.1
   webview_flutter: ^4.10.0
   fl_chart: ^0.70.2
+  flutter_secure_storage: ^4.2.1
 
 dev_dependencies:
   flutter_test:
