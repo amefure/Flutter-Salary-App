@@ -24,14 +24,14 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: Text("確認"),
+          title: const Text("確認"),
           content: Text("「" + paymentSource.name + "」を本当に削除しますか？"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: Text("キャンセル"),
+              child: const Text("キャンセル"),
             ),
             TextButton(
               onPressed: () {
@@ -117,7 +117,11 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
+                      margin: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 1,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         // 角丸
@@ -126,10 +130,18 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(CupertinoIcons.building_2_fill, color: paymentSource.themaColorEnum.color),
+                          Icon(
+                            CupertinoIcons.building_2_fill,
+                            color: paymentSource.themaColorEnum.color,
+                          ),
                           const SizedBox(width: 20),
 
-                          Expanded(child: CustomText(text: paymentSource.name)),
+                          Expanded(
+                            child: CustomText(
+                              text: paymentSource.name,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
 
                           IconButton(
                             onPressed: () {

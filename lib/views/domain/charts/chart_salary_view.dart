@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
@@ -20,27 +22,47 @@ class ChartSalaryView extends StatefulWidget {
 }
 
 class _ChartSalaryViewState extends State<ChartSalaryView> {
-  late Map<String, List<Salary>> groupedBySource;
-  late List<String> sourceList;
-  String selectedSource = "全て";
+  /// グラフに表示するためのグルーピングデータ
+  late Map<String, List<Salary>> _groupedBySource;
+  // Salaryに存在する支払い元リスト
+  late List<PaymentSource> _sourceList;
+  // 表示中の支払い元
+  late PaymentSource _selectedSource;
+
+  /// "全て" を表すダミーの PaymentSource を作成
+  final PaymentSource _allSource = PaymentSource(
+    Uuid.v4().toString(),
+    "ALL",
+    ThemaColor.blue.value,
+  );
 
   @override
   void initState() {
     super.initState();
+    _selectedSource = _allSource;
   }
 
   void _groupSalariesBySource() {
-    groupedBySource = {};
+    _groupedBySource = {};
     for (var salary in widget.salaryList) {
-      String sourceName = salary.source?.name ?? "その他";
-      if (!groupedBySource.containsKey(sourceName)) {
-        groupedBySource[sourceName] = [];
+      String sourceName = salary.source?.name ?? "未設定";
+      if (!_groupedBySource.containsKey(sourceName)) {
+        _groupedBySource[sourceName] = [];
       }
-      groupedBySource[sourceName]!.add(salary);
+      _groupedBySource[sourceName]!.add(salary);
     }
-    sourceList = ["全て", ...groupedBySource.keys];
-    if (!sourceList.contains(selectedSource)) {
-      selectedSource = "全て";
+
+    // 支払い元リストを作成
+    _sourceList = [
+      _allSource,
+      ..._groupedBySource.values.map(
+        (name) => name.first?.source ?? _allSource,
+      ),
+    ];
+
+    // 選択されている支払い元がリストに含まれていない場合、デフォルトを "全て" にする
+    if (!_sourceList.contains(_selectedSource)) {
+      _selectedSource = _allSource;
     }
   }
 
@@ -62,12 +84,25 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
         builder: (context, salaryViewModel, paymentSourceViewModel, child) {
           _groupSalariesBySource();
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildSourcePicker(),
+              SizedBox(width: screen.width),
+
               SizedBox(
+                width: screen.width * 0.5,
+                child: _buildSourceSelector(),
+              ),
+
+              const SizedBox(height: 20),
+
+              Container(
                 width: screen.width * 0.97,
                 height: 300,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: LineChart(
                   LineChartData(
                     minY: 0,
@@ -124,21 +159,89 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
     );
   }
 
-  /// 支払い元のピッカーを作成
-  Widget _buildSourcePicker() {
-    return SizedBox(
-      height: 100,
-      child: CupertinoPicker(
-        itemExtent: 40,
-        onSelectedItemChanged: (index) {
-          setState(() {
-            selectedSource = sourceList[index];
-          });
-        },
-        children:
-            sourceList
-                .map((source) => Text(source, style: TextStyle(fontSize: 16)))
-                .toList(),
+  /// **給与の支払い元を選択するUI (MenuAnchor)**
+  Widget _buildSourceSelector() {
+    return MenuAnchor(
+      builder: (context, controller, child) {
+        return GestureDetector(
+          onTap: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          child: _sourceLabel(_selectedSource),
+        );
+      },
+      menuChildren:
+          _sourceList.map((source) {
+            return MenuItemButton(
+              onPressed: () {
+                setState(() {
+                  _selectedSource = source;
+                });
+              },
+              child: SizedBox(
+                width: 200,
+                child: Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.building_2_fill,
+                      color: source.themaColorEnum.color,
+                    ),
+                    const SizedBox(width: 8),
+                    CustomText(text: source.name, fontWeight: FontWeight.bold),
+                    const Spacer(),
+                    if (_selectedSource == source)
+                      const Icon(CupertinoIcons.checkmark_alt),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+    );
+  }
+
+  /// 支払い元UIラベル
+  Widget _sourceLabel(PaymentSource _selectedSource) {
+    final PaymentSource? paymentSource =
+        _groupedBySource[_selectedSource.name]?.firstOrNull?.source;
+    final Color color =
+        paymentSource?.themaColorEnum.color ?? ThemaColor.blue.color;
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      width: 180,
+      decoration: BoxDecoration(
+        color: color,
+        // 角丸
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          // 影
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 5,
+            spreadRadius: 1,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(CupertinoIcons.building_2_fill, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(
+            child: CustomText(
+              text: paymentSource?.name ?? "ALL",
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.S,
+            ),
+          ),
+
+          const Icon(CupertinoIcons.chevron_down, color: Colors.white),
+        ],
       ),
     );
   }
@@ -150,9 +253,12 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
     List<LineChartBarData> lines = [];
 
     Map<String, List<Salary>> filteredData =
-        selectedSource == "全て"
-            ? groupedBySource
-            : {selectedSource: groupedBySource[selectedSource] ?? []};
+        _selectedSource.name == "ALL"
+            ? _groupedBySource
+            : {
+              _selectedSource.name:
+                  _groupedBySource[_selectedSource.name] ?? [],
+            };
 
     filteredData.forEach((source, salaries) {
       salaries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
