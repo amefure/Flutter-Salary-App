@@ -83,8 +83,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _deductionAmountController.text = "0";
       _netSalaryController.text = "0";
       // 存在するなら一番最初のものを指定
-      _paymentSourceController.text =
-          _paymentSources.firstOrNull?.name ?? "未設定";
+      _selectPaymentSource = _paymentSources.firstOrNull;
+      _paymentSourceController.text = _selectPaymentSource?.name ?? "未設定";
     }
   }
 
@@ -165,7 +165,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                       // selectYearAndMonthは時間は0:00になっている
                       // JTCの9時間の差分保存後にずれてしまうので
                       // 先に12時間ほどずらしておく
-                      _createdAt = selectYearAndMonth.add(const Duration(hours: 12));
+                      _createdAt = selectYearAndMonth.add(
+                        const Duration(hours: 12),
+                      );
                     });
                   },
                 ),
