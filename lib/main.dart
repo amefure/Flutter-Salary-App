@@ -1,15 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:salary/repository/password_service.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:salary/views/setting/app_lock_setting_view.dart';
 
 /// アプリのルート
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final passwordService = PasswordService();
+
+  bool isLockEnabled = await passwordService.isLockEnabled();
+
   final _repository = RealmRepository();
   // 各ViewModelをProviderとしてセットする
   runApp(
@@ -18,7 +25,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => SalaryViewModel(_repository)),
         ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(_repository)),
       ],
-      child: MyApp(),
+      child: MyApp(startScreen: isLockEnabled ? AppLockSettingView(isEntry: false) : RootTabViewView()),
     ),
   );
 }
@@ -26,7 +33,9 @@ void main() {
 /// アプリのルートWidget
 /// テーマ用
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget startScreen;
+  const MyApp({super.key, required this.startScreen});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,7 @@ class MyApp extends StatelessWidget {
         // タブバー
         barBackgroundColor: Colors.white,
       ),
-      home: RootTabViewView(),
+      home: startScreen,
     );
   }
 }

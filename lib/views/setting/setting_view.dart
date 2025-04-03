@@ -1,13 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salary/repository/password_service.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/setting/app_lock_setting_view.dart';
 import 'package:salary/views/setting/list_payment_source_view.dart';
 import 'package:salary/views/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingView extends StatelessWidget {
+class SettingView extends StatefulWidget {
   const SettingView({super.key});
+
+  @override
+  State<SettingView> createState() => _SettingViewState();
+}
+
+class _SettingViewState extends State<SettingView> {
+  bool _isAppLockEnabled = false; // アプリロックの状態を管理
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLockState();
+  }
+
+  Future<void> _loadLockState() async {
+    bool isEnabled = await PasswordService().isLockEnabled();
+    setState(() {
+      _isAppLockEnabled = isEnabled;
+    });
+  }
 
   /// ブラウザでURLを起動する
   void _launchURL(String url) async {
@@ -23,9 +45,7 @@ class SettingView extends StatelessWidget {
   void _openWebView(BuildContext context, String url) {
     Navigator.push(
       context,
-      CupertinoPageRoute(
-        builder: (context) => WebViewScreen(url: url),
-      ),
+      CupertinoPageRoute(builder: (context) => WebViewScreen(url: url)),
     );
   }
 
@@ -37,7 +57,6 @@ class SettingView extends StatelessWidget {
       child: SafeArea(
         child: ListView(
           children: [
-
             CupertinoListSection.insetGrouped(
               header: const CustomText(text: "App"),
               children: [
@@ -53,16 +72,44 @@ class SettingView extends StatelessWidget {
                     color: CustomColors.thema,
                   ),
                   trailing: const CupertinoListTileChevron(),
-                  onTap:
-                      () {
-                        Navigator.of(context).push(
+                  onTap: () {
+                    Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => ListPaymentSourceView(),
                       ),
                     );
-                      },
+                  },
                 ),
-            
+                CupertinoListTile(
+                  padding: EdgeInsets.all(20),
+                  title: const CustomText(
+                    text: "アプリロック",
+                    textSize: TextSize.MS,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  leading: const Icon(
+                    CupertinoIcons.lock_fill, // 鍵のアイコンに変更（好みで）
+                    color: CustomColors.thema,
+                  ),
+                  trailing: CupertinoSwitch(
+                    activeTrackColor: CustomColors.thema,
+                    value: _isAppLockEnabled,
+                    onChanged: (bool value) {
+                      setState(() {
+                        PasswordService().removePassword();
+                        _isAppLockEnabled = value;
+                      });
+
+                      if (value) {
+                        // スイッチがONになったらモーダル表示
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (context) => AppLockSettingView(),
+                        );
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
 
@@ -122,10 +169,7 @@ class SettingView extends StatelessWidget {
                   ),
                   trailing: const CupertinoListTileChevron(),
                   onTap:
-                      () => _openWebView(
-                        context,
-                        "https://appdev-room.com/",
-                      ),
+                      () => _openWebView(context, "https://appdev-room.com/"),
                 ),
               ],
             ),
