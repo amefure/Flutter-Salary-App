@@ -121,6 +121,7 @@ class _SettingViewState extends State<SettingView> {
                   text: "・アプリに不具合がございましたら「アプリの不具合はこちら」よりお問い合わせください。",
                   textSize: TextSize.S,
                   fontWeight: FontWeight.bold,
+                  maxLines: 2,
                 ),
               ),
               children: [
