@@ -9,10 +9,14 @@ import 'package:salary/viewmodels/salary_viewmodel.dart';
 import 'package:salary/views/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/views/setting/app_lock_setting_view.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 /// アプリのルート
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   final passwordService = PasswordService();
 
   bool isLockEnabled = await passwordService.isLockEnabled();
