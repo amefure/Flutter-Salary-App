@@ -60,38 +60,19 @@ class _SettingViewState extends State<SettingView> {
             CupertinoListSection.insetGrouped(
               header: const CustomText(text: "App"),
               children: [
-                CupertinoListTile(
-                  padding: EdgeInsets.all(20),
-                  title: const CustomText(
-                    text: "支払い元管理",
-                    textSize: TextSize.MS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  leading: const Icon(
-                    CupertinoIcons.building_2_fill,
-                    color: CustomColors.thema,
-                  ),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => ListPaymentSourceView(),
-                      ),
-                    );
-                  },
-                ),
-                CupertinoListTile(
-                  padding: EdgeInsets.all(20),
-                  title: const CustomText(
-                    text: "アプリロック",
-                    textSize: TextSize.MS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  leading: const Icon(
-                    CupertinoIcons.lock_fill, // 鍵のアイコンに変更（好みで）
-                    color: CustomColors.thema,
-                  ),
-                  trailing: CupertinoSwitch(
+                _settingListTile("支払い元管理", CupertinoIcons.building_2_fill, () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => ListPaymentSourceView(),
+                    ),
+                  );
+                }),
+
+                _settingListTile(
+                  "アプリロック",
+                  CupertinoIcons.lock_fill,
+                  null,
+                  CupertinoSwitch(
                     activeTrackColor: CustomColors.thema,
                     value: _isAppLockEnabled,
                     onChanged: (bool value) {
@@ -99,7 +80,6 @@ class _SettingViewState extends State<SettingView> {
                         PasswordService().removePassword();
                         _isAppLockEnabled = value;
                       });
-
                       if (value) {
                         // スイッチがONになったらモーダル表示
                         showCupertinoModalPopup(
@@ -125,58 +105,50 @@ class _SettingViewState extends State<SettingView> {
                 ),
               ),
               children: [
-                CupertinoListTile(
-                  padding: EdgeInsets.all(20),
-                  title: const CustomText(
-                    text: "アプリをレビューする",
-                    textSize: TextSize.MS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  leading: const Icon(
-                    CupertinoIcons.hand_thumbsup,
-                    color: CustomColors.thema,
-                  ),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap: () => _launchURL("https://appdev-room.com/app"),
+                _settingListTile(
+                  "アプリをレビューする",
+                  CupertinoIcons.hand_thumbsup,
+                  () {
+                    _launchURL("https://appdev-room.com/app");
+                  },
                 ),
-                CupertinoListTile(
-                  padding: EdgeInsets.all(20),
-                  title: const CustomText(
-                    text: "アプリの不具合はこちら",
-                    textSize: TextSize.MS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  leading: const Icon(
-                    CupertinoIcons.paperplane,
-                    color: CustomColors.thema,
-                  ),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap:
-                      () => _openWebView(
-                        context,
-                        "https://appdev-room.com/contact",
-                      ),
-                ),
-                CupertinoListTile(
-                  padding: EdgeInsets.all(20),
-                  title: const CustomText(
-                    text: "利用規約とプライバシーポリシー",
-                    textSize: TextSize.MS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  leading: const Icon(
-                    CupertinoIcons.calendar,
-                    color: CustomColors.thema,
-                  ),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap:
-                      () => _openWebView(context, "https://appdev-room.com/"),
+
+                _settingListTile("アプリの不具合はこちら", CupertinoIcons.paperplane, () {
+                  _openWebView(context, "https://appdev-room.com/contact");
+                }),
+
+                _settingListTile(
+                  "利用規約とプライバシーポリシー",
+                  CupertinoIcons.calendar,
+                  () {
+                    _openWebView(context, "https://appdev-room.com/");
+                  },
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// 設定リスト行UI
+  Widget _settingListTile(
+    String title,
+    IconData icon,
+    VoidCallback? action, [
+    Widget trailing = const CupertinoListTileChevron(),
+  ]) {
+    return CupertinoListTile(
+      padding: const EdgeInsets.all(20),
+      title: CustomText(
+        text: title,
+        textSize: TextSize.MS,
+        fontWeight: FontWeight.bold,
+      ),
+      leading: Icon(icon, color: CustomColors.thema),
+      trailing: trailing,
+      onTap: () => action,
     );
   }
 }

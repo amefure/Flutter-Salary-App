@@ -74,7 +74,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       _paymentSourceController.text = salary.source?.name ?? "未設定";
       _selectPaymentSource = salary.source;
       _createdAt = salary.createdAt;
-      print("=----_createdAt" + _createdAt.toString());
       _memoController.text = salary.memo;
     } else {
       DateTime now = DateTime.now();
