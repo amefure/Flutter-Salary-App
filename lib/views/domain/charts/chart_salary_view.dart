@@ -10,6 +10,7 @@ import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 
@@ -178,6 +179,10 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
               const SizedBox(height: 20),
 
               SizedBox(width: screen.width * 0.9, child: _tableSalayInfo()),
+
+              const Spacer(),
+
+              const AdMobBannerWidget(),
             ],
           );
         },

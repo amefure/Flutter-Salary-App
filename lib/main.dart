@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/repository/realm_repository.dart';
@@ -15,6 +16,7 @@ import 'firebase_options.dart';
 /// アプリのルート
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final passwordService = PasswordService();
