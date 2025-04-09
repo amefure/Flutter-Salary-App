@@ -148,7 +148,9 @@ class _SettingViewState extends State<SettingView> {
       ),
       leading: Icon(icon, color: CustomColors.thema),
       trailing: trailing,
-      onTap: () => action,
+      onTap: () {
+        if (action != null) action();
+      },
     );
   }
 }
