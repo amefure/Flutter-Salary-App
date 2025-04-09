@@ -11,7 +11,9 @@ plugins {
 android {
     namespace = "com.ame.Salary"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // flutter.ndkVersionを使用しない
+    // 上記はflutterSDK自体に依存しているNDKバージョンのため
+    ndkVersion = "28.0.13004108"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
