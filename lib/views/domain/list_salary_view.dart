@@ -41,7 +41,7 @@ class _SalaryListViewState extends State<SalaryListView> {
         child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
           builder: (context, salaryViewModel, paymentSourceViewModel, child) {
             if (salaryViewModel.salaries.isEmpty) {
-              return Center(child: Text('データがありません'));
+              return Center(child: const Text('データがありません'));
             }
             return ListView.builder(
               itemCount: salaryViewModel.salaries.length,
