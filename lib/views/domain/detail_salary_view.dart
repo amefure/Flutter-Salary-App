@@ -164,13 +164,17 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
                           Column(
                             children: [
-                              const CustomText(text: "支払い日"),
+                              const CustomText(
+                                text: "支払い日",
+                                fontWeight: FontWeight.bold
+                              ),
                               CustomText(
                                 text: DateTimeUtils.format(
                                   dateTime:
                                       targetSalary?.createdAt ?? DateTime.now(),
                                   pattern: "yyyy年M月d日",
                                 ),
+                                fontWeight: FontWeight.bold,
                               ),
                             ],
                           ),
@@ -181,7 +185,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                       // テーマカラーで色を変えたい場合
                       // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
                       // 給料テーブル
-                      _buildSalaryTable(ThemaColor.black.color),
+                      _buildSalaryTable(ThemaColor.black.color.withValues(alpha: 0.8)),
 
                       const SizedBox(height: 24),
 
@@ -269,14 +273,14 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
           headerColor,
           isTotal: true,
         ),
-        _buildExpandableRow("支給項目詳細", targetSalary?.paymentAmountItems),
+        _buildExpandableRow("", targetSalary?.paymentAmountItems),
         _buildTableRow(
           "控除額",
           targetSalary?.deductionAmount,
           headerColor,
           isTotal: true,
         ),
-        _buildExpandableRow("控除項目詳細", targetSalary?.deductionAmountItems),
+        _buildExpandableRow("", targetSalary?.deductionAmountItems),
         _buildTableRow(
           "手取り額",
           targetSalary?.netSalary,

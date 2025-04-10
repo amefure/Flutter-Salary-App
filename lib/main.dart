@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
@@ -17,6 +18,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  BiometricsService().checkAvailability();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final passwordService = PasswordService();

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
@@ -15,6 +16,7 @@ class AppLockSettingView extends StatefulWidget {
 
 class _AppLockSettingViewState extends State<AppLockSettingView> {
   final _passwordService = PasswordService();
+  final _biometricsService = BiometricsService();
   List<String> _input = [];
   final int _passwordLength = 4;
 
@@ -51,6 +53,8 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
           actions: [
             TextButton(
               onPressed: () {
+                // 入力パスワードを初期化
+                _input.clear();
                 Navigator.of(dialogContext).pop();
               },
               child: const Text("OK"),
@@ -106,44 +110,25 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_passwordLength, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          index < _input.length
-                              ? CustomColors.thema
-                              : Colors.grey,
-                    ),
-                  ),
-                );
-              }),
-            ),
+            // パスワード入力ボックス
+            _passwordBox(),
 
             const Spacer(),
 
-            CustomElevatedButton(
-              text: widget.isEntry ? "登録" : "解除",
-              onPressed: () {
-                if (_input.length == _passwordLength) {
-                  if (widget.isEntry) {
-                    _savePassword();
-                  } else {
-                    _validatePassword();
-                  }
-                }
-              },
-              backgroundColor:
-                  _input.length == _passwordLength
-                      ? CustomColors.thema
-                      : CustomColors.themaGray,
-            ),
+            // 生体認証ON / OFFでボタンのだしわけ
+            // かつ 登録モードではない
+            if (_biometricsService.isAvailable && !widget.isEntry && _input.length != _passwordLength)
+            // パスワード認証ボタン
+              SizedBox(
+                height: 50,
+                child:  _biometricsButton(),
+              )
+            else
+            // パスワード認証ボタン
+              SizedBox(
+                height: 50,
+                child: _passwordAuthButton(),
+              ),
 
             const Spacer(),
 
@@ -151,6 +136,68 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
           ],
         ),
       ),
+    );
+  }
+
+  /// パスワード表示用ボックスレイアウト
+  Widget _passwordBox() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(_passwordLength, (index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color:
+              index < _input.length
+                  ? CustomColors.thema
+                  : Colors.grey,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  /// パスワード認証ボタン
+  Widget _passwordAuthButton() {
+    return CustomElevatedButton(
+      text: widget.isEntry ? "登録" : "解除",
+      onPressed: () async {
+        if (_input.length == _passwordLength) {
+          if (widget.isEntry) {
+            // パスワード保存処理
+            _savePassword();
+          } else {
+            // パスワード認証処理
+            _validatePassword();
+          }
+        }
+      },
+      backgroundColor:
+      _input.length == _passwordLength
+          ? CustomColors.thema
+          : CustomColors.themaGray,
+    );
+  }
+
+  /// 生体認証処理
+  Widget _biometricsButton() {
+    return IconButton(
+        onPressed: () async {
+          // 生体認証に挑戦
+          bool isAuthenticated = await _biometricsService.authenticateWithBiometrics();
+          if (isAuthenticated) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => RootTabViewView()),
+            );
+          }
+        },
+        icon: Icon(Icons.fingerprint, size: 50),
     );
   }
 
