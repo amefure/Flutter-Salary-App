@@ -26,6 +26,7 @@ dependencies:
   firebase_core: ^3.13.0
   google_mobile_ads: ^5.3.1
   local_auth: ^2.3.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   change_app_package_name: ^1.1.0
@@ -33,6 +34,15 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_ios: "assets/images/app_icon.png"
+  image_path_android: "assets/images/app_icon.png"
+  adaptive_icon_background: '#000000' #iconの背景色
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  adaptive_icon_padding: true
 
 flutter:
   uses-material-design: true
