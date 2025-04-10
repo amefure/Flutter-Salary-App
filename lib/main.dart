@@ -43,13 +43,14 @@ void main() async {
 class MyApp extends StatelessWidget {
   final Widget startScreen;
   const MyApp({super.key, required this.startScreen});
-  
 
   @override
   Widget build(BuildContext context) {
     // IOS デザインアプリ
     return CupertinoApp(
-      title: '給料MEMO App',
+      title: 'シンプル給料記録',
+      // デバッグタグを非表示
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         // マテリアル Widget(Android)
         GlobalMaterialLocalizations.delegate,
