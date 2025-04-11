@@ -1,7 +1,7 @@
 name: salary
-description: "A new Flutter project."
+description: "シンプル給料記録アプリ"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
+# アプリバージョン番号 + ビルド番号 (+1)部分をインクリメントする
 version: 1.0.0+1
 
 environment:
@@ -40,7 +40,7 @@ flutter_icons:
   ios: true
   image_path_ios: "assets/images/app_icon.png"
   image_path_android: "assets/images/app_icon.png"
-  adaptive_icon_background: '#000000' #iconの背景色
+  adaptive_icon_background: '#000000'
   adaptive_icon_foreground: "assets/images/app_icon.png"
   adaptive_icon_padding: true
 
