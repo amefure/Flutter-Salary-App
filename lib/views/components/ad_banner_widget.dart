@@ -30,7 +30,7 @@ class _AdMobBannerWidgetState extends State<AdMobBannerWidget> {
   void _loadAd() {
     _bannerAd = BannerAd(
       // バナーID
-      adUnitId: _StaticKey.admobBannerIdTest,
+      adUnitId:  _StaticKey.admobBannerIdPrd,
       // バナーサイズ
       size: AdSize.fullBanner,
       request: const AdRequest(),

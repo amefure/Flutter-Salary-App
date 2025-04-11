@@ -25,7 +25,10 @@ class _SalaryListViewState extends State<SalaryListView> {
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
-          middle: const Text('給料MEMO'),
+          middle: const CustomText(
+            text: "シンプル給料記録",
+            fontWeight: FontWeight.bold,
+          ),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
@@ -41,7 +44,12 @@ class _SalaryListViewState extends State<SalaryListView> {
         child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
           builder: (context, salaryViewModel, paymentSourceViewModel, child) {
             if (salaryViewModel.salaries.isEmpty) {
-              return Center(child: const Text('データがありません'));
+              return Center(
+                  child: const CustomText(
+                    text: "データがありません",
+                    fontWeight: FontWeight.bold,
+                  )
+              );
             }
             return ListView.builder(
               itemCount: salaryViewModel.salaries.length,

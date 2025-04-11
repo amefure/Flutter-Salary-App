@@ -5,6 +5,7 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
+import 'package:salary/views/components/custom_text_view.dart';
 
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
@@ -37,14 +38,23 @@ class _DetailInputViewState extends State<DetailInputView> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: const Text("Error"),
-          content: Text(title),
+          title: const CustomText(
+            text: "ERROR",
+            fontWeight: FontWeight.bold,
+          ),
+          content: CustomText(
+            text: title,
+            fontWeight: FontWeight.bold,
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const CustomText(
+                text: "OK",
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         );
@@ -64,7 +74,10 @@ class _DetailInputViewState extends State<DetailInputView> {
       child: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
-          middle: Text("${widget.title}：詳細入力"),
+          middle: CustomText(
+            text: "${widget.title}：詳細入力",
+            fontWeight: FontWeight.bold,
+          ),
         ),
         child: SafeArea(
           child: Padding(
