@@ -8,6 +8,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val secretPropertiesFile = rootProject.file("secret.properties")
+val secretProperties = java.util.Properties()
+secretProperties.load(secretPropertiesFile.inputStream())
+
 android {
     namespace = "com.ame.Salary"
     compileSdk = flutter.compileSdkVersion
@@ -42,7 +46,7 @@ android {
         }
         release {
             // 本番用
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
+            manifestPlaceholders["admobAppId"] = secretProperties["ADMOB_APP_ID"] as String
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
