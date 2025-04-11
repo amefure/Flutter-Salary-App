@@ -8,6 +8,7 @@ import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/detail_input_view.dart';
@@ -528,6 +529,10 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                 ),
+
+                const SizedBox(height: 40),
+
+                const AdMobBannerWidget(),
               ],
             ),
           ),

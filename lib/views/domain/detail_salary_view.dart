@@ -9,6 +9,7 @@ import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
 import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
@@ -191,7 +192,9 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
                       // MEMO
                       const CustomLabelView(labelText: "MEMO"),
+
                       const SizedBox(height: 10),
+                      // MEMO Body
                       Container(
                         padding: const EdgeInsets.symmetric(
                           vertical: 12,
@@ -213,6 +216,10 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                           ],
                         ),
                       ),
+
+                      const SizedBox(height: 40),
+
+                      const AdMobBannerWidget(),
                     ],
                   );
                 },
