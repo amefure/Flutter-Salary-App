@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:salary/models/secrets.dart';
 
 class AdMobBannerWidget extends StatefulWidget {
   const AdMobBannerWidget({super.key});
@@ -30,7 +31,7 @@ class _AdMobBannerWidgetState extends State<AdMobBannerWidget> {
   void _loadAd() {
     _bannerAd = BannerAd(
       // バナーID
-      adUnitId:  _StaticKey.admobBannerIdPrd,
+      adUnitId:  StaticKey.admobBannerIdPrd,
       // バナーサイズ
       size: AdSize.fullBanner,
       request: const AdRequest(),
@@ -58,29 +59,5 @@ class _AdMobBannerWidgetState extends State<AdMobBannerWidget> {
       height: _bannerAd!.size.height.toDouble(),
       child: AdWidget(ad: _bannerAd!),
     ) : const SizedBox();
-  }
-}
-
-class _StaticKey {
-  static String get admobBannerIdPrd {
-    if (Platform.isIOS) {
-      // iOS本番用
-      return "ca-app-pub-3940256099942544/2934735716";
-    } else if (Platform.isAndroid) {
-      // Android本番用
-      return 'ca-app-pub-3940256099942544/6300978111';
-    }
-    throw UnsupportedError("対象外のプラットフォームです");
-  }
-
-  static String get admobBannerIdTest {
-    if (Platform.isIOS) {
-      // iOSテスト用
-      return "ca-app-pub-3940256099942544/2934735716";
-    } else if (Platform.isAndroid) {
-      // Androidテスト用
-      return 'ca-app-pub-3940256099942544/6300978111';
-    }
-    throw UnsupportedError("対象外のプラットフォームです");
   }
 }

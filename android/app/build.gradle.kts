@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -9,8 +11,16 @@ plugins {
 }
 
 val secretPropertiesFile = rootProject.file("secret.properties")
-val secretProperties = java.util.Properties()
+val secretProperties = Properties()
 secretProperties.load(secretPropertiesFile.inputStream())
+
+// key.properties をロードする
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(keystorePropertiesFile.inputStream())
+    }
+}
 
 android {
     namespace = "com.ame.Salary"
@@ -36,6 +46,15 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = keystoreProperties["storeFile"]?.let { file(it as String) }
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     buildTypes {
         debug {
             // テスト用
@@ -44,10 +63,7 @@ android {
         release {
             // 本番用
             manifestPlaceholders["admobAppId"] = secretProperties["ADMOB_APP_ID"] as String
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            // signingConfig = signingConfigs.getByName("debug")
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

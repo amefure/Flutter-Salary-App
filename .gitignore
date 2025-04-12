@@ -51,3 +51,8 @@ ios/Runner/GoogleService-Info.plist
 # Secrets
 /android/secret.properties
 /ios/Flutter/Release.xcconfig
+/lib/models/secrets.dart
+
+# Android Key Store
+/android/key.properties
+/my_release_key.jks
