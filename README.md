@@ -33,15 +33,15 @@
      ∟ repository   ・・・Realm / Shread Preferences / 生体認証リポジトリ
      ∟ utilitys     ・・・日付 / カラー / 数値 etc...
      ∟ viewmodels   ・・・Realm Saraly ViewModel
-     ∟ views        ・・・
+     ∟ views        ・・・View
          ∟ components ・・・UIコンポーネント
-         ∟ domain ・・・ドメイン機能
-         ∟ setting ・・・設定画面
-         ∟ weview ・・・WebView
+         ∟ domain     ・・・ドメイン機能
+         ∟ setting    ・・・設定画面
+         ∟ weview     ・・・WebView
          ∟ root_tab_view.dart ・・・アプリタブ管理ビュー
      ∟ firebase_options.dart  ・・・Firebaesの設定ファイル(自動生成)
      ∟ main.dart    ・・・アプリのエントリーポイン
- ∟ pubspec.yaml  ・・・プロジェクト/パッケージ設定管理ファイル
+ ∟ pubspec.yaml     ・・・プロジェクト/パッケージ設定管理ファイル
  ∟ README.md
  ∟ (etc)
 ```
