@@ -1,16 +1,72 @@
-# salary
+# シンプル給料記録アプリ
 
-A new Flutter project.
+給料や副業収益を記録・管理するためのメモアプリ
 
-## Getting Started
+## アプリ概要
 
-This project is a starting point for a Flutter application.
+＼シンプルな給料・副業収入記録アプリ／
 
-A few resources to get you started if this is your first Flutter project:
+◇このアプリでできること
+１.給料を記録
+２.年収や手取りが把握できる
+３.グラフで増減が見える化
+４.副業やバイトなどの収益も別で管理可能
+５.アプリにロックもかけられる(生体認証(指紋/顔)でログイン)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 開発環境
+- Android Studio Koala 2024.3.1
+- Xcode：16.0 
+- Flutter：3.29.2 
+- Dart：3.7.2 
+- Mac M1：Sequoia 15.4
+
+## 構成
+```
+(root)
+ ∟ android ・・・Android用のネイティブコードや設定
+ ∟ ios     ・・・iOS用のネイティブコードや設定
+ ∟ assets  ・・・リソース(画像etc...)
+ ∟ lib
+     ∟ model        ・・・Relam Database Model & 自動生成ファイル
+     ∟ repository   ・・・Realm / Shread Preferences / 生体認証リポジトリ
+     ∟ utilitys     ・・・日付 / カラー / 数値 etc...
+     ∟ viewmodels   ・・・Realm Saraly ViewModel
+     ∟ views        ・・・
+         ∟ components ・・・UIコンポーネント
+         ∟ domain ・・・ドメイン機能
+         ∟ setting ・・・設定画面
+         ∟ weview ・・・WebView
+         ∟ root_tab_view.dart ・・・アプリタブ管理ビュー
+     ∟ firebase_options.dart  ・・・Firebaesの設定ファイル(自動生成)
+     ∟ main.dart    ・・・アプリのエントリーポイン
+ ∟ pubspec.yaml  ・・・プロジェクト/パッケージ設定管理ファイル
+ ∟ README.md
+ ∟ (etc)
+```
+
+# ライブラリ
+
+## Utility
+- **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
+- **[intl](https://pub.dev/packages/intl) (0.19.0)** - 日付・数値・通貨のフォーマット処理 
+
+## Storage
+- **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ）
+- **[flutter_secure_storage](https://pub.dev/packages/flutter_secure_storage) (9.2.4)** - 暗号化されたデータの保存
+- **[realm](https://pub.dev/packages/realm) (20.0.1)** - Realm DataBase
+
+## UI
+- **[fl_chart](https://pub.dev/packages/fl_chart) (0.70.2)** - グラフ描画
+- **[webview_flutter](https://pub.dev/packages/webview_flutter) (4.10.0)** - WebView
+
+## Service
+- **[provider](https://pub.dev/packages/provider) (6.1.2)** - 状態管理
+- **[local_auth](https://pub.dev/packages/local_auth) (2.3.0)** - 生体認証
+- **[firebase_core](https://pub.dev/packages/firebase_core) (3.13.0)** - Firebase のコアライブラリ
+- **[google_mobile_ads](https://pub.dev/packages/google_mobile_ads) (5.3.1)** - Google AdMob
+
+## Develop
+- **[flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons) (0.14.3)** - アプリアイコンの設定
+- **[change_app_package_name](https://github.com/atiqsamtia/change_app_package_name) (1.1.0)** - アプリID(BundleID)の管理
