@@ -366,6 +366,8 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
         Align(
           alignment: Alignment.centerRight,
           child: ExpansionTile(
+            // デフォルトを展開状態にする
+            initiallyExpanded: true,
             title: const CustomText(
               text: "詳細を見る",
               textSize: TextSize.S,

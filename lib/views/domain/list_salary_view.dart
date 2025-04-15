@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
+import 'package:salary/models/salary.dart';
+import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/payment_source_viewmodel.dart';
@@ -17,8 +20,26 @@ class SalaryListView extends StatefulWidget {
 }
 
 class _SalaryListViewState extends State<SalaryListView> {
+  /// Salaryに存在する支払い元リスト
+  late List<PaymentSource> _sourceList;
+  /// 表示中の支払い元
+  late PaymentSource _selectedSource = _allSource;
+
+  /// "全て" を表すダミーの PaymentSource を作成
+  final PaymentSource _allSource = PaymentSource(
+    Uuid.v4().toString(),
+    "ALL",
+    ThemaColor.blue.value,
+  );
+
   @override
   Widget build(BuildContext context) {
+    _sourceList = [];
+    // paymentSourcesにinsertするとRealmに保存されてしまうので注意
+    _sourceList = [
+      _allSource,
+      ...context.read<PaymentSourceViewModel>().paymentSources,
+    ];
     // Scaffold配下にCupertinoPageScaffold(iOS UI)を設置しないと
     // Textのスタイルが黄色い下線になってしまう
     return Scaffold(
@@ -29,6 +50,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             text: "シンプル給料記録",
             fontWeight: FontWeight.bold,
           ),
+          leading: _buildSourceSelector(),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
@@ -138,6 +160,55 @@ class _SalaryListViewState extends State<SalaryListView> {
           },
         ),
       ),
+    );
+  }
+
+  /// **給与の支払い元を選択するUI (MenuAnchor)**
+  Widget _buildSourceSelector() {
+    return MenuAnchor(
+      builder: (context, controller, child) {
+        return GestureDetector(
+          onTap: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          child: const Icon(Icons.filter_list, size: 28),
+        );
+      },
+      menuChildren:
+      _sourceList.map((source) {
+        return MenuItemButton(
+          onPressed: () {
+            setState(() {
+              _selectedSource = source;
+              if (source == _allSource) {
+                context.read<SalaryViewModel>().fetchAll();
+              } else {
+                context.read<SalaryViewModel>().fetchFilter(source.name);
+              }
+            });
+          },
+          child: SizedBox(
+            width: 200,
+            child: Row(
+              children: [
+                Icon(
+                  CupertinoIcons.building_2_fill,
+                  color: source.themaColorEnum.color,
+                ),
+                const SizedBox(width: 8),
+                CustomText(text: source.name, fontWeight: FontWeight.bold),
+                const Spacer(),
+                if (_selectedSource == source)
+                  const Icon(CupertinoIcons.checkmark_alt),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

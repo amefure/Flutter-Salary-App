@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/repository/password_service.dart';
@@ -53,7 +55,7 @@ class _SettingViewState extends State<SettingView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
-      navigationBar: const CupertinoNavigationBar(middle: Text("設定")),
+      navigationBar: const CupertinoNavigationBar(middle: const CustomText(text: "設定")),
       child: SafeArea(
         child: ListView(
           children: [
@@ -105,13 +107,15 @@ class _SettingViewState extends State<SettingView> {
                 ),
               ),
               children: [
-                _settingListTile(
-                  "アプリをレビューする",
-                  CupertinoIcons.hand_thumbsup,
-                  () {
-                    _launchURL("https://appdev-room.com/app");
-                  },
-                ),
+
+                if (Platform.isIOS)
+                  _settingListTile(
+                    "アプリをレビューする",
+                    CupertinoIcons.hand_thumbsup,
+                        () {
+                      _launchURL("https://apps.apple.com/jp/app/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E7%B5%A6%E6%96%99%E8%A8%98%E9%8C%B2/id6744486398?action=write-review");
+                    },
+                  ),
 
                 _settingListTile("アプリの不具合はこちら", CupertinoIcons.paperplane, () {
                   _openWebView(context, "https://appdev-room.com/contact");
@@ -121,7 +125,7 @@ class _SettingViewState extends State<SettingView> {
                   "利用規約とプライバシーポリシー",
                   CupertinoIcons.calendar,
                   () {
-                    _openWebView(context, "https://appdev-room.com/");
+                    _openWebView(context, "https://appdev-room.com/app-terms-of-service");
                   },
                 ),
               ],

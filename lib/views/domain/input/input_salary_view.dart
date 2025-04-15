@@ -79,9 +79,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     } else {
       DateTime now = DateTime.now();
       _dateController.text = "${now.year}/${now.month}/${now.day}";
-      _paymentAmountController.text = "0";
-      _deductionAmountController.text = "0";
-      _netSalaryController.text = "0";
+      _paymentAmountController.text = "";
+      _deductionAmountController.text = "";
+      _netSalaryController.text = "";
       // 存在するなら一番最初のものを指定
       _selectPaymentSource = _paymentSources.firstOrNull;
       _paymentSourceController.text = _selectPaymentSource?.name ?? "未設定";
@@ -303,9 +303,6 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     );
   }
 
-  // 初期選択値
-  final String selectedOption = "選択してください";
-
   /// 選択肢のボタン
   CupertinoActionSheetAction _buildAction(BuildContext context, String option) {
     return CupertinoActionSheetAction(
@@ -358,6 +355,10 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   @override
   Widget build(BuildContext context) {
+    // 現在のSalary履歴を取得
+    // 編集対象は除去
+    final list = context.read<SalaryViewModel>().salaries.where((salary) => salary.id != widget.salary?.id).toList();
+
     return Scaffold(
       backgroundColor: CustomColors.foundation,
       body: CupertinoPageScaffold(
@@ -383,43 +384,12 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Consumer<PaymentSourceViewModel>(
-                  builder: (context, viewModel, child) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // ExpandedでCustomTextFieldのサイズを適切に制約しないとエラーになる
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _paymentSourceController,
-                            labelText: "支払い元",
-                            prefixIcon: CupertinoIcons.building_2_fill,
-                            prefixIconColor:
-                                _selectPaymentSource?.themaColorEnum.color ??
-                                CupertinoColors.systemGrey,
-                            readOnly: true,
-                            onTap:
-                                () => _showPaymentSourcePicker(
-                                  context,
-                                  viewModel.paymentSources,
-                                ),
-                          ),
-                        ),
 
-                        SizedBox(
-                          child: IconButton(
-                            onPressed:
-                                () => _showInputPaymentSourceModal(context),
-                            icon: Icon(
-                              CupertinoIcons.add_circled_solid,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                if (list.isNotEmpty)
+                  _historyCitingSalary(list),
+
+                // 支払い元ピッカー
+                _paymentSourcePicker(),
 
                 const SizedBox(height: 20),
 
@@ -434,15 +404,18 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
                 const SizedBox(height: 20),
 
+                // 総支給額UI
                 CustomTextField(
                   controller: _paymentAmountController,
                   labelText: "総支給額",
                   prefixIcon: CupertinoIcons.money_yen,
                   onSubmitted: (_) => _calcNetSalaryAmount(),
+                  onFocusLost: () => _calcNetSalaryAmount(),
                 ),
 
                 const SizedBox(height: 10),
 
+                // 総支給額：詳細入力
                 Row(
                   children: [
                     const Spacer(),
@@ -470,18 +443,22 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _paymentAmountItems.map((item) {
-                        return amountItemListRowView(item, true);
+                        return _amountItemListRowView(item, true);
                       }).toList(),
                 ),
 
                 const SizedBox(height: 10),
+
+                // 控除額
                 CustomTextField(
                   controller: _deductionAmountController,
                   labelText: "控除額",
                   prefixIcon: CupertinoIcons.money_yen,
                   onSubmitted: (_) => _calcNetSalaryAmount(),
+                  onFocusLost: () => _calcNetSalaryAmount(),
                 ),
 
+                // 控除額：詳細入力
                 Row(
                   children: [
                     const Spacer(),
@@ -509,7 +486,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Column(
                   children:
                       _deductionAmountItems.map((item) {
-                        return amountItemListRowView(item, false);
+                        return _amountItemListRowView(item, false);
                       }).toList(),
                 ),
 
@@ -541,8 +518,127 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     );
   }
 
+  Widget _historyCitingSalary(List<Salary> pastSalaries) {
+    return Row(
+      children: [
+        Spacer(),
+        CupertinoButton(
+          child: Row(
+            children: [
+              CustomText(
+                text: "過去から引用",
+                color: CustomColors.thema,
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+              ),
+              Icon(Icons.chevron_right),
+            ],
+          ),
+          onPressed: () {
+            _showSelectPastSalarySheet(pastSalaries);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showSelectPastSalarySheet(List<Salary> pastSalaries) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return CupertinoActionSheet(
+          title: const Text('引用する過去の情報を選択'),
+          actions: pastSalaries.map((salary) {
+            final dateStr = DateTimeUtils.format(dateTime: salary.createdAt);
+            return CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _copySalaryFromPast(salary);
+              },
+              child: Text('$dateStr - ${salary.source?.name ?? "未設定"} '),
+            );
+          }).toList(),
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('キャンセル'),
+          ),
+        );
+      },
+    );
+  }
+
+  void _copySalaryFromPast(Salary pastSalary) {
+    setState(() {
+      _selectPaymentSource = pastSalary.source;
+      if (_selectPaymentSource != null) {
+        _paymentSourceController.text = _selectPaymentSource!.name.toString();
+      }
+      _paymentAmountItems = pastSalary.paymentAmountItems.map(
+              (item) => AmountItem(Uuid.v4().toString(), item.key, item.value)
+      ).toList();
+      if (_paymentAmountItems.isEmpty) {
+        _paymentAmountController.text = pastSalary.paymentAmount.toString();
+      } else {
+        _updateTotalPaymentAmount();
+      }
+      _deductionAmountItems = pastSalary.deductionAmountItems.map(
+              (item) => AmountItem(Uuid.v4().toString(), item.key, item.value)
+      ).toList();
+      if (_deductionAmountItems.isEmpty) {
+        _deductionAmountController.text = pastSalary.deductionAmount.toString();
+      } else {
+        _updateTotalDeductionAmount();
+      }
+
+      _memoController.text = pastSalary.memo;
+
+      _calcNetSalaryAmount();
+    });
+  }
+
+  /// 支払い元ピッカー
+  Widget _paymentSourcePicker() {
+    return Consumer<PaymentSourceViewModel>(
+      builder: (context, viewModel, child) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // ExpandedでCustomTextFieldのサイズを適切に制約しないとエラーになる
+            Expanded(
+              child: CustomTextField(
+                controller: _paymentSourceController,
+                labelText: "支払い元",
+                prefixIcon: CupertinoIcons.building_2_fill,
+                prefixIconColor:
+                _selectPaymentSource?.themaColorEnum.color ??
+                    CupertinoColors.systemGrey,
+                readOnly: true,
+                onTap:
+                    () => _showPaymentSourcePicker(
+                  context,
+                  viewModel.paymentSources,
+                ),
+              ),
+            ),
+
+            SizedBox(
+              child: IconButton(
+                onPressed:
+                    () => _showInputPaymentSourceModal(context),
+                icon: Icon(
+                  CupertinoIcons.add_circled_solid,
+                  size: 28,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   /// AmountItemのリスト行単位のView
-  Widget amountItemListRowView(AmountItem item, bool isPayment) {
+  Widget _amountItemListRowView(AmountItem item, bool isPayment) {
     return Dismissible(
       key: Key(item.id),
       onDismissed: (direction) {

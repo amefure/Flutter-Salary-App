@@ -18,6 +18,11 @@ class SalaryViewModel extends ChangeNotifier {
     fetchAll();
   }
 
+  void fetchFilter(String name) {
+    fetchAll();
+    salaries = salaries.where((s) => s.source?.name == name).toList();
+  }
+
   /// Salaryの全データ取得
   void fetchAll() {
     salaries = _repository.fetchAll<Salary>();

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
@@ -24,11 +25,11 @@ class ChartSalaryView extends StatefulWidget {
 class _ChartSalaryViewState extends State<ChartSalaryView> {
   /// グラフに表示するためのグルーピングデータ
   late Map<String, List<Salary>> _groupedBySource;
-  // Salaryに存在する支払い元リスト
+  /// Salaryに存在する支払い元リスト
   late List<PaymentSource> _sourceList;
-  // 表示中の支払い元
+  /// 表示中の支払い元
   late PaymentSource _selectedSource;
-  // 表示中の年月
+  /// 表示中の年月
   late int _selectedYear;
 
   /// "全て" を表すダミーの PaymentSource を作成
@@ -156,7 +157,10 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
 
               const SizedBox(height: 20),
 
-              SizedBox(width: screen.width * 0.95, child: _buildChart()),
+              SizedBox(
+                  width: screen.width * 0.95,
+                  child: _buildChart()
+              ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +182,7 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
 
               const SizedBox(height: 20),
 
-              SizedBox(width: screen.width * 0.9, child: _tableSalayInfo()),
+              SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo()),
 
               const Spacer(),
 
@@ -277,7 +281,7 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
     );
   }
 
-  Widget _tableSalayInfo() {
+  Widget _tableSalaryInfo() {
     // 選択中のカテゴリでフィルタリング
     Map<String, List<Salary>> filteredData =
         _selectedSource.name == "ALL"
@@ -342,7 +346,7 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
     if (lines.isEmpty) {
       return Container(
         width: double.infinity,
-        height: screen.height * 0.3,
+        height: 300,
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: CupertinoColors.white,
@@ -357,6 +361,8 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
         ),
       );
     }
+    // Y軸の最大値を取得
+    final maxY = _calculateMaxY(lines);
 
     return Container(
       width: double.infinity,
@@ -368,7 +374,26 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
       ),
       child: LineChart(
         LineChartData(
+          // ツールチップ設定
+          lineTouchData: LineTouchData(
+            enabled: _selectedSource != _allSource ? true : false,
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (touchedSpots) {
+                touchedSpots.removeLast();
+                return touchedSpots.map((spot) {
+                  return LineTooltipItem(
+                    '${spot.x.toInt()}月\n${NumberUtils.formatWithComma(spot.y.toInt())}円',
+                    const TextStyle(color: Colors.white),
+                  );
+                }).toList();
+              },
+            ),
+          ),
+          // 最大Y軸
+          maxY: maxY,
+          // 最小Y軸
           minY: 0,
+          // 各方向のラベル(目盛り)制御
           titlesData: FlTitlesData(
             topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -407,6 +432,16 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
         ),
       ),
     );
+  }
+
+  /// Y軸の最大値を取得
+  double _calculateMaxY(List<LineChartBarData> lines) {
+    final maxY = lines.expand((bar) => bar.spots).map((e) => e.y).fold(0.0, max);
+    final padded = maxY * 1.1;
+
+    // 例：14532 → 15000 に切り上げ
+    final magnitude = pow(10, padded.toInt().toString().length - 1);
+    return (padded / magnitude).ceil() * magnitude.toDouble();
   }
 
   /// 選択された支払い元のデータを取得し、折れ線データを生成
