@@ -2,7 +2,9 @@ name: salary
 description: "シンプル給料記録アプリ"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # アプリバージョン番号 + ビルド番号 (+1)部分をインクリメントする
-version: 1.0.1+3
+# 以下実行でiOSに反映
+# $ flutter build ipa
+version: 1.0.2+4
 
 environment:
   sdk: ^3.7.2
