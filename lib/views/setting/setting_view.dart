@@ -143,7 +143,7 @@ class _SettingViewState extends State<SettingView> {
     Widget trailing = const CupertinoListTileChevron(),
   ]) {
     return CupertinoListTile(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(15),
       title: CustomText(
         text: title,
         textSize: TextSize.MS,

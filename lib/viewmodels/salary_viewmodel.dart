@@ -12,6 +12,9 @@ class SalaryViewModel extends ChangeNotifier {
   /// Salary リスト
   List<Salary> salaries = [];
 
+  /// ALL Salary リスト
+  List<Salary> allSalaries = [];
+
   /// 引数付きコンストラクタ
   SalaryViewModel(this._repository) {
     // 初期化時に全データを取得
@@ -19,15 +22,16 @@ class SalaryViewModel extends ChangeNotifier {
   }
 
   void fetchFilter(String name) {
-    fetchAll();
-    salaries = salaries.where((s) => s.source?.name == name).toList();
+    salaries = allSalaries.where((s) => s.source?.name == name).toList();
   }
 
   /// Salaryの全データ取得
   void fetchAll() {
-    salaries = _repository.fetchAll<Salary>();
+    final allSalariesTmp = _repository.fetchAll<Salary>();
     // 日付の降順
-    salaries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    salaries = allSalariesTmp;
+    allSalaries = allSalariesTmp;
     notifyListeners();
   }
 

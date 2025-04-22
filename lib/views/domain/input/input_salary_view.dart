@@ -292,7 +292,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     }
   }
 
-  // 金額詳細アイテム追加画面を表示
+  /// 金額詳細アイテム追加画面を表示
   Future<void> _showInputPaymentSourceModal(BuildContext context) async {
     showModalBottomSheet(
       context: context,
@@ -318,7 +318,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
         }
         Navigator.pop(context);
       },
-      child: Text(option),
+      child: CustomText(text: option),
     );
   }
 
@@ -555,7 +555,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 Navigator.pop(dialogContext);
                 _copySalaryFromPast(salary);
               },
-              child: Text('$dateStr - ${salary.source?.name ?? "未設定"} '),
+              child: CustomText(text: '$dateStr - ${salary.source?.name ?? "未設定"} '),
             );
           }).toList(),
           cancelButton: CupertinoActionSheetAction(

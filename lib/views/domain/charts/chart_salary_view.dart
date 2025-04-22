@@ -144,7 +144,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       navigationBar: CupertinoNavigationBar(middle: const Text('')),
       child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
         builder: (context, salaryViewModel, paymentSourceViewModel, child) {
-          _groupSalariesBySource(salaryViewModel.salaries);
+          _groupSalariesBySource(salaryViewModel.allSalaries);
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -226,8 +226,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                       color: source.themaColorEnum.color,
                     ),
                     const SizedBox(width: 8),
-                    CustomText(text: source.name, fontWeight: FontWeight.bold),
-                    const Spacer(),
+                    Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
                     if (_selectedSource == source)
                       const Icon(CupertinoIcons.checkmark_alt),
                   ],

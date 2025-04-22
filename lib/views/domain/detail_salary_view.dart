@@ -166,7 +166,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                           Column(
                             children: [
                               const CustomText(
-                                text: "支払い日",
+                                text: "支給日",
                                 fontWeight: FontWeight.bold
                               ),
                               CustomText(

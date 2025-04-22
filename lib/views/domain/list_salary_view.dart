@@ -200,8 +200,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                   color: source.themaColorEnum.color,
                 ),
                 const SizedBox(width: 8),
-                CustomText(text: source.name, fontWeight: FontWeight.bold),
-                const Spacer(),
+                Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
                 if (_selectedSource == source)
                   const Icon(CupertinoIcons.checkmark_alt),
               ],

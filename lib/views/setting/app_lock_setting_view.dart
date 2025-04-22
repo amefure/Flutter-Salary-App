@@ -20,6 +20,16 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
   final List<String> _input = [];
   final int _passwordLength = 4;
 
+  @override
+  void initState() {
+    super.initState();
+    // 登録ではない
+    if (!widget.isEntry) {
+      // 起動時に生体認証有効ユーザーには認証リクエスト
+      _executeBiometricsAuth();
+    }
+  }
+
   /// パスワード登録成功アラート
   void _showSuccessAlert(BuildContext context) {
     showCupertinoDialog(
@@ -91,12 +101,28 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     }
   }
 
-  Future<void> _savePassword() async {
+  void _savePassword() async {
     if (_input.length == _passwordLength) {
       String password = _input.join('');
       await PasswordService().setPassword(password);
       if (!mounted) return;
       _showSuccessAlert(context);
+    }
+  }
+
+  /// 生体認証で画面遷移
+  void _executeBiometricsAuth() async {
+    // 生体認証に挑戦
+    bool isAuthenticated = await _biometricsService.authenticateWithBiometrics();
+    // info: Don't use 'BuildContext's across async gaps警告
+    // asyncメソッドでcontextを参照すると解放されている可能性があるため警告が出る
+    // 使用前にmountedをチェックする
+    if (!mounted) return;
+    if (isAuthenticated) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => RootTabViewView()),
+      );
     }
   }
 
@@ -190,18 +216,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
   Widget _biometricsButton() {
     return IconButton(
         onPressed: () async {
-          // 生体認証に挑戦
-          bool isAuthenticated = await _biometricsService.authenticateWithBiometrics();
-          // info: Don't use 'BuildContext's across async gaps警告
-          // asyncメソッドでcontextを参照すると解放されている可能性があるため警告が出る
-          // 使用前にmountedをチェックする
-          if (!mounted) return;
-          if (isAuthenticated) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => RootTabViewView()),
-            );
-          }
+          _executeBiometricsAuth();
         },
         icon: Icon(Icons.fingerprint, size: 50),
     );
