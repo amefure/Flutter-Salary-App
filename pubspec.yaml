@@ -30,6 +30,7 @@ dependencies:
   local_auth: ^2.3.0
   flutter_launcher_icons: ^0.14.3
   flutter_riverpod: ^2.6.1
+  flutter_flavorizr: ^2.4.0
 
 dev_dependencies:
   change_app_package_name: ^1.1.0
