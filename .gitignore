@@ -56,3 +56,7 @@ ios/Runner/GoogleService-Info.plist
 # Android Key Store
 /android/key.properties
 /my_release_key.jks
+
+# flutter_flavorizr
+.tmp/
+assets.tmp.zip

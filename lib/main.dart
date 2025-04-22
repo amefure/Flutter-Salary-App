@@ -13,10 +13,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/views/setting/app_lock_setting_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'flavors.dart';
+import 'package:flutter/services.dart';
 
 /// アプリのルート
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // フレーバー
+  F.appFlavor = Flavor.values.firstWhere(
+        (element) => element.name == appFlavor,
+  );
+
   MobileAds.instance.initialize();
   BiometricsService().checkAvailability();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

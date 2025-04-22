@@ -7,6 +7,7 @@ flavors:
       applicationId: "com.ame.Salary.dev"
     ios:
       bundleId: "com.ame.Salary.dev"
+      icon: "assets/images/app_icon.png"
   # stgフレーバー
   stg:
     app:
@@ -15,24 +16,27 @@ flavors:
       applicationId: "com.ame.Salary.stg"
     ios:
       bundleId: "com.ame.Salary.stg"
+      icon: "assets/images/app_icon.png"
   # prodフレーバー
   prod:
     app:
-      name: "シンプル給料記録アプリ Release"
+      name: "シンプル給料記録アプリ"
     android:
       applicationId: "com.ame.Salary"
     ios:
       bundleId: "com.ame.Salary"
+      icon: "assets/images/app_icon.png"
 
-#instructions:
-#  - flutter:main            # mainエントリーポイントを自動生成
-#  - flutter:flavors         # Flavor クラスなどの自動生成
-#  - android:buildGradle     # Android build.gradle に flavor 定義を追加
-#  - android:flavorizrGradle # flavorizr 専用の Gradle プラグイン設定を適用
-#  - android:androidManifest # AndroidManifest にアプリ名などの差分設定を追加
-#  - ios:podfile             # Podfile にフレーバー対応の設定を追加
-#  - ios:xcconfig            # iOS ビルド設定（Debug-dev.xcconfig など）を生成
-#  - ios:buildTargets        # iOS ビルドターゲットの複製（dev / prod）
-#  - ios:schema              # Xcode にスキーム（dev / prod）を追加
-#  - ios:plist               # Info.plist を分割し、環境ごとの差異に対応
-#  - ide:config              # VSCode / Android Studio 用の起動構成を自動生成
+instructions:
+  - assets:download         # 外部からアセットテンプレートをダウンロードする
+  - assets:extract          # ダウンロードしたアセットを展開（解凍）する
+  - android:androidManifest # AndroidManifest にアプリ名などの差分設定を追加
+  - android:flavorizrGradle # flavorizr 専用の Gradle プラグイン設定を適用
+  - android:buildGradle     # Android build.gradle に flavor 定義を追加
+  - flutter:flavors         # Flavor クラスなどの自動生成
+  - ios:podfile             # Podfile にフレーバー対応の設定を追加
+  - ios:xcconfig            # iOS ビルド設定（Debug-dev.xcconfig など）を生成
+  - ios:buildTargets        # iOS ビルドターゲットの複製（dev / prod）
+  - ios:schema              # Xcode にスキーム（dev / prod）を追加
+  - ios:plist               # Info.plist を分割し、環境ごとの差異に対応
+  - ide:config              # VSCode / Android Studio 用の起動構成を自動生成
