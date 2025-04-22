@@ -342,7 +342,6 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
   /// グラフ描画 & NoData UI
   Widget _buildChart() {
     List<LineChartBarData> lines = _buildLines();
-    final screen = MediaQuery.of(context).size;
     if (lines.isEmpty) {
       return Container(
         width: double.infinity,
