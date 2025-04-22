@@ -11,13 +11,13 @@ class AppLockSettingView extends StatefulWidget {
   const AppLockSettingView({super.key, this.isEntry = true});
   final bool isEntry;
   @override
-  _AppLockSettingViewState createState() => _AppLockSettingViewState();
+  AppLockSettingViewState createState() => AppLockSettingViewState();
 }
 
-class _AppLockSettingViewState extends State<AppLockSettingView> {
+class AppLockSettingViewState extends State<AppLockSettingView> {
   final _passwordService = PasswordService();
   final _biometricsService = BiometricsService();
-  List<String> _input = [];
+  final List<String> _input = [];
   final int _passwordLength = 4;
 
   /// パスワード登録成功アラート
@@ -68,6 +68,7 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
   void _validatePassword() async {
     String? storedPassword = await _passwordService.getPassword();
     String password = _input.join('');
+    if (!mounted) return;
     if (storedPassword == password) {
       Navigator.pushReplacement(
         context,
@@ -94,6 +95,7 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
     if (_input.length == _passwordLength) {
       String password = _input.join('');
       await PasswordService().setPassword(password);
+      if (!mounted) return;
       _showSuccessAlert(context);
     }
   }
@@ -190,6 +192,10 @@ class _AppLockSettingViewState extends State<AppLockSettingView> {
         onPressed: () async {
           // 生体認証に挑戦
           bool isAuthenticated = await _biometricsService.authenticateWithBiometrics();
+          // info: Don't use 'BuildContext's across async gaps警告
+          // asyncメソッドでcontextを参照すると解放されている可能性があるため警告が出る
+          // 使用前にmountedをチェックする
+          if (!mounted) return;
           if (isAuthenticated) {
             Navigator.pushReplacement(
               context,

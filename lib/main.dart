@@ -14,24 +14,27 @@ import 'package:salary/views/setting/app_lock_setting_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-/// アプリのルート
+/// アプリのエントリーポイント
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // AdMob初期化
   MobileAds.instance.initialize();
+  // 生体認証有効チェック
   BiometricsService().checkAvailability();
+  // Firebase初期化
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final passwordService = PasswordService();
 
   bool isLockEnabled = await passwordService.isLockEnabled();
 
-  final _repository = RealmRepository();
+  final repository = RealmRepository();
   // 各ViewModelをProviderとしてセットする
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SalaryViewModel(_repository)),
-        ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(_repository)),
+        ChangeNotifierProvider(create: (_) => SalaryViewModel(repository)),
+        ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(repository)),
       ],
       child: MyApp(startScreen: isLockEnabled ? AppLockSettingView(isEntry: false) : RootTabViewView()),
     ),

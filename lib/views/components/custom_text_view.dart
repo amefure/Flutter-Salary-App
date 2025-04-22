@@ -12,13 +12,13 @@ class CustomText extends StatelessWidget {
   final int? maxLines; // 行数
 
   const CustomText({
-    Key? key,
+    super.key,
     required this.text,
     this.textSize = TextSize.M,
     this.color = CustomColors.text,
     this.fontWeight = FontWeight.normal,
     this.maxLines = 1
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

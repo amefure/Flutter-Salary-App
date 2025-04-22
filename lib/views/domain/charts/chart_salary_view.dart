@@ -16,13 +16,13 @@ import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 
 class ChartSalaryView extends StatefulWidget {
-  ChartSalaryView({super.key});
+  const ChartSalaryView({super.key});
 
   @override
-  _ChartSalaryViewState createState() => _ChartSalaryViewState();
+  ChartSalaryViewState createState() => ChartSalaryViewState();
 }
 
-class _ChartSalaryViewState extends State<ChartSalaryView> {
+class ChartSalaryViewState extends State<ChartSalaryView> {
   /// グラフに表示するためのグルーピングデータ
   late Map<String, List<Salary>> _groupedBySource;
   /// Salaryに存在する支払い元リスト
@@ -239,9 +239,9 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
   }
 
   /// 支払い元UIラベル
-  Widget _sourceLabel(PaymentSource _selectedSource) {
+  Widget _sourceLabel(PaymentSource selectedSource) {
     final PaymentSource? paymentSource =
-        _groupedBySource[_selectedSource.name]?.firstOrNull?.source;
+        _groupedBySource[selectedSource.name]?.firstOrNull?.source;
     final Color color =
         paymentSource?.themaColorEnum.color ?? ThemaColor.blue.color;
 
@@ -342,7 +342,6 @@ class _ChartSalaryViewState extends State<ChartSalaryView> {
   /// グラフ描画 & NoData UI
   Widget _buildChart() {
     List<LineChartBarData> lines = _buildLines();
-    final screen = MediaQuery.of(context).size;
     if (lines.isEmpty) {
       return Container(
         width: double.infinity,

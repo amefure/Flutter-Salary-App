@@ -29,7 +29,6 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
       _nameController.text = paymentSource.name;
       selectedColor = paymentSource.themaColorEnum;
     }
-    ;
     super.initState();
   }
 

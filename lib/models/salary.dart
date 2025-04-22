@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:realm/realm.dart';
 import 'package:salary/models/thema_color.dart';
 

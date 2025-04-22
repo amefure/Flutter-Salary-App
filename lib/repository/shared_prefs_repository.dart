@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum SharedPreferencesKeys {
-  USERNAME('username');
+  userName('username');
 
   final String key;
   const SharedPreferencesKeys(this.key);

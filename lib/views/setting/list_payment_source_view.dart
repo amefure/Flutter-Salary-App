@@ -25,7 +25,7 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
           title: const Text("確認"),
-          content: Text("「" + paymentSource.name + "」を本当に削除しますか？"),
+          content: Text("「${paymentSource.name}」を本当に削除しますか？"),
           actions: [
             TextButton(
               onPressed: () {

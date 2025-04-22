@@ -113,14 +113,14 @@ class _SalaryListViewState extends State<SalaryListView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               CustomText(
-                                text: salary.createdAt.year.toString() + "年",
+                                text: "${salary.createdAt.year}年",
                                 textSize: TextSize.S,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
 
                               CustomText(
-                                text: salary.createdAt.month.toString() + "月",
+                                text: "${salary.createdAt.month}月",
                                 textSize: TextSize.ML,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

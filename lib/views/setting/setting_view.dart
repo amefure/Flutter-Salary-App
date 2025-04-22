@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -55,7 +54,7 @@ class _SettingViewState extends State<SettingView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
-      navigationBar: const CupertinoNavigationBar(middle: const CustomText(text: "設定")),
+      navigationBar: const CupertinoNavigationBar(middle: CustomText(text: "設定")),
       child: SafeArea(
         child: ListView(
           children: [
