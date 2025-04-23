@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
-import 'package:salary/viewmodels/payment_source_viewmodel.dart';
+import 'package:salary/viewmodels/provider/payment_source_viewmodel.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';
 

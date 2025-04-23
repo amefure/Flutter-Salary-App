@@ -5,7 +5,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
-import 'package:salary/viewmodels/payment_source_viewmodel.dart';
+import 'package:salary/viewmodels/provider/payment_source_viewmodel.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';

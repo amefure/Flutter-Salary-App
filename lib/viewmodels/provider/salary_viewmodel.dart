@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salary/repository/realm_repository.dart';
-import '../models/salary.dart';
+import '../../models/salary.dart';
 
 /// Salary操作するViewModel
 /// [ChangeNotifier]で状態管理
