@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
-import 'package:salary/viewmodels/provider/payment_source_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 
 class InputPaymentSourceView extends StatefulWidget {
   const InputPaymentSourceView({super.key, this.paymentSource});
-
+  // 引数で支払い元情報を受け取る
+  // nullでない場合は更新処理へ
   final PaymentSource? paymentSource;
 
   @override
@@ -25,6 +26,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
 
   @override
   void initState() {
+    // 更新処理なら初期値をセット
     if (widget.paymentSource case PaymentSource paymentSource) {
       _nameController.text = paymentSource.name;
       selectedColor = paymentSource.themaColorEnum;
@@ -44,14 +46,14 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text("Error"),
-          content: Text("名称を入力してください。"),
+          title: const Text("Error"),
+          content: const Text("名称を入力してください。"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -81,6 +83,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
+                // 名称入力ボックス
                 CustomTextField(
                   controller: _nameController,
                   labelText: "名称",
@@ -91,7 +94,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                 const SizedBox(height: 20),
 
                 const CustomLabelView(labelText: "カラー"),
-
+                // カラーピッカー
                 _ThemaColorPicker(
                   selectedColor: selectedColor,
                   onColorSelected: (color) {
@@ -103,33 +106,8 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
 
                 const SizedBox(height: 20),
 
-                CustomElevatedButton(
-                  text: widget.paymentSource == null ? "追加" : "更新",
-                  onPressed: () {
-                    String name = _nameController.text;
-                    if (name.isNotEmpty) {
-                      if (widget.paymentSource
-                          case PaymentSource paymentSource) {
-                        context.read<PaymentSourceViewModel>().update(
-                          paymentSource.id,
-                          name,
-                          selectedColor,
-                        );
-                      } else {
-                        final payment = PaymentSource(
-                          Uuid.v4().toString(),
-                          name,
-                          selectedColor.value,
-                        );
-                        context.read<PaymentSourceViewModel>().add(payment);
-                      }
-
-                      Navigator.of(context).pop();
-                    } else {
-                      _showErrorDialog(context);
-                    }
-                  },
-                ),
+                // 追加 / 更新ボタン
+                _addOrUpdateButton(),
               ],
             ),
           ),
@@ -137,13 +115,49 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
       ),
     );
   }
+
+  /// 追加 / 更新ボタン
+  Widget _addOrUpdateButton() {
+    return Consumer(
+      builder: (context, ref, child) {
+        return CustomElevatedButton(
+          text: widget.paymentSource == null ? "追加" : "更新",
+          onPressed: () {
+            String name = _nameController.text;
+            if (name.isNotEmpty) {
+              if (widget.paymentSource case PaymentSource paymentSource) {
+                // 更新
+                ref
+                    .read(paymentSourceProvider.notifier)
+                    .update(paymentSource.id, name, selectedColor);
+              } else {
+                // 新規登録
+                final payment = PaymentSource(
+                  Uuid.v4().toString(),
+                  name,
+                  selectedColor.value,
+                );
+                ref.read(paymentSourceProvider.notifier).add(payment);
+              }
+              // 完了後にモーダルを閉じる
+              Navigator.of(context).pop();
+            } else {
+              // バリデーションエラー
+              _showErrorDialog(context);
+            }
+          },
+        );
+      },
+    );
+  }
 }
 
-// カラーピッカー UI
+/// カラーピッカー UI
 class _ThemaColorPicker extends StatefulWidget {
-  // 選択済みカラー
+  /// 選択済みカラー
   final ThemaColor selectedColor;
-  // カラー選択後のアクション
+
+  /// カラー選択後のアクション
   final Function(ThemaColor) onColorSelected;
 
   const _ThemaColorPicker({

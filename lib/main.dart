@@ -14,6 +14,8 @@ import 'package:salary/views/setting/app_lock_setting_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+
+/// ⌘ + option + L => フォーマット
 /// アプリのエントリーポイント
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

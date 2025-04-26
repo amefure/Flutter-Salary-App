@@ -1,23 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
-import 'package:salary/viewmodels/provider/payment_source_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';
 
-class ListPaymentSourceView extends StatefulWidget {
+/// [ConsumerWidget]でUI更新
+class ListPaymentSourceView extends ConsumerWidget {
   const ListPaymentSourceView({super.key});
 
-  @override
-  State<ListPaymentSourceView> createState() => _ListPaymentSourceViewState();
-}
-
-class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
   /// 削除確認ダイアログ
   void _showConfirmDeleteAlert(
     BuildContext context,
+    WidgetRef ref,
     PaymentSource paymentSource,
   ) {
     showCupertinoDialog(
@@ -35,9 +32,9 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
             ),
             TextButton(
               onPressed: () {
-                _deletePaymentSource(dialogContext, paymentSource);
+                _deletePaymentSource(dialogContext, ref, paymentSource);
               },
-              child: CustomText(
+              child: const CustomText(
                 text: "削除",
                 fontWeight: FontWeight.bold,
                 color: CustomColors.negative,
@@ -50,18 +47,18 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
     );
   }
 
+  /// 支払い元の削除
   void _deletePaymentSource(
     BuildContext dialogContext,
+    WidgetRef ref,
     PaymentSource paymentSource,
   ) {
-    setState(() {});
-    // 削除処理
-    context.read<PaymentSourceViewModel>().delete(paymentSource);
+    ref.read(paymentSourceProvider.notifier).delete(paymentSource);
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
   }
 
-  // 金額詳細アイテム追加画面を表示
+  /// 支払い元追加画面を表示
   Future<void> _showInputPaymentSourceModal(BuildContext context) async {
     showModalBottomSheet(
       context: context,
@@ -72,7 +69,7 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
     );
   }
 
-  // 金額詳細アイテム追加画面を表示
+  /// 支払い元更新画面を表示
   Future<void> _showUpdatePaymentSourceModal(
     BuildContext context,
     PaymentSource paymentSource,
@@ -87,7 +84,9 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final paymentSources = ref.watch(paymentSourceProvider);
+
     return Scaffold(
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
@@ -102,67 +101,72 @@ class _ListPaymentSourceViewState extends State<ListPaymentSourceView> {
           ),
         ),
         child: SafeArea(
-          child: Consumer<PaymentSourceViewModel>(
-            builder: (context, viewModel, child) {
-              if (viewModel.paymentSources.isEmpty) {
-                return Center(child: const Text('登録された支払い元データがありません'));
-              }
-              return ListView.builder(
-                itemCount: viewModel.paymentSources.length,
-                itemBuilder: (context, index) {
-                  final paymentSource = viewModel.paymentSources[index];
-                  return InkWell(
-                    onTap: () {
-                      _showUpdatePaymentSourceModal(context, paymentSource);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        // 角丸
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CupertinoIcons.building_2_fill,
-                            color: paymentSource.themaColorEnum.color,
-                          ),
-                          const SizedBox(width: 20),
-
-                          Expanded(
-                            child: CustomText(
-                              text: paymentSource.name,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          IconButton(
-                            onPressed: () {
-                              _showConfirmDeleteAlert(context, paymentSource);
-                            },
-                            icon: Icon(
-                              CupertinoIcons.trash_fill,
-                              color: CustomColors.negative,
-                            ),
-                            iconSize: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          child:
+              paymentSources.isEmpty
+                  ? _noDataView()
+                  : _paymentSourceList(paymentSources, ref),
         ),
       ),
+    );
+  }
+
+  /// NoData EmptyView
+  Widget _noDataView() {
+    return const Center(child: CustomText(text: '登録された支払い元データがありません'));
+  }
+
+  /// 支払い元リスト
+  Widget _paymentSourceList(List<PaymentSource> paymentSources, WidgetRef ref) {
+    return ListView.builder(
+      itemCount: paymentSources.length,
+      itemBuilder: (context, index) {
+        final paymentSource = paymentSources[index];
+        return InkWell(
+          onTap: () {
+            _showUpdatePaymentSourceModal(context, paymentSource);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              // 角丸
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // アイコン
+                Icon(
+                  CupertinoIcons.building_2_fill,
+                  color: paymentSource.themaColorEnum.color,
+                ),
+                const SizedBox(width: 20),
+
+                // 支払い元名
+                Expanded(
+                  child: CustomText(
+                    text: paymentSource.name,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                // 削除ボタン
+                IconButton(
+                  onPressed: () {
+                    _showConfirmDeleteAlert(context, ref, paymentSource);
+                  },
+                  icon: Icon(
+                    CupertinoIcons.trash_fill,
+                    color: CustomColors.negative,
+                  ),
+                  iconSize: 20,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
