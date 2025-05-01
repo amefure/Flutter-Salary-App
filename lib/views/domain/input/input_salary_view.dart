@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
-import 'package:salary/viewmodels/payment_source_viewmodel.dart';
-import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
+import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -15,16 +15,16 @@ import 'package:salary/views/domain/input/detail_input_view.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';
 
 /// 給料入力画面
-class InputSalaryView extends StatefulWidget {
+class InputSalaryView extends ConsumerStatefulWidget {
   const InputSalaryView({super.key, required this.salary});
 
   final Salary? salary;
 
   @override
-  State<StatefulWidget> createState() => _InputSalaryViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _InputSalaryViewState();
 }
 
-class _InputSalaryViewState extends State<InputSalaryView> {
+class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
   final TextEditingController _paymentAmountController =
       TextEditingController();
   final TextEditingController _deductionAmountController =
@@ -48,11 +48,18 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   /// 控除額詳細アイテム
   List<AmountItem> _deductionAmountItems = [];
 
+  List<Salary> _historyList = [];
+
   @override
   void initState() {
     super.initState();
 
-    _paymentSources = context.read<PaymentSourceViewModel>().paymentSources;
+    // 現在のSalary履歴を取得
+    // 編集対象は除去
+    _historyList = ref.read(salaryProvider).where((salary) => salary.id != widget.salary?.id).toList();
+
+
+    _paymentSources = ref.read(paymentSourceProvider);
 
     if (widget.salary case Salary salary) {
       DateTime now = salary.createdAt;
@@ -220,7 +227,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
   }
 
   /// 給料情報新規追加
-  void _addOrUpdate(BuildContext context) {
+  void _addOrUpdate(BuildContext context, WidgetRef ref) {
     // 桁数バリデーション
     _validationLength();
 
@@ -248,9 +255,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     );
 
     if (widget.salary case Salary salary) {
-      context.read<SalaryViewModel>().update(salary, newSalary);
+      ref.read(salaryProvider.notifier).update(salary, newSalary);
     } else {
-      context.read<SalaryViewModel>().add(newSalary);
+      ref.read(salaryProvider.notifier).add(newSalary);
     }
 
     Navigator.of(context).pop();
@@ -353,11 +360,9 @@ class _InputSalaryViewState extends State<InputSalaryView> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    // 現在のSalary履歴を取得
-    // 編集対象は除去
-    final list = context.read<SalaryViewModel>().salaries.where((salary) => salary.id != widget.salary?.id).toList();
 
     return Scaffold(
       backgroundColor: CustomColors.foundation,
@@ -368,15 +373,19 @@ class _InputSalaryViewState extends State<InputSalaryView> {
               widget.salary == null
                   ? const Text('収入登録画面')
                   : const Text('収入更新画面'),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              _addOrUpdate(context);
+          trailing: Consumer(
+            builder: (_, ref, _) {
+              return CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  _addOrUpdate(context, ref);
+                },
+                child: const Icon(
+                  CupertinoIcons.check_mark_circled_solid,
+                  size: 28,
+                ),
+              );
             },
-            child: const Icon(
-              CupertinoIcons.check_mark_circled_solid,
-              size: 28,
-            ),
           ),
         ),
         child: SafeArea(
@@ -384,9 +393,7 @@ class _InputSalaryViewState extends State<InputSalaryView> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-
-                if (list.isNotEmpty)
-                  _historyCitingSalary(list),
+                if (_historyList.isNotEmpty) _historyCitingSalary(_historyList),
 
                 // 支払い元ピッカー
                 _paymentSourcePicker(),
@@ -548,16 +555,21 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       builder: (BuildContext dialogContext) {
         return CupertinoActionSheet(
           title: const Text('引用する過去の情報を選択'),
-          actions: pastSalaries.map((salary) {
-            final dateStr = DateTimeUtils.format(dateTime: salary.createdAt);
-            return CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                _copySalaryFromPast(salary);
-              },
-              child: CustomText(text: '$dateStr - ${salary.source?.name ?? "未設定"} '),
-            );
-          }).toList(),
+          actions:
+              pastSalaries.map((salary) {
+                final dateStr = DateTimeUtils.format(
+                  dateTime: salary.createdAt,
+                );
+                return CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    _copySalaryFromPast(salary);
+                  },
+                  child: CustomText(
+                    text: '$dateStr - ${salary.source?.name ?? "未設定"} ',
+                  ),
+                );
+              }).toList(),
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('キャンセル'),
@@ -573,17 +585,25 @@ class _InputSalaryViewState extends State<InputSalaryView> {
       if (_selectPaymentSource != null) {
         _paymentSourceController.text = _selectPaymentSource!.name.toString();
       }
-      _paymentAmountItems = pastSalary.paymentAmountItems.map(
-              (item) => AmountItem(Uuid.v4().toString(), item.key, item.value)
-      ).toList();
+      _paymentAmountItems =
+          pastSalary.paymentAmountItems
+              .map(
+                (item) =>
+                    AmountItem(Uuid.v4().toString(), item.key, item.value),
+              )
+              .toList();
       if (_paymentAmountItems.isEmpty) {
         _paymentAmountController.text = pastSalary.paymentAmount.toString();
       } else {
         _updateTotalPaymentAmount();
       }
-      _deductionAmountItems = pastSalary.deductionAmountItems.map(
-              (item) => AmountItem(Uuid.v4().toString(), item.key, item.value)
-      ).toList();
+      _deductionAmountItems =
+          pastSalary.deductionAmountItems
+              .map(
+                (item) =>
+                    AmountItem(Uuid.v4().toString(), item.key, item.value),
+              )
+              .toList();
       if (_deductionAmountItems.isEmpty) {
         _deductionAmountController.text = pastSalary.deductionAmount.toString();
       } else {
@@ -598,8 +618,8 @@ class _InputSalaryViewState extends State<InputSalaryView> {
 
   /// 支払い元ピッカー
   Widget _paymentSourcePicker() {
-    return Consumer<PaymentSourceViewModel>(
-      builder: (context, viewModel, child) {
+    return Consumer(
+      builder: (context, ref, child) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -610,25 +630,21 @@ class _InputSalaryViewState extends State<InputSalaryView> {
                 labelText: "支払い元",
                 prefixIcon: CupertinoIcons.building_2_fill,
                 prefixIconColor:
-                _selectPaymentSource?.themaColorEnum.color ??
+                    _selectPaymentSource?.themaColorEnum.color ??
                     CupertinoColors.systemGrey,
                 readOnly: true,
                 onTap:
                     () => _showPaymentSourcePicker(
-                  context,
-                  viewModel.paymentSources,
-                ),
+                      context,
+                      ref.read(paymentSourceProvider),
+                    ),
               ),
             ),
 
             SizedBox(
               child: IconButton(
-                onPressed:
-                    () => _showInputPaymentSourceModal(context),
-                icon: Icon(
-                  CupertinoIcons.add_circled_solid,
-                  size: 28,
-                ),
+                onPressed: () => _showInputPaymentSourceModal(context),
+                icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
               ),
             ),
           ],

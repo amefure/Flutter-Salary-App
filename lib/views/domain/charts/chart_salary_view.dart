@@ -1,16 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'dart:math';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
-import 'package:salary/viewmodels/payment_source_viewmodel.dart';
-import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
+import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -142,9 +142,11 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(middle: const Text('')),
-      child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
-        builder: (context, salaryViewModel, paymentSourceViewModel, child) {
-          _groupSalariesBySource(salaryViewModel.allSalaries);
+      child: Consumer(
+        builder: (context, ref, child) {
+          final salaries = ref.watch(salaryProvider.notifier).allSalaries;
+          final _ = ref.watch(paymentSourceProvider);
+          _groupSalariesBySource(salaries);
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

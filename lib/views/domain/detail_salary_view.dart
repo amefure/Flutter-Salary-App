@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
-import 'package:salary/viewmodels/payment_source_viewmodel.dart';
-import 'package:salary/viewmodels/salary_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -40,7 +39,11 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   }
 
   /// エラーダイアログを表示
-  void _showDeleteConfirmDialog(BuildContext context, Salary salary) {
+  void _showDeleteConfirmDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Salary salary,
+  ) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -56,7 +59,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             ),
             TextButton(
               onPressed: () {
-                _deleteSalary(context, dialogContext, salary);
+                _deleteSalary(context, dialogContext, ref, salary);
               },
               child: const CustomText(
                 text: "削除",
@@ -81,13 +84,14 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   void _deleteSalary(
     BuildContext context,
     BuildContext dialogContext,
+    WidgetRef ref,
     Salary salary,
   ) {
     // 削除前にnullにして画面を更新
     targetSalary = null;
     setState(() {});
     // 削除処理
-    context.read<SalaryViewModel>().delete(salary);
+    ref.read(salaryProvider.notifier).delete(salary);
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
     // リスト画面に戻る(コンテキストが異なるので注意)
@@ -99,34 +103,32 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(
-        middle: Consumer<SalaryViewModel>(
-          builder: (context, salaryViewModel, child) {
-            return CustomText(
-              text: DateTimeUtils.format(
-                dateTime: targetSalary?.createdAt ?? DateTime.now(),
-              ),
-              fontWeight: FontWeight.bold,
-            );
-          },
+        middle: CustomText(
+          text: DateTimeUtils.format(
+            dateTime: targetSalary?.createdAt ?? DateTime.now(),
+          ),
+          fontWeight: FontWeight.bold,
         ),
         backgroundColor: CustomColors.foundation,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                // nullでないなら
-                if (targetSalary case Salary salary) {
-                  _showDeleteConfirmDialog(context, salary);
-                }
-              },
-              child: const Icon(
-                CupertinoIcons.trash_circle_fill,
-                size: 28,
-                color: CustomColors.negative,
-              ),
-            ),
+            Consumer(builder: (_, ref, _) {
+              return CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  // nullでないなら
+                  if (targetSalary case Salary salary) {
+                    _showDeleteConfirmDialog(context, ref, salary);
+                  }
+                },
+                child: const Icon(
+                  CupertinoIcons.trash_circle_fill,
+                  size: 28,
+                  color: CustomColors.negative,
+                ),
+              );
+            }),
             CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
@@ -146,13 +148,8 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
-              child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
-                builder: (
-                  context,
-                  salaryViewModel,
-                  paymentSourceViewModel,
-                  child,
-                ) {
+              child: Consumer(
+                builder: (context, ref, child) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -167,7 +164,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                             children: [
                               const CustomText(
                                 text: "支給日",
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
                               ),
                               CustomText(
                                 text: DateTimeUtils.format(
@@ -186,7 +183,9 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                       // テーマカラーで色を変えたい場合
                       // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
                       // 給料テーブル
-                      _buildSalaryTable(ThemaColor.black.color.withValues(alpha: 0.8)),
+                      _buildSalaryTable(
+                        ThemaColor.black.color.withValues(alpha: 0.8),
+                      ),
 
                       const SizedBox(height: 24),
 

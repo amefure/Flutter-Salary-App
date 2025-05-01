@@ -1,28 +1,34 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
-import '../models/salary.dart';
 
-/// Salary操作するViewModel
-/// [ChangeNotifier]で状態管理
-/// main.dartにて[MultiProvider]で設定
-class SalaryViewModel extends ChangeNotifier {
-  /// 引数でRepositoryをセット
-  final RealmRepository _repository;
+final salaryProvider = StateNotifierProvider<SalaryNotifier, List<Salary>>((
+  ref,
+) {
+  final repository = RealmRepository();
+  return SalaryNotifier(repository);
+});
 
-  /// Salary リスト
-  List<Salary> salaries = [];
-
-  /// ALL Salary リスト
-  List<Salary> allSalaries = [];
-
-  /// 引数付きコンストラクタ
-  SalaryViewModel(this._repository) {
+/// Riverpod
+/// [Salary]を操作するViewModel
+/// [StateNotifier]で状態管理
+class SalaryNotifier extends StateNotifier<List<Salary>> {
+  /// 初期化
+  SalaryNotifier(this._repository) : super([]) {
     // 初期化時に全データを取得
     fetchAll();
   }
 
+  /// 引数でRepositoryをセット
+  final RealmRepository _repository;
+
+  /// ALL キャッシュ Salary リスト
+  List<Salary> allSalaries = [];
+
+  /// 支払い元でフィルタリング
   void fetchFilter(String name) {
-    salaries = allSalaries.where((s) => s.source?.name == name).toList();
+    // キャッシュしてあるALLデータからフィルタリング
+    state = allSalaries.where((s) => s.source?.name == name).toList();
   }
 
   /// Salaryの全データ取得
@@ -30,9 +36,8 @@ class SalaryViewModel extends ChangeNotifier {
     final allSalariesTmp = _repository.fetchAll<Salary>();
     // 日付の降順
     allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    salaries = allSalariesTmp;
+    state = allSalariesTmp;
     allSalaries = allSalariesTmp;
-    notifyListeners();
   }
 
   /// 追加

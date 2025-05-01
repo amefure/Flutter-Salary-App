@@ -1,28 +1,30 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
-import '../models/salary.dart';
 
+final paymentSourceProvider =
+    StateNotifierProvider<PaymentSourceNotifier, List<PaymentSource>>((ref) {
+      final repository = RealmRepository();
+      return PaymentSourceNotifier(repository);
+    });
+
+/// Riverpod
 /// PaymentSourceを操作するViewModel
-/// [ChangeNotifier]で状態管理
-/// main.dartにて[MultiProvider]で設定
-class PaymentSourceViewModel extends ChangeNotifier {
-  /// 引数でRepositoryをセット
-  final RealmRepository _repository;
-
-  /// PaymentSource リスト
-  List<PaymentSource> paymentSources = [];
-
-  /// 引数付きコンストラクタ
-  PaymentSourceViewModel(this._repository) {
+/// [StateNotifier]で状態管理
+class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
+  /// 初期化
+  PaymentSourceNotifier(this._repository) : super([]) {
     // 初期化時に全データを取得
     fetchAll();
   }
 
-  /// PaymentSourceの全データ取得
+  /// 引数でRepositoryをセット
+  final RealmRepository _repository;
+
+  /// 全取得
   void fetchAll() {
-    paymentSources = _repository.fetchAll<PaymentSource>();
-    notifyListeners();
+    state = _repository.fetchAll<PaymentSource>();
   }
 
   /// 追加
@@ -33,11 +35,8 @@ class PaymentSourceViewModel extends ChangeNotifier {
 
   /// 更新
   void update(String id, String name, ThemaColor color) {
-    // 更新処理
     _repository.updateById(id, (PaymentSource paymentSource) {
-      // 名称
       paymentSource.name = name;
-      // カラー
       paymentSource.themaColor = color.value;
     });
     fetchAll();
