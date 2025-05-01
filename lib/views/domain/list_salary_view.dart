@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
-import 'package:salary/viewmodels/provider/payment_source_viewmodel.dart';
-import 'package:salary/viewmodels/provider/salary_viewmodel.dart';
+import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
+import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/detail_salary_view.dart';
 import 'package:salary/views/domain/input/input_salary_view.dart';
@@ -21,7 +21,7 @@ class SalaryListView extends StatefulWidget {
 
 class _SalaryListViewState extends State<SalaryListView> {
   /// Salaryに存在する支払い元リスト
-  late List<PaymentSource> _sourceList;
+  List<PaymentSource> _sourceList = [];
   /// 表示中の支払い元
   late PaymentSource _selectedSource = _allSource;
 
@@ -34,12 +34,6 @@ class _SalaryListViewState extends State<SalaryListView> {
 
   @override
   Widget build(BuildContext context) {
-    _sourceList = [];
-    // paymentSourcesにinsertするとRealmに保存されてしまうので注意
-    _sourceList = [
-      _allSource,
-      ...context.read<PaymentSourceViewModel>().paymentSources,
-    ];
     // Scaffold配下にCupertinoPageScaffold(iOS UI)を設置しないと
     // Textのスタイルが黄色い下線になってしまう
     return Scaffold(
@@ -63,9 +57,17 @@ class _SalaryListViewState extends State<SalaryListView> {
             },
           ),
         ),
-        child: Consumer2<SalaryViewModel, PaymentSourceViewModel>(
-          builder: (context, salaryViewModel, paymentSourceViewModel, child) {
-            if (salaryViewModel.salaries.isEmpty) {
+        child: Consumer(
+          builder: (context, ref, child) {
+            final salaries = ref.watch(salaryProvider);
+            final paymentSources = ref.watch(paymentSourceProvider);
+            _sourceList = [];
+            // paymentSourcesにinsertするとRealmに保存されてしまうので注意
+            _sourceList = [
+              _allSource,
+              ...paymentSources,
+            ];
+            if (salaries.isEmpty) {
               return Center(
                   child: const CustomText(
                     text: "データがありません",
@@ -74,9 +76,9 @@ class _SalaryListViewState extends State<SalaryListView> {
               );
             }
             return ListView.builder(
-              itemCount: salaryViewModel.salaries.length,
+              itemCount: salaries.length,
               itemBuilder: (context, index) {
-                final salary = salaryViewModel.salaries[index];
+                final salary = salaries[index];
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
@@ -165,50 +167,52 @@ class _SalaryListViewState extends State<SalaryListView> {
 
   /// **給与の支払い元を選択するUI (MenuAnchor)**
   Widget _buildSourceSelector() {
-    return MenuAnchor(
-      builder: (context, controller, child) {
-        return GestureDetector(
-          onTap: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
-          },
-          child: const Icon(Icons.filter_list, size: 28),
-        );
-      },
-      menuChildren:
-      _sourceList.map((source) {
-        return MenuItemButton(
-          onPressed: () {
-            setState(() {
-              _selectedSource = source;
-              if (source == _allSource) {
-                context.read<SalaryViewModel>().fetchAll();
+    return Consumer(builder: (_, ref, _) {
+      return MenuAnchor(
+        builder: (context, controller, child) {
+          return GestureDetector(
+            onTap: () {
+              if (controller.isOpen) {
+                controller.close();
               } else {
-                context.read<SalaryViewModel>().fetchFilter(source.name);
+                controller.open();
               }
-            });
-          },
-          child: SizedBox(
-            width: 200,
-            child: Row(
-              children: [
-                Icon(
-                  CupertinoIcons.building_2_fill,
-                  color: source.themaColorEnum.color,
-                ),
-                const SizedBox(width: 8),
-                Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
-                if (_selectedSource == source)
-                  const Icon(CupertinoIcons.checkmark_alt),
-              ],
+            },
+            child: const Icon(Icons.filter_list, size: 28),
+          );
+        },
+        menuChildren:
+        _sourceList.map((source) {
+          return MenuItemButton(
+            onPressed: () {
+              setState(() {
+                _selectedSource = source;
+                if (source == _allSource) {
+                  ref.read(salaryProvider.notifier).fetchAll();
+                } else {
+                  ref.read(salaryProvider.notifier).fetchFilter(source.name);
+                }
+              });
+            },
+            child: SizedBox(
+              width: 200,
+              child: Row(
+                children: [
+                  Icon(
+                    CupertinoIcons.building_2_fill,
+                    color: source.themaColorEnum.color,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
+                  if (_selectedSource == source)
+                    const Icon(CupertinoIcons.checkmark_alt),
+                ],
+              ),
             ),
-          ),
-        );
-      }).toList(),
-    );
+          );
+        }).toList(),
+      );
+    });
   }
 
   /// ラベルと金額表示UI

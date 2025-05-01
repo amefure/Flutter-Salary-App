@@ -144,7 +144,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       navigationBar: CupertinoNavigationBar(middle: const Text('')),
       child: Consumer(
         builder: (context, ref, child) {
-          final salaries = ref.watch(salaryProvider);
+          final salaries = ref.watch(salaryProvider.notifier).allSalaries;
           final _ = ref.watch(paymentSourceProvider);
           _groupSalariesBySource(salaries);
           return Column(
