@@ -63,7 +63,8 @@
 - **[webview_flutter](https://pub.dev/packages/webview_flutter) (4.10.0)** - WebView
 
 ## Service
-- **[provider](https://pub.dev/packages/provider) (6.1.2)** - 状態管理
+- **[provider](https://pub.dev/packages/provider) (6.1.2)** - ~~状態管理(old)~~
+- **[provider](https://pub.dev/packages/riverpod) (2.6.1)** - 状態管理
 - **[local_auth](https://pub.dev/packages/local_auth) (2.3.0)** - 生体認証
 - **[firebase_core](https://pub.dev/packages/firebase_core) (3.13.0)** - Firebase のコアライブラリ
 - **[google_mobile_ads](https://pub.dev/packages/google_mobile_ads) (5.3.1)** - Google AdMob
