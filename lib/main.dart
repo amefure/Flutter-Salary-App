@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:salary/repository/biometrics_service.dart';
@@ -32,15 +33,16 @@ void main() async {
 
   final repository = RealmRepository();
   // 各ViewModelをProviderとしてセットする
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SalaryViewModel(repository)),
-        ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(repository)),
-      ],
-      child: MyApp(startScreen: isLockEnabled ? AppLockSettingView(isEntry: false) : RootTabViewView()),
-    ),
-  );
+  // runApp(
+  //   MultiProvider(
+  //     providers: [
+  //       ChangeNotifierProvider(create: (_) => SalaryViewModel(repository)),
+  //       ChangeNotifierProvider(create: (_) => PaymentSourceViewModel(repository)),
+  //     ],
+  //     child: MyApp(startScreen: isLockEnabled ? AppLockSettingView(isEntry: false) : RootTabViewView()),
+  //   ),
+  // );
+  runApp(ProviderScope(child: MyApp(startScreen: isLockEnabled ? AppLockSettingView(isEntry: false) : RootTabViewView())));
 }
 
 /// アプリのルートWidget

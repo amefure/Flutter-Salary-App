@@ -3,11 +3,11 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
 
-final paymentSourceProvider = StateNotifierProvider<PaymentSourceNotifier, List<PaymentSource>>((ref) {
-    final repository = RealmRepository();
-    return PaymentSourceNotifier(repository);
-  },
-);
+final paymentSourceProvider =
+    StateNotifierProvider<PaymentSourceNotifier, List<PaymentSource>>((ref) {
+      final repository = RealmRepository();
+      return PaymentSourceNotifier(repository);
+    });
 
 /// Riverpod
 /// PaymentSourceを操作するViewModel
