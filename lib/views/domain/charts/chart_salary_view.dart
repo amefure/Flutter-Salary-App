@@ -141,7 +141,12 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
-      navigationBar: CupertinoNavigationBar(middle: const Text('')),
+      navigationBar: const CupertinoNavigationBar(
+          middle: CustomText(
+            text: "MyData",
+            fontWeight: FontWeight.bold,
+          )
+      ),
       child: Consumer(
         builder: (context, ref, child) {
           final salaries = ref.watch(salaryProvider.notifier).allSalaries;
@@ -150,43 +155,50 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(width: screen.width),
 
-              SizedBox(
-                width: screen.width * 0.5,
-                child: _buildSourceSelector(),
+              Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(width: screen.width),
+
+                        SizedBox(
+                          width: screen.width * 0.5,
+                          child: _buildSourceSelector(),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: _buildChart()
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(CupertinoIcons.chevron_back),
+                              onPressed: () => _changeYear(-1),
+                            ),
+                            CustomText(
+                              text: "$_selectedYear年 1月 〜 12月",
+                              fontWeight: FontWeight.bold,
+                            ),
+                            IconButton(
+                              icon: const Icon(CupertinoIcons.chevron_forward),
+                              onPressed: () => _changeYear(1),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo()),
+                      ],
+                    ),
+                  )
               ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                  width: screen.width * 0.95,
-                  child: _buildChart()
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(CupertinoIcons.chevron_back),
-                    onPressed: () => _changeYear(-1),
-                  ),
-                  CustomText(
-                    text: "$_selectedYear年 1月 〜 12月",
-                    fontWeight: FontWeight.bold,
-                  ),
-                  IconButton(
-                    icon: const Icon(CupertinoIcons.chevron_forward),
-                    onPressed: () => _changeYear(1),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo()),
-
-              const Spacer(),
 
               const AdMobBannerWidget(),
             ],

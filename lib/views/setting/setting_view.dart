@@ -54,7 +54,12 @@ class _SettingViewState extends State<SettingView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
-      navigationBar: const CupertinoNavigationBar(middle: CustomText(text: "設定")),
+      navigationBar: const CupertinoNavigationBar(
+          middle: CustomText(
+            text: "設定",
+            fontWeight: FontWeight.bold,
+          )
+      ),
       child: SafeArea(
         child: ListView(
           children: [
