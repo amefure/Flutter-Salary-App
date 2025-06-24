@@ -4,7 +4,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # アプリバージョン番号 + ビルド番号 (+1)部分をインクリメントする
 # 以下実行でiOSに反映
 # $ flutter build ipa
-version: 1.0.3+5
+# リリース手順：https://appdev-room.com/flutter-release
+version: 1.0.4+6
 
 environment:
   sdk: ^3.7.2
