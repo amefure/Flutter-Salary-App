@@ -10,6 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/views/setting/app_lock_setting_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 /// ⌘ + option + L => フォーマット
 /// アプリのエントリーポイント
@@ -21,6 +22,8 @@ void main() async {
   BiometricsService().checkAvailability();
   // Firebase初期化
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // FirebaseAnalyticsのインスタンスを作成
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   final passwordService = PasswordService();
 

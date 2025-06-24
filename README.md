@@ -49,6 +49,10 @@
 
 # ライブラリ
 
+## Analytics
+
+- **[firebase_analytics](https://pub.dev/packages/firebase_analytics) (11.5.0)** - Firebase Analytics データ解析
+
 ## Utility
 - **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
 - **[intl](https://pub.dev/packages/intl) (0.19.0)** - 日付・数値・通貨のフォーマット処理 
