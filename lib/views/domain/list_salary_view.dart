@@ -51,7 +51,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             onPressed: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => InputSalaryView(salary: null),
+                  builder: (context) => const InputSalaryView(salary: null),
                 ),
               );
             },
@@ -68,8 +68,8 @@ class _SalaryListViewState extends State<SalaryListView> {
               ...paymentSources,
             ];
             if (salaries.isEmpty) {
-              return Center(
-                  child: const CustomText(
+              return const Center(
+                  child: CustomText(
                     text: "データがありません",
                     fontWeight: FontWeight.bold,
                   )

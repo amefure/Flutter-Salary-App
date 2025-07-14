@@ -23,7 +23,7 @@ void main() async {
   // Firebase初期化
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseAnalyticsのインスタンスを作成
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  FirebaseAnalytics _ = FirebaseAnalytics.instance;
 
   final passwordService = PasswordService();
 
@@ -35,8 +35,8 @@ void main() async {
       child: MyApp(
         startScreen:
             isLockEnabled
-                ? AppLockSettingView(isEntry: false)
-                : RootTabViewView(),
+                ? const AppLockSettingView(isEntry: false)
+                : const RootTabViewView(),
       ),
     ),
   );
@@ -65,9 +65,9 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
-        Locale('ja', 'JP'), // 日本語
+        const Locale('ja', 'JP'), // 日本語
       ],
-      theme: CupertinoThemeData(
+      theme: const CupertinoThemeData(
         // ライトモード限定にする
         brightness: Brightness.light,
         // プライマリーカラー

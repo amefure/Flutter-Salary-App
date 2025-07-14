@@ -46,7 +46,7 @@ class _RootTabViewViewState extends State<RootTabViewView> {
       case 0:
         return const SalaryListView();
       case 1:
-        return ChartSalaryView();
+        return const ChartSalaryView();
       case 2:
         return const SettingView();
       default:

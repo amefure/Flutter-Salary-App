@@ -69,7 +69,7 @@ class _SettingViewState extends State<SettingView> {
                 _settingListTile("支払い元管理", CupertinoIcons.building_2_fill, () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
-                      builder: (context) => ListPaymentSourceView(),
+                      builder: (context) => const ListPaymentSourceView(),
                     ),
                   );
                 }),
@@ -90,7 +90,7 @@ class _SettingViewState extends State<SettingView> {
                         // スイッチがONになったらモーダル表示
                         showCupertinoModalPopup(
                           context: context,
-                          builder: (context) => AppLockSettingView(),
+                          builder: (context) => const AppLockSettingView(),
                         );
                       }
                     },

@@ -82,7 +82,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     if (storedPassword == password) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RootTabViewView()),
+        MaterialPageRoute(builder: (context) => const RootTabViewView()),
       );
     } else {
       _showValidateErrorAlert(context);
@@ -121,7 +121,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     if (isAuthenticated) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RootTabViewView()),
+        MaterialPageRoute(builder: (context) => const RootTabViewView()),
       );
     }
   }
@@ -218,14 +218,14 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
         onPressed: () async {
           _executeBiometricsAuth();
         },
-        icon: Icon(Icons.fingerprint, size: 50),
+        icon: const Icon(Icons.fingerprint, size: 50),
     );
   }
 
   Widget _buildNumberPad() {
     return GridView.builder(
       shrinkWrap: true,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 1.8,
       ),

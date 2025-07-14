@@ -64,7 +64,7 @@ class ListPaymentSourceView extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return InputPaymentSourceView();
+        return const InputPaymentSourceView();
       },
     );
   }
@@ -156,7 +156,7 @@ class ListPaymentSourceView extends ConsumerWidget {
                   onPressed: () {
                     _showConfirmDeleteAlert(context, ref, paymentSource);
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     CupertinoIcons.trash_fill,
                     color: CustomColors.negative,
                   ),

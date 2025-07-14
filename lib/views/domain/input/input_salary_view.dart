@@ -305,7 +305,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return InputPaymentSourceView();
+        return const InputPaymentSourceView();
       },
     );
   }
@@ -528,9 +528,9 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
   Widget _historyCitingSalary(List<Salary> pastSalaries) {
     return Row(
       children: [
-        Spacer(),
+        const Spacer(),
         CupertinoButton(
-          child: Row(
+          child: const Row(
             children: [
               CustomText(
                 text: "過去から引用",
@@ -723,7 +723,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                     color: CustomColors.thema,
                   ),
                   const SizedBox(width: 2),
-                  CustomText(
+                  const CustomText(
                     text: "円",
                     fontWeight: FontWeight.bold,
                     textSize: TextSize.SS,

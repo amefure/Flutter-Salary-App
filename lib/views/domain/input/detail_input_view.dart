@@ -66,7 +66,7 @@ class _DetailInputViewState extends State<DetailInputView> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: CustomColors.foundation,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

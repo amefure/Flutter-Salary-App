@@ -246,7 +246,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: Offset(2, 2),
+            offset: const Offset(2, 2),
           ),
         ],
       ),
@@ -271,7 +271,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   Widget _buildSalaryTable(Color headerColor) {
     return Table(
       border: TableBorder.all(color: Colors.grey),
-      columnWidths: {0: FlexColumnWidth(1), 1: FlexColumnWidth(3)},
+      columnWidths: {0: const FlexColumnWidth(1), 1: const FlexColumnWidth(3)},
       children: [
         _buildTableRow(
           "総支給額",
@@ -387,7 +387,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   /// 展開時に表示されるAmountItem行
   Widget _buildAmountItemRow(AmountItem item) {
     return Padding(
-      padding: EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(4.0),
       child: Row(
         children: [
           // ⚪︎ アイコン
@@ -412,7 +412,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   /// AmountItemが存在しなかった場合のメッセージ
   Widget _buildNoItemsMessage() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Align(
         alignment: Alignment.center,

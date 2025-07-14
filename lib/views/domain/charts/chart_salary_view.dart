@@ -271,7 +271,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
             color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: Offset(2, 2),
+            offset: const Offset(2, 2),
           ),
         ],
       ),
@@ -359,7 +359,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       return Container(
         width: double.infinity,
         height: 300,
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: CupertinoColors.white,
           borderRadius: BorderRadius.circular(8),
@@ -379,7 +379,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     return Container(
       width: double.infinity,
       height: 300,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: CupertinoColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -407,8 +407,8 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           minY: 0,
           // 各方向のラベル(目盛り)制御
           titlesData: FlTitlesData(
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
