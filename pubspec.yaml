@@ -18,8 +18,7 @@ dependencies:
   realm: ^20.0.1
   shared_preferences: ^2.5.2
   provider: ^6.1.2
-  # 最新は0.20.2,だがflutter_localizationsのインストールのため0.19.0にする
-  intl: ^0.19.0 
+  intl: ^0.20.2
   flutter_localizations:
     sdk: flutter
   url_launcher: ^6.3.1
