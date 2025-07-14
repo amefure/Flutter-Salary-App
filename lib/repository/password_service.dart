@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PasswordService {
   final _storage = const FlutterSecureStorage();
-  static const _keyPassword = "app_lock_password";
+  static const _keyPassword = 'app_lock_password';
 
   Future<void> removePassword() async {
     await _storage.delete(key: _keyPassword);

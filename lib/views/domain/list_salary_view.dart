@@ -28,7 +28,7 @@ class _SalaryListViewState extends State<SalaryListView> {
   /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource _allSource = PaymentSource(
     Uuid.v4().toString(),
-    "ALL",
+    'ALL',
     ThemaColor.blue.value,
   );
 
@@ -41,7 +41,7 @@ class _SalaryListViewState extends State<SalaryListView> {
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
           middle: const CustomText(
-            text: "シンプル給料記録",
+            text: 'シンプル給料記録',
             fontWeight: FontWeight.bold,
           ),
           leading: _buildSourceSelector(),
@@ -70,7 +70,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             if (salaries.isEmpty) {
               return const Center(
                   child: CustomText(
-                    text: "データがありません",
+                    text: 'データがありません',
                     fontWeight: FontWeight.bold,
                   )
               );
@@ -115,14 +115,14 @@ class _SalaryListViewState extends State<SalaryListView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               CustomText(
-                                text: "${salary.createdAt.year}年",
+                                text: '${salary.createdAt.year}年',
                                 textSize: TextSize.S,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
 
                               CustomText(
-                                text: "${salary.createdAt.month}月",
+                                text: '${salary.createdAt.month}月',
                                 textSize: TextSize.ML,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -140,16 +140,16 @@ class _SalaryListViewState extends State<SalaryListView> {
                               CustomText(
                                 text: switch (salary.source?.name) {
                                   String name => name,
-                                  _ => "未設定",
+                                  _ => '未設定',
                                 },
                                 textSize: TextSize.S,
                                 color: CustomColors.text.withValues(alpha: 0.7),
                               ),
                               // 給料詳細UI
                               // 総支給
-                              _buildSalaryRow("総支給", salary.paymentAmount),
+                              _buildSalaryRow('総支給', salary.paymentAmount),
                               // 手取り
-                              _buildSalaryRow("手取り", salary.netSalary),
+                              _buildSalaryRow('手取り', salary.netSalary),
                             ],
                           ),
                         ),
@@ -232,7 +232,7 @@ class _SalaryListViewState extends State<SalaryListView> {
               fontWeight: FontWeight.bold,
             ),
             const SizedBox(width: 5),
-            const CustomText(text: "円", textSize: TextSize.S),
+            const CustomText(text: '円', textSize: TextSize.S),
           ],
         ),
       ],

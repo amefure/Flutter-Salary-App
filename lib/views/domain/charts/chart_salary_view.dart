@@ -35,14 +35,14 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource _allSource = PaymentSource(
     Uuid.v4().toString(),
-    "ALL",
+    'ALL',
     ThemaColor.blue.value,
   );
 
    /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource _unSetSource = PaymentSource(
     Uuid.v4().toString(),
-    "未設定",
+    '未設定',
     ThemaColor.blue.value,
   );
 
@@ -57,7 +57,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     _groupedBySource = {};
 
     for (var salary in salaryList) {
-      String sourceName = salary.source?.name ?? "未設定";
+      String sourceName = salary.source?.name ?? '未設定';
 
       // 支払い元ごとのリストがなければ作成
       if (!_groupedBySource.containsKey(sourceName)) {
@@ -65,11 +65,11 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       }
 
       // `createdAt` を "yyyy-MM" の形式でキーにする
-      String yearMonthKey = DateFormat("yyyy-MM").format(salary.createdAt);
+      String yearMonthKey = DateFormat('yyyy-MM').format(salary.createdAt);
 
       // 同じ年月のデータがあるかチェック
       var existingIndex = _groupedBySource[sourceName]!.indexWhere(
-        (s) => DateFormat("yyyy-MM").format(s.createdAt) == yearMonthKey,
+        (s) => DateFormat('yyyy-MM').format(s.createdAt) == yearMonthKey,
       );
 
       // 月初の 0 時 0 分 にリセットする
@@ -143,7 +143,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       backgroundColor: CustomColors.foundation,
       navigationBar: const CupertinoNavigationBar(
           middle: CustomText(
-            text: "MyData",
+            text: 'MyData',
             fontWeight: FontWeight.bold,
           )
       ),
@@ -182,7 +182,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                               onPressed: () => _changeYear(-1),
                             ),
                             CustomText(
-                              text: "$_selectedYear年 1月 〜 12月",
+                              text: '$_selectedYear年 1月 〜 12月',
                               fontWeight: FontWeight.bold,
                             ),
                             IconButton(
@@ -281,7 +281,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           const SizedBox(width: 8),
           Expanded(
             child: CustomText(
-              text: paymentSource?.name ?? "ALL",
+              text: paymentSource?.name ?? 'ALL',
               color: Colors.white,
               fontWeight: FontWeight.bold,
               textSize: TextSize.S,
@@ -297,7 +297,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   Widget _tableSalaryInfo() {
     // 選択中のカテゴリでフィルタリング
     Map<String, List<Salary>> filteredData =
-        _selectedSource.name == "ALL"
+        _selectedSource.name == 'ALL'
             ? _groupedBySource
             : {
               _selectedSource.name:
@@ -321,8 +321,8 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     return Column(
       spacing: 20,
       children: [
-        _buildSalaryRow("年収（総支給）", paymentAmountSum),
-        _buildSalaryRow("年収（手取り）", netSalarySum),
+        _buildSalaryRow('年収（総支給）', paymentAmountSum),
+        _buildSalaryRow('年収（手取り）', netSalarySum),
       ],
     );
   }
@@ -345,7 +345,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
               fontWeight: FontWeight.bold,
             ),
             const SizedBox(width: 5),
-            const CustomText(text: "円", textSize: TextSize.S),
+            const CustomText(text: '円', textSize: TextSize.S),
           ],
         ),
       ],
@@ -366,7 +366,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
         ),
         alignment: Alignment.center,
         child: const CustomText(
-          text: "データがありません",
+          text: 'データがありません',
           textSize: TextSize.M,
           fontWeight: FontWeight.bold,
           color: CupertinoColors.systemGrey,
@@ -418,7 +418,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       CustomText(
-                        text: "${NumberUtils.formatWithComma(value.toInt())}円",
+                        text: '${NumberUtils.formatWithComma(value.toInt())}円',
                         textSize: TextSize.SS,
                       ),
                       const SizedBox(width: 5),
@@ -433,7 +433,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                 interval: 1,
                 getTitlesWidget: (value, meta) {
                   return CustomText(
-                    text: "${value.toInt()}月",
+                    text: '${value.toInt()}月',
                     textSize: TextSize.SS,
                   );
                 },
@@ -462,7 +462,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
     // 選択中のカテゴリでフィルタリング
     Map<String, List<Salary>> filteredData =
-        _selectedSource.name == "ALL"
+        _selectedSource.name == 'ALL'
             ? _groupedBySource
             : {
               _selectedSource.name:

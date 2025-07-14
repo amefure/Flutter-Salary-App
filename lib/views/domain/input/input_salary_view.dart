@@ -63,7 +63,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
     if (widget.salary case Salary salary) {
       DateTime now = salary.createdAt;
-      _dateController.text = "${now.year}/${now.month}/${now.day}";
+      _dateController.text = '${now.year}/${now.month}/${now.day}';
       _paymentAmountController.text = salary.paymentAmount.toString();
       _deductionAmountController.text = salary.deductionAmount.toString();
       _netSalaryController.text = salary.netSalary.toString();
@@ -79,19 +79,19 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
           salary.deductionAmountItems
               .map((item) => AmountItem(item.id, item.key, item.value))
               .toList();
-      _paymentSourceController.text = salary.source?.name ?? "未設定";
+      _paymentSourceController.text = salary.source?.name ?? '未設定';
       _selectPaymentSource = salary.source;
       _createdAt = salary.createdAt;
       _memoController.text = salary.memo;
     } else {
       DateTime now = DateTime.now();
-      _dateController.text = "${now.year}/${now.month}/${now.day}";
-      _paymentAmountController.text = "";
-      _deductionAmountController.text = "";
-      _netSalaryController.text = "";
+      _dateController.text = '${now.year}/${now.month}/${now.day}';
+      _paymentAmountController.text = '';
+      _deductionAmountController.text = '';
+      _netSalaryController.text = '';
       // 存在するなら一番最初のものを指定
       _selectPaymentSource = _paymentSources.firstOrNull;
-      _paymentSourceController.text = _selectPaymentSource?.name ?? "未設定";
+      _paymentSourceController.text = _selectPaymentSource?.name ?? '未設定';
     }
   }
 
@@ -150,7 +150,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
             children: [
               // Doneボタン
               CupertinoButton(
-                child: const Text("完了"),
+                child: const Text('完了'),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               // iOSスタイルの日付ピッカー
@@ -166,7 +166,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                       final selectYearAndMonth =
                           DateTimeUtils.parse(
                             dateString: _dateController.text,
-                            pattern: "yyyy/M/d",
+                            pattern: 'yyyy/M/d',
                           ) ??
                           DateTime.now();
                       // selectYearAndMonthは時間は0:00になっている
@@ -188,7 +188,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
   /// **DateTime を "YYYY/MM/DD" 形式に変換**
   String _formatDate(DateTime date) {
-    return "${date.year}/${date.month}/${date.day}";
+    return '${date.year}/${date.month}/${date.day}';
   }
 
   /// エラーダイアログを表示
@@ -197,14 +197,14 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: const Text("Error"),
+          title: const Text('Error'),
           content: Text(title),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("OK"),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -221,7 +221,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
     if (_paymentAmountController.text.length > 19 ||
         _deductionAmountController.text.length > 19 ||
         _netSalaryController.text.length > 19) {
-      _showErrorDialog(context, "19桁以上は入力できません。");
+      _showErrorDialog(context, '19桁以上は入力できません。');
       return;
     }
   }
@@ -238,7 +238,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
     // どれかが null（不正な入力値）の場合はエラーダイアログを表示
     if (paymentAmount == null || deductionAmount == null || netSalary == null) {
-      _showErrorDialog(context, "総支給額、控除額、手取り額を入力してください。");
+      _showErrorDialog(context, '総支給額、控除額、手取り額を入力してください。');
       return;
     }
 
@@ -268,11 +268,11 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
     BuildContext context,
     bool isPayment,
   ) async {
-    String title = "";
+    String title = '';
     if (isPayment) {
-      title = "総支給額";
+      title = '総支給額';
     } else {
-      title = "控除額";
+      title = '控除額';
     }
     // 結果をawaitで同期的に取得する
     final AmountItem? newItem = await showModalBottomSheet<AmountItem?>(
@@ -345,14 +345,14 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
         context: context,
         builder: (BuildContext context) {
           return CupertinoActionSheet(
-            title: const Text("支払い元を選択してください"),
+            title: const Text('支払い元を選択してください'),
             actions:
                 paymentSource
                     .map((option) => _buildAction(context, option.name))
                     .toList(),
             cancelButton: CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(context),
-              child: const Text("キャンセル"),
+              child: const Text('キャンセル'),
             ),
           );
         },
@@ -403,7 +403,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                 // 日付ピッカー
                 CustomTextField(
                   controller: _dateController,
-                  labelText: "支給日",
+                  labelText: '支給日',
                   prefixIcon: CupertinoIcons.calendar,
                   readOnly: true,
                   onTap: () => _selectDate(context),
@@ -414,7 +414,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                 // 総支給額UI
                 CustomTextField(
                   controller: _paymentAmountController,
-                  labelText: "総支給額",
+                  labelText: '総支給額',
                   prefixIcon: CupertinoIcons.money_yen,
                   onSubmitted: (_) => _calcNetSalaryAmount(),
                   onFocusLost: () => _calcNetSalaryAmount(),
@@ -434,7 +434,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                       child: const Row(
                         children: [
                           CustomText(
-                            text: "総支給額：詳細入力",
+                            text: '総支給額：詳細入力',
                             color: CustomColors.thema,
                             textSize: TextSize.S,
                             fontWeight: FontWeight.bold,
@@ -459,7 +459,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                 // 控除額
                 CustomTextField(
                   controller: _deductionAmountController,
-                  labelText: "控除額",
+                  labelText: '控除額',
                   prefixIcon: CupertinoIcons.money_yen,
                   onSubmitted: (_) => _calcNetSalaryAmount(),
                   onFocusLost: () => _calcNetSalaryAmount(),
@@ -477,7 +477,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                       child: const Row(
                         children: [
                           CustomText(
-                            text: "控除額：詳細入力",
+                            text: '控除額：詳細入力',
                             color: CustomColors.thema,
                             textSize: TextSize.S,
                             fontWeight: FontWeight.bold,
@@ -500,7 +500,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                 const SizedBox(height: 10),
                 CustomTextField(
                   controller: _netSalaryController,
-                  labelText: "手取り額",
+                  labelText: '手取り額',
                   prefixIcon: CupertinoIcons.money_yen,
                 ),
 
@@ -508,7 +508,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
                 CustomTextField(
                   controller: _memoController,
-                  labelText: "MEMO",
+                  labelText: 'MEMO',
                   prefixIcon: Icons.comment,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
@@ -533,7 +533,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
           child: const Row(
             children: [
               CustomText(
-                text: "過去から引用",
+                text: '過去から引用',
                 color: CustomColors.thema,
                 textSize: TextSize.S,
                 fontWeight: FontWeight.bold,
@@ -627,7 +627,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
             Expanded(
               child: CustomTextField(
                 controller: _paymentSourceController,
-                labelText: "支払い元",
+                labelText: '支払い元',
                 prefixIcon: CupertinoIcons.building_2_fill,
                 prefixIconColor:
                     _selectPaymentSource?.themaColorEnum.color ??
@@ -666,11 +666,11 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       },
       child: GestureDetector(
         onTap: () async {
-          String title = "";
+          String title = '';
           if (isPayment) {
-            title = "総支給額";
+            title = '総支給額';
           } else {
-            title = "控除額";
+            title = '控除額';
           }
           _paymentAmountItems.remove(item);
           _deductionAmountItems.remove(item);
@@ -724,7 +724,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                   ),
                   const SizedBox(width: 2),
                   const CustomText(
-                    text: "円",
+                    text: '円',
                     fontWeight: FontWeight.bold,
                     textSize: TextSize.SS,
                   ),

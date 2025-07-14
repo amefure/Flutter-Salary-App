@@ -39,7 +39,7 @@ class _DetailInputViewState extends State<DetailInputView> {
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: const CustomText(
-            text: "ERROR",
+            text: 'ERROR',
             fontWeight: FontWeight.bold,
           ),
           content: CustomText(
@@ -52,7 +52,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                 Navigator.of(context).pop();
               },
               child: const CustomText(
-                text: "OK",
+                text: 'OK',
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -75,7 +75,7 @@ class _DetailInputViewState extends State<DetailInputView> {
         backgroundColor: CustomColors.foundation,
         navigationBar: CupertinoNavigationBar(
           middle: CustomText(
-            text: "${widget.title}：詳細入力",
+            text: '${widget.title}：詳細入力',
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -86,7 +86,7 @@ class _DetailInputViewState extends State<DetailInputView> {
               children: [
                 CustomTextField(
                   controller: _nameController,
-                  labelText: "項目名",
+                  labelText: '項目名',
                   prefixIcon: CupertinoIcons.signature,
                   keyboardType: TextInputType.text,
                 ),
@@ -95,24 +95,24 @@ class _DetailInputViewState extends State<DetailInputView> {
 
                 CustomTextField(
                   controller: _amountController,
-                  labelText: "金額",
+                  labelText: '金額',
                   prefixIcon: CupertinoIcons.money_yen,
                 ),
 
                 const SizedBox(height: 20),
                 CustomElevatedButton(
-                  text: "追加",
+                  text: '追加',
                   onPressed: () {
                     String name = _nameController.text;
                     int amount = int.tryParse(_amountController.text) ?? 0;
 
                     if (_amountController.text.length > 19) {
-                      _showErrorDialog(context, "19桁以上は入力できません。");
+                      _showErrorDialog(context, '19桁以上は入力できません。');
                       return;
                     }
 
                     if (name.isEmpty || amount < 0) {
-                      _showErrorDialog(context, "項目名と金額を入力してください。");
+                      _showErrorDialog(context, '項目名と金額を入力してください。');
                       return;
                     }
 

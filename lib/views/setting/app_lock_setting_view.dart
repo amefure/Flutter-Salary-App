@@ -36,15 +36,15 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: const Text("お知らせ"),
-          content: const Text("パスワードでアプリをロックしました。"),
+          title: const Text('お知らせ'),
+          content: const Text('パスワードでアプリをロックしました。'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text("OK"),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -58,8 +58,8 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: const Text("Error"),
-          content: const Text("パスワードが違います。"),
+          title: const Text('Error'),
+          content: const Text('パスワードが違います。'),
           actions: [
             TextButton(
               onPressed: () {
@@ -67,7 +67,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
                 _input.clear();
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text("OK"),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -131,7 +131,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.isEntry ? "パスワード登録" : ""),
+        middle: Text(widget.isEntry ? 'パスワード登録' : ''),
       ),
       child: SafeArea(
         child: Column(
@@ -193,7 +193,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
   /// パスワード認証ボタン
   Widget _passwordAuthButton() {
     return CustomElevatedButton(
-      text: widget.isEntry ? "登録" : "解除",
+      text: widget.isEntry ? '登録' : '解除',
       onPressed: () async {
         if (_input.length == _passwordLength) {
           if (widget.isEntry) {

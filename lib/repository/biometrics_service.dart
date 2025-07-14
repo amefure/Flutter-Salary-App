@@ -24,12 +24,12 @@ class BiometricsService {
     final isDeviceSupported = await _auth.isDeviceSupported();
     isAvailable = (canCheckBiometrics && isDeviceSupported);
 
-    debugPrint("Biometrics Available: $isAvailable");
+    debugPrint('Biometrics Available: $isAvailable');
   }
 
   Future<bool> authenticateWithBiometrics() async {
     if (!isAvailable) {
-      debugPrint("生体認証は使用できません");
+      debugPrint('生体認証は使用できません');
       return false;
     }
 
@@ -41,7 +41,7 @@ class BiometricsService {
         ),
       );
     } catch (e) {
-      debugPrint("生体認証エラー: $e");
+      debugPrint('生体認証エラー: $e');
       return false;
     }
   }

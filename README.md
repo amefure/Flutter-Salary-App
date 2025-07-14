@@ -76,3 +76,4 @@
 ## Develop
 - **[flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons) (0.14.3)** - アプリアイコンの設定
 - **[change_app_package_name](https://github.com/atiqsamtia/change_app_package_name) (1.1.0)** - アプリID(BundleID)の管理
+- **[flutter_lints](https://pub.dev/packages/flutter_lints) (6.0.0)** - 静的解析ツール

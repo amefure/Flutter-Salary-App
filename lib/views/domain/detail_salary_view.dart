@@ -34,7 +34,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   void initState() {
     // 最初にコピーしておく
     targetSalary = widget.salary;
-    _memoController.text = targetSalary?.memo ?? "";
+    _memoController.text = targetSalary?.memo ?? '';
     super.initState();
   }
 
@@ -48,21 +48,21 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: const Text("確認"),
-          content: const Text("給料情報を本当に削除しますか？"),
+          title: const Text('確認'),
+          content: const Text('給料情報を本当に削除しますか？'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text("キャンセル"),
+              child: const Text('キャンセル'),
             ),
             TextButton(
               onPressed: () {
                 _deleteSalary(context, dialogContext, ref, salary);
               },
               child: const CustomText(
-                text: "削除",
+                text: '削除',
                 fontWeight: FontWeight.bold,
                 color: CustomColors.negative,
                 textSize: TextSize.MS,
@@ -163,14 +163,14 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                           Column(
                             children: [
                               const CustomText(
-                                text: "支給日",
+                                text: '支給日',
                                 fontWeight: FontWeight.bold,
                               ),
                               CustomText(
                                 text: DateTimeUtils.format(
                                   dateTime:
                                       targetSalary?.createdAt ?? DateTime.now(),
-                                  pattern: "yyyy年M月d日",
+                                  pattern: 'yyyy年M月d日',
                                 ),
                                 fontWeight: FontWeight.bold,
                               ),
@@ -190,7 +190,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                       const SizedBox(height: 24),
 
                       // MEMO
-                      const CustomLabelView(labelText: "MEMO"),
+                      const CustomLabelView(labelText: 'MEMO'),
 
                       const SizedBox(height: 10),
                       // MEMO Body
@@ -209,7 +209,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                             const SizedBox(width: 10), // アイコンとテキストの間隔
 
                             CustomText(
-                              text: targetSalary?.memo ?? "",
+                              text: targetSalary?.memo ?? '',
                               maxLines: null,
                             ),
                           ],
@@ -256,7 +256,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
           const SizedBox(width: 8),
           Expanded(
             child: CustomText(
-              text: targetSalary?.source?.name ?? "未設定",
+              text: targetSalary?.source?.name ?? '未設定',
               color: Colors.white,
               fontWeight: FontWeight.bold,
               textSize: TextSize.S,
@@ -274,21 +274,21 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       columnWidths: {0: const FlexColumnWidth(1), 1: const FlexColumnWidth(3)},
       children: [
         _buildTableRow(
-          "総支給額",
+          '総支給額',
           targetSalary?.paymentAmount,
           headerColor,
           isTotal: true,
         ),
-        _buildExpandableRow("", targetSalary?.paymentAmountItems),
+        _buildExpandableRow('', targetSalary?.paymentAmountItems),
         _buildTableRow(
-          "控除額",
+          '控除額',
           targetSalary?.deductionAmount,
           headerColor,
           isTotal: true,
         ),
-        _buildExpandableRow("", targetSalary?.deductionAmountItems),
+        _buildExpandableRow('', targetSalary?.deductionAmountItems),
         _buildTableRow(
-          "手取り額",
+          '手取り額',
           targetSalary?.netSalary,
           headerColor,
           isTotal: true,
@@ -337,7 +337,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
                 const SizedBox(width: 3),
 
                 CustomText(
-                  text: "円",
+                  text: '円',
                   textSize: TextSize.SS,
                   fontWeight: FontWeight.bold,
                   color: isTotal ? Colors.white : CustomColors.text,
@@ -368,7 +368,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             // デフォルトを展開状態にする
             initiallyExpanded: true,
             title: const CustomText(
-              text: "詳細を見る",
+              text: '詳細を見る',
               textSize: TextSize.S,
               fontWeight: FontWeight.bold,
             ),
@@ -400,7 +400,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             child: Align(
               alignment: Alignment.centerRight, // 右寄せ
               child: CustomText(
-                text: "${NumberUtils.formatWithComma(item.value)}円",
+                text: '${NumberUtils.formatWithComma(item.value)}円',
                 textSize: TextSize.MS,
               ),
             ),
@@ -417,7 +417,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
       child: Align(
         alignment: Alignment.center,
         child: CustomText(
-          text: "項目がありません。",
+          text: '項目がありません。',
           textSize: TextSize.M,
           color: Colors.grey,
         ),

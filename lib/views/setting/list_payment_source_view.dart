@@ -21,21 +21,21 @@ class ListPaymentSourceView extends ConsumerWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
-          title: const Text("確認"),
-          content: Text("「${paymentSource.name}」を本当に削除しますか？"),
+          title: const Text('確認'),
+          content: Text('「${paymentSource.name}」を本当に削除しますか？'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text("キャンセル"),
+              child: const Text('キャンセル'),
             ),
             TextButton(
               onPressed: () {
                 _deletePaymentSource(dialogContext, ref, paymentSource);
               },
               child: const CustomText(
-                text: "削除",
+                text: '削除',
                 fontWeight: FontWeight.bold,
                 color: CustomColors.negative,
                 textSize: TextSize.MS,

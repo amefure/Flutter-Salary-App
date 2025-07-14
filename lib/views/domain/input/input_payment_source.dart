@@ -46,14 +46,14 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: const Text("Error"),
-          content: const Text("名称を入力してください。"),
+          title: const Text('Error'),
+          content: const Text('名称を入力してください。'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("OK"),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -75,8 +75,8 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
         navigationBar: CupertinoNavigationBar(
           middle:
               widget.paymentSource == null
-                  ? const Text("支払い元登録画面")
-                  : const Text("支払い元更新画面"),
+                  ? const Text('支払い元登録画面')
+                  : const Text('支払い元更新画面'),
         ),
         child: SafeArea(
           child: Padding(
@@ -86,14 +86,14 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                 // 名称入力ボックス
                 CustomTextField(
                   controller: _nameController,
-                  labelText: "名称",
+                  labelText: '名称',
                   prefixIcon: CupertinoIcons.signature,
                   keyboardType: TextInputType.text,
                 ),
 
                 const SizedBox(height: 20),
 
-                const CustomLabelView(labelText: "カラー"),
+                const CustomLabelView(labelText: 'カラー'),
                 // カラーピッカー
                 _ThemaColorPicker(
                   selectedColor: selectedColor,
@@ -121,7 +121,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
     return Consumer(
       builder: (context, ref, child) {
         return CustomElevatedButton(
-          text: widget.paymentSource == null ? "追加" : "更新",
+          text: widget.paymentSource == null ? '追加' : '更新',
           onPressed: () {
             String name = _nameController.text;
             if (name.isNotEmpty) {

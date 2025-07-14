@@ -19,15 +19,15 @@ class _RootTabViewViewState extends State<RootTabViewView> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
-            label: "History",
+            label: 'History',
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.chart_bar_fill),
-            label: "Data",
+            label: 'Data',
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear_alt_fill),
-            label: "Settings",
+            label: 'Settings',
           ),
         ],
       ),

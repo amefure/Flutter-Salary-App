@@ -56,7 +56,7 @@ class _SettingViewState extends State<SettingView> {
       backgroundColor: CustomColors.foundation,
       navigationBar: const CupertinoNavigationBar(
           middle: CustomText(
-            text: "設定",
+            text: '設定',
             fontWeight: FontWeight.bold,
           )
       ),
@@ -64,9 +64,9 @@ class _SettingViewState extends State<SettingView> {
         child: ListView(
           children: [
             CupertinoListSection.insetGrouped(
-              header: const CustomText(text: "App"),
+              header: const CustomText(text: 'App'),
               children: [
-                _settingListTile("支払い元管理", CupertinoIcons.building_2_fill, () {
+                _settingListTile('支払い元管理', CupertinoIcons.building_2_fill, () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => const ListPaymentSourceView(),
@@ -75,7 +75,7 @@ class _SettingViewState extends State<SettingView> {
                 }),
 
                 _settingListTile(
-                  "アプリロック",
+                  'アプリロック',
                   CupertinoIcons.lock_fill,
                   null,
                   CupertinoSwitch(
@@ -100,11 +100,11 @@ class _SettingViewState extends State<SettingView> {
             ),
 
             CupertinoListSection.insetGrouped(
-              header: const CustomText(text: "LINK"),
+              header: const CustomText(text: 'LINK'),
               footer: const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: CustomText(
-                  text: "・アプリに不具合がございましたら「アプリの不具合はこちら」よりお問い合わせください。",
+                  text: '・アプリに不具合がございましたら「アプリの不具合はこちら」よりお問い合わせください。',
                   textSize: TextSize.S,
                   fontWeight: FontWeight.bold,
                   maxLines: 2,
@@ -114,22 +114,22 @@ class _SettingViewState extends State<SettingView> {
 
                 if (Platform.isIOS)
                   _settingListTile(
-                    "アプリをレビューする",
+                    'アプリをレビューする',
                     CupertinoIcons.hand_thumbsup,
                         () {
-                      _launchURL("https://apps.apple.com/jp/app/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E7%B5%A6%E6%96%99%E8%A8%98%E9%8C%B2/id6744486398?action=write-review");
+                      _launchURL('https://apps.apple.com/jp/app/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E7%B5%A6%E6%96%99%E8%A8%98%E9%8C%B2/id6744486398?action=write-review');
                     },
                   ),
 
-                _settingListTile("アプリの不具合はこちら", CupertinoIcons.paperplane, () {
-                  _openWebView(context, "https://appdev-room.com/contact");
+                _settingListTile('アプリの不具合はこちら', CupertinoIcons.paperplane, () {
+                  _openWebView(context, 'https://appdev-room.com/contact');
                 }),
 
                 _settingListTile(
-                  "利用規約とプライバシーポリシー",
+                  '利用規約とプライバシーポリシー',
                   CupertinoIcons.calendar,
                   () {
-                    _openWebView(context, "https://appdev-room.com/app-terms-of-service");
+                    _openWebView(context, 'https://appdev-room.com/app-terms-of-service');
                   },
                 ),
               ],

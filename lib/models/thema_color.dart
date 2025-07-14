@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 
 enum ThemaColor {
-  red(CustomColors.negative, 0, "クリムゾンレッド"),
-  blue(CustomColors.thema, 1, "オーシャンブルー"),
-  green(CustomColors.themaGreen, 2, "エメラルドグリーン"),
-  purple(CustomColors.themaPurple, 3, "ロイヤルパープル"),
-  yellow(CustomColors.themaYellow, 4, "サンフラワーイエロー"),
-  orange(CustomColors.themaOrange, 5, "タンジェリンオレンジ"),
-  black(CustomColors.themaBlack, 6, "チャコールブラック"),
-  gray(CustomColors.themaGray, 7, "ストーングレー");
+  red(CustomColors.negative, 0, 'クリムゾンレッド'),
+  blue(CustomColors.thema, 1, 'オーシャンブルー'),
+  green(CustomColors.themaGreen, 2, 'エメラルドグリーン'),
+  purple(CustomColors.themaPurple, 3, 'ロイヤルパープル'),
+  yellow(CustomColors.themaYellow, 4, 'サンフラワーイエロー'),
+  orange(CustomColors.themaOrange, 5, 'タンジェリンオレンジ'),
+  black(CustomColors.themaBlack, 6, 'チャコールブラック'),
+  gray(CustomColors.themaGray, 7, 'ストーングレー');
 
   final Color color;
   final int value;
