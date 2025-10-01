@@ -17,11 +17,11 @@
 追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
 
 ## 開発環境
-- Android Studio Meerkat | 2024.3.1 Patch 2
-- Xcode：16.0 
+- Android Studio：Narwhal Feature Drop
+- Xcode：26.0.1 
 - Flutter：3.29.2 
 - Dart：3.7.2 
-- Mac M1：Sequoia 15.4
+- Mac M1：Sequoia 15.6.1
 
 ## 構成
 ```

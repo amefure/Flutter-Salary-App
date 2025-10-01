@@ -39,10 +39,17 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
+# $ flutter pub run flutter_launcher_icons:main
+# 上記コマンドを実行してアイコンを自動生成
 flutter_icons:
   android: true
   ios: true
+  # iOS Lightアイコン
   image_path_ios: "assets/images/app_icon.png"
+  # iOS Darkアイコン
+  image_path_ios_dark_transparent: "assets/images/app_icon_dark.png"
+  # iOS Tintedアイコン
+  image_path_ios_tinted_grayscale: "assets/images/app_icon_tinted.png"
   image_path_android: "assets/images/app_icon.png"
   adaptive_icon_background: '#000000'
   adaptive_icon_foreground: "assets/images/app_icon.png"
