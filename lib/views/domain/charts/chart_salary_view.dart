@@ -169,9 +169,10 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
                         const SizedBox(height: 20),
 
+                        // 月ごとの給料グラフ
                         SizedBox(
                             width: screen.width * 0.95,
-                            child: _buildChart()
+                            child: _buildYearSalaryChart()
                         ),
 
                         Row(
@@ -195,6 +196,10 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                         const SizedBox(height: 20),
 
                         SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo()),
+
+                        const SizedBox(height: 20),
+
+
                       ],
                     ),
                   )
@@ -353,7 +358,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   }
 
   /// グラフ描画 & NoData UI
-  Widget _buildChart() {
+  Widget _buildYearSalaryChart() {
     List<LineChartBarData> lines = _buildLines();
     if (lines.isEmpty) {
       return Container(

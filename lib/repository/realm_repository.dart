@@ -1,4 +1,5 @@
 import 'package:realm/realm.dart';
+import 'package:salary/models/config/realm_schema_config.dart';
 import 'package:salary/models/salary.dart';
 
 /// Realm DB Repository クラス
@@ -17,11 +18,14 @@ class RealmRepository {
   /// Private Named constructor
   RealmRepository._internal() {
     // 対象のモデルを設定
-    final config = Configuration.local([
-      Salary.schema,
-      PaymentSource.schema,
-      AmountItem.schema,
-    ]);
+    final config = Configuration.local(
+      [
+        Salary.schema,
+        PaymentSource.schema,
+        AmountItem.schema,
+      ],
+      schemaVersion: RealmSchemaConfig.schemaVersion,
+    );
     _realm = Realm(config);
   }
 

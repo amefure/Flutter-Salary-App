@@ -49,6 +49,8 @@ class _PaymentSource {
   late String name;
   // カラー
   late int themaColor;
+  // MEMO
+  late String? memo;
 
   // ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);

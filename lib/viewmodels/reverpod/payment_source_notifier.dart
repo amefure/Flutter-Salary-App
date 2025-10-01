@@ -34,10 +34,11 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
   }
 
   /// 更新
-  void update(String id, String name, ThemaColor color) {
+  void update(String id, String name, ThemaColor color, String? memo) {
     _repository.updateById(id, (PaymentSource paymentSource) {
       paymentSource.name = name;
       paymentSource.themaColor = color.value;
+      paymentSource.memo = memo;
     });
     fetchAll();
   }

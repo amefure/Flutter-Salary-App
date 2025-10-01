@@ -69,7 +69,7 @@ class _SettingViewState extends State<SettingView> {
                 _settingListTile('支払い元管理', CupertinoIcons.building_2_fill, () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
-                      builder: (context) => const ListPaymentSourceView(),
+                      builder: (context) => ListPaymentSourceView(),
                     ),
                   );
                 }),

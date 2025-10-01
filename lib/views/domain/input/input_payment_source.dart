@@ -22,6 +22,7 @@ class InputPaymentSourceView extends StatefulWidget {
 
 class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
   ThemaColor selectedColor = ThemaColor.gray;
 
   @override
@@ -29,6 +30,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
     // 更新処理なら初期値をセット
     if (widget.paymentSource case PaymentSource paymentSource) {
       _nameController.text = paymentSource.name;
+      _memoController.text = paymentSource.memo ?? '';
       selectedColor = paymentSource.themaColorEnum;
     }
     super.initState();
@@ -37,6 +39,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   @override
   void dispose() {
     _nameController.dispose();
+    _memoController.dispose();
     super.dispose();
   }
 
@@ -93,6 +96,16 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
 
                 const SizedBox(height: 20),
 
+                CustomTextField(
+                  controller: _memoController,
+                  labelText: 'MEMO',
+                  prefixIcon: Icons.comment,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                ),
+
+                const SizedBox(height: 20),
+
                 const CustomLabelView(labelText: 'カラー'),
                 // カラーピッカー
                 _ThemaColorPicker(
@@ -124,18 +137,20 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
           text: widget.paymentSource == null ? '追加' : '更新',
           onPressed: () {
             String name = _nameController.text;
+            String? memo = _memoController.text.isEmpty ? null : _memoController.text;
             if (name.isNotEmpty) {
               if (widget.paymentSource case PaymentSource paymentSource) {
                 // 更新
                 ref
                     .read(paymentSourceProvider.notifier)
-                    .update(paymentSource.id, name, selectedColor);
+                    .update(paymentSource.id, name, selectedColor, memo);
               } else {
                 // 新規登録
                 final payment = PaymentSource(
                   Uuid.v4().toString(),
                   name,
                   selectedColor.value,
+                  memo: memo,
                 );
                 ref.read(paymentSourceProvider.notifier).add(payment);
               }

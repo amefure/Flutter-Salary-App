@@ -9,7 +9,7 @@ import 'package:salary/views/domain/input/input_payment_source.dart';
 
 /// [ConsumerWidget]でUI更新
 class ListPaymentSourceView extends ConsumerWidget {
-  const ListPaymentSourceView({super.key});
+  ListPaymentSourceView({super.key});
 
   /// 削除確認ダイアログ
   void _showConfirmDeleteAlert(
@@ -83,6 +83,9 @@ class ListPaymentSourceView extends ConsumerWidget {
     );
   }
 
+  /// 支払い元の開閉状態用StateProvider
+  final paymentSourceExpandedProvider = StateProvider<Map<String, bool>>((ref) => {});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final paymentSources = ref.watch(paymentSourceProvider);
@@ -120,7 +123,13 @@ class ListPaymentSourceView extends ConsumerWidget {
     return ListView.builder(
       itemCount: paymentSources.length,
       itemBuilder: (context, index) {
+
         final paymentSource = paymentSources[index];
+
+        /// アイテムの開閉状態を取得
+        final expandedStates = ref.watch(paymentSourceExpandedProvider);
+        bool isExpanded = expandedStates[paymentSource.id] ?? false;
+
         return InkWell(
           onTap: () {
             _showUpdatePaymentSourceModal(context, paymentSource);
@@ -143,11 +152,52 @@ class ListPaymentSourceView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 20),
 
-                // 支払い元名
+                // 名前 + メモ
                 Expanded(
-                  child: CustomText(
-                    text: paymentSource.name,
-                    fontWeight: FontWeight.bold,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 名前は常に表示
+                      CustomText(
+                        text: paymentSource.name,
+                        fontWeight: FontWeight.bold,
+                      ),
+
+                      // メモと開閉アイコン
+                      if (paymentSource.memo != null && paymentSource.memo!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: CustomText(
+                                  text: paymentSource.memo!,
+                                  color: CustomColors.text.withAlpha(80),
+                                  maxLines: isExpanded ? null : 1,
+                                ),
+                              ),
+                              // 開閉アイコン
+                              GestureDetector(
+                                onTap: () {
+                                  ref.read(paymentSourceExpandedProvider.notifier).update((state) {
+                                    final newState = Map<String, bool>.from(state);
+                                    newState[paymentSource.id] = !isExpanded;
+                                    return newState;
+                                  });
+                                },
+                                child: Icon(
+                                  isExpanded
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                  size: 20,
+                                  color: CustomColors.text.withAlpha(80),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                 ),
 
