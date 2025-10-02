@@ -169,6 +169,11 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
                         const SizedBox(height: 20),
 
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: const CustomLabelView(labelText: '月別合計金額')
+                        ),
+
                         // 月ごとの給料グラフ
                         SizedBox(
                             width: screen.width * 0.95,
@@ -199,6 +204,18 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
                         const SizedBox(height: 20),
 
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: const CustomLabelView(labelText: '年別合計金額(10年間)')
+                        ),
+
+                        // 年ごとの給料グラフ
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: _buildYearlyPaymentBarChart(salaries)
+                        ),
+
+                        const SizedBox(height: 20),
 
                       ],
                     ),
@@ -528,5 +545,133 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       }
     });
     return lines;
+  }
+
+  Widget _buildYearlyPaymentBarChart(List<Salary> salaries) {
+    // 年ごとの総支給額を集計
+    Map<int, int> yearlyPaymentSums = {};
+
+    Map<String, List<Salary>> filteredData =
+    _selectedSource.name == 'ALL'
+        ? _groupedBySource
+        : {
+      _selectedSource.name:
+      _groupedBySource[_selectedSource.name] ?? [],
+    };
+
+    filteredData.forEach((source, salaryList) {
+      for (var s in salaryList) {
+        final year = s.createdAt.year;
+        yearlyPaymentSums[year] = (yearlyPaymentSums[year] ?? 0) + s.paymentAmount;
+      }
+    });
+
+    if (yearlyPaymentSums.isEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 250,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: CupertinoColors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const CustomText(
+          text: 'データがありません',
+          textSize: TextSize.M,
+          fontWeight: FontWeight.bold,
+          color: CupertinoColors.systemGrey,
+        ),
+      );
+    }
+
+    // 年をソートし、最大10年分だけ使用
+    final sortedYears = yearlyPaymentSums.keys.toList()..sort();
+    final yearsToShow = sortedYears.length > 5
+        ? sortedYears.sublist(sortedYears.length - 5)
+        : sortedYears;
+
+    List<BarChartGroupData> barGroups = [];
+    for (int i = 0; i < yearsToShow.length; i++) {
+      final year = yearsToShow[i];
+      final amount = yearlyPaymentSums[year]!;
+
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barsSpace: 0,
+          barRods: [
+            BarChartRodData(
+              toY: amount.toDouble(),
+              color: Colors.blue,
+              width: 20,
+              borderRadius: BorderRadius.zero,
+            ),
+          ],
+        ),
+      );
+    }
+
+    final maxY =
+        barGroups.expand((g) => g.barRods).map((r) => r.toY).fold(0.0, max) * 1.1;
+
+    return Container(
+      width: double.infinity,
+      height: 250,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: CupertinoColors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: BarChart(
+        BarChartData(
+          maxY: maxY,
+          minY: 0,
+          barTouchData: BarTouchData(
+            enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                final year = yearsToShow[group.x.toInt()];
+                final value = rod.toY.toInt();
+                return BarTooltipItem(
+                  '$year年\n${NumberUtils.formatWithComma(value)}円',
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                );
+              },
+            ),
+          ),
+          barGroups: barGroups,
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 60,
+                getTitlesWidget: (value, meta) => CustomText(
+                  text: '${NumberUtils.formatWithComma(value.toInt())}円',
+                  textSize: TextSize.SS,
+                ),
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                interval: 1,
+                getTitlesWidget: (index, meta) {
+                  final year = yearsToShow[index.toInt()];
+                  return CustomText(text: '$year年', textSize: TextSize.SS);
+                },
+              ),
+            ),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          gridData: FlGridData(show: true),
+          borderData: FlBorderData(show: false),
+        ),
+      ),
+    );
   }
 }
