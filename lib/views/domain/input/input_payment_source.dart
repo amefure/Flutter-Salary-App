@@ -84,45 +84,47 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // 名称入力ボックス
-                CustomTextField(
-                  controller: _nameController,
-                  labelText: '名称',
-                  prefixIcon: CupertinoIcons.signature,
-                  keyboardType: TextInputType.text,
-                ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // 名称入力ボックス
+                  CustomTextField(
+                    controller: _nameController,
+                    labelText: '名称',
+                    prefixIcon: CupertinoIcons.signature,
+                    keyboardType: TextInputType.text,
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                CustomTextField(
-                  controller: _memoController,
-                  labelText: 'MEMO',
-                  prefixIcon: Icons.comment,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                ),
+                  CustomTextField(
+                    controller: _memoController,
+                    labelText: 'MEMO',
+                    prefixIcon: Icons.comment,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                const CustomLabelView(labelText: 'カラー'),
-                // カラーピッカー
-                _ThemaColorPicker(
-                  selectedColor: selectedColor,
-                  onColorSelected: (color) {
-                    setState(() {
-                      selectedColor = color;
-                    });
-                  },
-                ),
+                  const CustomLabelView(labelText: 'カラー'),
+                  // カラーピッカー
+                  _ThemaColorPicker(
+                    selectedColor: selectedColor,
+                    onColorSelected: (color) {
+                      setState(() {
+                        selectedColor = color;
+                      });
+                    },
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // 追加 / 更新ボタン
-                _addOrUpdateButton(),
-              ],
-            ),
+                  // 追加 / 更新ボタン
+                  _addOrUpdateButton(),
+                ],
+              ),
+            )
           ),
         ),
       ),

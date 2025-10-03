@@ -319,60 +319,109 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   Widget _tableSalaryInfo() {
     // 選択中のカテゴリでフィルタリング
     Map<String, List<Salary>> filteredData =
-        _selectedSource.name == 'ALL'
-            ? _groupedBySource
-            : {
-              _selectedSource.name:
-                  _groupedBySource[_selectedSource.name] ?? [],
-            };
+    _selectedSource.name == 'ALL'
+        ? _groupedBySource
+        : {
+      _selectedSource.name:
+      _groupedBySource[_selectedSource.name] ?? [],
+    };
+
     int paymentAmountSum = 0;
     int netSalarySum = 0;
+    int prevPaymentAmountSum = 0;
+    int prevNetSalarySum = 0;
 
     filteredData.forEach((source, salaries) {
-      // 選択中の年月でフィルタリング
-      List<Salary> filteredSalaries =
-          salaries.where((s) => s.createdAt.year == _selectedYear).toList();
-
-      // 支給額・手取り額を合計する
+      // 当年
+      final filteredSalaries =
+      salaries.where((s) => s.createdAt.year == _selectedYear).toList();
       for (var salary in filteredSalaries) {
         paymentAmountSum += salary.paymentAmount;
         netSalarySum += salary.netSalary;
+      }
+
+      // 前年
+      final prevSalaries =
+      salaries.where((s) => s.createdAt.year == _selectedYear - 1).toList();
+      for (var salary in prevSalaries) {
+        prevPaymentAmountSum += salary.paymentAmount;
+        prevNetSalarySum += salary.netSalary;
       }
     });
 
     return Column(
       spacing: 20,
       children: [
-        _buildSalaryRow('年収（総支給）', paymentAmountSum),
-        _buildSalaryRow('年収（手取り）', netSalarySum),
+        _buildSalaryRow(
+          '年収（総支給）',
+          paymentAmountSum,
+          diff: paymentAmountSum - prevPaymentAmountSum,
+        ),
+        _buildSalaryRow(
+          '年収（手取り）',
+          netSalarySum,
+          diff: netSalarySum - prevNetSalarySum,
+        ),
       ],
     );
   }
 
-  /// ラベルと金額表示UI
-  Widget _buildSalaryRow(String label, int amount) {
-    return Row(
-      children: [
-        CustomLabelView(labelText: label),
+  Widget _buildSalaryRow(String label, int amount, {int diff = 0}) {
+    Color diffColor;
+    String diffText = '';
 
-        const Spacer(),
-        const SizedBox(width: 15),
+    if (diff > 0) {
+      diffColor = Colors.green;
+      diffText = '+${NumberUtils.formatWithComma(diff)}円';
+    } else if (diff < 0) {
+      diffColor = Colors.red;
+      diffText = '${NumberUtils.formatWithComma(diff)}円';
+    } else {
+      diffColor = CustomColors.text.withAlpha(120);
+      diffText = '±0';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CustomLabelView(labelText: label),
+            const Spacer(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CustomText(
+                  text: NumberUtils.formatWithComma(amount),
+                  textSize: TextSize.L,
+                  color: CustomColors.thema,
+                  fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(width: 5),
+                const CustomText(text: '円', textSize: TextSize.S),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            const Spacer(),
+            const CustomText(text: '前年', textSize: TextSize.SS),
+            const SizedBox(width: 5),
             CustomText(
-              text: NumberUtils.formatWithComma(amount),
-              textSize: TextSize.L,
-              color: CustomColors.thema,
+              text: diffText,
+              textSize: TextSize.SS,
+              color: diffColor,
               fontWeight: FontWeight.bold,
             ),
-            const SizedBox(width: 5),
-            const CustomText(text: '円', textSize: TextSize.S),
           ],
         ),
       ],
     );
   }
+
 
   /// グラフ描画 & NoData UI
   Widget _buildYearSalaryChart() {

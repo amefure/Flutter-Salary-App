@@ -101,7 +101,7 @@ class _DetailInputViewState extends State<DetailInputView> {
 
                 const SizedBox(height: 20),
                 CustomElevatedButton(
-                  text: '追加',
+                  text: widget.amountItem == null ? '追加' : '更新',
                   onPressed: () {
                     String name = _nameController.text;
                     int amount = int.tryParse(_amountController.text) ?? 0;
