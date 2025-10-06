@@ -5,7 +5,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # 以下実行でiOSに反映
 # $ flutter build ipa
 # リリース手順：https://appdev-room.com/flutter-release
-version: 1.1.1+8
+version: 1.1.1+9
 
 environment:
   sdk: ^3.7.2
