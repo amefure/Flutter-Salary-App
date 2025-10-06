@@ -24,7 +24,8 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.ame.Salary"
-    compileSdk = flutter.compileSdkVersion
+    // flutter.compileSdkVersionを使用しない
+    compileSdk = 36 // flutter.compileSdkVersion
     // flutter.ndkVersionを使用しない
     // 上記はflutterSDK自体に依存しているNDKバージョンのため
     ndkVersion = "28.0.13004108"
@@ -40,8 +41,10 @@ android {
 
     defaultConfig {
         applicationId = "com.ame.Salary"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // flutter.minSdkVersionを使用しない
+        minSdk = 23
+        // flutter.targetSdkVersionを使用しない
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
