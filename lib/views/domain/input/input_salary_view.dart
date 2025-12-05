@@ -530,7 +530,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
                 if (!_removeAds)
                   const AdMobBannerWidget(),
-                const AdMobBannerWidget(),
+
               ],
             ),
           ),
