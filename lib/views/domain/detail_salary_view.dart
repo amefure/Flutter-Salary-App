@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
+import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
@@ -30,8 +31,12 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   final _memoController = TextEditingController();
 
+  /// 広告削除
+  bool _removeAds = false;
+
   @override
   void initState() {
+    _fetchRemoveAds();
     // 最初にコピーしておく
     targetSalary = widget.salary;
     _memoController.text = targetSalary?.memo ?? '';
@@ -72,6 +77,15 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
         );
       },
     );
+  }
+
+
+  /// 広告削除フラグを取得
+  Future<void> _fetchRemoveAds() async {
+    bool removeAds = SharedPreferencesService().fetchRemoveAds();
+    setState(() {
+      _removeAds = removeAds;
+    });
   }
 
   /// 編集画面表示
@@ -218,7 +232,8 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
                       const SizedBox(height: 40),
 
-                      const AdMobBannerWidget(),
+                      if (!_removeAds)
+                        const AdMobBannerWidget(),
                     ],
                   );
                 },

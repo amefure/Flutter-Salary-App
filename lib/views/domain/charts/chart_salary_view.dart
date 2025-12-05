@@ -7,6 +7,7 @@ import 'dart:math';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
+import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
@@ -31,6 +32,9 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   late PaymentSource _selectedSource;
   /// 表示中の年月
   late int _selectedYear;
+
+  /// 広告削除
+  bool _removeAds = false;
 
   /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource _allSource = PaymentSource(
@@ -135,9 +139,19 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     });
   }
 
+  /// 広告削除フラグを取得
+  Future<void> _fetchRemoveAds() async {
+    bool removeAds = SharedPreferencesService().fetchRemoveAds();
+    setState(() {
+      _removeAds = removeAds;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
+
+    _fetchRemoveAds();
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
@@ -222,7 +236,8 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                   )
               ),
 
-              const AdMobBannerWidget(),
+              if (!_removeAds)
+                const AdMobBannerWidget(),
             ],
           );
         },
