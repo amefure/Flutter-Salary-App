@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/models/secrets.dart';
 import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilitys/logger.dart';
 import 'dart:async';
 import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
@@ -38,7 +39,7 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
       _onPurchaseUpdate,
       onDone: () => _subscription?.cancel(),
       onError: (error) {
-        print('purchaseStream Error: $error');
+        logger('purchaseStream Error: $error');
       },
     );
 
@@ -56,8 +57,8 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
     setState(() => _loading = true);
 
     final response = await _iap.queryProductDetails(_productIds);
-    print('notFound: ${response.notFoundIDs}');
-    print('products: ${response.productDetails}');
+    logger('notFound: ${response.notFoundIDs}');
+    logger('products: ${response.productDetails}');
 
     setState(() {
       _products = response.productDetails;
@@ -77,20 +78,20 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
     for (final purchaseDetails in purchaseDetailsList) {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
-          print('購入処理中...');
+          logger('購入処理中...');
           break;
 
         case PurchaseStatus.purchased:
-          print('購入成功！');
+          logger('購入成功！');
           _deliverProduct(purchaseDetails);
           break;
 
         case PurchaseStatus.error:
-          print('購入エラー: ${purchaseDetails.error}');
+          logger('購入エラー: ${purchaseDetails.error}');
           break;
 
         case PurchaseStatus.restored:
-          print('購入復元！');
+          logger('購入復元！');
           _deliverProduct(purchaseDetails);
           break;
 
@@ -110,7 +111,7 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
     setState(() {
       _purchasedIds.add(purchaseDetails.productID);
     });
-    print('購入成功: ${purchaseDetails.productID}');
+    logger('購入成功: ${purchaseDetails.productID}');
     if (purchaseDetails.productID == StaticKey.inAppPurchaseRemoveAdsId) {
       final notifier = ref.read(removeAdsProvider.notifier);
       notifier.update(true);
