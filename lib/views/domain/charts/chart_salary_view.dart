@@ -7,14 +7,15 @@ import 'dart:math';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
-import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/number_utils.dart';
+import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+
 
 class ChartSalaryView extends StatefulWidget {
   const ChartSalaryView({super.key});
@@ -32,9 +33,6 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   late PaymentSource _selectedSource;
   /// 表示中の年月
   late int _selectedYear;
-
-  /// 広告削除
-  bool _removeAds = false;
 
   /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource _allSource = PaymentSource(
@@ -139,19 +137,9 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     });
   }
 
-  /// 広告削除フラグを取得
-  Future<void> _fetchRemoveAds() async {
-    bool removeAds = SharedPreferencesService().fetchRemoveAds();
-    setState(() {
-      _removeAds = removeAds;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
-
-    _fetchRemoveAds();
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
@@ -163,6 +151,10 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
       ),
       child: Consumer(
         builder: (context, ref, child) {
+
+          /// 広告削除フラグ
+          final removeAds = ref.watch(removeAdsProvider);
+
           final salaries = ref.watch(salaryProvider.notifier).allSalaries;
           final _ = ref.watch(paymentSourceProvider);
           _groupSalariesBySource(salaries);
@@ -236,7 +228,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                   )
               ),
 
-              if (!_removeAds)
+              if (!removeAds)
                 const AdMobBannerWidget(),
             ],
           );

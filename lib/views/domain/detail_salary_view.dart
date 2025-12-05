@@ -8,6 +8,7 @@ import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/utilitys/date_time_utils.dart';
 import 'package:salary/utilitys/number_utils.dart';
+import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
@@ -31,12 +32,8 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   final _memoController = TextEditingController();
 
-  /// 広告削除
-  bool _removeAds = false;
-
   @override
   void initState() {
-    _fetchRemoveAds();
     // 最初にコピーしておく
     targetSalary = widget.salary;
     _memoController.text = targetSalary?.memo ?? '';
@@ -79,14 +76,6 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
     );
   }
 
-
-  /// 広告削除フラグを取得
-  Future<void> _fetchRemoveAds() async {
-    bool removeAds = SharedPreferencesService().fetchRemoveAds();
-    setState(() {
-      _removeAds = removeAds;
-    });
-  }
 
   /// 編集画面表示
   void _editSalary(Salary salary) {
@@ -164,6 +153,9 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
             child: SingleChildScrollView(
               child: Consumer(
                 builder: (context, ref, child) {
+                  /// 広告削除フラグ
+                  final removeAds = ref.watch(removeAdsProvider);
+
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,7 +224,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
                       const SizedBox(height: 40),
 
-                      if (!_removeAds)
+                      if (!removeAds)
                         const AdMobBannerWidget(),
                     ],
                   );

@@ -1,23 +1,23 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/models/secrets.dart';
-import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'dart:async';
-
+import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 
-class InAppPurchaseView extends StatefulWidget {
+class InAppPurchaseView extends ConsumerStatefulWidget {
   const InAppPurchaseView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _InAppPurchaseState();
+  ConsumerState<InAppPurchaseView> createState() => _InAppPurchaseState();
 }
 
-class _InAppPurchaseState extends State<InAppPurchaseView> {
+class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
   final _iap = InAppPurchase.instance;
 
   final Set<String> _productIds = { StaticKey.inAppPurchaseRemoveAdsId };
@@ -112,7 +112,8 @@ class _InAppPurchaseState extends State<InAppPurchaseView> {
     });
     print('購入成功: ${purchaseDetails.productID}');
     if (purchaseDetails.productID == StaticKey.inAppPurchaseRemoveAdsId) {
-      SharedPreferencesService().saveRemoveAds(true);
+      final notifier = ref.read(removeAdsProvider.notifier);
+      notifier.update(true);
     }
   }
 
