@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
+import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilitys/custom_colors.dart';
 import 'package:salary/views/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -24,6 +25,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseAnalyticsのインスタンスを作成
   FirebaseAnalytics _ = FirebaseAnalytics.instance;
+
+  // SharedPreferencesの初期化
+  await SharedPreferencesService().init();
 
   final passwordService = PasswordService();
 

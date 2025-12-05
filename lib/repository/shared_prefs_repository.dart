@@ -1,19 +1,45 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum SharedPreferencesKeys {
-  userName('username');
+  removeAds('removeAds');
 
   final String key;
   const SharedPreferencesKeys(this.key);
 }
 
-class SharedPreferencesRepository {
-  static final SharedPreferencesRepository _instance =
-      SharedPreferencesRepository._internal();
-  factory SharedPreferencesRepository() => _instance;
+class SharedPreferencesService {
+  static final SharedPreferencesService _instance =
+  SharedPreferencesService._internal();
+  factory SharedPreferencesService() => _instance;
+
+  SharedPreferencesService._internal();
+
+  late final _SharedPreferencesRepository _repository;
+
+  Future<void> init() async {
+    _repository = _SharedPreferencesRepository();
+    _repository.init();
+  }
+
+  Future<void> saveRemoveAds(bool value) async {
+    _repository.saveBool(SharedPreferencesKeys.removeAds, value);
+  }
+
+  bool fetchRemoveAds() => _repository.getBool(SharedPreferencesKeys.removeAds);
+}
+
+/// シングルトン設計
+/// ```
+/// // 普通にインスタンス化するだけでシングルトンになる
+/// final repository = RealmRepository();
+/// ```
+class _SharedPreferencesRepository {
+  static final _SharedPreferencesRepository _instance =
+  _SharedPreferencesRepository._internal();
+  factory _SharedPreferencesRepository() => _instance;
   SharedPreferences? _prefs;
 
-  SharedPreferencesRepository._internal();
+  _SharedPreferencesRepository._internal();
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -33,6 +59,14 @@ class SharedPreferencesRepository {
 
   int? getInt(SharedPreferencesKeys key) {
     return _prefs?.getInt(key.key);
+  }
+
+  Future<void> saveBool(SharedPreferencesKeys key, bool value) async {
+    _prefs?.setBool(key.key, value);
+  }
+
+  bool getBool(SharedPreferencesKeys key) {
+    return _prefs?.getBool(key.key) ?? false;
   }
 
   Future<void> remove(SharedPreferencesKeys key) async {
