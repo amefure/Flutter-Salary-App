@@ -19,8 +19,8 @@
 ## 開発環境
 - Android Studio：Narwhal Feature Drop
 - Xcode：26.0.1 
-- Flutter：3.29.2 
-- Dart：3.7.2 
+- Flutter：3.38.3
+- Dart：3.10.1
 - Mac M1：Sequoia 15.6.1
 
 ## 構成
@@ -52,6 +52,9 @@
 ## Analytics
 
 - **[firebase_analytics](https://pub.dev/packages/firebase_analytics) (11.5.0)** - Firebase Analytics データ解析
+
+## InAppPurchase
+- **[in_app_purchase](https://pub.dev/packages/in_app_purchase) (3.2.3)** - アプリ内課金のOS機能ラッパー
 
 ## Utility
 - **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
