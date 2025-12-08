@@ -106,6 +106,11 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
     }
   }
 
+  /// 購入復元処理
+  Future<void> _restore() async {
+    await InAppPurchase.instance.restorePurchases();
+  }
+
   /// 購入成功処理
   void _deliverProduct(PurchaseDetails purchaseDetails) {
     setState(() {
@@ -153,53 +158,80 @@ class _InAppPurchaseState extends ConsumerState<InAppPurchaseView> {
          Expanded(
              child:
              ListView.builder(
-               itemCount: products.length,
+               itemCount: products.length + 1,
                itemBuilder: (context, index) {
+                 final isLast = index == products.length;
+
+                 if (isLast) {
+                   return _itemRowView(
+                     '購入アイテムを復元する',
+                     '一度ご購入いただけますと、\nアプリ再インストール時に「復元する」ボタンから復元が可能となっています。',
+                     '',
+                     '復元する',
+                     _restore,
+                   );
+                 }
+
                  final product = products[index];
-                 return Card(
-                   color: Colors.white,
-                   margin: const EdgeInsets.symmetric(
-                       horizontal: 16, vertical: 8),
-                   child: Padding(
-                     padding: const EdgeInsets.all(12),
-                     child: Column(
-                       spacing: 8,
-                       children: [
-                         // アイテムタイトル
-                         CustomText(
-                           text: product.title,
-                           textSize: TextSize.M,
-                           fontWeight: FontWeight.bold,
-                         ),
-                         // アイテム説明
-                         CustomText(
-                           text: '・${product.description}',
-                           textSize: TextSize.SS,
-                         ),
-                         // 金額
-                         CustomText(
-                           text: product.price,
-                           textSize: TextSize.L,
-                           fontWeight: FontWeight.bold,
-                         ),
-
-                         _purchasedIds.contains(product.id) ?
-                         CustomElevatedButton(
-                             text: '購入ずみ',
-                             onPressed: () {}
-                         ) : CustomElevatedButton(
-                             text: '購入する',
-                             onPressed: () => _buy(product)
-                         )
-
-                       ],
-                     ),
-                   ),
+                 final isPurchase =  _purchasedIds.contains(product.id);
+                 return _itemRowView(
+                   product.title,
+                   product.description,
+                   product.price,
+                   isPurchase ? '購入済み' : '購入する',
+                   isPurchase ? () {} : () => _buy(product),
                  );
                },
              )
          )
        ]
    );
+  }
+
+  Widget _itemRowView(
+      String title,
+      String description,
+      String price,
+      String buttonTitle,
+      VoidCallback onPressed,
+      ) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(
+          horizontal: 16, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          spacing: 8,
+          children: [
+            // アイテムタイトル
+            CustomText(
+              text: title,
+              textSize: TextSize.M,
+              fontWeight: FontWeight.bold,
+            ),
+            // アイテム説明
+            CustomText(
+              text: '・$description',
+              textSize: TextSize.SS,
+              maxLines: 3,
+            ),
+
+            if (price.isNotEmpty)
+            // 金額
+              CustomText(
+                text: price,
+                textSize: TextSize.L,
+                fontWeight: FontWeight.bold,
+              ),
+
+            CustomElevatedButton(
+                text: buttonTitle,
+                onPressed: onPressed
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
