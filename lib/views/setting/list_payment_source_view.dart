@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';

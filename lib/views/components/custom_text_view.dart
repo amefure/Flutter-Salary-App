@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 
 // フォントサイズのサイズを管理するEnum
 enum TextSize { SS, S, MS, M, ML, L }
