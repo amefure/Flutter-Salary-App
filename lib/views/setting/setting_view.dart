@@ -76,10 +76,10 @@ class _SettingViewState extends State<SettingView> {
                 }),
 
                 if (Platform.isIOS)
-                  _settingListTile('広告削除', CupertinoIcons.building_2_fill, () {
+                  _settingListTile('広告削除', CupertinoIcons.gift, () {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
-                        builder: (context) => InAppPurchaseView(),
+                        builder: (context) => const InAppPurchaseView(),
                       ),
                     );
                   }),
