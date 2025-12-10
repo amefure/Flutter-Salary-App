@@ -8,7 +8,6 @@ import 'package:salary/views/components/custom_text_view.dart';
 import 'in_app_purchase_state.dart';
 import 'in_app_purchase_viewmodel.dart';
 
-
 class InAppPurchaseView extends ConsumerWidget {
   const InAppPurchaseView({super.key});
 
@@ -29,6 +28,7 @@ class InAppPurchaseView extends ConsumerWidget {
             ? const Center(
           child: CustomText(
             text: '商品が見つかりません。\n時間を開けて再度お試しください。',
+            maxLines: 2,
           ),
         )
             : _productListView(state, vm),
@@ -63,9 +63,10 @@ class InAppPurchaseView extends ConsumerWidget {
               final p = state.products[index];
               final isPurchased = state.purchasedIds.contains(p.id);
 
+              // FIXME なせか空になる時があるのでisEmptyなら明示的に値を返す暫定対応
               return _itemRowView(
-                p.title,
-                p.description,
+                p.title.isEmpty ? '広告削除' : p.title,
+                p.description.isEmpty ? 'アプリ内に表示されているバナー広告が非表示になります。' : p.description,
                 p.price,
                 isPurchased ? '購入済み' : '購入する',
                 isPurchased ? () {} : () => vm.buy(p),
@@ -111,7 +112,7 @@ class InAppPurchaseView extends ConsumerWidget {
 
             CustomElevatedButton(
                 text: buttonTitle,
-                backgroundColor: buttonTitle == '購入済み' ? CustomColors.thema : CustomColors.foundation,
+                backgroundColor: buttonTitle == '購入済み' ? CustomColors.themaBlack : CustomColors.thema,
                 onPressed: onPressed
             )
           ],
