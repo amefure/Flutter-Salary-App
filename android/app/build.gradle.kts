@@ -42,7 +42,7 @@ android {
     defaultConfig {
         applicationId = "com.ame.Salary"
         // flutter.minSdkVersionを使用しない
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         // flutter.targetSdkVersionを使用しない
         targetSdk = 36
         versionCode = flutter.versionCode
