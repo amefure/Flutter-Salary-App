@@ -1,6 +1,6 @@
 // フォントサイズのサイズを管理するEnum
 import 'package:flutter/material.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 
 enum ThemaColor {
   red(CustomColors.negative, 0, 'クリムゾンレッド'),

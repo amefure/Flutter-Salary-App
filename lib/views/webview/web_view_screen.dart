@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// WebView

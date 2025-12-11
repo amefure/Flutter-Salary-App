@@ -32,7 +32,7 @@
  ∟ lib
      ∟ model        ・・・Relam Database Model & 自動生成ファイル
      ∟ repository   ・・・Realm / Shread Preferences / 生体認証リポジトリ
-     ∟ utilitys     ・・・日付 / カラー / 数値 etc...
+     ∟ utilities     ・・・日付 / カラー / 数値 etc...
      ∟ viewmodels   ・・・Realm Saraly ViewModel
      ∟ views        ・・・View
          ∟ components ・・・UIコンポーネント

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/views/components/custom_elevated_button.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/root_tab_view.dart';

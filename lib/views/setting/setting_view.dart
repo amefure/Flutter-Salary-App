@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:salary/repository/password_service.dart';
-import 'package:salary/utilitys/custom_colors.dart';
+import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/setting/app_lock_setting_view.dart';
-import 'package:salary/views/setting/in_app_purchase_view.dart';
+import 'package:salary/views/setting/in_app_purchase/in_app_purchase_view.dart';
 import 'package:salary/views/setting/list_payment_source_view.dart';
 import 'package:salary/views/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -75,14 +75,13 @@ class _SettingViewState extends State<SettingView> {
                   );
                 }),
 
-                if (Platform.isIOS)
-                  _settingListTile('広告削除', CupertinoIcons.gift, () {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => const InAppPurchaseView(),
-                      ),
-                    );
-                  }),
+                _settingListTile('広告削除', CupertinoIcons.gift, () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const InAppPurchaseView(),
+                    ),
+                  );
+                }),
 
                 _settingListTile(
                   'アプリロック',
