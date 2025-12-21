@@ -77,6 +77,8 @@ class SalaryNotifier extends StateNotifier<List<Salary>> {
       salary.deductionAmountItems.addAll(updateSalary.deductionAmountItems);
       // 支払い元
       salary.source = updateSalary.source;
+      // 賞与フラグ
+      salary.isBonus = updateSalary.isBonus;
       // MEMO
       salary.memo = updateSalary.memo;
     });

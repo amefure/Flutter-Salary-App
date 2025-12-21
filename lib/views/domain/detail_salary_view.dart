@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
-import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
@@ -103,13 +102,17 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   @override
   Widget build(BuildContext context) {
+    String title = DateTimeUtils.format(
+      dateTime: targetSalary?.createdAt ?? DateTime.now(),
+    );
+    if (targetSalary?.isBonus ?? false) {
+      title = '$title(賞)';
+    }
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation,
       navigationBar: CupertinoNavigationBar(
         middle: CustomText(
-          text: DateTimeUtils.format(
-            dateTime: targetSalary?.createdAt ?? DateTime.now(),
-          ),
+          text: title,
           fontWeight: FontWeight.bold,
         ),
         backgroundColor: CustomColors.foundation,

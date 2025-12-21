@@ -88,6 +88,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
             salary.deductionAmount,
             salary.netSalary,
             resetToMonthStart(salary.createdAt),
+            salary.isBonus,
             salary.memo,
             paymentAmountItems: salary.paymentAmountItems.toList(), // コピー
             deductionAmountItems: salary.deductionAmountItems.toList(), // コピー
@@ -104,6 +105,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           existingSalary.deductionAmount + salary.deductionAmount,
           existingSalary.netSalary + salary.netSalary,
           resetToMonthStart(existingSalary.createdAt), // 日付は元のまま
+          existingSalary.isBonus,
           existingSalary.memo,
           paymentAmountItems: existingSalary.paymentAmountItems.toList(), // コピー
           deductionAmountItems:

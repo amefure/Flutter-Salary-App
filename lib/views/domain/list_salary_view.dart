@@ -122,8 +122,8 @@ class _SalaryListViewState extends State<SalaryListView> {
                               ),
 
                               CustomText(
-                                text: '${salary.createdAt.month}月',
-                                textSize: TextSize.ML,
+                                text: !salary.isBonus ? '${salary.createdAt.month}月' :  '${salary.createdAt.month}月(賞)',
+                                textSize: !salary.isBonus ? TextSize.ML :  TextSize.SS,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),

@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'salary.dart';
@@ -6,6 +7,7 @@ part of 'salary.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// coverage:ignore-file
 // ignore_for_file: type=lint
 class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
   Salary(
@@ -14,6 +16,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
     int deductionAmount,
     int netSalary,
     DateTime createdAt,
+    bool isBonus,
     String memo, {
     Iterable<AmountItem> paymentAmountItems = const [],
     Iterable<AmountItem> deductionAmountItems = const [],
@@ -25,10 +28,17 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'netSalary', netSalary);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set<RealmList<AmountItem>>(
-        this, 'paymentAmountItems', RealmList<AmountItem>(paymentAmountItems));
-    RealmObjectBase.set<RealmList<AmountItem>>(this, 'deductionAmountItems',
-        RealmList<AmountItem>(deductionAmountItems));
+      this,
+      'paymentAmountItems',
+      RealmList<AmountItem>(paymentAmountItems),
+    );
+    RealmObjectBase.set<RealmList<AmountItem>>(
+      this,
+      'deductionAmountItems',
+      RealmList<AmountItem>(deductionAmountItems),
+    );
     RealmObjectBase.set(this, 'source', source);
+    RealmObjectBase.set(this, 'isBonus', isBonus);
     RealmObjectBase.set(this, 'memo', memo);
   }
 
@@ -89,6 +99,11 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'source', value);
 
   @override
+  bool get isBonus => RealmObjectBase.get<bool>(this, 'isBonus') as bool;
+  @override
+  set isBonus(bool value) => RealmObjectBase.set(this, 'isBonus', value);
+
+  @override
   String get memo => RealmObjectBase.get<String>(this, 'memo') as String;
   @override
   set memo(String value) => RealmObjectBase.set(this, 'memo', value);
@@ -114,6 +129,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
       'paymentAmountItems': paymentAmountItems.toEJson(),
       'deductionAmountItems': deductionAmountItems.toEJson(),
       'source': source.toEJson(),
+      'isBonus': isBonus.toEJson(),
       'memo': memo.toEJson(),
     };
   }
@@ -128,6 +144,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
         'deductionAmount': EJsonValue deductionAmount,
         'netSalary': EJsonValue netSalary,
         'createdAt': EJsonValue createdAt,
+        'isBonus': EJsonValue isBonus,
         'memo': EJsonValue memo,
       } =>
         Salary(
@@ -136,6 +153,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
           fromEJson(deductionAmount),
           fromEJson(netSalary),
           fromEJson(createdAt),
+          fromEJson(isBonus),
           fromEJson(memo),
           paymentAmountItems: fromEJson(ejson['paymentAmountItems']),
           deductionAmountItems: fromEJson(ejson['deductionAmountItems']),
@@ -154,12 +172,25 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('deductionAmount', RealmPropertyType.int),
       SchemaProperty('netSalary', RealmPropertyType.int),
       SchemaProperty('createdAt', RealmPropertyType.timestamp),
-      SchemaProperty('paymentAmountItems', RealmPropertyType.object,
-          linkTarget: 'AmountItem', collectionType: RealmCollectionType.list),
-      SchemaProperty('deductionAmountItems', RealmPropertyType.object,
-          linkTarget: 'AmountItem', collectionType: RealmCollectionType.list),
-      SchemaProperty('source', RealmPropertyType.object,
-          optional: true, linkTarget: 'PaymentSource'),
+      SchemaProperty(
+        'paymentAmountItems',
+        RealmPropertyType.object,
+        linkTarget: 'AmountItem',
+        collectionType: RealmCollectionType.list,
+      ),
+      SchemaProperty(
+        'deductionAmountItems',
+        RealmPropertyType.object,
+        linkTarget: 'AmountItem',
+        collectionType: RealmCollectionType.list,
+      ),
+      SchemaProperty(
+        'source',
+        RealmPropertyType.object,
+        optional: true,
+        linkTarget: 'PaymentSource',
+      ),
+      SchemaProperty('isBonus', RealmPropertyType.bool),
       SchemaProperty('memo', RealmPropertyType.string),
     ]);
   }();
@@ -170,11 +201,7 @@ class Salary extends _Salary with RealmEntity, RealmObjectBase, RealmObject {
 
 class AmountItem extends _AmountItem
     with RealmEntity, RealmObjectBase, RealmObject {
-  AmountItem(
-    String id,
-    String key,
-    int value,
-  ) {
+  AmountItem(String id, String key, int value) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'key', key);
     RealmObjectBase.set(this, 'value', value);
@@ -220,16 +247,8 @@ class AmountItem extends _AmountItem
   static AmountItem _fromEJson(EJsonValue ejson) {
     if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
-      {
-        'id': EJsonValue id,
-        'key': EJsonValue key,
-        'value': EJsonValue value,
-      } =>
-        AmountItem(
-          fromEJson(id),
-          fromEJson(key),
-          fromEJson(value),
-        ),
+      {'id': EJsonValue id, 'key': EJsonValue key, 'value': EJsonValue value} =>
+        AmountItem(fromEJson(id), fromEJson(key), fromEJson(value)),
       _ => raiseInvalidEJson(ejson),
     };
   }
@@ -238,11 +257,15 @@ class AmountItem extends _AmountItem
     RealmObjectBase.registerFactory(AmountItem._);
     register(_toEJson, _fromEJson);
     return const SchemaObject(
-        ObjectType.realmObject, AmountItem, 'AmountItem', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('key', RealmPropertyType.string),
-      SchemaProperty('value', RealmPropertyType.int),
-    ]);
+      ObjectType.realmObject,
+      AmountItem,
+      'AmountItem',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('key', RealmPropertyType.string),
+        SchemaProperty('value', RealmPropertyType.int),
+      ],
+    );
   }();
 
   @override
@@ -251,12 +274,7 @@ class AmountItem extends _AmountItem
 
 class PaymentSource extends _PaymentSource
     with RealmEntity, RealmObjectBase, RealmObject {
-  PaymentSource(
-    String id,
-    String name,
-    int themaColor, {
-    String? memo,
-  }) {
+  PaymentSource(String id, String name, int themaColor, {String? memo}) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'themaColor', themaColor);
@@ -290,9 +308,9 @@ class PaymentSource extends _PaymentSource
       RealmObjectBase.getChanges<PaymentSource>(this);
 
   @override
-  Stream<RealmObjectChanges<PaymentSource>> changesFor(
-          [List<String>? keyPaths]) =>
-      RealmObjectBase.getChangesFor<PaymentSource>(this, keyPaths);
+  Stream<RealmObjectChanges<PaymentSource>> changesFor([
+    List<String>? keyPaths,
+  ]) => RealmObjectBase.getChangesFor<PaymentSource>(this, keyPaths);
 
   @override
   PaymentSource freeze() => RealmObjectBase.freezeObject<PaymentSource>(this);
@@ -329,12 +347,16 @@ class PaymentSource extends _PaymentSource
     RealmObjectBase.registerFactory(PaymentSource._);
     register(_toEJson, _fromEJson);
     return const SchemaObject(
-        ObjectType.realmObject, PaymentSource, 'PaymentSource', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('themaColor', RealmPropertyType.int),
-      SchemaProperty('memo', RealmPropertyType.string, optional: true),
-    ]);
+      ObjectType.realmObject,
+      PaymentSource,
+      'PaymentSource',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('name', RealmPropertyType.string),
+        SchemaProperty('themaColor', RealmPropertyType.int),
+        SchemaProperty('memo', RealmPropertyType.string, optional: true),
+      ],
+    );
   }();
 
   @override

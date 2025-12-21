@@ -10,6 +10,7 @@ import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
+import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
 import 'package:salary/views/domain/input/detail_input_view.dart';
@@ -35,6 +36,9 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
   final TextEditingController _paymentSourceController =
       TextEditingController();
   final TextEditingController _memoController = TextEditingController();
+
+  /// ボーナスかどうかのフラグ
+  bool _isBonus = false;
 
   /// 支払い元一覧
   List<PaymentSource> _paymentSources = [];
@@ -71,6 +75,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       _paymentAmountController.text = salary.paymentAmount.toString();
       _deductionAmountController.text = salary.deductionAmount.toString();
       _netSalaryController.text = salary.netSalary.toString();
+      _isBonus = salary.isBonus;
       // mapでコピーを作成しておかないと参照渡しでRealm管理下オブジェクトがわたり
       // write内でないので書き込み権限エラーになる
       // しかしコピーしたものでそのまま更新しようとするとエラーになるので注意
@@ -260,6 +265,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       deductionAmount,
       netSalary,
       _createdAt,
+      _isBonus,
       memo,
       paymentAmountItems: _paymentAmountItems,
       deductionAmountItems: _deductionAmountItems,
@@ -517,6 +523,27 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
                 ),
 
                 const SizedBox(height: 20),
+
+                const CustomLabelView(labelText: '賞与'),
+
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+
+                    const Spacer(),
+
+                    CupertinoSwitch(
+                      activeTrackColor: CustomColors.thema,
+                      value: _isBonus,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isBonus = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
 
                 CustomTextField(
                   controller: _memoController,
