@@ -8,6 +8,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/utilities/logger.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
@@ -29,6 +30,10 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
   late Map<String, List<Salary>> _groupedBySource;
   /// Salaryに存在する支払い元リスト
   late List<PaymentSource> _sourceList;
+
+  /// 全てのSalary一覧
+  List<Salary> _allSalaries = List.empty();
+
   /// 表示中の支払い元
   late PaymentSource _selectedSource;
   /// 表示中の年月
@@ -41,7 +46,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     ThemaColor.blue.value,
   );
 
-   /// "全て" を表すダミーの PaymentSource を作成
+   /// "未設定" を表すダミーの PaymentSource を作成
   final PaymentSource _unSetSource = PaymentSource(
     Uuid.v4().toString(),
     '未設定',
@@ -55,6 +60,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
     _selectedYear = DateTime.now().year;
   }
 
+  /// 月(yyyy-MM)単位にデータをまとめてグルーピング
   void _groupSalariesBySource(List<Salary> salaryList) {
     _groupedBySource = {};
 
@@ -96,7 +102,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           ),
         );
       } else {
-        // すでに存在するデータなら、新しいコピーを作成して置き換える
+        // すでに存在するデータなら、金額をaddした新しいコピーを作成して置き換える
         var existingSalary = _groupedBySource[sourceName]![existingIndex];
 
         var updatedSalary = Salary(
@@ -157,9 +163,9 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           /// 広告削除フラグ
           final removeAds = ref.watch(removeAdsProvider);
 
-          final salaries = ref.watch(salaryProvider.notifier).allSalaries;
+          _allSalaries = ref.watch(salaryProvider.notifier).allSalaries;
           final _ = ref.watch(paymentSourceProvider);
-          _groupSalariesBySource(salaries);
+          _groupSalariesBySource(_allSalaries);
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -220,7 +226,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
                         // 年ごとの給料グラフ
                         SizedBox(
                             width: screen.width * 0.95,
-                            child: _buildYearlyPaymentBarChart(salaries)
+                            child: _buildYearlyPaymentBarChart(_allSalaries)
                         ),
 
                         const SizedBox(height: 20),
@@ -327,36 +333,66 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
 
   Widget _tableSalaryInfo() {
     // 選択中のカテゴリでフィルタリング
-    Map<String, List<Salary>> filteredData =
+    final List<Salary> filteredSourceList =
     _selectedSource.name == 'ALL'
-        ? _groupedBySource
-        : {
-      _selectedSource.name:
-      _groupedBySource[_selectedSource.name] ?? [],
-    };
+        ? _allSalaries
+        : _allSalaries
+        .where((salary) =>
+    salary.source?.name == _selectedSource.name)
+        .toList();
 
+    // 当年(総支給)
     int paymentAmountSum = 0;
+    // 当年(手取り)
     int netSalarySum = 0;
+    // 前年(総支給)
     int prevPaymentAmountSum = 0;
+    // 前年(手取り)
     int prevNetSalarySum = 0;
 
-    filteredData.forEach((source, salaries) {
-      // 当年
-      final filteredSalaries =
-      salaries.where((s) => s.createdAt.year == _selectedYear).toList();
-      for (var salary in filteredSalaries) {
-        paymentAmountSum += salary.paymentAmount;
-        netSalarySum += salary.netSalary;
+    // 当年夏季賞与(総支給)
+    int summerBonus = 0;
+    // 当年冬季賞与(総支給)
+    int winterBonus = 0;
+    // 前年夏季賞与(総支給)
+    int prevSummerBonus = 0;
+    // 前年冬季賞与(総支給)
+    int prevWinterBonus = 0;
+
+    // 当年
+    final theYearSalaries = filteredSourceList.where((s) => s.createdAt.year == _selectedYear).toList();
+    for (var salary in theYearSalaries) {
+      paymentAmountSum += salary.paymentAmount;
+      netSalarySum += salary.netSalary;
+
+      // 夏季賞与計算(総支給)
+      if (salary.isBonus && salary.createdAt.month <= DateTime.june) {
+        summerBonus += salary.paymentAmount;
       }
 
-      // 前年
-      final prevSalaries =
-      salaries.where((s) => s.createdAt.year == _selectedYear - 1).toList();
-      for (var salary in prevSalaries) {
-        prevPaymentAmountSum += salary.paymentAmount;
-        prevNetSalarySum += salary.netSalary;
+      // 冬季賞与計算
+      if (salary.isBonus && salary.createdAt.month > DateTime.june && salary.createdAt.month <= 12) {
+        winterBonus += salary.paymentAmount;
       }
-    });
+    }
+
+    // 当年
+    final preYearSalaries = filteredSourceList.where((s) => s.createdAt.year == _selectedYear - 1).toList();
+    for (var salary in preYearSalaries) {
+      prevPaymentAmountSum += salary.paymentAmount;
+      prevNetSalarySum += salary.netSalary;
+
+      // 夏季賞与計算(総支給)
+      if (salary.isBonus && salary.createdAt.month <= 6) {
+        prevSummerBonus += salary.paymentAmount;
+      }
+
+      // 冬季賞与計算
+      if (salary.isBonus) {
+        prevWinterBonus += salary.paymentAmount;
+      }
+    }
+
 
     return Column(
       spacing: 20,
@@ -370,6 +406,16 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
           '年収（手取り）',
           netSalarySum,
           diff: netSalarySum - prevNetSalarySum,
+        ),
+        _buildSalaryRow(
+          '夏季賞与（総支給）',
+          summerBonus,
+          diff: summerBonus - prevSummerBonus,
+        ),
+        _buildSalaryRow(
+          '冬季賞与（総支給）',
+          winterBonus,
+          diff: winterBonus - prevWinterBonus,
         ),
       ],
     );
@@ -726,7 +772,7 @@ class ChartSalaryViewState extends State<ChartSalaryView> {
             topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
-          gridData: FlGridData(show: true),
+          gridData: const FlGridData(show: true),
           borderData: FlBorderData(show: false),
         ),
       ),
