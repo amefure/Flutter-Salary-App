@@ -52,6 +52,7 @@ class _Body extends ConsumerWidget {
                       children: [
                         SizedBox(width: screen.width),
 
+                        // 支払い元選択UI
                         SizedBox(
                           width: screen.width * 0.5,
                           child: _SourceSelector(),
@@ -83,7 +84,7 @@ class _Body extends ConsumerWidget {
                             child: const CustomLabelView(labelText: '年別合計金額(10年間)')
                         ),
 
-                        // 年ごとの給料グラフ
+                        // 年ごとの給料グラフ(過去10年分)
                         SizedBox(
                           width: screen.width * 0.95,
                           child: _buildYearlyPaymentBarChart(ref),
@@ -101,35 +102,37 @@ class _Body extends ConsumerWidget {
     );
   }
 
+  Widget _noChartsData() {
+    return Container(
+      width: double.infinity,
+      height: 300,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: CupertinoColors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.center,
+      child: const CustomText(
+        text: 'データがありません',
+        textSize: TextSize.M,
+        fontWeight: FontWeight.bold,
+        color: CupertinoColors.systemGrey,
+      ),
+    );
+  }
+
   /// グラフ描画 & NoData UI
   Widget _buildYearSalaryChart(WidgetRef ref) {
     final state = ref.watch(chartSalaryProvider);
     final notifier = ref.read(chartSalaryProvider.notifier);
 
-    // 🔽 ここで「今までのメンバ変数」を再現する
     final _selectedSource = state.selectedSource;
 
-    // ViewModel が持っているダミーSource
     final _allSource = notifier.allSource;
 
     List<LineChartBarData> lines = _buildLines(ref);
     if (lines.isEmpty) {
-      return Container(
-        width: double.infinity,
-        height: 300,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: CupertinoColors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        alignment: Alignment.center,
-        child: const CustomText(
-          text: 'データがありません',
-          textSize: TextSize.M,
-          fontWeight: FontWeight.bold,
-          color: CupertinoColors.systemGrey,
-        ),
-      );
+      return _noChartsData();
     }
     // Y軸の最大値を取得
     final maxY = _calculateMaxY(lines);
@@ -216,24 +219,24 @@ class _Body extends ConsumerWidget {
 
   /// 選択された支払い元のデータを取得し、折れ線データを生成
   List<LineChartBarData> _buildLines(WidgetRef ref) {
-    final _selectedSource = state.selectedSource;
-    final _selectedYear = state.selectedYear;
-    final _groupedBySource = state.groupedBySource;
+    final selectedSource = state.selectedSource;
+    final selectedYear = state.selectedYear;
+    final groupedBySource = state.groupedBySource;
     List<LineChartBarData> lines = [];
 
     // 選択中のカテゴリでフィルタリング
     Map<String, List<MonthlySalarySummary>> filteredData =
-        _selectedSource.name == 'ALL'
-            ? _groupedBySource
+    selectedSource.name == ChartSalaryViewModel.ALL_TITLE
+            ? groupedBySource
             : {
-              _selectedSource.name:
-                  _groupedBySource[_selectedSource.name] ?? [],
+      selectedSource.name:
+      groupedBySource[selectedSource.name] ?? [],
             };
 
     filteredData.forEach((source, salaries) {
       // 選択中の年月でフィルタリング
       List<MonthlySalarySummary> filteredSalaries =
-          salaries.where((s) => s.createdAt.year == _selectedYear).toList();
+          salaries.where((s) => s.createdAt.year == selectedYear).toList();
 
       // 日付順にソート
       filteredSalaries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -286,18 +289,19 @@ class _Body extends ConsumerWidget {
     return lines;
   }
 
+  /// 年ごとの給料グラフ(過去10年分)
   Widget _buildYearlyPaymentBarChart(WidgetRef ref) {
-    final _selectedSource = state.selectedSource;
-    final _groupedBySource = state.groupedBySource;
+    final selectedSource = state.selectedSource;
+    final groupedBySource = state.groupedBySource;
     // 年ごとの総支給額を集計
     Map<int, int> yearlyPaymentSums = {};
 
     Map<String, List<MonthlySalarySummary>> filteredData =
-    _selectedSource.name == 'ALL'
-        ? _groupedBySource
+    selectedSource.name == ChartSalaryViewModel.ALL_TITLE
+        ? groupedBySource
         : {
-      _selectedSource.name:
-      _groupedBySource[_selectedSource.name] ?? [],
+      selectedSource.name:
+      groupedBySource[selectedSource.name] ?? [],
     };
 
     filteredData.forEach((source, salaryList) {
@@ -308,21 +312,7 @@ class _Body extends ConsumerWidget {
     });
 
     if (yearlyPaymentSums.isEmpty) {
-      return Container(
-        width: double.infinity,
-        height: 250,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: CupertinoColors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const CustomText(
-          text: 'データがありません',
-          textSize: TextSize.M,
-          fontWeight: FontWeight.bold,
-          color: CupertinoColors.systemGrey,
-        ),
-      );
+      return _noChartsData();
     }
 
     // 年をソートし、最大10年分だけ使用
@@ -416,95 +406,34 @@ class _Body extends ConsumerWidget {
     );
   }
 
+  /// 当年 / 前年比較テーブル
   Widget _tableSalaryInfo( WidgetRef ref) {
-    final _selectedSource = state.selectedSource;
-    final _selectedYear = state.selectedYear;
-    final _groupedBySource = state.groupedBySource;
-    final _allSalaries = state.allSalaries;
-    // 選択中のカテゴリでフィルタリング
-    final List<Salary> filteredSourceList =
-    _selectedSource.name == 'ALL'
-        ? _allSalaries
-        : _allSalaries
-        .where((salary) =>
-    salary.source?.name == _selectedSource.name)
-        .toList();
-
-    // 当年(総支給)
-    int paymentAmountSum = 0;
-    // 当年(手取り)
-    int netSalarySum = 0;
-    // 前年(総支給)
-    int prevPaymentAmountSum = 0;
-    // 前年(手取り)
-    int prevNetSalarySum = 0;
-
-    // 当年夏季賞与(総支給)
-    int summerBonus = 0;
-    // 当年冬季賞与(総支給)
-    int winterBonus = 0;
-    // 前年夏季賞与(総支給)
-    int prevSummerBonus = 0;
-    // 前年冬季賞与(総支給)
-    int prevWinterBonus = 0;
-
-    // 当年
-    final theYearSalaries = filteredSourceList.where((s) => s.createdAt.year == _selectedYear).toList();
-    for (var salary in theYearSalaries) {
-      paymentAmountSum += salary.paymentAmount;
-      netSalarySum += salary.netSalary;
-
-      // 夏季賞与計算(総支給)
-      if (salary.isBonus && salary.createdAt.month <= DateTime.june) {
-        summerBonus += salary.paymentAmount;
-      }
-
-      // 冬季賞与計算
-      if (salary.isBonus && salary.createdAt.month > DateTime.june && salary.createdAt.month <= 12) {
-        winterBonus += salary.paymentAmount;
-      }
-    }
-
-    // 当年
-    final preYearSalaries = filteredSourceList.where((s) => s.createdAt.year == _selectedYear - 1).toList();
-    for (var salary in preYearSalaries) {
-      prevPaymentAmountSum += salary.paymentAmount;
-      prevNetSalarySum += salary.netSalary;
-
-      // 夏季賞与計算(総支給)
-      if (salary.isBonus && salary.createdAt.month <= 6) {
-        prevSummerBonus += salary.paymentAmount;
-      }
-
-      // 冬季賞与計算
-      if (salary.isBonus) {
-        prevWinterBonus += salary.paymentAmount;
-      }
-    }
-
+    final summary = ref
+        .watch(chartSalaryProvider.notifier)
+        .buildYearlySummary();
 
     return Column(
       spacing: 20,
       children: [
         _buildSalaryRow(
           '年収（総支給）',
-          paymentAmountSum,
-          diff: paymentAmountSum - prevPaymentAmountSum,
+          summary.paymentAmount,
+          diff: summary.diffPaymentAmount,
         ),
         _buildSalaryRow(
           '年収（手取り）',
-          netSalarySum,
-          diff: netSalarySum - prevNetSalarySum,
+          summary.netSalary,
+          diff: summary.diffNetSalary,
         ),
         _buildSalaryRow(
           '夏季賞与（総支給）',
-          summerBonus,
-          diff: summerBonus - prevSummerBonus,
+          summary.summerBonus,
+          diff: summary.diffSummerBonus,
         ),
         _buildSalaryRow(
           '冬季賞与（総支給）',
-          winterBonus,
-          diff: winterBonus - prevWinterBonus,
+          summary.winterBonus,
+          diff: summary.diffWinterBonus,
         ),
       ],
     );
