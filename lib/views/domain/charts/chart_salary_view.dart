@@ -2,17 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'dart:math';
-import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
-import 'package:salary/utilities/logger.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
-import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
-import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
@@ -47,56 +41,62 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screen = MediaQuery.of(context).size;
+    /// 広告削除フラグ
+    final removeAds = ref.watch(removeAdsProvider);
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Expanded(child: SingleChildScrollView(
-            child: Column(
-                children: [
-                  SizedBox(width: screen.width),
+          Expanded(
+              child: SingleChildScrollView(
+                  child: Column(
+                      children: [
+                        SizedBox(width: screen.width),
 
-                  SizedBox(
-                    width: screen.width * 0.5,
-                    child: _SourceSelector(),
+                        SizedBox(
+                          width: screen.width * 0.5,
+                          child: _SourceSelector(),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: const CustomLabelView(labelText: '月別合計金額')
+                        ),
+
+                        // 月ごとの給料グラフ
+                        SizedBox(
+                          width: screen.width * 0.95,
+                          child: _buildYearSalaryChart(ref),
+                        ),
+
+                        _YearSelector(year: state.selectedYear),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo(ref)),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(
+                            width: screen.width * 0.95,
+                            child: const CustomLabelView(labelText: '年別合計金額(10年間)')
+                        ),
+
+                        // 年ごとの給料グラフ
+                        SizedBox(
+                          width: screen.width * 0.95,
+                          child: _buildYearlyPaymentBarChart(ref),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                      ]
                   ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                      width: screen.width * 0.95,
-                      child: const CustomLabelView(labelText: '月別合計金額')
-                  ),
-
-                  // 月ごとの給料グラフ
-                  SizedBox(
-                      width: screen.width * 0.95,
-                      child: _buildYearSalaryChart(ref),
-                  ),
-
-                  _YearSelector(year: state.selectedYear),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(width: screen.width * 0.9, child: _tableSalaryInfo(ref)),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                      width: screen.width * 0.95,
-                      child: const CustomLabelView(labelText: '年別合計金額(10年間)')
-                  ),
-
-                  // 年ごとの給料グラフ
-                  SizedBox(
-                      width: screen.width * 0.95,
-                      child: _buildYearlyPaymentBarChart(ref),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                ]
-            ),
-          ))
+              ),
+          ),
+          if (!removeAds)
+            const AdMobBannerWidget(),
         ]
     );
   }
