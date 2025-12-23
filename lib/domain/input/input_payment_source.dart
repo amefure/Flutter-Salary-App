@@ -6,10 +6,10 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
-import 'package:salary/views/components/custom_elevated_button.dart';
-import 'package:salary/views/components/custom_label_view.dart';
-import 'package:salary/views/components/custom_text_field_view.dart';
-import 'package:salary/views/domain/charts/chart_salary_view_model.dart';
+import 'package:salary/common/components/custom_elevated_button.dart';
+import 'package:salary/common/components/custom_label_view.dart';
+import 'package:salary/common/components/custom_text_field_view.dart';
+import 'package:salary/charts/chart_salary_view_model.dart';
 
 class InputPaymentSourceView extends StatefulWidget {
   const InputPaymentSourceView({super.key, this.paymentSource});

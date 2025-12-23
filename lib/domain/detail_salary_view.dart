@@ -9,10 +9,10 @@ import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
-import 'package:salary/views/components/ad_banner_widget.dart';
-import 'package:salary/views/components/custom_label_view.dart';
-import 'package:salary/views/components/custom_text_view.dart';
-import 'package:salary/views/domain/input/input_salary_view.dart';
+import 'package:salary/common/components/ad_banner_widget.dart';
+import 'package:salary/common/components/custom_label_view.dart';
+import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/domain/input/input_salary_view.dart';
 
 class DetailSalaryView extends StatefulWidget {
   const DetailSalaryView({super.key, required this.salary});

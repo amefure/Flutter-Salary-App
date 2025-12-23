@@ -8,9 +8,9 @@ import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
-import 'package:salary/views/components/custom_text_view.dart';
-import 'package:salary/views/domain/detail_salary_view.dart';
-import 'package:salary/views/domain/input/input_salary_view.dart';
+import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/domain/detail_salary_view.dart';
+import 'package:salary/domain/input/input_salary_view.dart';
 
 class SalaryListView extends StatefulWidget {
   const SalaryListView({super.key});

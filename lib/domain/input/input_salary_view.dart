@@ -9,13 +9,13 @@ import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
-import 'package:salary/views/components/ad_banner_widget.dart';
-import 'package:salary/views/components/custom_label_view.dart';
-import 'package:salary/views/components/custom_text_field_view.dart';
-import 'package:salary/views/components/custom_text_view.dart';
-import 'package:salary/views/domain/charts/chart_salary_view_model.dart';
-import 'package:salary/views/domain/input/detail_input_view.dart';
-import 'package:salary/views/domain/input/input_payment_source.dart';
+import 'package:salary/common/components/ad_banner_widget.dart';
+import 'package:salary/common/components/custom_label_view.dart';
+import 'package:salary/common/components/custom_text_field_view.dart';
+import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/domain/input/detail_input_view.dart';
+import 'package:salary/domain/input/input_payment_source.dart';
 
 /// 給料入力画面
 class InputSalaryView extends ConsumerStatefulWidget {

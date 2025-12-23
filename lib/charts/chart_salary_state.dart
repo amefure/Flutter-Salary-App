@@ -1,5 +1,5 @@
 import 'package:salary/models/salary.dart';
-import 'package:salary/views/domain/charts/chart_salary_view_model.dart';
+import 'package:salary/charts/chart_salary_view_model.dart';
 
 class ChartSalaryState {
   /// 全てのSalary一覧

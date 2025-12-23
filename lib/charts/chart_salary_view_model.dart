@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/charts/chart_salary_state.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
-import 'chart_salary_state.dart';
 
 final chartSalaryProvider =
 StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((

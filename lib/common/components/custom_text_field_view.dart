@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:salary/views/components/custom_label_view.dart';
+import 'package:salary/common/components/custom_label_view.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;

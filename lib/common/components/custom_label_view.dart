@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/common/components/custom_text_view.dart';
 
 class CustomLabelView extends StatelessWidget {
   final String labelText;
