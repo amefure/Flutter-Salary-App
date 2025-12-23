@@ -55,6 +55,11 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     _loadSalaries();
   }
 
+  /// リフレッシュ
+  void refresh() {
+    // データロード
+    _loadSalaries();
+  }
 
   /// Realm から Salary を取得
   void _loadSalaries() {

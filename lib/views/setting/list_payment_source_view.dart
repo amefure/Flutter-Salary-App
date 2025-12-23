@@ -5,6 +5,7 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/domain/charts/chart_salary_view_model.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';
 
 /// [ConsumerWidget]でUI更新
@@ -54,6 +55,8 @@ class ListPaymentSourceView extends ConsumerWidget {
     PaymentSource paymentSource,
   ) {
     ref.read(paymentSourceProvider.notifier).delete(paymentSource);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
   }

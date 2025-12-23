@@ -13,6 +13,7 @@ import 'package:salary/views/components/ad_banner_widget.dart';
 import 'package:salary/views/components/custom_label_view.dart';
 import 'package:salary/views/components/custom_text_field_view.dart';
 import 'package:salary/views/components/custom_text_view.dart';
+import 'package:salary/views/domain/charts/chart_salary_view_model.dart';
 import 'package:salary/views/domain/input/detail_input_view.dart';
 import 'package:salary/views/domain/input/input_payment_source.dart';
 
@@ -277,6 +278,9 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
     } else {
       ref.read(salaryProvider.notifier).add(newSalary);
     }
+
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
 
     Navigator.of(context).pop();
   }

@@ -102,6 +102,7 @@ class _Body extends ConsumerWidget {
     );
   }
 
+  /// データなしグラフ
   Widget _noChartsData() {
     return Container(
       width: double.infinity,
@@ -126,9 +127,9 @@ class _Body extends ConsumerWidget {
     final state = ref.watch(chartSalaryProvider);
     final notifier = ref.read(chartSalaryProvider.notifier);
 
-    final _selectedSource = state.selectedSource;
+    final selectedSource = state.selectedSource;
 
-    final _allSource = notifier.allSource;
+    final allSource = notifier.allSource;
 
     List<LineChartBarData> lines = _buildLines(ref);
     if (lines.isEmpty) {
@@ -149,7 +150,7 @@ class _Body extends ConsumerWidget {
         LineChartData(
           // ツールチップ設定
           lineTouchData: LineTouchData(
-            enabled: _selectedSource != _allSource ? true : false,
+            enabled: selectedSource != allSource ? true : false,
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 touchedSpots.removeLast();
