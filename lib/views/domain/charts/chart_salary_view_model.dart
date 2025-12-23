@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
@@ -186,7 +185,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
         if (s.isBonus && s.createdAt.month <= 6) {
           prevSummerBonus += s.paymentAmount;
         }
-        if (s.isBonus) {
+        if (s.isBonus && s.createdAt.month > 6) {
           prevWinterBonus += s.paymentAmount;
         }
       }
