@@ -45,7 +45,7 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
 
   /// 削除
   void delete(PaymentSource paymentSource) {
-    _repository.delete<PaymentSource>(paymentSource);
+    _repository.delete<PaymentSource>(paymentSource.id);
     fetchAll();
   }
 }

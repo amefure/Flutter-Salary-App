@@ -34,7 +34,16 @@ class RealmRepository {
 
   /// ジェネリクスで指定した全データを取得
   List<T> fetchAll<T extends RealmObject>() {
-    return _realm.all<T>().toList();
+    return _realm.all<T>().freeze().toList();
+  }
+
+  /// ジェネリクスで指定した対象IDのデータデータを取得
+  T? fetchById<T extends RealmObject>(
+      String id
+      ) {
+    // ID で検索
+    final item = _realm.find<T>(id);
+    return item?.freeze() as T;
   }
 
   /// ジェネリクスで指定した新しいデータを追加
@@ -59,9 +68,12 @@ class RealmRepository {
   }
 
   /// ジェネリクスで指定したデータを削除
-  void delete<T extends RealmObject>(T item) {
+  void delete<T extends RealmObject>(String id) {
     _realm.write(() {
-      _realm.delete(item);
+      final target = _realm.find<T>(id); // ID で検索
+      if (target != null) {
+        _realm.delete(target);
+      }
     });
   }
 

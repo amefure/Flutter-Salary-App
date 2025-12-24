@@ -9,7 +9,7 @@ import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/domain/detail_salary_view.dart';
+import 'package:salary/domain/detail/detail_salary_view.dart';
 import 'package:salary/domain/input/input_salary_view.dart';
 
 class SalaryListView extends StatefulWidget {
@@ -83,7 +83,7 @@ class _SalaryListViewState extends State<SalaryListView> {
                   onTap: () {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
-                        builder: (context) => DetailSalaryView(salary: salary),
+                        builder: (context) => DetailSalaryView(id: salary.id),
                       ),
                     );
                   },

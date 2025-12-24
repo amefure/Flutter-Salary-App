@@ -87,7 +87,7 @@ class SalaryNotifier extends StateNotifier<List<Salary>> {
 
   /// 削除
   void delete(Salary salary) {
-    _repository.delete<Salary>(salary);
+    _repository.delete<Salary>(salary.id);
     fetchAll();
   }
 }

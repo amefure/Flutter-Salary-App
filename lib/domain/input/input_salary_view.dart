@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilities/custom_colors.dart';
@@ -275,6 +276,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
     if (widget.salary case Salary salary) {
       ref.read(salaryProvider.notifier).update(salary, newSalary);
+      ref.read(detailSalaryProvider(salary.id).notifier).loadSalary(salary.id);
     } else {
       ref.read(salaryProvider.notifier).add(newSalary);
     }

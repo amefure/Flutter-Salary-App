@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
@@ -14,37 +16,156 @@ import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/domain/input/input_salary_view.dart';
 
-class DetailSalaryView extends StatefulWidget {
-  const DetailSalaryView({super.key, required this.salary});
-
-  final Salary salary;
-
-  @override
-  State<DetailSalaryView> createState() => _DetailSalaryViewState();
-}
-
-class _DetailSalaryViewState extends State<DetailSalaryView> {
-  /// この画面で表示対象のSalary
-  /// initStateでDetailSalaryViewから受けとったものをコピーしておく
-  /// 削除前にnullにしてsetStateをしないと画面が真っ赤でエラーになる
-  Salary? targetSalary;
-
-  final _memoController = TextEditingController();
+class DetailSalaryView extends ConsumerWidget {
+  const DetailSalaryView({super.key, required this.id});
+  
+  final String id;
 
   @override
-  void initState() {
-    // 最初にコピーしておく
-    targetSalary = widget.salary;
-    _memoController.text = targetSalary?.memo ?? '';
-    super.initState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(detailSalaryProvider(id));
+    String title = DateTimeUtils.format(
+      dateTime: state.salary?.createdAt ?? DateTime.now(),
+    );
+    if (state.salary?.isBonus ?? false) {
+      title = '$title(賞)';
+    }
+
+    /// 広告削除フラグ
+    final removeAds = ref.watch(removeAdsProvider);
+
+    return CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation,
+        navigationBar: CupertinoNavigationBar(
+          middle: CustomText(
+            text: title,
+            fontWeight: FontWeight.bold,
+          ),
+          backgroundColor: CustomColors.foundation,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Consumer(builder: (_, ref, _) {
+                return CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    // nullでないなら
+                    if (state.salary case Salary salary) {
+                      _showDeleteConfirmDialog(context, ref, salary);
+                    }
+                  },
+                  child: const Icon(
+                    CupertinoIcons.trash_circle_fill,
+                    size: 28,
+                    color: CustomColors.negative,
+                  ),
+                );
+              }),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  if (state.salary case Salary salary) {
+                    _editSalary(context, salary);
+                  }
+                },
+                child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
+              ),
+            ],
+          ),
+        ),
+        // Scaffold を使うことでスタイルが適用される
+        child: Scaffold(
+            backgroundColor: CustomColors.foundation,
+            body: SafeArea(
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                // 支払い元ラベル
+                                _sourceLabel(state.salary),
+                                const Spacer(),
+
+                                Column(
+                                  children: [
+                                    const CustomText(
+                                      text: '支給日',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    CustomText(
+                                      text: DateTimeUtils.format(
+                                        dateTime:
+                                        state.salary?.createdAt ?? DateTime.now(),
+                                        pattern: 'yyyy年M月d日',
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+                            // テーマカラーで色を変えたい場合
+                            // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
+                            // 給料テーブル
+                            _buildSalaryTable(
+                              state.salary,
+                              ThemaColor.black.color.withValues(alpha: 0.8),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // MEMO
+                            const CustomLabelView(labelText: 'MEMO'),
+
+                            const SizedBox(height: 10),
+                            // MEMO Body
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: CupertinoColors.white, // 背景色
+                                borderRadius: BorderRadius.circular(8), // 角丸
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.comment),
+                                  const SizedBox(width: 10), // アイコンとテキストの間隔
+
+                                  CustomText(
+                                    text: state.salary?.memo ?? '',
+                                    maxLines: null,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 40),
+
+                            if (!removeAds)
+                              const AdMobBannerWidget(),
+                          ],
+                        )
+                    )
+                )
+            )
+        )
+    );
   }
 
   /// エラーダイアログを表示
   void _showDeleteConfirmDialog(
-    BuildContext context,
-    WidgetRef ref,
-    Salary salary,
-  ) {
+      BuildContext context,
+      WidgetRef ref,
+      Salary salary,
+      ) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -75,179 +196,41 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
     );
   }
 
-
-  /// 編集画面表示
-  void _editSalary(Salary salary) {
-    Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)),
-    );
-  }
-
   void _deleteSalary(
-    BuildContext context,
-    BuildContext dialogContext,
-    WidgetRef ref,
-    Salary salary,
-  ) {
+      BuildContext context,
+      BuildContext dialogContext,
+      WidgetRef ref,
+      Salary salary,
+      ) {
     // 削除前にnullにして画面を更新
-    targetSalary = null;
-    setState(() {});
+    ref.read(detailSalaryProvider(id).notifier).resetSalary();
     // 削除処理
     ref.read(salaryProvider.notifier).delete(salary);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
     // リスト画面に戻る(コンテキストが異なるので注意)
     Navigator.of(context).pop();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    String title = DateTimeUtils.format(
-      dateTime: targetSalary?.createdAt ?? DateTime.now(),
-    );
-    if (targetSalary?.isBonus ?? false) {
-      title = '$title(賞)';
-    }
-    return CupertinoPageScaffold(
-      backgroundColor: CustomColors.foundation,
-      navigationBar: CupertinoNavigationBar(
-        middle: CustomText(
-          text: title,
-          fontWeight: FontWeight.bold,
-        ),
-        backgroundColor: CustomColors.foundation,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Consumer(builder: (_, ref, _) {
-              return CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  // nullでないなら
-                  if (targetSalary case Salary salary) {
-                    _showDeleteConfirmDialog(context, ref, salary);
-                  }
-                },
-                child: const Icon(
-                  CupertinoIcons.trash_circle_fill,
-                  size: 28,
-                  color: CustomColors.negative,
-                ),
-              );
-            }),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (targetSalary case Salary salary) {
-                  _editSalary(salary);
-                }
-              },
-              child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
-            ),
-          ],
-        ),
-      ),
-      // Scaffold を使うことでスタイルが適用される
-      child: Scaffold(
-        backgroundColor: CustomColors.foundation,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Consumer(
-                builder: (context, ref, child) {
-                  /// 広告削除フラグ
-                  final removeAds = ref.watch(removeAdsProvider);
-
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          // 支払い元ラベル
-                          _sourceLabel(),
-                          const Spacer(),
-
-                          Column(
-                            children: [
-                              const CustomText(
-                                text: '支給日',
-                                fontWeight: FontWeight.bold,
-                              ),
-                              CustomText(
-                                text: DateTimeUtils.format(
-                                  dateTime:
-                                      targetSalary?.createdAt ?? DateTime.now(),
-                                  pattern: 'yyyy年M月d日',
-                                ),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-                      // テーマカラーで色を変えたい場合
-                      // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
-                      // 給料テーブル
-                      _buildSalaryTable(
-                        ThemaColor.black.color.withValues(alpha: 0.8),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // MEMO
-                      const CustomLabelView(labelText: 'MEMO'),
-
-                      const SizedBox(height: 10),
-                      // MEMO Body
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.white, // 背景色
-                          borderRadius: BorderRadius.circular(8), // 角丸
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.comment),
-                            const SizedBox(width: 10), // アイコンとテキストの間隔
-
-                            CustomText(
-                              text: targetSalary?.memo ?? '',
-                              maxLines: null,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      if (!removeAds)
-                        const AdMobBannerWidget(),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
+  /// 編集画面表示
+  void _editSalary(BuildContext context, Salary salary) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)),
     );
   }
 
   /// 支払い元UIラベル
-  Widget _sourceLabel() {
+  Widget _sourceLabel(
+      Salary? targetSalary,
+      ) {
     return Container(
       padding: const EdgeInsets.all(10),
       width: 180,
       decoration: BoxDecoration(
         color:
-            targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color,
+        targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color,
         // 角丸
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -278,7 +261,7 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
   }
 
   /// 給料テーブル
-  Widget _buildSalaryTable(Color headerColor) {
+  Widget _buildSalaryTable(Salary? targetSalary, Color headerColor) {
     return Table(
       border: TableBorder.all(color: Colors.grey),
       columnWidths: {0: const FlexColumnWidth(1), 1: const FlexColumnWidth(3)},
@@ -309,11 +292,11 @@ class _DetailSalaryViewState extends State<DetailSalaryView> {
 
   /// 1行単位のUI
   TableRow _buildTableRow(
-    String label,
-    int? amount,
-    Color headerColor, {
-    bool isTotal = false,
-  }) {
+      String label,
+      int? amount,
+      Color headerColor, {
+        bool isTotal = false,
+      }) {
     return TableRow(
       decoration: BoxDecoration(
         // ヘッダーカラー
