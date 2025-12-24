@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_state.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/models/salary_mock_factory.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
 
@@ -63,6 +64,8 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   /// Realm から Salary を取得
   void _loadSalaries() {
     final salaries = _repository.fetchAll<Salary>();
+    // モック(確認用)
+    // final salaries = SalaryMockFactory.generateYear(year: DateTime.now().year);
     setSalaries(salaries);
   }
 
