@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:salary/models/secrets.dart';
+import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 
-class AdMobBannerWidget extends StatefulWidget {
+class AdMobBannerWidget extends ConsumerWidget {
   const AdMobBannerWidget({super.key});
 
   @override
-  State<AdMobBannerWidget> createState() => _AdMobBannerWidgetState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final removeAds = ref.watch(removeAdsProvider);
+    if (removeAds) return const SizedBox.shrink();
+    return const _AdMobBannerWidget();
+  }
 }
 
-class _AdMobBannerWidgetState extends State<AdMobBannerWidget> {
+
+class _AdMobBannerWidget extends StatefulWidget {
+  const _AdMobBannerWidget();
+
+  @override
+  State<_AdMobBannerWidget> createState() => _AdMobBannerWidgetState();
+}
+
+class _AdMobBannerWidgetState extends State<_AdMobBannerWidget> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 

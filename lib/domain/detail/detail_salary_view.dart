@@ -9,7 +9,6 @@ import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
-import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/common/components/ad_banner_widget.dart';
 import 'package:salary/common/components/custom_label_view.dart';
@@ -30,9 +29,6 @@ class DetailSalaryView extends ConsumerWidget {
     if (state.salary?.isBonus ?? false) {
       title = '$title(賞)';
     }
-
-    /// 広告削除フラグ
-    final removeAds = ref.watch(removeAdsProvider);
 
     return CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation,
@@ -149,8 +145,7 @@ class DetailSalaryView extends ConsumerWidget {
 
                             const SizedBox(height: 40),
 
-                            if (!removeAds)
-                              const AdMobBannerWidget(),
+                            const AdMobBannerWidget(),
                           ],
                         )
                     )

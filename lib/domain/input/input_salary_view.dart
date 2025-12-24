@@ -57,13 +57,10 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
   List<Salary> _historyList = [];
 
-  /// 広告削除
-  bool _removeAds = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchRemoveAds();
     // 現在のSalary履歴を取得
     // 編集対象は除去
     _historyList = ref.read(salaryProvider).where((salary) => salary.id != widget.salary?.id).toList();
@@ -104,14 +101,6 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
       _selectPaymentSource = _paymentSources.firstOrNull;
       _paymentSourceController.text = _selectPaymentSource?.name ?? '未設定';
     }
-  }
-
-  /// 広告削除フラグを取得
-  Future<void> _fetchRemoveAds() async {
-    bool removeAds = SharedPreferencesService().fetchRemoveAds();
-    setState(() {
-      _removeAds = removeAds;
-    });
   }
 
   @override
@@ -561,9 +550,7 @@ class _InputSalaryViewState extends ConsumerState<InputSalaryView> {
 
                 const SizedBox(height: 40),
 
-                if (!_removeAds)
-                  const AdMobBannerWidget(),
-
+                const AdMobBannerWidget(),
               ],
             ),
           ),

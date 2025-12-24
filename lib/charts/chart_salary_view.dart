@@ -9,7 +9,6 @@ import 'dart:math';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/number_utils.dart';
-import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
 import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 
@@ -41,8 +40,6 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screen = MediaQuery.of(context).size;
-    /// 広告削除フラグ
-    final removeAds = ref.watch(removeAdsProvider);
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -96,8 +93,7 @@ class _Body extends ConsumerWidget {
                   ),
               ),
           ),
-          if (!removeAds)
-            const AdMobBannerWidget(),
+          const AdMobBannerWidget(),
         ]
     );
   }
