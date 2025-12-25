@@ -17,13 +17,17 @@
 追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
 
 ## 開発環境
-- Android Studio：Narwhal Feature Drop
+- Android Studio：Otter 2 Feature Drop
 - Xcode：26.0.1 
 - Flutter：3.38.3
 - Dart：3.10.1
+- FVM：4.0.5
 - Mac M1：Sequoia 15.6.1
 
-## 構成
+## ディレクトリ構成
+※ Feature-Firstに変更ずみ
+
+以下旧(TODO：更新)
 ```
 (root)
  ∟ android ・・・Android用のネイティブコードや設定

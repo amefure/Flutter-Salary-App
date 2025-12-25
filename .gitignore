@@ -56,3 +56,6 @@ ios/Runner/GoogleService-Info.plist
 # Android Key Store
 /android/key.properties
 /my_release_key.jks
+
+# FVM Version Cache
+.fvm/
