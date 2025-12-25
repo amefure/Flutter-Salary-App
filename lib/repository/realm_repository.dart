@@ -68,7 +68,7 @@ class RealmRepository {
   }
 
   /// ジェネリクスで指定したデータを削除
-  void delete<T extends RealmObject>(String id) {
+  void deleteById<T extends RealmObject>(String id) {
     _realm.write(() {
       final target = _realm.find<T>(id); // ID で検索
       if (target != null) {

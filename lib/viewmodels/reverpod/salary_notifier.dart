@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/models/salary_mock_factory.dart';
 import 'package:salary/repository/realm_repository.dart';
 
 final salaryProvider = StateNotifierProvider<SalaryNotifier, List<Salary>>((
@@ -55,11 +54,11 @@ class SalaryNotifier extends StateNotifier<List<Salary>> {
     // 旧SalaryのpaymentAmountItems/deductionAmountItemsの中身を一度完全に削除する
     // forEachで実行すると管理下リストオブジェクト内での操作違反でエラーになるため
     // fromでコピーを作成してからループさせる
-    for (var item in List.from(oldSalary.paymentAmountItems)) {
-      _repository.delete(item);
+    for (var item in List<AmountItem>.from(oldSalary.paymentAmountItems))  {
+      _repository.deleteById<AmountItem>(item.id);
     }
-    for (var item in List.from(oldSalary.deductionAmountItems)) {
-      _repository.delete(item);
+    for (var item in List<AmountItem>.from(oldSalary.deductionAmountItems)) {
+      _repository.deleteById<AmountItem>(item.id);
     }
 
     // 更新処理
@@ -90,7 +89,7 @@ class SalaryNotifier extends StateNotifier<List<Salary>> {
 
   /// 削除
   void delete(Salary salary) {
-    _repository.delete<Salary>(salary.id);
+    _repository.deleteById<Salary>(salary.id);
     fetchAll();
   }
 }
