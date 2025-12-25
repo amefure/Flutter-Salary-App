@@ -19,7 +19,7 @@
 ## 開発環境
 - Android Studio：Otter 2 Feature Drop
 - Xcode：26.0.1 
-- Flutter：3.38.3
+- Flutter：3.38.3(stable)
 - Dart：3.10.1
 - FVM：4.0.5
 - Mac M1：Sequoia 15.6.1
@@ -27,28 +27,41 @@
 ## ディレクトリ構成
 ※ Feature-Firstに変更ずみ
 
-以下旧(TODO：更新)
 ```
 (root)
  ∟ android ・・・Android用のネイティブコードや設定
  ∟ ios     ・・・iOS用のネイティブコードや設定
  ∟ assets  ・・・リソース(画像etc...)
  ∟ lib
-     ∟ model        ・・・Relam Database Model & 自動生成ファイル
+     ∟ models        ・・・Relam Database Model & 自動生成ファイル
      ∟ repository   ・・・Realm / Shread Preferences / 生体認証リポジトリ
      ∟ utilities     ・・・日付 / カラー / 数値 etc...
      ∟ viewmodels   ・・・Realm Saraly ViewModel
-     ∟ views        ・・・View
-         ∟ components ・・・UIコンポーネント
-         ∟ domain     ・・・ドメイン機能
-         ∟ setting    ・・・設定画面
-         ∟ weview     ・・・WebView
-         ∟ root_tab_view.dart ・・・アプリタブ管理ビュー
+     ∟ common ・・・全体共通
+           ∟ components ・・・UIコンポーネント
+           ∟ root_tab_view.dart ・・・アプリタブ管理ビュー
+     ∟ charts     ・・・グラフ機能
+     ∟ domain     ・・・ドメイン機能
+     ∟ setting    ・・・設定画面
+     ∟ weview     ・・・WebView
      ∟ firebase_options.dart  ・・・Firebaesの設定ファイル(自動生成)
      ∟ main.dart    ・・・アプリのエントリーポイント
  ∟ pubspec.yaml     ・・・プロジェクト/パッケージ設定管理ファイル
  ∟ README.md
  ∟ (etc)
+```
+
+## 環境構築
+
+FVMを使用してFlutter SDKを管理しています。
+
+```
+# 1.FVM自体のインストール
+$ brew tap leoafarias/fvm
+$ brew install fvm
+
+# 2.プロジェクトルートでfvm installコマンドの実行
+$ fvm install
 ```
 
 # ライブラリ
