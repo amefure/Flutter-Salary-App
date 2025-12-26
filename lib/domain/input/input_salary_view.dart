@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/repository/shared_prefs_repository.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
@@ -15,8 +14,8 @@ import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_field_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
-import 'package:salary/domain/input/detail_input_view.dart';
-import 'package:salary/domain/input/input_payment_source.dart';
+import 'package:salary/domain/detail_input_view.dart';
+import 'package:salary/domain/input_payment_source.dart';
 
 /// 給料入力画面
 class InputSalaryView extends ConsumerStatefulWidget {

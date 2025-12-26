@@ -62,6 +62,31 @@ class _DetailInputViewState extends State<DetailInputView> {
     );
   }
 
+  void _registerAmountItem() {
+    String name = _nameController.text;
+    int amount = int.tryParse(_amountController.text) ?? 0;
+
+    if (_amountController.text.length > 19) {
+      _showErrorDialog(context, '19桁以上は入力できません。');
+      return;
+    }
+
+    if (name.isEmpty || amount < 0) {
+      _showErrorDialog(context, '項目名と金額を入力してください。');
+      return;
+    }
+
+    if (widget.amountItem case AmountItem amountItem) {
+      Navigator.of(
+        context,
+      ).pop(AmountItem(amountItem.id, name, amount));
+    } else {
+      Navigator.of(
+        context,
+      ).pop(AmountItem(Uuid.v4().toString(), name, amount));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -103,28 +128,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                 CustomElevatedButton(
                   text: widget.amountItem == null ? '追加' : '更新',
                   onPressed: () {
-                    String name = _nameController.text;
-                    int amount = int.tryParse(_amountController.text) ?? 0;
-
-                    if (_amountController.text.length > 19) {
-                      _showErrorDialog(context, '19桁以上は入力できません。');
-                      return;
-                    }
-
-                    if (name.isEmpty || amount < 0) {
-                      _showErrorDialog(context, '項目名と金額を入力してください。');
-                      return;
-                    }
-
-                    if (widget.amountItem case AmountItem amountItem) {
-                      Navigator.of(
-                        context,
-                      ).pop(AmountItem(amountItem.id, name, amount));
-                    } else {
-                      Navigator.of(
-                        context,
-                      ).pop(AmountItem(Uuid.v4().toString(), name, amount));
-                    }
+                    _registerAmountItem();
                   },
                 ),
               ],
