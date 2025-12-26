@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/domain/detail/detail_salary_state.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
@@ -17,7 +18,7 @@ import 'package:salary/domain/input/input_salary_view.dart';
 
 class DetailSalaryView extends ConsumerWidget {
   const DetailSalaryView({super.key, required this.id});
-  
+
   final String id;
 
   @override
@@ -69,89 +70,7 @@ class DetailSalaryView extends ConsumerWidget {
             ],
           ),
         ),
-        // Scaffold を使うことでスタイルが適用される
-        child: Scaffold(
-            backgroundColor: CustomColors.foundation,
-            body: SafeArea(
-                child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                // 支払い元ラベル
-                                _sourceLabel(state.salary),
-                                const Spacer(),
-
-                                Column(
-                                  children: [
-                                    const CustomText(
-                                      text: '支給日',
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    CustomText(
-                                      text: DateTimeUtils.format(
-                                        dateTime:
-                                        state.salary?.createdAt ?? DateTime.now(),
-                                        pattern: 'yyyy年M月d日',
-                                      ),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 24),
-                            // テーマカラーで色を変えたい場合
-                            // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
-                            // 給料テーブル
-                            _buildSalaryTable(
-                              state.salary,
-                              ThemaColor.black.color.withValues(alpha: 0.8),
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // MEMO
-                            const CustomLabelView(labelText: 'MEMO'),
-
-                            const SizedBox(height: 10),
-                            // MEMO Body
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: CupertinoColors.white, // 背景色
-                                borderRadius: BorderRadius.circular(8), // 角丸
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.comment),
-                                  const SizedBox(width: 10), // アイコンとテキストの間隔
-
-                                  CustomText(
-                                    text: state.salary?.memo ?? '',
-                                    maxLines: null,
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 40),
-
-                            const AdMobBannerWidget(),
-                          ],
-                        )
-                    )
-                )
-            )
-        )
+        child: _Body(state: state)
     );
   }
 
@@ -213,6 +132,99 @@ class DetailSalaryView extends ConsumerWidget {
   void _editSalary(BuildContext context, Salary salary) {
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (context) => InputSalaryView(salary: salary)),
+    );
+  }
+}
+
+class _Body extends ConsumerWidget {
+  final DetailSalaryState state;
+
+  const _Body({required this.state});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Scaffold を使うことでスタイルが適用される
+    return Scaffold(
+        backgroundColor: CustomColors.foundation,
+        body: SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            // 支払い元ラベル
+                            _sourceLabel(state.salary),
+                            const Spacer(),
+
+                            Column(
+                              children: [
+                                const CustomText(
+                                  text: '支給日',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                CustomText(
+                                  text: DateTimeUtils.format(
+                                    dateTime:
+                                    state.salary?.createdAt ?? DateTime.now(),
+                                    pattern: 'yyyy年M月d日',
+                                  ),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+                        // テーマカラーで色を変えたい場合
+                        // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
+                        // 給料テーブル
+                        _buildSalaryTable(
+                          state.salary,
+                          ThemaColor.black.color.withValues(alpha: 0.8),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // MEMO
+                        const CustomLabelView(labelText: 'MEMO'),
+
+                        const SizedBox(height: 10),
+                        // MEMO Body
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.white, // 背景色
+                            borderRadius: BorderRadius.circular(8), // 角丸
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.comment),
+                              const SizedBox(width: 10), // アイコンとテキストの間隔
+
+                              CustomText(
+                                text: state.salary?.memo ?? '',
+                                maxLines: null,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        const AdMobBannerWidget(),
+                      ],
+                    )
+                )
+            )
+        )
     );
   }
 
