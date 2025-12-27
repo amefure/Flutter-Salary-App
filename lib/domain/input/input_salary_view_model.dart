@@ -167,7 +167,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     state = state.copyWith(
       deductionAmountItems: [...state.deductionAmountItems, item],
     );
-    updateTotalPaymentAmount();
+    updateTotalDeductionAmount();
   }
 
   void updatePaymentAmountItem({
