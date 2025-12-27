@@ -50,8 +50,6 @@ class InputSalaryView extends ConsumerWidget {
     );
   }
 
-
-
   /// エラーダイアログを表示
   void _showErrorDialog(BuildContext context, String title) {
     showCupertinoDialog(
@@ -84,8 +82,6 @@ class _BodyWidget extends ConsumerStatefulWidget {
 
 
 class _Body extends ConsumerState<_BodyWidget> {
-
-
   final TextEditingController _paymentAmountController = TextEditingController();
   final TextEditingController _deductionAmountController = TextEditingController();
   final TextEditingController _netSalaryController = TextEditingController();
@@ -93,15 +89,18 @@ class _Body extends ConsumerState<_BodyWidget> {
   final TextEditingController _paymentSourceController = TextEditingController();
   final TextEditingController _memoController = TextEditingController();
   late final ProviderSubscription<InputSalaryState> _subscription;
+
   @override
   void initState() {
     super.initState();
-    _listenSyncStateController();
-
-    _setUpInitialValue();
+    // TextEditingController =>(変化) ViewModel.Stateと同期
+    _bindControllersToState();
+    // ViewModel.State =>(変化) TextEditingControllerと同期
+    _bindStateToControllers();
   }
 
-  void _setUpInitialValue() {
+  /// ViewModel.State =>(変化) TextEditingControllerと同期
+  void _bindStateToControllers() {
     _subscription = ref.listenManual<InputSalaryState>(
       inputSalaryProvider(widget.salary),
       fireImmediately: true,
@@ -129,8 +128,8 @@ class _Body extends ConsumerState<_BodyWidget> {
   }
 
 
-  /// TextEditingControllerをViewModelのStateと同期する
-  void _listenSyncStateController() {
+  /// TextEditingController =>(変化) ViewModel.Stateと同期
+  void _bindControllersToState() {
     final vm = ref.read(inputSalaryProvider(widget.salary).notifier);
 
     // 入力されたらViewModelに反映

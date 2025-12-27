@@ -1,5 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
@@ -7,7 +5,6 @@ import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/domain/input/input_salary_state.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
-import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/logger.dart';
 import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 
@@ -318,8 +315,4 @@ sealed class InputSalaryException implements Exception {
 
 class ValidationException extends InputSalaryException {
   const ValidationException(String message) : super(message);
-}
-
-class CalculationException extends InputSalaryException {
-  const CalculationException(String message) : super(message);
 }
