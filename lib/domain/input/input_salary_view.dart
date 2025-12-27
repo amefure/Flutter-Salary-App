@@ -172,7 +172,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           children: [
             // 給料履歴一覧
             if (state.historyList.isNotEmpty)
-              _historyCitingSalary(state.historyList, vm.copySalaryFromPast),
+              _historyCitingSalaryButton(state.historyList, vm.copySalaryFromPast),
 
             // 支払い元ピッカー
             _paymentSourcePicker(
@@ -539,7 +539,8 @@ class _Body extends ConsumerState<_BodyWidget> {
     }
   }
 
-  Widget _historyCitingSalary(
+  /// 過去の給料情報表示ボタン
+  Widget _historyCitingSalaryButton(
       List<Salary> pastSalaries,
       void Function(Salary salary) onSelected
       ) {
@@ -566,6 +567,7 @@ class _Body extends ConsumerState<_BodyWidget> {
     );
   }
 
+  /// 過去の給料情報選択アクションシートを表示
   void _showSelectPastSalarySheet(
       List<Salary> pastSalaries,
       void Function(Salary salary) onSelected
@@ -586,7 +588,7 @@ class _Body extends ConsumerState<_BodyWidget> {
                 onSelected(salary);
               },
               child: CustomText(
-                text: '$dateStr - ${salary.source?.name ?? "未設定"} ',
+                text: '$dateStr${salary.isBonus ? '(賞)': ''} - ${salary.source?.name ?? "未設定"} ',
               ),
             );
           }).toList(),
@@ -612,7 +614,7 @@ class _Body extends ConsumerState<_BodyWidget> {
   }
 
 
-  /// 選択肢のボタン
+  /// 支払い元選択肢のボタン
   CupertinoActionSheetAction _pickerItemButton(
       BuildContext context, PaymentSource source,
       void Function(PaymentSource source) onPressed

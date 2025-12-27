@@ -201,12 +201,6 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
 
 
   void selectDate(DateTime newDate) {
-   // final dateString = _formatDate(newDate);
-    // final selectYearAndMonth =
-    //     DateTimeUtils.parse(
-    //       dateString: dateString,
-    //       pattern: 'yyyy/M/d',
-    //     ) ?? DateTime.now();
     // selectYearAndMonthは時間は0:00になっている
     // JTCの9時間の差分保存後にずれてしまうので
     // 先に12時間ほどずらしておく
@@ -218,41 +212,39 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     );
   }
 
+  /// 過去の情報をコピーして反映させる
   void copySalaryFromPast(Salary pastSalary) {
     final selectPaymentSource = pastSalary.source;
     final paymentAmountItems =
         pastSalary.paymentAmountItems
-            .map(
-              (item) =>
-              AmountItem(Uuid.v4().toString(), item.key, item.value),
-        )
+            .map((item) => AmountItem(Uuid.v4().toString(), item.key, item.value))
             .toList();
-    String? paymentAmount;
-    if (paymentAmountItems.isEmpty) {
-      paymentAmount = pastSalary.paymentAmount.toString();
-    } else {
-      updateTotalPaymentAmount();
-    }
+    String paymentAmount = pastSalary.paymentAmount.toString();
+
     final deductionAmountItems =
         pastSalary.deductionAmountItems
-            .map(
-              (item) =>
-              AmountItem(Uuid.v4().toString(), item.key, item.value),
-        )
+            .map((item) => AmountItem(Uuid.v4().toString(), item.key, item.value))
             .toList();
-    String? deductionAmount;
-    if (deductionAmountItems.isEmpty) {
-      deductionAmount = pastSalary.deductionAmount.toString();
-    } else {
-      updateTotalDeductionAmount();
-    }
+    String deductionAmount = pastSalary.deductionAmount.toString();
 
     state = state.copyWith(
       paymentAmount: paymentAmount,
       deductionAmount: deductionAmount,
+      paymentAmountItems: paymentAmountItems,
+      deductionAmountItems: deductionAmountItems,
+      isBonus: pastSalary.isBonus,
       memo: pastSalary.memo,
       selectPaymentSource: selectPaymentSource,
     );
+    if (paymentAmountItems.isNotEmpty) {
+      // 詳細登録が存在するなら総支給額再更新
+      updateTotalPaymentAmount();
+    }
+    if (deductionAmountItems.isNotEmpty) {
+      // 詳細登録が存在するなら控除額再更新
+      updateTotalDeductionAmount();
+    }
+    // 手取り反映
     calcNetSalaryAmount();
   }
 
