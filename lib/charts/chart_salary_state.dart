@@ -1,5 +1,6 @@
 import 'package:salary/models/salary.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/models/thema_color.dart';
 
 class ChartSalaryState {
   /// 全てのSalary一覧
@@ -20,6 +21,16 @@ class ChartSalaryState {
     required this.selectedSource,
     required this.selectedYear,
   });
+
+  static ChartSalaryState initial() {
+    return ChartSalaryState(
+      allSalaries: [],
+      groupedBySource: {},
+      sourceList: [],
+      selectedSource: PaymentSource('', ChartSalaryViewModel.ALL_TITLE, ThemaColor.blue.value),
+      selectedYear: DateTime.now().year,
+    );
+  }
 
   ChartSalaryState copyWith({
     List<Salary>? allSalaries,

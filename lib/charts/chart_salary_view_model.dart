@@ -40,15 +40,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// 初期インスタンス化
   ChartSalaryViewModel(this.ref, this._repository)
-      : super(
-    ChartSalaryState(
-      allSalaries: [],
-      groupedBySource: {},
-      sourceList: [],
-      selectedSource: PaymentSource('', ALL_TITLE, ThemaColor.blue.value),
-      selectedYear: DateTime.now().year,
-    ),
-  ) {
+      : super(ChartSalaryState.initial()) {
     // ALLを選択状態に変更
     changeSource(allSource);
     // データロード

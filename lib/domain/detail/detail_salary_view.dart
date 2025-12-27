@@ -42,22 +42,20 @@ class DetailSalaryView extends ConsumerWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Consumer(builder: (_, ref, _) {
-                return CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    // nullでないなら
-                    if (state.salary case Salary salary) {
-                      _showDeleteConfirmDialog(context, ref, salary);
-                    }
-                  },
-                  child: const Icon(
-                    CupertinoIcons.trash_circle_fill,
-                    size: 28,
-                    color: CustomColors.negative,
-                  ),
-                );
-              }),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  // nullでないなら
+                  if (state.salary case Salary salary) {
+                    _showDeleteConfirmDialog(context, ref, salary);
+                  }
+                },
+                child: const Icon(
+                  CupertinoIcons.trash_circle_fill,
+                  size: 28,
+                  color: CustomColors.negative,
+                ),
+              ),
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () {
