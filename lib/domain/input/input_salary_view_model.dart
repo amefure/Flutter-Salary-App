@@ -91,11 +91,12 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     }
   }
 
-  void refreshPaymentSources() {
+  List<PaymentSource> fetchAndRefreshPaymentSources() {
     final paymentSources = _repository.fetchAll<PaymentSource>();
     state = state.copyWith(
         paymentSources: paymentSources,
     );
+    return paymentSources;
   }
 
 
