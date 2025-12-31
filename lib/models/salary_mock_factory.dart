@@ -2,15 +2,40 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 
 class SalaryMockFactory {
+
+  static List<Salary> allGenerateYears() {
+    // 一昨年給料(メイン)
+    List<Salary> salaries = _generateYear(year: DateTime.now().year - 2, baseAmount: 200000);
+    // 前年給料(メイン)
+    salaries += _generateYear(year: DateTime.now().year - 1, baseAmount: 250000);
+    // 当年給料(メイン)
+    salaries += _generateYear(year: DateTime.now().year);
+
+    // 一昨年給料(サブ)
+    salaries += _generateYear(year: DateTime.now().year - 2, baseAmount: 8000, isMainSource: false);
+    // 前年給料(サブ)
+    salaries += _generateYear(year: DateTime.now().year - 1, baseAmount: 10000, isMainSource: false);
+    // 当年給料(サブ)
+    salaries += _generateYear(year: DateTime.now().year, baseAmount: 12000, isMainSource: false);
+
+    return salaries;
+  }
+
   /// 指定年の給料モックを12か月分生成
-  static List<Salary> generateYear({
+  static List<Salary> _generateYear({
     required int year,
+    int baseAmount = 300000,
+    bool isMainSource = true,
   }) {
     return List.generate(12, (index) {
       final month = index + 1;
       final isBonus = month == 6 || month == 12;
 
-      final paymentAmount = isBonus ? 800000 : 300000 + month * 2000;
+      // ボーナス金額(2ヶ月分)
+      final bonus = baseAmount * 2;
+      // 月給料ベース + 月数 × 4000
+      final amount = baseAmount + month * 4000;
+      final paymentAmount = isBonus ?  bonus: amount;
       final deductionAmount = (paymentAmount * 0.18).round();
       final netSalary = paymentAmount - deductionAmount;
 
@@ -22,7 +47,7 @@ class SalaryMockFactory {
         DateTime(year, month, 25),
         paymentAmountItems: _paymentItems(paymentAmount, isBonus),
         deductionAmountItems: _deductionItems(deductionAmount),
-        source: _paymentSource(),
+        source: isMainSource ? _paymentMainSource() : _paymentSubSource(),
         isBonus,
         isBonus ? '${month}月 ボーナス' : '${month}月分の給料',
       );
@@ -71,13 +96,23 @@ class SalaryMockFactory {
     ];
   }
 
-  /// 支払い元（固定）
-  static PaymentSource _paymentSource() {
+  /// 支払い元
+  static PaymentSource _paymentMainSource() {
     return PaymentSource(
-      'source_company',
-      '株式会社サンプル',
-      ThemaColor.blue.value,
+      'source_main_company',
+      '株式会社ame',
+      ThemaColor.orange.value,
       memo: '本業',
+    );
+  }
+
+  /// 支払い元
+  static PaymentSource _paymentSubSource() {
+    return PaymentSource(
+      'source_sub_company',
+      'ABCデザイン',
+      ThemaColor.yellow.value,
+      memo: '副業',
     );
   }
 }
