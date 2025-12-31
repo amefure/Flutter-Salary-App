@@ -23,6 +23,8 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   static const String ALL_TITLE = 'ALL';
   static const String UNSET_TITLE = '未設定';
+  /// 棒グラフの最大表示年数：10年
+  static const int DISPLAY_BAR_CHARTS = 10;
 
   /// "全て" を表すダミーの PaymentSource を作成
   final PaymentSource allSource = PaymentSource(
@@ -198,8 +200,52 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     );
   }
 
+  /// 10年分棒グラフ表示用データの生成
+  /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
+  YearlyPaymentChartData buildYearlyPaymentBarChartData() {
+    final selectedSource = state.selectedSource;
+    final groupedBySource = state.groupedBySource;
+
+    // 年ごとの総支給額
+    final Map<int, int> yearlySums = {};
+
+    // 支払い元でフィルタリング
+    final filtered = selectedSource.name == ALL_TITLE
+        ? groupedBySource
+        : { selectedSource.name: groupedBySource[selectedSource.name] ?? [] };
+
+    for (final list in filtered.values) {
+      for (final s in list) {
+        final year = s.createdAt.year;
+        yearlySums[year] = (yearlySums[year] ?? 0) + s.paymentAmount;
+      }
+    }
+
+    if (yearlySums.isEmpty) {
+      return const YearlyPaymentChartData(
+        years: [],
+        amounts: [],
+        maxY: 0,
+      );
+    }
+
+    // 年を昇順ソート → 最大10年
+    final years = yearlySums.keys.toList()..sort();
+    final yearsToShow = years.length > DISPLAY_BAR_CHARTS ? years.sublist(years.length - DISPLAY_BAR_CHARTS) : years;
+
+    final amounts = yearsToShow.map((y) => yearlySums[y]!).toList();
+    final maxY = amounts.reduce((a, b) => a > b ? a : b) * 1.1;
+
+    return YearlyPaymentChartData(
+      years: yearsToShow,
+      amounts: amounts,
+      maxY: maxY.toDouble(),
+    );
+  }
+
 }
 
+/// 月別折れ線グラフ用データクラス
 class MonthlySalarySummary {
   final DateTime createdAt;
   final int paymentAmount;
@@ -218,7 +264,7 @@ class MonthlySalarySummary {
   });
 }
 
-
+/// 給料合計テーブル用データクラス
 class YearlySalarySummary {
   /// 当年(総支給)
   final int paymentAmount;
@@ -247,4 +293,19 @@ class YearlySalarySummary {
     required this.diffSummerBonus,
     required this.diffWinterBonus,
   });
+}
+
+/// 10年分棒グラフ用データクラス
+class YearlyPaymentChartData {
+  final List<int> years;
+  final List<int> amounts;
+  final double maxY;
+
+  const YearlyPaymentChartData({
+    required this.years,
+    required this.amounts,
+    required this.maxY,
+  });
+
+  bool get isEmpty => years.isEmpty;
 }

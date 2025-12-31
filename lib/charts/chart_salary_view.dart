@@ -291,48 +291,25 @@ class _Body extends ConsumerWidget {
 
   /// 年ごとの給料グラフ(過去10年分)
   Widget _buildYearlyPaymentBarChart(WidgetRef ref) {
-    final selectedSource = state.selectedSource;
-    final groupedBySource = state.groupedBySource;
-    // 年ごとの総支給額を集計
-    Map<int, int> yearlyPaymentSums = {};
+    final vm = ref.read(chartSalaryProvider.notifier);
+    final chartData = vm.buildYearlyPaymentBarChartData();
 
-    Map<String, List<MonthlySalarySummary>> filteredData =
-    selectedSource.name == ChartSalaryViewModel.ALL_TITLE
-        ? groupedBySource
-        : {
-      selectedSource.name:
-      groupedBySource[selectedSource.name] ?? [],
-    };
-
-    filteredData.forEach((source, salaryList) {
-      for (var s in salaryList) {
-        final year = s.createdAt.year;
-        yearlyPaymentSums[year] = (yearlyPaymentSums[year] ?? 0) + s.paymentAmount;
-      }
-    });
-
-    if (yearlyPaymentSums.isEmpty) {
+    if (chartData.isEmpty) {
       return _noChartsData();
     }
 
-    // 年をソートし、最大10年分だけ使用
-    final sortedYears = yearlyPaymentSums.keys.toList()..sort();
-    final yearsToShow = sortedYears.length > 5
-        ? sortedYears.sublist(sortedYears.length - 5)
-        : sortedYears;
+    final yearsToShow = chartData.years;
+    final amounts = chartData.amounts;
 
     List<BarChartGroupData> barGroups = [];
     for (int i = 0; i < yearsToShow.length; i++) {
-      final year = yearsToShow[i];
-      final amount = yearlyPaymentSums[year]!;
-
       barGroups.add(
         BarChartGroupData(
           x: i,
           barsSpace: 0,
           barRods: [
             BarChartRodData(
-              toY: amount.toDouble(),
+              toY: amounts[i].toDouble(),
               color: Colors.blue,
               width: 20,
               borderRadius: BorderRadius.zero,
@@ -341,9 +318,6 @@ class _Body extends ConsumerWidget {
         ),
       );
     }
-
-    final maxY =
-        barGroups.expand((g) => g.barRods).map((r) => r.toY).fold(0.0, max) * 1.1;
 
     return Container(
       width: double.infinity,
@@ -355,7 +329,7 @@ class _Body extends ConsumerWidget {
       ),
       child: BarChart(
         BarChartData(
-          maxY: maxY,
+          maxY: chartData.maxY,
           minY: 0,
           barTouchData: BarTouchData(
             enabled: true,

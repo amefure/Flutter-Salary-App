@@ -5,7 +5,8 @@ import 'package:salary/models/thema_color.dart';
 class ChartSalaryState {
   /// 全てのSalary一覧
   final List<Salary> allSalaries;
-  /// グラフに表示するためのグルーピングデータ
+  /// 支払い元でグルーピングした総データ
+  /// Keyは支払い元名 例：株式会社ame：List<MonthlySalarySummary>
   final Map<String, List<MonthlySalarySummary>> groupedBySource;
   /// Salaryに存在する支払い元リスト
   final List<PaymentSource> sourceList;
