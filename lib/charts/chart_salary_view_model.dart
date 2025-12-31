@@ -210,9 +210,9 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     final Map<int, int> yearlySums = {};
 
     // 支払い元でフィルタリング
-    final filtered = selectedSource.name == ALL_TITLE
+    final filtered = selectedSource.id == allDummySource.id
         ? groupedBySource
-        : { selectedSource.name: groupedBySource[selectedSource.name] ?? [] };
+        : { selectedSource.id: groupedBySource[selectedSource.id] ?? [] };
 
     for (final list in filtered.values) {
       for (final s in list) {
