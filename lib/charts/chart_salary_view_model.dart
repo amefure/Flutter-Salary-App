@@ -27,14 +27,14 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   static const int DISPLAY_BAR_CHARTS = 10;
 
   /// "全て" を表すダミーの PaymentSource を作成
-  final PaymentSource allSource = PaymentSource(
+  static final PaymentSource allDummySource = PaymentSource(
     Uuid.v4().toString(),
     ALL_TITLE,
     ThemaColor.blue.value,
   );
 
   /// "未設定" を表すダミーの PaymentSource を作成
-  final PaymentSource _unSetSource = PaymentSource(
+  static final PaymentSource _unSetDummySource = PaymentSource(
     Uuid.v4().toString(),
     UNSET_TITLE,
     ThemaColor.blue.value,
@@ -44,7 +44,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   ChartSalaryViewModel(this.ref, this._repository)
       : super(ChartSalaryState.initial()) {
     // ALLを選択状態に変更
-    changeSource(allSource);
+    changeSource(allDummySource);
     // データロード
     _loadSalaries();
   }
@@ -67,9 +67,9 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   void setSalaries(List<Salary> salaries) {
     final grouped = _groupBySourceAndMonth(salaries);
     final sources = [
-      allSource,
+      allDummySource,
       ...grouped.values.map(
-            (e) => e.firstOrNull?.source ?? _unSetSource,
+            (e) => e.firstOrNull?.source ?? _unSetDummySource,
       ),
     ];
 
@@ -97,17 +97,17 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     final Map<String, List<MonthlySalarySummary>> result = {};
 
     for (final salary in salaries) {
-      final sourceName = salary.source?.name ?? UNSET_TITLE;
-      result.putIfAbsent(sourceName, () => []);
+      final sourceId = salary.source?.id ?? _unSetDummySource.id;
+      result.putIfAbsent(sourceId, () => []);
 
       final createdAt = DateTime(salary.createdAt.year, salary.createdAt.month, 1);
 
-      final index = result[sourceName]!.indexWhere(
+      final index = result[sourceId]!.indexWhere(
             (s) => s.createdAt.year == createdAt.year && s.createdAt.month == createdAt.month,
       );
 
       if (index == -1) {
-        result[sourceName]!.add(
+        result[sourceId]!.add(
           MonthlySalarySummary(
             createdAt: createdAt,
             paymentAmount: salary.paymentAmount,
@@ -118,8 +118,8 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
           ),
         );
       } else {
-        final old = result[sourceName]![index];
-        result[sourceName]![index] = MonthlySalarySummary(
+        final old = result[sourceId]![index];
+        result[sourceId]![index] = MonthlySalarySummary(
           createdAt: createdAt,
           paymentAmount: old.paymentAmount + salary.paymentAmount,
           deductionAmount: old.deductionAmount + salary.deductionAmount,

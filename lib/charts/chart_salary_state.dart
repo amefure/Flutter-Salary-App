@@ -6,7 +6,7 @@ class ChartSalaryState {
   /// 全てのSalary一覧
   final List<Salary> allSalaries;
   /// 支払い元でグルーピングした総データ
-  /// Keyは支払い元名 例：株式会社ame：List<MonthlySalarySummary>
+  /// Keyは支払い元のID
   final Map<String, List<MonthlySalarySummary>> groupedBySource;
   /// Salaryに存在する支払い元リスト
   final List<PaymentSource> sourceList;

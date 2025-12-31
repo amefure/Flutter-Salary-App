@@ -128,8 +128,6 @@ class _Body extends ConsumerWidget {
 
     final selectedSource = state.selectedSource;
 
-    final allSource = notifier.allSource;
-
     List<LineChartBarData> lines = _buildLines(ref);
     if (lines.isEmpty) {
       return _noChartsData();
@@ -149,7 +147,7 @@ class _Body extends ConsumerWidget {
         LineChartData(
           // ツールチップ設定
           lineTouchData: LineTouchData(
-            enabled: selectedSource != allSource ? true : false,
+            enabled: selectedSource != ChartSalaryViewModel.allDummySource ? true : false,
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 touchedSpots.removeLast();
@@ -226,12 +224,9 @@ class _Body extends ConsumerWidget {
 
     // 選択中のカテゴリでフィルタリング
     Map<String, List<MonthlySalarySummary>> filteredData =
-    selectedSource.name == ChartSalaryViewModel.ALL_TITLE
+    selectedSource.id == ChartSalaryViewModel.allDummySource.id
             ? groupedBySource
-            : {
-      selectedSource.name:
-      groupedBySource[selectedSource.name] ?? [],
-            };
+            : { selectedSource.id : groupedBySource[selectedSource.id] ?? [] };
 
     filteredData.forEach((source, salaries) {
       // 選択中の年月でフィルタリング
