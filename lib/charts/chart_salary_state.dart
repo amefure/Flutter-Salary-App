@@ -14,6 +14,10 @@ class ChartSalaryState {
   final PaymentSource selectedSource;
   /// 表示中の年月
   final int selectedYear;
+  /// グラフ表示モード
+  final ChartDisplayMode displayMode;
+  /// 円グラフ表示用データ
+  final Map<PaymentSource, int> yearlyPaymentBySource;
 
   ChartSalaryState({
     required this.allSalaries,
@@ -21,6 +25,8 @@ class ChartSalaryState {
     required this.sourceList,
     required this.selectedSource,
     required this.selectedYear,
+    required this.displayMode,
+    required this.yearlyPaymentBySource,
   });
 
   static ChartSalaryState initial() {
@@ -30,6 +36,8 @@ class ChartSalaryState {
       sourceList: [],
       selectedSource: PaymentSource('', ChartSalaryViewModel.ALL_TITLE, ThemaColor.blue.value),
       selectedYear: DateTime.now().year,
+      displayMode: ChartDisplayMode.line,
+      yearlyPaymentBySource: {},
     );
   }
 
@@ -39,6 +47,8 @@ class ChartSalaryState {
     List<PaymentSource>? sourceList,
     PaymentSource? selectedSource,
     int? selectedYear,
+    ChartDisplayMode? displayMode,
+    Map<PaymentSource, int>? yearlyPaymentBySource,
   }) {
     return ChartSalaryState(
       allSalaries: allSalaries ?? this.allSalaries,
@@ -46,6 +56,8 @@ class ChartSalaryState {
       sourceList: sourceList ?? this.sourceList,
       selectedSource: selectedSource ?? this.selectedSource,
       selectedYear: selectedYear ?? this.selectedYear,
+      displayMode: displayMode ?? this.displayMode,
+      yearlyPaymentBySource: yearlyPaymentBySource ?? this.yearlyPaymentBySource,
     );
   }
 }

@@ -6,6 +6,12 @@ import 'package:salary/models/salary_mock_factory.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
 
+enum ChartDisplayMode {
+  line, // 折れ線
+  pie,  // 円グラフ
+}
+
+
 final chartSalaryProvider =
 StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((
     ref
@@ -57,15 +63,15 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// Realm から Salary を取得
   void _loadSalaries() {
-    final salaries = _repository.fetchAll<Salary>();
+    //final salaries = _repository.fetchAll<Salary>();
     // モック(確認用)
-    // final salaries = SalaryMockFactory.generateYear(year: DateTime.now().year);
+    final salaries = SalaryMockFactory.allGenerateYears();
     setSalaries(salaries);
   }
 
   /// Salary一覧を受け取り、集計
-  void setSalaries(List<Salary> salaries) {
-    final grouped = _groupBySourceAndMonth(salaries);
+  void setSalaries(List<Salary> allSalaries) {
+    final grouped = _groupBySourceAndMonth(allSalaries);
     final sources = [
       allDummySource,
       ...grouped.values.map(
@@ -73,8 +79,10 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
       ),
     ];
 
+   //final pie = _buildYearlyPaymentBySource(grouped, state.selectedYear);
+
     state = state.copyWith(
-      allSalaries: salaries,
+      allSalaries: allSalaries,
       groupedBySource: grouped,
       sourceList: sources,
     );
@@ -87,6 +95,15 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   void changeYear(int offset) {
     state = state.copyWith(
       selectedYear: state.selectedYear + offset,
+    );
+  }
+
+  /// グラフ切り替え
+  void toggleDisplayMode() {
+    state = state.copyWith(
+      displayMode: state.displayMode == ChartDisplayMode.line
+          ? ChartDisplayMode.pie
+          : ChartDisplayMode.line,
     );
   }
 
@@ -111,9 +128,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
           MonthlySalarySummary(
             createdAt: createdAt,
             paymentAmount: salary.paymentAmount,
-            deductionAmount: salary.deductionAmount,
             netSalary: salary.netSalary,
-            isBonus: salary.isBonus,
             source: salary.source,
           ),
         );
@@ -122,9 +137,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
         result[sourceId]![index] = MonthlySalarySummary(
           createdAt: createdAt,
           paymentAmount: old.paymentAmount + salary.paymentAmount,
-          deductionAmount: old.deductionAmount + salary.deductionAmount,
           netSalary: old.netSalary + salary.netSalary,
-          isBonus: old.isBonus,
           source: old.source,
         );
       }
@@ -133,11 +146,36 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     return result;
   }
 
-  YearlySalarySummary buildYearlySummary() {
-    final selectedSource = state.selectedSource;
-    final selectedYear = state.selectedYear;
-    final allSalaries = state.allSalaries;
+  /// 年別 × 支払い元ごとの総支給額を集計
+  Map<String, int> buildYearlyPaymentBySource(
+      List<Salary> salaries,
+      int year,
+      PaymentSource selectedSource,
+      ) {
+    final Map<String, int> result = {};
 
+    for (final salary in salaries) {
+      if (salary.createdAt.year != year) continue;
+
+      final source = salary.source ?? _unSetDummySource;
+
+      if (selectedSource.name != ALL_TITLE &&
+          source.name != selectedSource.name) {
+        continue;
+      }
+
+      result[source.id] =
+          (result[source.id] ?? 0) + salary.paymentAmount;
+    }
+
+    return result;
+  }
+
+  YearlySalarySummary buildYearlySummary({
+    required PaymentSource selectedSource,
+    required int selectedYear,
+    required List<Salary> allSalaries
+}) {
     final filtered = selectedSource.name == ALL_TITLE
         ? allSalaries
         : allSalaries.where((s) =>
@@ -202,10 +240,10 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// 10年分棒グラフ表示用データの生成
   /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
-  YearlyPaymentChartData buildYearlyPaymentBarChartData() {
-    final selectedSource = state.selectedSource;
-    final groupedBySource = state.groupedBySource;
-
+  YearlyPaymentChartData buildYearlyPaymentBarChartData({
+    required PaymentSource selectedSource,
+    required Map<String, List<MonthlySalarySummary>> groupedBySource
+}) {
     // 年ごとの総支給額
     final Map<int, int> yearlySums = {};
 
@@ -245,21 +283,22 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
 }
 
-/// 月別折れ線グラフ用データクラス
+/// 月別合計データクラス
+/// 生成日時
 class MonthlySalarySummary {
+  /// 生成日時(対象年月の1日が格納される)
   final DateTime createdAt;
+  /// 対象年月の合計総支給額
   final int paymentAmount;
-  final int deductionAmount;
+  /// 対象年月の合計手取り額
   final int netSalary;
-  final bool isBonus;
+  /// 対象年月の支払い元
   final PaymentSource? source;
 
   MonthlySalarySummary({
     required this.createdAt,
     required this.paymentAmount,
-    required this.deductionAmount,
     required this.netSalary,
-    required this.isBonus,
     required this.source,
   });
 }
