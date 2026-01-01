@@ -1,5 +1,6 @@
 import 'package:salary/models/salary.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/charts/chart_display_mode.dart';
 import 'package:salary/models/thema_color.dart';
 
 class ChartSalaryState {

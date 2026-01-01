@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_state.dart';
@@ -8,12 +6,7 @@ import 'package:salary/models/salary.dart';
 import 'package:salary/models/salary_mock_factory.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
-
-enum ChartDisplayMode {
-  line, // 折れ線
-  pie,  // 円グラフ
-}
-
+import 'package:salary/charts/chart_display_mode.dart';
 
 final chartSalaryProvider =
 StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((
