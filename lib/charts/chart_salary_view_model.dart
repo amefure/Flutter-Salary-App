@@ -59,9 +59,10 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// Realm から Salary を取得
   void _loadSalaries() {
-    //final salaries = _repository.fetchAll<Salary>();
+
+    final salaries = _repository.fetchAll<Salary>();
     // モック(確認用)
-    final salaries = SalaryMockFactory.allGenerateYears();
+    // final salaries = SalaryMockFactory.allGenerateYears();
     setSalaries(salaries);
   }
 

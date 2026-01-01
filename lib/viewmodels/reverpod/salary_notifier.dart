@@ -34,9 +34,9 @@ class SalaryNotifier extends StateNotifier<List<Salary>> {
 
   /// Salaryの全データ取得
   void fetchAll() {
-    // final allSalariesTmp = _repository.fetchAll<Salary>();
+    final allSalariesTmp = _repository.fetchAll<Salary>();
     // モック(確認用)
-    final allSalariesTmp = SalaryMockFactory.allGenerateYears();
+    // final allSalariesTmp = SalaryMockFactory.allGenerateYears();
     // 日付の降順
     allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     state = allSalariesTmp;
