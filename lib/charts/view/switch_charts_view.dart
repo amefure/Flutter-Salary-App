@@ -30,6 +30,7 @@ class SwitchChartsView extends ConsumerWidget {
   /// グラフ描画 & NoData UI
   Widget _buildYearSalaryChart(WidgetRef ref) {
     final state = ref.watch(chartSalaryProvider);
+    final vm = ref.read(chartSalaryProvider.notifier);
 
     final selectedSource = state.selectedSource;
 
@@ -37,8 +38,9 @@ class SwitchChartsView extends ConsumerWidget {
     if (lines.isEmpty) {
       return const EmptyChartView();
     }
+    final values = lines.expand((bar) => bar.spots).map((spot) => spot.y);
     // Y軸の最大値を取得
-    final maxY = _calculateMaxY(lines);
+    final maxY = vm.calculateMaxYFromValues(values);
 
     return Container(
       width: double.infinity,
@@ -110,15 +112,6 @@ class SwitchChartsView extends ConsumerWidget {
     );
   }
 
-  /// Y軸の最大値を取得
-  double _calculateMaxY(List<LineChartBarData> lines) {
-    final maxY = lines.expand((bar) => bar.spots).map((e) => e.y).fold(0.0, max);
-    final padded = maxY * 1.1;
-
-    // 例：14532 → 15000 に切り上げ
-    final magnitude = pow(10, padded.toInt().toString().length - 1);
-    return (padded / magnitude).ceil() * magnitude.toDouble();
-  }
 
   /// 選択された支払い元のデータを取得し、折れ線データを生成
   List<LineChartBarData> _buildLines(WidgetRef ref) {

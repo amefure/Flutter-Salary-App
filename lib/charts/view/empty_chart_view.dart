@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 

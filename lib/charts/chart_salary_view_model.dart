@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_state.dart';
@@ -272,13 +275,28 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     final yearsToShow = years.length > DISPLAY_BAR_CHARTS ? years.sublist(years.length - DISPLAY_BAR_CHARTS) : years;
 
     final amounts = yearsToShow.map((y) => yearlySums[y]!).toList();
-    final maxY = amounts.reduce((a, b) => a > b ? a : b) * 1.1;
+    final maxY = calculateMaxYFromValues(amounts.map((e) => e.toDouble()),);
 
     return YearlyPaymentChartData(
       years: yearsToShow,
       amounts: amounts,
       maxY: maxY.toDouble(),
     );
+  }
+
+  /// 数値配列の最大値を[paddingRate]係数で増長して丸めた値を取得
+  double calculateMaxYFromValues(
+      Iterable<double> values, {
+        double paddingRate = 0.1,
+      }) {
+    if (values.isEmpty) return 0;
+
+    final maxValue = values.reduce(max);
+    final padded = maxValue * (1 + paddingRate);
+
+    // 例: 14532 → 15000
+    final magnitude = pow(10, padded.toInt().toString().length - 1);
+    return (padded / magnitude).ceil() * magnitude.toDouble();
   }
 
 }
