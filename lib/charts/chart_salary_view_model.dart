@@ -33,6 +33,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     Uuid.v4().toString(),
     ALL_TITLE,
     ThemaColor.blue.value,
+    false
   );
 
   /// "未設定" を表すダミーの PaymentSource を作成
@@ -40,6 +41,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     Uuid.v4().toString(),
     UNSET_TITLE,
     ThemaColor.blue.value,
+      false
   );
 
   /// 初期インスタンス化

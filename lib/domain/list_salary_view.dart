@@ -30,6 +30,7 @@ class _SalaryListViewState extends State<SalaryListView> {
     Uuid.v4().toString(),
     'ALL',
     ThemaColor.blue.value,
+    false
   );
 
   @override

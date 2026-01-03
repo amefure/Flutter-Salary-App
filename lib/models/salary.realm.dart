@@ -274,11 +274,18 @@ class AmountItem extends _AmountItem
 
 class PaymentSource extends _PaymentSource
     with RealmEntity, RealmObjectBase, RealmObject {
-  PaymentSource(String id, String name, int themaColor, {String? memo}) {
+  PaymentSource(
+    String id,
+    String name,
+    int themaColor,
+    bool isMain, {
+    String? memo,
+  }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'themaColor', themaColor);
     RealmObjectBase.set(this, 'memo', memo);
+    RealmObjectBase.set(this, 'isMain', isMain);
   }
 
   PaymentSource._();
@@ -304,6 +311,11 @@ class PaymentSource extends _PaymentSource
   set memo(String? value) => RealmObjectBase.set(this, 'memo', value);
 
   @override
+  bool get isMain => RealmObjectBase.get<bool>(this, 'isMain') as bool;
+  @override
+  set isMain(bool value) => RealmObjectBase.set(this, 'isMain', value);
+
+  @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
       RealmObjectBase.getChanges<PaymentSource>(this);
 
@@ -321,6 +333,7 @@ class PaymentSource extends _PaymentSource
       'name': name.toEJson(),
       'themaColor': themaColor.toEJson(),
       'memo': memo.toEJson(),
+      'isMain': isMain.toEJson(),
     };
   }
 
@@ -332,11 +345,13 @@ class PaymentSource extends _PaymentSource
         'id': EJsonValue id,
         'name': EJsonValue name,
         'themaColor': EJsonValue themaColor,
+        'isMain': EJsonValue isMain,
       } =>
         PaymentSource(
           fromEJson(id),
           fromEJson(name),
           fromEJson(themaColor),
+          fromEJson(isMain),
           memo: fromEJson(ejson['memo']),
         ),
       _ => raiseInvalidEJson(ejson),
@@ -355,6 +370,7 @@ class PaymentSource extends _PaymentSource
         SchemaProperty('name', RealmPropertyType.string),
         SchemaProperty('themaColor', RealmPropertyType.int),
         SchemaProperty('memo', RealmPropertyType.string, optional: true),
+        SchemaProperty('isMain', RealmPropertyType.bool),
       ],
     );
   }();

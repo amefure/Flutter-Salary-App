@@ -35,7 +35,7 @@ class ChartSalaryState {
       allSalaries: [],
       groupedBySource: {},
       sourceList: [],
-      selectedSource: PaymentSource('', ChartSalaryViewModel.ALL_TITLE, ThemaColor.blue.value),
+      selectedSource: PaymentSource('', ChartSalaryViewModel.ALL_TITLE, ThemaColor.blue.value, false),
       selectedYear: DateTime.now().year,
       displayMode: ChartDisplayMode.line,
       yearlyPaymentBySource: {},

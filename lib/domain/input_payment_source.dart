@@ -25,6 +25,7 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _memoController = TextEditingController();
   ThemaColor selectedColor = ThemaColor.gray;
+  bool _isMain = false;
 
   @override
   void initState() {
@@ -146,13 +147,14 @@ class _InputPaymentSourceViewState extends State<InputPaymentSourceView> {
                 // 更新
                 ref
                     .read(paymentSourceProvider.notifier)
-                    .update(paymentSource.id, name, selectedColor, memo);
+                    .update(paymentSource.id, name, selectedColor, memo, _isMain);
               } else {
                 // 新規登録
                 final payment = PaymentSource(
                   Uuid.v4().toString(),
                   name,
                   selectedColor.value,
+                  _isMain,
                   memo: memo,
                 );
                 ref.read(paymentSourceProvider.notifier).add(payment);

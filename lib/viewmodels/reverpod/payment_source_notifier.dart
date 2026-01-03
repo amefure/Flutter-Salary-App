@@ -34,9 +34,10 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
   }
 
   /// 更新
-  void update(String id, String name, ThemaColor color, String? memo) {
+  void update(String id, String name, ThemaColor color, String? memo, bool isMain) {
     _repository.updateById(id, (PaymentSource paymentSource) {
       paymentSource.name = name;
+      paymentSource.isMain = isMain;
       paymentSource.themaColor = color.value;
       paymentSource.memo = memo;
     });

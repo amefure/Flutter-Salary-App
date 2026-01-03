@@ -53,6 +53,8 @@ class _PaymentSource {
   late int themaColor;
   /// MEMO
   late String? memo;
+  /// 本業フラグ
+  late bool isMain;
 
   /// ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
