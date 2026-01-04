@@ -26,7 +26,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
 
   /// 初期インスタンス化
   InputSalaryViewModel(this.ref, this._repository, this.salary)
-      : super( InputSalaryState.initial()) {
+      : super(InputSalaryState.initial()) {
     // 履歴を読み込み
     _loadHistorySalary(salary);
     // 支払い元履歴と編集対象初期値の取得

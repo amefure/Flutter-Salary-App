@@ -12,7 +12,7 @@ import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_field_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/domain/detail_input_view.dart';
-import 'package:salary/domain/input_payment_source.dart';
+import 'package:salary/domain/input_patment_source/input_payment_source_view.dart';
 
 /// 給料入力画面
 class InputSalaryView extends ConsumerWidget {
