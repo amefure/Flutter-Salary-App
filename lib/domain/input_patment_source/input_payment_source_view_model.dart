@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/domain/input_patment_source/input_payment_source_state.dart';
+import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
@@ -83,6 +84,8 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
     }
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
     onComplete();
   }
 

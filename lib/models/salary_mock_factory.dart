@@ -49,7 +49,7 @@ class SalaryMockFactory {
         deductionAmountItems: _deductionItems(deductionAmount),
         source: isMainSource ? _paymentMainSource() : _paymentSubSource(),
         isBonus,
-        isBonus ? '${month}月 ボーナス' : '${month}月分の給料',
+        isBonus ? '$month月 ボーナス' : '$month月分の給料',
       );
     });
   }

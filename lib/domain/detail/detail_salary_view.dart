@@ -6,6 +6,7 @@ import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/common/components/payment_source_label_view.dart';
 import 'package:salary/domain/detail/detail_salary_state.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
+import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
@@ -121,6 +122,8 @@ class DetailSalaryView extends ConsumerWidget {
     ref.read(salaryProvider.notifier).delete(salary);
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
     // リスト画面に戻る(コンテキストが異なるので注意)

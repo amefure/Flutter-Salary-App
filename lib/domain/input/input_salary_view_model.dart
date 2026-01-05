@@ -3,6 +3,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/domain/input/input_salary_state.dart';
+import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilities/logger.dart';
@@ -297,6 +298,8 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
 
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
   }
 }
 

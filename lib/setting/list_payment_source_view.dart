@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/common/components/payment_icon_view.dart';
+import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
@@ -58,6 +59,8 @@ class ListPaymentSourceView extends ConsumerWidget {
     ref.read(paymentSourceProvider.notifier).delete(paymentSource);
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
   }
