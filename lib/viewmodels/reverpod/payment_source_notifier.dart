@@ -24,7 +24,12 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
 
   /// 全取得
   void fetchAll() {
-    state = _repository.fetchAll<PaymentSource>();
+    state = _repository.fetchAll<PaymentSource>()
+      ..sort((a, b) {
+        final aValue = a.isMain ? 1 : 0;
+        final bValue = b.isMain ? 1 : 0;
+        return bValue - aValue;
+      });
   }
 
   /// 追加

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/common/components/payment_icon_view.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
@@ -149,10 +150,8 @@ class ListPaymentSourceView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // アイコン
-                Icon(
-                  CupertinoIcons.building_2_fill,
-                  color: paymentSource.themaColorEnum.color,
-                ),
+                PaymentIconView(paymentSource: paymentSource),
+
                 const SizedBox(width: 20),
 
                 // 名前 + メモ

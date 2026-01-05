@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realm/realm.dart';
+import 'package:salary/common/components/payment_icon_view.dart';
+import 'package:salary/models/dummy_source.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/viewmodels/reverpod/payment_source_notifier.dart';
@@ -23,15 +23,7 @@ class _SalaryListViewState extends State<SalaryListView> {
   /// Salaryに存在する支払い元リスト
   List<PaymentSource> _sourceList = [];
   /// 表示中の支払い元
-  late PaymentSource _selectedSource = _allSource;
-
-  /// "全て" を表すダミーの PaymentSource を作成
-  final PaymentSource _allSource = PaymentSource(
-    Uuid.v4().toString(),
-    'ALL',
-    ThemaColor.blue.value,
-    false
-  );
+  late PaymentSource _selectedSource = DummySource.allDummySource;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +57,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             _sourceList = [];
             // paymentSourcesにinsertするとRealmに保存されてしまうので注意
             _sourceList = [
-              _allSource,
+              DummySource.allDummySource,
               ...paymentSources,
             ];
             if (salaries.isEmpty) {
@@ -138,14 +130,27 @@ class _SalaryListViewState extends State<SalaryListView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CustomText(
-                                text: switch (salary.source?.name) {
-                                  String name => name,
-                                  _ => '未設定',
-                                },
-                                textSize: TextSize.S,
-                                color: CustomColors.text.withValues(alpha: 0.7),
-                              ),
+
+                              Row(
+                                children: [
+
+                                  // 本業フラグが true のときだけ表示
+                                  if (salary.source?.isMain ?? false)
+                                    const Icon(
+                                      Icons.star,
+                                      size: 14,
+                                      color: Colors.amber,
+                                    ),
+
+                                  CustomText(
+                                    text: switch (salary.source?.name) {
+                                      String name => name,
+                                      _ => '未設定',
+                                    },
+                                    textSize: TextSize.S,
+                                    color: CustomColors.text.withValues(alpha: 0.7),
+                                  ),
+                              ]),
                               // 給料詳細UI
                               // 総支給
                               _buildSalaryRow('総支給', salary.paymentAmount),
@@ -188,7 +193,7 @@ class _SalaryListViewState extends State<SalaryListView> {
             onPressed: () {
               setState(() {
                 _selectedSource = source;
-                if (source == _allSource) {
+                if (source == DummySource.allDummySource) {
                   ref.read(salaryProvider.notifier).fetchAll();
                 } else {
                   ref.read(salaryProvider.notifier).fetchFilter(source.name);
@@ -199,10 +204,9 @@ class _SalaryListViewState extends State<SalaryListView> {
               width: 200,
               child: Row(
                 children: [
-                  Icon(
-                    CupertinoIcons.building_2_fill,
-                    color: source.themaColorEnum.color,
-                  ),
+                  // アイコン
+                  PaymentIconView(paymentSource: source),
+
                   const SizedBox(width: 8),
                   Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
                   if (_selectedSource == source)

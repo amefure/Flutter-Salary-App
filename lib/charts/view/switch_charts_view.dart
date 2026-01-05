@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/charts/view/empty_chart_view.dart';
 import 'package:salary/charts/chart_display_mode.dart';
 import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/models/dummy_source.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
@@ -54,7 +55,7 @@ class SwitchChartsView extends ConsumerWidget {
         LineChartData(
           // ツールチップ設定
           lineTouchData: LineTouchData(
-            enabled: selectedSource != ChartSalaryViewModel.allDummySource ? true : false,
+            enabled: selectedSource != DummySource.allDummySource ? true : false,
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 touchedSpots.removeLast();
@@ -123,7 +124,7 @@ class SwitchChartsView extends ConsumerWidget {
 
     // 選択中のカテゴリでフィルタリング
     Map<String, List<MonthlySalarySummary>> filteredData =
-    selectedSource.id == ChartSalaryViewModel.allDummySource.id
+    selectedSource.id == DummySource.allDummySource.id
         ? groupedBySource
         : { selectedSource.id : groupedBySource[selectedSource.id] ?? [] };
 
@@ -225,7 +226,7 @@ class SwitchChartsView extends ConsumerWidget {
       final value = e.value;
       final source = sourceMap[sourceName];
 
-      final titleName = source?.name ?? ChartSalaryViewModel.UNSET_TITLE;
+      final titleName = source?.name ?? DummySource.UNSET_TITLE;
       final titlePercent = '${(value / total * 100).toStringAsFixed(1)}%';
 
       return PieChartSectionData(

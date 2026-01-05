@@ -1,10 +1,9 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_state.dart';
+import 'package:salary/models/dummy_source.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/salary_mock_factory.dart';
-import 'package:salary/models/thema_color.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/charts/chart_display_mode.dart';
 
@@ -22,33 +21,14 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// 引数でRepositoryをセット
   final RealmRepository _repository;
-
-  static const String ALL_TITLE = 'ALL';
-  static const String UNSET_TITLE = '未設定';
   /// 棒グラフの最大表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 10;
-
-  /// "全て" を表すダミーの PaymentSource を作成
-  static final PaymentSource allDummySource = PaymentSource(
-    Uuid.v4().toString(),
-    ALL_TITLE,
-    ThemaColor.blue.value,
-    false
-  );
-
-  /// "未設定" を表すダミーの PaymentSource を作成
-  static final PaymentSource _unSetDummySource = PaymentSource(
-    Uuid.v4().toString(),
-    UNSET_TITLE,
-    ThemaColor.blue.value,
-      false
-  );
 
   /// 初期インスタンス化
   ChartSalaryViewModel(this.ref, this._repository)
       : super(ChartSalaryState.initial()) {
     // ALLを選択状態に変更
-    changeSource(allDummySource);
+    changeSource(DummySource.allDummySource);
     // データロード
     _loadSalaries();
   }
@@ -71,14 +51,20 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   /// Salary一覧を受け取り、集計
   void setSalaries(List<Salary> allSalaries) {
     final grouped = _groupBySourceAndMonth(allSalaries);
-    final sources = [
-      allDummySource,
+    List<PaymentSource> sources = [
       ...grouped.values.map(
-            (e) => e.firstOrNull?.source ?? _unSetDummySource,
-      ),
+            (e) => e.firstOrNull?.source ?? DummySource.unSetDummySource,
+      )
+    ]..sort((a, b) {
+      final aValue = a.isMain ? 1 : 0;
+      final bValue = b.isMain ? 1 : 0;
+      return bValue - aValue;
+    });
+    // ALLを追加
+    sources = [
+      DummySource.allDummySource,
+      ...sources
     ];
-
-   //final pie = _buildYearlyPaymentBySource(grouped, state.selectedYear);
 
     state = state.copyWith(
       allSalaries: allSalaries,
@@ -113,7 +99,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     final Map<String, List<MonthlySalarySummary>> result = {};
 
     for (final salary in salaries) {
-      final sourceId = salary.source?.id ?? _unSetDummySource.id;
+      final sourceId = salary.source?.id ?? DummySource.unSetDummySource.id;
       result.putIfAbsent(sourceId, () => []);
 
       final createdAt = DateTime(salary.createdAt.year, salary.createdAt.month, 1);
@@ -156,9 +142,9 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     for (final salary in salaries) {
       if (salary.createdAt.year != year) continue;
 
-      final source = salary.source ?? _unSetDummySource;
+      final source = salary.source ?? DummySource.unSetDummySource;
 
-      if (selectedSource.name != ALL_TITLE &&
+      if (selectedSource.name != DummySource.ALL_TITLE &&
           source.name != selectedSource.name) {
         continue;
       }
@@ -175,10 +161,10 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     required int selectedYear,
     required List<Salary> allSalaries
 }) {
-    final filtered = selectedSource.name == ALL_TITLE
+    final filtered = selectedSource.name == DummySource.ALL_TITLE
         ? allSalaries
         : allSalaries.where((s) =>
-    (s.source?.name ?? UNSET_TITLE) == selectedSource.name,
+    (s.source?.name ?? DummySource.UNSET_TITLE) == selectedSource.name,
     ).toList();
 
     // 当年(総支給)
@@ -247,7 +233,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     final Map<int, int> yearlySums = {};
 
     // 支払い元でフィルタリング
-    final filtered = selectedSource.id == allDummySource.id
+    final filtered = selectedSource.id == DummySource.allDummySource.id
         ? groupedBySource
         : { selectedSource.id: groupedBySource[selectedSource.id] ?? [] };
 

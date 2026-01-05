@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
+import 'package:salary/common/components/payment_source_label_view.dart';
 import 'package:salary/domain/detail/detail_salary_state.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
@@ -155,7 +156,8 @@ class _Body extends ConsumerWidget {
                         Row(
                           children: [
                             // 支払い元ラベル
-                            _sourceLabel(state.salary),
+                            PaymentSourceLabelView(paymentSource: state.salary?.source),
+
                             const Spacer(),
 
                             Column(
@@ -226,44 +228,6 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  /// 支払い元UIラベル
-  Widget _sourceLabel(
-      Salary? targetSalary,
-      ) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      width: 180,
-      decoration: BoxDecoration(
-        color:
-        targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color,
-        // 角丸
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          // 影
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: const Offset(2, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(CupertinoIcons.building_2_fill, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(
-            child: CustomText(
-              text: targetSalary?.source?.name ?? '未設定',
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              textSize: TextSize.S,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   /// 給料テーブル
   Widget _buildSalaryTable(Salary? targetSalary, Color headerColor) {

@@ -7,7 +7,8 @@ import 'package:salary/charts/view/switch_charts_view.dart';
 import 'package:salary/charts/view/table_salary_info_view.dart';
 import 'package:salary/common/components/ad_banner_widget.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/models/salary.dart';
+import 'package:salary/common/components/payment_icon_view.dart';
+import 'package:salary/common/components/payment_source_label_view.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
@@ -121,7 +122,10 @@ class _SourceSelector extends ConsumerWidget {
               controller.open();
             }
           },
-          child: _SourceLabel(selectedSource: state.selectedSource),
+          child: PaymentSourceLabelView(
+            paymentSource: state.selectedSource,
+            isShowChevronDown: true,
+          ),
         );
       },
       menuChildren: state.sourceList.map((source) {
@@ -131,10 +135,7 @@ class _SourceSelector extends ConsumerWidget {
             width: 200,
             child: Row(
               children: [
-                Icon(
-                  CupertinoIcons.building_2_fill,
-                  color: source.themaColorEnum.color,
-                ),
+                PaymentIconView(paymentSource: source),
                 const SizedBox(width: 8),
                 Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
                 if (state.selectedSource == source)
@@ -173,53 +174,6 @@ class _YearSelector extends ConsumerWidget {
           onPressed: () => notifier.changeYear(1),
         ),
       ],
-    );
-  }
-}
-
-/// 支払い元UIラベル
-class _SourceLabel extends ConsumerWidget {
-  final PaymentSource selectedSource;
-
-  const _SourceLabel({required this.selectedSource});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final Color color = selectedSource.themaColorEnum.color;
-
-    return Container(
-      padding: const EdgeInsets.all(10),
-      width: 180,
-      decoration: BoxDecoration(
-        color: color,
-        // 角丸
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          // 影
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: const Offset(2, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(CupertinoIcons.building_2_fill, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(
-            child: CustomText(
-              text: selectedSource.name,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              textSize: TextSize.S,
-            ),
-          ),
-
-          const Icon(CupertinoIcons.chevron_down, color: Colors.white),
-        ],
-      ),
     );
   }
 }
