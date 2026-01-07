@@ -1,6 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/domain/list/list_salary_state.dart';
+import 'package:salary/domain/list_salary/list_salary_state.dart';
 import 'package:salary/models/dummy_source.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/salary_mock_factory.dart';

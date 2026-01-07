@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/common/components/payment_icon_view.dart';
-import 'package:salary/domain/list/list_salary_view_model.dart';
+import 'package:salary/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/providers/payment_source_notifier.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
-import 'package:salary/domain/input_patment_source/input_payment_source_view.dart';
+import 'package:salary/domain/input_payment_source/input_payment_source_view.dart';
 
 /// [ConsumerWidget]でUI更新
 class ListPaymentSourceView extends ConsumerWidget {

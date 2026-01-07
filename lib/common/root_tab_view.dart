@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/charts/view/chart_salary_screen.dart';
-import 'package:salary/domain/list/list_salary_view.dart';
+import 'package:salary/domain/list_salary/list_salary_view.dart';
 import 'package:salary/setting/setting_view.dart';
 
 class RootTabViewView extends StatefulWidget {

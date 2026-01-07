@@ -16,14 +16,14 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
   /// 初期化
   PaymentSourceNotifier(this._repository) : super([]) {
     // 初期化時に全データを取得
-    fetchAll();
+    _fetchAll();
   }
 
   /// 引数でRepositoryをセット
   final RealmRepository _repository;
 
   /// 全取得
-  void fetchAll() {
+  void _fetchAll() {
     state = _repository.fetchAll<PaymentSource>()
       ..sort((a, b) {
         final aValue = a.isMain ? 1 : 0;
@@ -35,7 +35,7 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
   /// 追加
   void add(PaymentSource paymentSource) {
     _repository.add<PaymentSource>(paymentSource);
-    fetchAll();
+    _fetchAll();
   }
 
   /// 更新
@@ -46,12 +46,12 @@ class PaymentSourceNotifier extends StateNotifier<List<PaymentSource>> {
       paymentSource.themaColor = color.value;
       paymentSource.memo = memo;
     });
-    fetchAll();
+    _fetchAll();
   }
 
   /// 削除
   void delete(PaymentSource paymentSource) {
     _repository.deleteById<PaymentSource>(paymentSource.id);
-    fetchAll();
+    _fetchAll();
   }
 }
