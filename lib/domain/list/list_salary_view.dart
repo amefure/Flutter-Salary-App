@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/common/components/ad_banner_widget.dart';
 import 'package:salary/common/components/payment_icon_view.dart';
 import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/utilities/custom_colors.dart';
@@ -111,103 +112,109 @@ class SalaryListView extends ConsumerWidget {
           )
       );
     }
-    return ListView.builder(
-      itemCount: salaries.length,
-      itemBuilder: (context, index) {
-        final salary = salaries[index];
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => DetailSalaryView(id: salary.id),
+    return Column(
+      children: [
+        Expanded(child: ListView.builder(
+          itemCount: salaries.length,
+          itemBuilder: (context, index) {
+            final salary = salaries[index];
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => DetailSalaryView(id: salary.id),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  // 角丸
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 年月UI
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color:
+                        salary.source?.themaColorEnum.color ??
+                            CustomColors.thema,
+                        // 角丸
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(
+                            text: '${salary.createdAt.year}年',
+                            textSize: TextSize.S,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+
+                          CustomText(
+                            text: !salary.isBonus ? '${salary.createdAt.month}月' :  '${salary.createdAt.month}月(賞)',
+                            textSize: !salary.isBonus ? TextSize.ML :  TextSize.SS,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          Row(
+                              children: [
+
+                                // 本業フラグが true のときだけ表示
+                                if (salary.source?.isMain ?? false)
+                                  const Icon(
+                                    Icons.star,
+                                    size: 14,
+                                    color: Colors.amber,
+                                  ),
+
+                                CustomText(
+                                  text: switch (salary.source?.name) {
+                                    String name => name,
+                                    _ => '未設定',
+                                  },
+                                  textSize: TextSize.S,
+                                  color: CustomColors.text.withValues(alpha: 0.7),
+                                ),
+                              ]),
+                          // 給料詳細UI
+                          // 総支給
+                          _buildSalaryRow('総支給', salary.paymentAmount),
+                          // 手取り
+                          _buildSalaryRow('手取り', salary.netSalary),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              // 角丸
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 年月UI
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color:
-                    salary.source?.themaColorEnum.color ??
-                        CustomColors.thema,
-                    // 角丸
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(
-                        text: '${salary.createdAt.year}年',
-                        textSize: TextSize.S,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+        )),
 
-                      CustomText(
-                        text: !salary.isBonus ? '${salary.createdAt.month}月' :  '${salary.createdAt.month}月(賞)',
-                        textSize: !salary.isBonus ? TextSize.ML :  TextSize.SS,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-
-                      Row(
-                          children: [
-
-                            // 本業フラグが true のときだけ表示
-                            if (salary.source?.isMain ?? false)
-                              const Icon(
-                                Icons.star,
-                                size: 14,
-                                color: Colors.amber,
-                              ),
-
-                            CustomText(
-                              text: switch (salary.source?.name) {
-                                String name => name,
-                                _ => '未設定',
-                              },
-                              textSize: TextSize.S,
-                              color: CustomColors.text.withValues(alpha: 0.7),
-                            ),
-                          ]),
-                      // 給料詳細UI
-                      // 総支給
-                      _buildSalaryRow('総支給', salary.paymentAmount),
-                      // 手取り
-                      _buildSalaryRow('手取り', salary.netSalary),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+        const AdMobBannerWidget(),
+      ],
     );
   }
 
