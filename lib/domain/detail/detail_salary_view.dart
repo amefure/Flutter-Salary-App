@@ -2,17 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
-import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/common/components/payment_source_label_view.dart';
 import 'package:salary/domain/detail/detail_salary_state.dart';
 import 'package:salary/domain/detail/detail_salary_view_model.dart';
-import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/date_time_utils.dart';
 import 'package:salary/utilities/number_utils.dart';
-import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 import 'package:salary/common/components/ad_banner_widget.dart';
 import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
@@ -116,14 +113,8 @@ class DetailSalaryView extends ConsumerWidget {
       WidgetRef ref,
       Salary salary,
       ) {
-    // 削除前にnullにして画面を更新
-    ref.read(detailSalaryProvider(id).notifier).resetSalary();
-    // 削除処理
-    ref.read(salaryProvider.notifier).delete(salary);
-    // MyData画面のリフレッシュ
-    ref.read(chartSalaryProvider.notifier).refresh();
-    // Homeリスト画面のリフレッシュ
-    ref.read(listSalaryProvider.notifier).refresh();
+    // 削除処理を実行
+    ref.read(detailSalaryProvider(id).notifier).delete(salary);
     // ダイアログを閉じる(コンテキストが異なるので注意)
     Navigator.of(dialogContext).pop();
     // リスト画面に戻る(コンテキストが異なるので注意)

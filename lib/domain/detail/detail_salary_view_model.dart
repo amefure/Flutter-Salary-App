@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/domain/detail/detail_salary_state.dart';
+import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
 
@@ -21,14 +23,26 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   DetailSalaryViewModel(this.ref, this._repository)
       : super(DetailSalaryState(salary: null));
 
-  /// Realm から Salary を取得
+  /// Realm から Salary を取得（Single Source of Truth設計)
   void loadSalary(String id) {
     final item = _repository.fetchById<Salary>(id);
     state = state.copyWith(salary: item?.freeze());
   }
 
-  /// Realm から Salary を取得
-  void resetSalary() {
+  /// 詳細画面で表示対象のデータをリセット
+  void _resetSalary() {
     state = state.copyWith(salary: null);
+  }
+
+  /// 削除
+  void delete(Salary salary) {
+    // 削除前にnullにして画面を更新
+    _resetSalary();
+    // 削除処理
+    _repository.deleteById<Salary>(salary.id);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
   }
 }

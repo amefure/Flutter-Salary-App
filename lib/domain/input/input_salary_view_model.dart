@@ -7,7 +7,6 @@ import 'package:salary/domain/list/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
 import 'package:salary/utilities/logger.dart';
-import 'package:salary/viewmodels/reverpod/salary_notifier.dart';
 
 final inputSalaryProvider =
 StateNotifierProvider.autoDispose.family<InputSalaryViewModel, InputSalaryState, Salary?>(
@@ -292,16 +291,59 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     );
 
     if (salary case Salary salary) {
-      ref.read(salaryProvider.notifier).update(salary, newSalary);
+      _update(salary, newSalary);
       ref.read(detailSalaryProvider(salary.id).notifier).loadSalary(salary.id);
     } else {
-      ref.read(salaryProvider.notifier).add(newSalary);
+      _add(newSalary);
     }
 
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ
     ref.read(listSalaryProvider.notifier).refresh();
+  }
+
+  /// 追加
+  void _add(Salary salary) {
+    _repository.add<Salary>(salary);
+  }
+
+  /// 更新
+  void _update(Salary oldSalary, Salary updateSalary) {
+    // 後続でコピーオブジェクトで更新するため
+    // 旧SalaryのpaymentAmountItems/deductionAmountItemsの中身を一度完全に削除する
+    // forEachで実行すると管理下リストオブジェクト内での操作違反でエラーになるため
+    // fromでコピーを作成してからループさせる
+    for (var item in List<AmountItem>.from(oldSalary.paymentAmountItems))  {
+      _repository.deleteById<AmountItem>(item.id);
+    }
+    for (var item in List<AmountItem>.from(oldSalary.deductionAmountItems)) {
+      _repository.deleteById<AmountItem>(item.id);
+    }
+
+    // 更新処理
+    _repository.updateById(oldSalary.id, (Salary salary) {
+      // 総支給
+      salary.paymentAmount = updateSalary.paymentAmount;
+      // 控除額
+      salary.deductionAmount = updateSalary.deductionAmount;
+      // 手取り額
+      salary.netSalary = updateSalary.netSalary;
+      // 登録日
+      salary.createdAt = updateSalary.createdAt;
+      // 総支給構成要素(リストは一度クリアにしてから追加しないと更新できない)
+      salary.paymentAmountItems.clear();
+      salary.paymentAmountItems.addAll(updateSalary.paymentAmountItems);
+      // 控除額構成要素
+      salary.deductionAmountItems.clear();
+      salary.deductionAmountItems.addAll(updateSalary.deductionAmountItems);
+      // 支払い元
+      salary.source = updateSalary.source;
+      // 賞与フラグ
+      salary.isBonus = updateSalary.isBonus;
+      // MEMO
+      salary.memo = updateSalary.memo;
+    });
   }
 }
 
