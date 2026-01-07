@@ -37,6 +37,8 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
   /// 現在のSalary履歴を取得　編集対象は除去
   void _loadHistorySalary(Salary? current) {
     final histories = _repository.fetchAll<Salary>().where((salary) => salary.id != current?.id).toList();
+    // 日付の降順
+    histories.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     logger('履歴を読み込み${histories.length}');
     state = state.copyWith(
       historyList: histories
