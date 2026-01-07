@@ -4,7 +4,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/models/secrets.dart';
 import 'package:salary/utilities/logger.dart';
 import 'in_app_purchase_state.dart';
-import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
+import 'package:salary/providers/remove_ads_notifier.dart';
 
 final inAppPurchaseProvider =
 NotifierProvider<InAppPurchaseViewModel, InAppPurchaseState>(

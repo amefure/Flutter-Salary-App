@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:salary/models/secrets.dart';
-import 'package:salary/viewmodels/reverpod/remove_ads_notifier.dart';
+import 'package:salary/providers/remove_ads_notifier.dart';
 
 class AdMobBannerWidget extends ConsumerWidget {
   const AdMobBannerWidget({super.key});
