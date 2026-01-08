@@ -8,7 +8,7 @@ class CustomColors {
   static Color background(BuildContext context) {
     final isDark =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return isDark ? Colors.black : Colors.white;
+    return isDark ? const Color(0xFF333333) : Colors.white;
   }
 
   /// テキストカラー
@@ -25,7 +25,7 @@ class CustomColors {
   static Color foundation(BuildContext context) {
     final isDark =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return isDark ? const Color(0xFF333333) : const Color(0xFFF2F2F7);
+    return isDark ? const Color(0xFF222222) : const Color(0xFFF2F2F7);
   }
 
   /// ネガティブ

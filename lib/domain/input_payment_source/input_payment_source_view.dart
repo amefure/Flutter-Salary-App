@@ -216,7 +216,7 @@ class _ThemaColorPicker extends ConsumerWidget {
           children: [
             Container(width: 20, height: 20, color: color.color),
             const SizedBox(width: 8),
-            Text(color.toName()),
+            CustomText(text: color.toName()),
           ],
         ),
       );
@@ -229,6 +229,7 @@ class _ThemaColorPicker extends ConsumerWidget {
     final vm = ref.read(inputPaymentSourceProvider(paymentSource).notifier);
     return DropdownButton<ThemaColor>(
       value: selectedColor,
+      dropdownColor: CustomColors.background(context),
       items: _createItems(),
       onChanged: (color) {
         vm.updateColor(color);

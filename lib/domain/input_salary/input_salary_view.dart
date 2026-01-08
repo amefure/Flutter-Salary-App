@@ -460,15 +460,19 @@ class _Body extends ConsumerState<_BodyWidget> {
         return Container(
           height: 300,
           padding: const EdgeInsets.only(top: 6),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          decoration: BoxDecoration(
+            color: CustomColors.background(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Column(
             children: [
               // Doneボタン
               CupertinoButton(
-                child: const Text('完了'),
+                child: const CustomText(
+                  text :'完了',
+                  color: CustomColors.thema,
+                  fontWeight: FontWeight.bold,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               // iOSスタイルの日付ピッカー

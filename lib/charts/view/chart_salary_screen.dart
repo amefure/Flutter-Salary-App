@@ -130,9 +130,19 @@ class _SourceSelector extends ConsumerWidget {
           ),
         );
       },
+      style: MenuStyle(
+        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_){
+          return CustomColors.background(context);
+        }),
+      ),
       menuChildren: state.sourceList.map((source) {
         return MenuItemButton(
           onPressed: () => notifier.changeSource(source),
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
+              return CustomColors.background(context);
+            }),
+          ),
           child: SizedBox(
             width: 200,
             child: Row(
@@ -141,7 +151,10 @@ class _SourceSelector extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
                 if (state.selectedSource == source)
-                  const Icon(CupertinoIcons.checkmark_alt),
+                  Icon(
+                    CupertinoIcons.checkmark_alt,
+                    color: CustomColors.text(context),
+                  ),
               ],
             ),
           ),

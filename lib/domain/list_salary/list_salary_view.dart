@@ -69,12 +69,21 @@ class BuildSourceSelector extends ConsumerWidget {
           child: const Icon(Icons.filter_list, size: 28),
         );
       },
-      menuChildren:
-      sourceList.map((source) {
+      style: MenuStyle(
+        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
+          return CustomColors.background(context);
+        }),
+      ),
+      menuChildren: sourceList.map((source) {
         return MenuItemButton(
           onPressed: () {
             vm.filterPaymentSource(source);
           },
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
+              return CustomColors.background(context);
+            }),
+          ),
           child: SizedBox(
             width: 200,
             child: Row(
@@ -87,7 +96,10 @@ class BuildSourceSelector extends ConsumerWidget {
                 Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
 
                 if (source == selectedSource)
-                  const Icon(CupertinoIcons.checkmark_alt),
+                  Icon(
+                    CupertinoIcons.checkmark_alt,
+                    color: CustomColors.text(context),
+                  ),
               ],
             ),
           ),

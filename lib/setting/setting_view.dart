@@ -160,6 +160,7 @@ class _SettingViewState extends State<SettingView> {
   ]) {
     return CupertinoListTile(
       padding: const EdgeInsets.all(15),
+      backgroundColor: CustomColors.background(context),
       title: CustomText(
         text: title,
         textSize: TextSize.MS,
