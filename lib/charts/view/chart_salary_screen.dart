@@ -82,6 +82,8 @@ class ChartSalaryScreen extends StatelessWidget {
                           child: const CustomLabelView(labelText: '年別合計金額(10年間)')
                       ),
 
+                      const SizedBox(height: 8),
+
                       // 年ごとの給料グラフ(過去10年分)
                       SizedBox(
                         width: screen.width * 0.95,

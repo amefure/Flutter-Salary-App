@@ -145,7 +145,7 @@ class ListPaymentSourceView extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: CustomColors.background(context),
               // 角丸
               borderRadius: BorderRadius.circular(8),
             ),

@@ -66,6 +66,7 @@ class _SettingViewState extends State<SettingView> {
           children: [
             CupertinoListSection.insetGrouped(
               header: const CustomText(text: 'App'),
+              backgroundColor: CustomColors.foundation(context),
               children: [
                 _settingListTile('支払い元管理', CupertinoIcons.building_2_fill, () {
                   Navigator.of(context).push(
@@ -110,6 +111,7 @@ class _SettingViewState extends State<SettingView> {
 
             CupertinoListSection.insetGrouped(
               header: const CustomText(text: 'LINK'),
+              backgroundColor: CustomColors.foundation(context),
               footer: const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: CustomText(

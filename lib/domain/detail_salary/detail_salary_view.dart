@@ -196,7 +196,7 @@ class _Body extends ConsumerWidget {
                             horizontal: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: CupertinoColors.white, // 背景色
+                            color: CustomColors.background(context), // 背景色
                             borderRadius: BorderRadius.circular(8), // 角丸
                           ),
                           child: Row(

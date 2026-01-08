@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/common/components/custom_label_view.dart';
+import 'package:salary/utilities/custom_colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -75,7 +76,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             child: Icon(widget.prefixIcon, color: widget.prefixIconColor),
           ),
           decoration: BoxDecoration(
-            color: CupertinoColors.white,
+            color: CustomColors.background(context),
             borderRadius: BorderRadius.circular(5),
           ),
         ),

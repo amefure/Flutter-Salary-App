@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// カスタムカラーを定義
 class CustomColors {
 
-  /// バックグラウンドカラー
+  /// バックグラウンドカラー(ダークなら黒 / ライトなら白)
   static Color background(BuildContext context) {
     final isDark =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -25,7 +25,7 @@ class CustomColors {
   static Color foundation(BuildContext context) {
     final isDark =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return isDark ? const Color(0xFF3333333) : const Color(0xFFF2F2F7);
+    return isDark ? const Color(0xFF333333) : const Color(0xFFF2F2F7);
   }
 
   /// ネガティブ
@@ -49,7 +49,7 @@ class CustomColors {
   static const Color themaOrange = Color(0xFFb16926);
 
   /// 黒
-  static const Color themaBlack = Color(0xFF333333);
+  static const Color themaBlack = Color(0xFF444444);
 
   /// 灰色
   static const Color themaGray = Color(0xFF90a2aa);

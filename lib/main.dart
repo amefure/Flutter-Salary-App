@@ -73,7 +73,9 @@ class MyApp extends StatelessWidget {
       ],
       theme: CupertinoThemeData(
         // ライトモード限定にする
-        brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,//Brightness.light,
+        // brightness: Brightness.light,
+        // システムに準ずる(明示的に指定する必要なし？)
+        // brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,//
         // プライマリーカラー
         primaryColor: CustomColors.thema,
         // Scaffoldの背景色を白に設定
