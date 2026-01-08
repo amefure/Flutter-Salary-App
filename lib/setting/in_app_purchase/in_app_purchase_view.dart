@@ -52,6 +52,7 @@ class InAppPurchaseView extends ConsumerWidget {
               final isLast = index == state.products.length;
               if (isLast) {
                 return _itemRowView(
+                  context,
                   '購入アイテムを復元する',
                   '一度ご購入いただけますと、\n再インストール時に復元が可能です。',
                   '',
@@ -65,6 +66,7 @@ class InAppPurchaseView extends ConsumerWidget {
 
               // FIXME なせか空になる時があるのでisEmptyなら明示的に値を返す暫定対応
               return _itemRowView(
+                context,
                 p.title.isEmpty ? '広告削除' : p.title,
                 p.description.isEmpty ? 'アプリ内に表示されているバナー広告が非表示になります。' : p.description,
                 p.price,
@@ -79,6 +81,7 @@ class InAppPurchaseView extends ConsumerWidget {
   }
 
   Widget _itemRowView(
+      BuildContext context,
       String title,
       String description,
       String price,
@@ -87,7 +90,7 @@ class InAppPurchaseView extends ConsumerWidget {
       ) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
+      color: CustomColors.background(context),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
