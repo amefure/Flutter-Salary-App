@@ -101,7 +101,7 @@ class ListPaymentSourceView extends ConsumerWidget {
       body: CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
-          middle: const Text('給料MEMO'),
+          middle: const Text('支払い元一覧'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
