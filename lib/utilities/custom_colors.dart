@@ -1,20 +1,40 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// カスタムカラーを定義
 class CustomColors {
+
+  /// バックグラウンドカラー
+  static Color background(BuildContext context) {
+    final isDark =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return isDark ? Colors.black : Colors.white;
+  }
+
   /// テキストカラー
-  static const Color text = Color(0xFF333333);
+  static Color text(BuildContext context) {
+    final isDark =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return isDark ? Colors.white : const Color(0xFF333333);
+  }
 
   /// テーマ(ベース)カラー
   static const Color thema = Color(0xFF276bb1);
 
   /// ファンデーションカラー
-  static const Color foundation = Color(0xFFF2F2F7);
+  static Color foundation(BuildContext context) {
+    final isDark =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return isDark ? const Color(0xFF3333333) : const Color(0xFFF2F2F7);
+  }
 
   /// ネガティブ
   static const Color negative = Color(0xFFB12729);
 
   /// =============== テーマカラー =====================
+
+  /// 青
+  static const Color themaBlue = Color(0xFF276bb1);
 
   /// 緑
   static const Color themaGreen = Color(0xFF26b19a);

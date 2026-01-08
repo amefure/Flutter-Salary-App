@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/domain/input_patment_source/input_payment_source_state.dart';
-import 'package:salary/domain/input_patment_source/input_payment_source_view_model.dart';
+import 'package:salary/domain/input_payment_source/input_payment_source_state.dart';
+import 'package:salary/domain/input_payment_source/input_payment_source_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/utilities/custom_colors.dart';
@@ -23,13 +23,13 @@ class InputPaymentSourceView extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      decoration: const BoxDecoration(
-        color: CustomColors.foundation,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: CustomColors.foundation(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       height: MediaQuery.of(context).size.height * 0.8,
       child: CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle: paymentSource == null ? const Text('支払い元登録画面') : const Text('支払い元更新画面'),
         ),
@@ -178,7 +178,7 @@ class _ToggleIsMainSwitch extends ConsumerWidget {
 
           if (!isMainEnabled)
             const CustomText(
-                text: '既に別のデータで設定済みです',
+              text: '既に別のデータで設定済みです',
               textSize: TextSize.MS,
               fontWeight: FontWeight.bold,
             ),

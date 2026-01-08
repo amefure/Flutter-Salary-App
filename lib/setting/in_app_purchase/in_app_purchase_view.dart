@@ -17,7 +17,7 @@ class InAppPurchaseView extends ConsumerWidget {
     final vm = ref.read(inAppPurchaseProvider.notifier);
 
     return CupertinoPageScaffold(
-      backgroundColor: CustomColors.foundation,
+      backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
         middle: Text('広告削除'),
       ),

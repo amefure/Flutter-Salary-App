@@ -91,13 +91,13 @@ class _DetailInputViewState extends State<DetailInputView> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      decoration: const BoxDecoration(
-        color: CustomColors.foundation,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration:  BoxDecoration(
+        color: CustomColors.foundation(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       height: MediaQuery.of(context).size.height * 0.8,
       child: CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle: CustomText(
             text: '${widget.title}：詳細入力',

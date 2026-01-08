@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/utilities/custom_colors.dart';
 
 class EmptyChartView extends StatelessWidget {
   const EmptyChartView({super.key});
@@ -10,7 +11,7 @@ class EmptyChartView extends StatelessWidget {
       height: 300,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: CupertinoColors.white,
+        color: CustomColors.background(context),
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,

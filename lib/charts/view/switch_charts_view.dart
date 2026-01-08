@@ -8,6 +8,7 @@ import 'package:salary/charts/chart_display_mode.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/models/dummy_source.dart';
 import 'package:salary/models/salary.dart';
+import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/utilities/number_utils.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 
@@ -21,15 +22,18 @@ class SwitchChartsView extends ConsumerWidget {
 
     switch (displayMode) {
       case ChartDisplayMode.line:
-        return _buildYearSalaryChart(ref);
+        return _buildYearSalaryChart(context, ref);
 
       case ChartDisplayMode.pie:
-        return _buildPieChart(ref);
+        return _buildPieChart(context, ref);
     }
   }
 
   /// グラフ描画 & NoData UI
-  Widget _buildYearSalaryChart(WidgetRef ref) {
+  Widget _buildYearSalaryChart(
+      BuildContext context,
+      WidgetRef ref
+      ) {
     final state = ref.watch(chartSalaryProvider);
     final vm = ref.read(chartSalaryProvider.notifier);
 
@@ -48,7 +52,7 @@ class SwitchChartsView extends ConsumerWidget {
       height: 300,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: CupertinoColors.white,
+        color: CustomColors.background(context),
         borderRadius: BorderRadius.circular(8),
       ),
       child: LineChart(
@@ -185,7 +189,10 @@ class SwitchChartsView extends ConsumerWidget {
   }
 
 
-  Widget _buildPieChart(WidgetRef ref) {
+  Widget _buildPieChart(
+      BuildContext context,
+      WidgetRef ref
+      ) {
     final state = ref.watch(chartSalaryProvider);
 
     final selectedYear = state.selectedYear;
@@ -234,10 +241,10 @@ class SwitchChartsView extends ConsumerWidget {
         title: '$titleName\n$titlePercent',
         color: source?.themaColorEnum.color ?? Colors.grey,
         radius: 100,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: CustomColors.background(context),
         ),
       );
     }).toList();
@@ -246,7 +253,7 @@ class SwitchChartsView extends ConsumerWidget {
       height: 300,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: CupertinoColors.white,
+        color: CustomColors.background(context),
         borderRadius: BorderRadius.circular(8),
       ),
       child: PieChart(

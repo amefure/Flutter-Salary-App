@@ -21,7 +21,7 @@ class ChartSalaryScreen extends StatelessWidget {
     // 画面サイズを取得
     final screen = MediaQuery.of(context).size;
     return CupertinoPageScaffold(
-      backgroundColor: CustomColors.foundation,
+      backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
         middle: CustomText(
           text: 'MyData',

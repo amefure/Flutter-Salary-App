@@ -7,7 +7,7 @@ enum TextSize { SS, S, MS, M, ML, L }
 class CustomText extends StatelessWidget {
   final String text; // 表示するテキスト
   final TextSize textSize; // サイズを指定
-  final Color color; // テキストカラー
+  final Color? color; // テキストカラー
   final FontWeight fontWeight; // フォントの太さ
   final int? maxLines; // 行数
 
@@ -15,7 +15,7 @@ class CustomText extends StatelessWidget {
     super.key,
     required this.text,
     this.textSize = TextSize.M,
-    this.color = CustomColors.text,
+    this.color,
     this.fontWeight = FontWeight.normal,
     this.maxLines = 1
   });
@@ -55,7 +55,7 @@ class CustomText extends StatelessWidget {
       softWrap: false,
       style: TextStyle(
         fontSize: fontSize,
-        color: color,
+        color: color ?? CustomColors.text(context),
         fontWeight: fontWeight,
       ),
     );

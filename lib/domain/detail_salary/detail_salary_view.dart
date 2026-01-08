@@ -31,13 +31,13 @@ class DetailSalaryView extends ConsumerWidget {
     }
 
     return CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle: CustomText(
             text: title,
             fontWeight: FontWeight.bold,
           ),
-          backgroundColor: CustomColors.foundation,
+          backgroundColor: CustomColors.foundation(context),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -138,7 +138,7 @@ class _Body extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Scaffold を使うことでスタイルが適用される
     return Scaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -178,6 +178,7 @@ class _Body extends ConsumerWidget {
                         // targetSalary?.source?.themaColorEnum.color ?? ThemaColor.blue.color
                         // 給料テーブル
                         _buildSalaryTable(
+                          context,
                           state.salary,
                           ThemaColor.black.color.withValues(alpha: 0.8),
                         ),
@@ -224,12 +225,17 @@ class _Body extends ConsumerWidget {
 
 
   /// 給料テーブル
-  Widget _buildSalaryTable(Salary? targetSalary, Color headerColor) {
+  Widget _buildSalaryTable(
+      BuildContext context,
+      Salary? targetSalary,
+      Color headerColor
+      ) {
     return Table(
       border: TableBorder.all(color: Colors.grey),
       columnWidths: {0: const FlexColumnWidth(1), 1: const FlexColumnWidth(3)},
       children: [
         _buildTableRow(
+          context,
           '総支給額',
           targetSalary?.paymentAmount,
           headerColor,
@@ -237,6 +243,7 @@ class _Body extends ConsumerWidget {
         ),
         _buildExpandableRow('', targetSalary?.paymentAmountItems),
         _buildTableRow(
+          context,
           '控除額',
           targetSalary?.deductionAmount,
           headerColor,
@@ -244,6 +251,7 @@ class _Body extends ConsumerWidget {
         ),
         _buildExpandableRow('', targetSalary?.deductionAmountItems),
         _buildTableRow(
+          context,
           '手取り額',
           targetSalary?.netSalary,
           headerColor,
@@ -255,6 +263,7 @@ class _Body extends ConsumerWidget {
 
   /// 1行単位のUI
   TableRow _buildTableRow(
+      BuildContext context,
       String label,
       int? amount,
       Color headerColor, {
@@ -272,7 +281,7 @@ class _Body extends ConsumerWidget {
             text: label,
             textSize: TextSize.M,
             fontWeight: FontWeight.bold,
-            color: isTotal ? Colors.white : CustomColors.text,
+            color: isTotal ? Colors.white : CustomColors.text(context),
           ),
         ),
         Padding(
@@ -287,7 +296,7 @@ class _Body extends ConsumerWidget {
                   text: NumberUtils.formatWithComma(amount ?? 0),
                   textSize: TextSize.ML,
                   fontWeight: FontWeight.bold,
-                  color: isTotal ? Colors.white : CustomColors.text,
+                  color: isTotal ? Colors.white : CustomColors.text(context),
                 ),
 
                 const SizedBox(width: 3),
@@ -296,7 +305,7 @@ class _Body extends ConsumerWidget {
                   text: '円',
                   textSize: TextSize.SS,
                   fontWeight: FontWeight.bold,
-                  color: isTotal ? Colors.white : CustomColors.text,
+                  color: isTotal ? Colors.white : CustomColors.text(context),
                 ),
               ],
             ),

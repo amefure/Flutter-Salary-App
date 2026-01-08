@@ -18,7 +18,7 @@ class SalaryListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: CupertinoPageScaffold(
-            backgroundColor: CustomColors.foundation,
+            backgroundColor: CustomColors.foundation(context),
             navigationBar: CupertinoNavigationBar(
               middle: const CustomText(
                 text: 'シンプル給料記録',
@@ -131,7 +131,7 @@ class SalaryListView extends ConsumerWidget {
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: CustomColors.background(context),
                   // 角丸
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -195,7 +195,7 @@ class SalaryListView extends ConsumerWidget {
                                     _ => '未設定',
                                   },
                                   textSize: TextSize.S,
-                                  color: CustomColors.text.withValues(alpha: 0.7),
+                                  color: CustomColors.text(context).withValues(alpha: 0.7),
                                 ),
                               ]),
                           // 給料詳細UI

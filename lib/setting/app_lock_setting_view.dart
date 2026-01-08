@@ -129,7 +129,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CustomColors.foundation,
+      backgroundColor: CustomColors.foundation(context),
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.isEntry ? 'パスワード登録' : ''),
       ),
@@ -160,7 +160,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
 
             const Spacer(),
 
-            Material(color: CustomColors.foundation, child: _buildNumberPad()),
+            Material(color: CustomColors.foundation(context), child: _buildNumberPad()),
           ],
         ),
       ),

@@ -32,21 +32,25 @@ class TableSalaryInfoView extends ConsumerWidget {
       spacing: 20,
       children: [
         _buildSalaryRow(
+          context,
           '年収（総支給）',
           summary.paymentAmount,
           diff: summary.diffPaymentAmount,
         ),
         _buildSalaryRow(
+          context,
           '年収（手取り）',
           summary.netSalary,
           diff: summary.diffNetSalary,
         ),
         _buildSalaryRow(
+          context,
           '夏季賞与（総支給）',
           summary.summerBonus,
           diff: summary.diffSummerBonus,
         ),
         _buildSalaryRow(
+          context,
           '冬季賞与（総支給）',
           summary.winterBonus,
           diff: summary.diffWinterBonus,
@@ -55,7 +59,10 @@ class TableSalaryInfoView extends ConsumerWidget {
     );
   }
 
-  Widget _buildSalaryRow(String label, int amount, {int diff = 0}) {
+  Widget _buildSalaryRow(
+      BuildContext context,
+      String label,
+      int amount, {int diff = 0}) {
     Color diffColor;
     String diffText = '';
 
@@ -66,7 +73,7 @@ class TableSalaryInfoView extends ConsumerWidget {
       diffColor = Colors.red;
       diffText = '${NumberUtils.formatWithComma(diff)}円';
     } else {
-      diffColor = CustomColors.text.withAlpha(120);
+      diffColor = CustomColors.text(context).withAlpha(120);
       diffText = '±0';
     }
 

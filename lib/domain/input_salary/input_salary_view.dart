@@ -23,9 +23,9 @@ class InputSalaryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vm = ref.read(inputSalaryProvider(salary).notifier);
     return Scaffold(
-      backgroundColor: CustomColors.foundation,
+      backgroundColor: CustomColors.foundation(context),
       body: CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle:
           salary == null ? const Text('給料登録画面') : const Text('給料更新画面'),

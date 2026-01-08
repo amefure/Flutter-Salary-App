@@ -99,7 +99,7 @@ class ListPaymentSourceView extends ConsumerWidget {
 
     return Scaffold(
       body: CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation,
+        backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle: const Text('給料MEMO'),
           trailing: CupertinoButton(
@@ -178,7 +178,7 @@ class ListPaymentSourceView extends ConsumerWidget {
                               Expanded(
                                 child: CustomText(
                                   text: paymentSource.memo!,
-                                  color: CustomColors.text.withAlpha(80),
+                                  color: CustomColors.text(context).withAlpha(80),
                                   maxLines: isExpanded ? null : 1,
                                 ),
                               ),
@@ -196,7 +196,7 @@ class ListPaymentSourceView extends ConsumerWidget {
                                       ? Icons.expand_less
                                       : Icons.expand_more,
                                   size: 20,
-                                  color: CustomColors.text.withAlpha(80),
+                                  color: CustomColors.text(context).withAlpha(80),
                                 ),
                               ),
                             ],

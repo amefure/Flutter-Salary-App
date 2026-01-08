@@ -4,7 +4,7 @@ import 'package:salary/utilities/custom_colors.dart';
 
 enum ThemaColor {
   red(CustomColors.negative, 0, 'クリムゾンレッド'),
-  blue(CustomColors.thema, 1, 'オーシャンブルー'),
+  blue(CustomColors.themaBlue, 1, 'オーシャンブルー'),
   green(CustomColors.themaGreen, 2, 'エメラルドグリーン'),
   purple(CustomColors.themaPurple, 3, 'ロイヤルパープル'),
   yellow(CustomColors.themaYellow, 4, 'サンフラワーイエロー'),

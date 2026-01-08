@@ -26,7 +26,7 @@ class CustomElevatedButton extends StatelessWidget {
       ),
       child: CustomText(
         text: text,
-        color: Colors.white,
+        color: CustomColors.background(context),
         fontWeight: FontWeight.bold,
       ),
     );

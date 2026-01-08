@@ -71,15 +71,15 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         const Locale('ja', 'JP'), // 日本語
       ],
-      theme: const CupertinoThemeData(
+      theme: CupertinoThemeData(
         // ライトモード限定にする
-        brightness: Brightness.light,
+        brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,//Brightness.light,
         // プライマリーカラー
         primaryColor: CustomColors.thema,
         // Scaffoldの背景色を白に設定
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: CustomColors.background(context),
         // タブバー
-        barBackgroundColor: Colors.white,
+        barBackgroundColor: CustomColors.background(context),
       ),
       home: startScreen,
     );
