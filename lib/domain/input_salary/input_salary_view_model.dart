@@ -101,6 +101,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
 
   /// 手取りの合計金額を計算しUI反映
   void calcNetSalaryAmount() {
+
     final int? paymentAmount = int.tryParse(state.paymentAmount);
     final int? deductionAmount = int.tryParse(state.deductionAmount);
 
@@ -188,7 +189,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     state = state.copyWith(
       deductionAmountItems: [...state.deductionAmountItems, newItem],
     );
-    updateTotalPaymentAmount();
+    updateTotalDeductionAmount();
   }
 
   void removePaymentAmountItem(AmountItem item) {

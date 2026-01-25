@@ -241,10 +241,10 @@ class SwitchChartsView extends ConsumerWidget {
         title: '$titleName\n$titlePercent',
         color: source?.themaColorEnum.color ?? Colors.grey,
         radius: 100,
-        titleStyle: TextStyle(
+        titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: CustomColors.background(context),
+          color: Colors.white,
         ),
       );
     }).toList();

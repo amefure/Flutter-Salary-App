@@ -44,7 +44,7 @@ class _DetailInputViewState extends State<DetailInputView> {
           ),
           content: CustomText(
             text: title,
-            fontWeight: FontWeight.bold,
+            maxLines: 2,
           ),
           actions: [
             TextButton(
@@ -64,15 +64,15 @@ class _DetailInputViewState extends State<DetailInputView> {
 
   void _registerAmountItem() {
     String name = _nameController.text;
-    int amount = int.tryParse(_amountController.text) ?? 0;
+    final int? amount = int.tryParse(_amountController.text);
 
     if (_amountController.text.length > 19) {
       _showErrorDialog(context, '19桁以上は入力できません。');
       return;
     }
 
-    if (name.isEmpty || amount < 0) {
-      _showErrorDialog(context, '項目名と金額を入力してください。');
+    if (name.isEmpty || amount == null) {
+      _showErrorDialog(context, '項目名と金額を正しく入力してください。');
       return;
     }
 
