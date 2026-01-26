@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/main.dart';
+import 'package:salary/providers/theme_mode_notifier.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/common/components/custom_text_view.dart';
@@ -10,14 +13,14 @@ import 'package:salary/setting/list_payment_source_view.dart';
 import 'package:salary/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingView extends StatefulWidget {
+class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
 
   @override
-  State<SettingView> createState() => _SettingViewState();
+  ConsumerState<SettingView> createState() => _SettingViewState();
 }
 
-class _SettingViewState extends State<SettingView> {
+class _SettingViewState extends ConsumerState<SettingView> {
   bool _isAppLockEnabled = false; // アプリロックの状態を管理
 
   @override
@@ -83,6 +86,19 @@ class _SettingViewState extends State<SettingView> {
                     ),
                   );
                 }),
+
+                _settingListTile(
+                  'ダークモード',
+                  CupertinoIcons.moon_fill,
+                  null,
+                  CupertinoSwitch(
+                    activeTrackColor: CustomColors.thema,
+                    value: ref.watch(themeModeProvider) == AppThemeMode.dark,
+                    onChanged: (value) {
+                      ref.read(themeModeProvider.notifier).toggle(value);
+                    },
+                  ),
+                ),
 
                 _settingListTile(
                   'アプリロック',

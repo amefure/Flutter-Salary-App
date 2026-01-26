@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:salary/providers/theme_mode_notifier.dart';
 import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/repository/shared_prefs_repository.dart';
@@ -48,13 +48,22 @@ void main() async {
 
 /// アプリのルートWidget
 /// テーマ用
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final Widget startScreen;
 
-  const MyApp({super.key, required this.startScreen});
+  const MyApp({
+    super.key,
+    required this.startScreen,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ユーザー変更を検知したら全体をリフレッシュする
+    final mode = ref.watch(themeModeProvider);
+    final brightness = switch (mode) {
+      AppThemeMode.light => Brightness.light,
+      AppThemeMode.dark => Brightness.dark,
+    };
     // IOS デザインアプリ
     return CupertinoApp(
       title: 'シンプル給料記録',
@@ -72,16 +81,17 @@ class MyApp extends StatelessWidget {
         const Locale('ja', 'JP'), // 日本語
       ],
       theme: CupertinoThemeData(
-        // ライトモード限定にする
-        // brightness: Brightness.light,
-        // システムに準ずる(明示的に指定する必要なし？)
-        // brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,//
+        // ユーザー設定モードを反映
+        brightness: brightness,
         // プライマリーカラー
         primaryColor: CustomColors.thema,
         // Scaffoldの背景色を白に設定
         scaffoldBackgroundColor: CustomColors.background(context),
         // タブバー
-        barBackgroundColor: CustomColors.background(context),
+        // CustomColors.background(context)で指定すると色が変化しない
+        // 未指定にするとMyData画面がバグる
+        // => Barが不透明扱いでUIに高さが認識されなくなりスクロールに食われる
+        barBackgroundColor: CupertinoColors.systemBackground,
       ),
       home: startScreen,
     );

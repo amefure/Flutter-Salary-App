@@ -1,7 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum SharedPreferencesKeys {
-  removeAds('removeAds');
+  removeAds('removeAds'),
+  themeMode('themeMode');
 
   final String key;
   const SharedPreferencesKeys(this.key);
@@ -26,6 +27,14 @@ class SharedPreferencesService {
   }
 
   bool fetchRemoveAds() => _repository.getBool(SharedPreferencesKeys.removeAds);
+
+  Future<void> saveThemeMode(bool isDark) async {
+    _repository.saveBool(SharedPreferencesKeys.themeMode, isDark);
+  }
+
+  bool? fetchThemeModeNullable() {
+    return _repository.getBoolNullable(SharedPreferencesKeys.themeMode);
+  }
 }
 
 /// シングルトン設計
@@ -67,6 +76,10 @@ class _SharedPreferencesRepository {
 
   bool getBool(SharedPreferencesKeys key) {
     return _prefs?.getBool(key.key) ?? false;
+  }
+
+  bool? getBoolNullable(SharedPreferencesKeys key) {
+    return _prefs?.getBool(key.key);
   }
 
   Future<void> remove(SharedPreferencesKeys key) async {

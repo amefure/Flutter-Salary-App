@@ -27,7 +27,7 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
       _subscription?.cancel();
     });
 
-    return InAppPurchaseState(loading: true);
+    return const InAppPurchaseState(loading: true);
   }
 
   /// 初期化
