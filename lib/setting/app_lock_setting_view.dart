@@ -42,7 +42,8 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop();
+                // 成功時にはtrueを明示的に返す
+                Navigator.of(context).pop(true);
               },
               child: const Text('OK'),
             ),
