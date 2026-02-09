@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/providers/theme_mode_notifier.dart';
 import 'package:salary/setting/home/setting_view_model.dart';
+import 'package:salary/setting/register_account/register_account_view.dart';
 import 'package:salary/utilities/custom_colors.dart';
 import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/setting/app_lock_setting_view.dart';
@@ -50,6 +51,19 @@ class SettingView extends StatelessWidget {
                               builder: (context) => ListPaymentSourceView(),
                             ),
                           );
+                    }
+                ),
+
+                _settingListTile(
+                    context,
+                    'アカウント作成',
+                    CupertinoIcons.person_add_solid,
+                        () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => RegisterAccountView(),
+                        ),
+                      );
                     }
                 ),
 
