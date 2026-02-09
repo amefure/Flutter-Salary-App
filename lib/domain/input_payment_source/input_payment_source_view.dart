@@ -6,7 +6,7 @@ import 'package:salary/domain/input_payment_source/input_payment_source_state.da
 import 'package:salary/domain/input_payment_source/input_payment_source_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
-import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/common/components/custom_elevated_button.dart';
 import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_field_view.dart';

@@ -3,7 +3,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/setting/home/setting_state.dart';
-import 'package:salary/utilities/logger.dart';
+import 'package:salary/core/utils/logger.dart';
 
 final settingProvider = StateNotifierProvider<SettingViewModel, SettingState>((ref) {
   return SettingViewModel(ref);

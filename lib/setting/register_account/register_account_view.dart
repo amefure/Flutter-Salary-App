@@ -7,7 +7,7 @@ import 'package:salary/common/components/custom_text_view.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/setting/register_account/register_account_state.dart';
 import 'package:salary/setting/register_account/register_account_view_model.dart';
-import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 
 
 class RegisterAccountView extends StatelessWidget {

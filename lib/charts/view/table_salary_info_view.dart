@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/common/components/custom_label_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/utilities/custom_colors.dart';
-import 'package:salary/utilities/number_utils.dart';
+import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/number_utils.dart';
 
 /// 当年 / 前年比較テーブル
 class TableSalaryInfoView extends ConsumerWidget {

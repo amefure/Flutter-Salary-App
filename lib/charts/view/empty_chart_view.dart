@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 
 class EmptyChartView extends StatelessWidget {
   const EmptyChartView({super.key});

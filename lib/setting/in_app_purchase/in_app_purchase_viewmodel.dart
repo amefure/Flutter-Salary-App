@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/models/secrets.dart';
-import 'package:salary/utilities/logger.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'in_app_purchase_state.dart';
 import 'package:salary/providers/remove_ads_notifier.dart';
 

@@ -5,7 +5,7 @@ import 'package:salary/providers/theme_mode_notifier.dart';
 import 'package:salary/repository/biometrics_service.dart';
 import 'package:salary/repository/password_service.dart';
 import 'package:salary/repository/shared_prefs_repository.dart';
-import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/common/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/setting/app_lock_setting_view.dart';

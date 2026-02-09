@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/models/salary.dart';
-import 'package:salary/utilities/custom_colors.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/common/components/custom_elevated_button.dart';
 import 'package:salary/common/components/custom_text_field_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';

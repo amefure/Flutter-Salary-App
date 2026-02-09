@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 import 'package:salary/charts/view/empty_chart_view.dart';
 import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/utilities/custom_colors.dart';
-import 'package:salary/utilities/number_utils.dart';
+import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/number_utils.dart';
 
 /// 年ごとの給料グラフ(過去10年分)
 class BarChartYearlyView extends ConsumerWidget {

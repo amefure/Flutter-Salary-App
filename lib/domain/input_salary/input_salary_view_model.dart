@@ -6,7 +6,7 @@ import 'package:salary/domain/input_salary/input_salary_state.dart';
 import 'package:salary/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/repository/realm_repository.dart';
-import 'package:salary/utilities/logger.dart';
+import 'package:salary/core/utils/logger.dart';
 
 final inputSalaryProvider =
 StateNotifierProvider.autoDispose.family<InputSalaryViewModel, InputSalaryState, Salary?>(
