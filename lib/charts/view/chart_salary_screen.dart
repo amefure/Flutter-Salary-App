@@ -5,12 +5,12 @@ import 'package:salary/charts/view/bar_chart_yearly_view.dart';
 import 'package:salary/charts/view/chart_mode_switcher.dart';
 import 'package:salary/charts/view/switch_charts_view.dart';
 import 'package:salary/charts/view/table_salary_info_view.dart';
-import 'package:salary/common/components/ad_banner_widget.dart';
-import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/common/components/payment_icon_view.dart';
-import 'package:salary/common/components/payment_source_label_view.dart';
+import 'package:salary/core/common/components/ad_banner_widget.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/payment_icon_view.dart';
+import 'package:salary/core/common/components/payment_source_label_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/common/components/custom_label_view.dart';
+import 'package:salary/core/common/components/custom_label_view.dart';
 import 'package:salary/charts/chart_salary_view_model.dart';
 
 class ChartSalaryScreen extends StatelessWidget {

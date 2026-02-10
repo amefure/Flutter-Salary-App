@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/common/components/custom_elevated_button.dart';
-import 'package:salary/common/components/custom_text_field_view.dart';
-import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom_elevated_button.dart';
+import 'package:salary/core/common/components/custom_text_field_view.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/models/thema_color.dart';
 import 'package:salary/setting/register_account/register_account_state.dart';
 import 'package:salary/setting/register_account/register_account_view_model.dart';

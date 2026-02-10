@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String text;

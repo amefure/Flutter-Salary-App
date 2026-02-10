@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/common/components/ad_banner_widget.dart';
-import 'package:salary/common/components/payment_icon_view.dart';
+import 'package:salary/core/common/components/ad_banner_widget.dart';
+import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
-import 'package:salary/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/domain/detail_salary/detail_salary_view.dart';
 import 'package:salary/domain/input_salary/input_salary_view.dart';
 

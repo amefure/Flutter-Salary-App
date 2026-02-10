@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/common/components/custom_text_view.dart';
-import 'package:salary/common/components/payment_icon_view.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/models/salary.dart';
 import 'package:salary/models/thema_color.dart';
 
