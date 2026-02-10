@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
-import 'package:salary/models/salary.dart';
-import 'package:salary/models/thema_color.dart';
+import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/models/thema_color.dart';
 
 /// 支払い元UIラベル
 class PaymentSourceLabelView extends ConsumerWidget {

@@ -1,0 +1,227 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/payment_icon_view.dart';
+import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
+import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/providers/payment_source_notifier.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/feature/charts/chart_salary_view_model.dart';
+import 'package:salary/feature/domain/input_payment_source/input_payment_source_view.dart';
+
+/// [ConsumerWidget]でUI更新
+class ListPaymentSourceView extends ConsumerWidget {
+  ListPaymentSourceView({super.key});
+
+  /// 削除確認ダイアログ
+  void _showConfirmDeleteAlert(
+    BuildContext context,
+    WidgetRef ref,
+    PaymentSource paymentSource,
+  ) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return CupertinoAlertDialog(
+          title: const Text('確認'),
+          content: Text('「${paymentSource.name}」を本当に削除しますか？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('キャンセル'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deletePaymentSource(dialogContext, ref, paymentSource);
+              },
+              child: const CustomText(
+                text: '削除',
+                fontWeight: FontWeight.bold,
+                color: CustomColors.negative,
+                textSize: TextSize.MS,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// 支払い元の削除
+  void _deletePaymentSource(
+    BuildContext dialogContext,
+    WidgetRef ref,
+    PaymentSource paymentSource,
+  ) {
+    ref.read(paymentSourceProvider.notifier).delete(paymentSource);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
+    // ダイアログを閉じる(コンテキストが異なるので注意)
+    Navigator.of(dialogContext).pop();
+  }
+
+  /// 支払い元追加画面を表示
+  Future<void> _showInputPaymentSourceModal(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return const InputPaymentSourceView();
+      },
+    );
+  }
+
+  /// 支払い元更新画面を表示
+  Future<void> _showUpdatePaymentSourceModal(
+    BuildContext context,
+    PaymentSource paymentSource,
+  ) async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return InputPaymentSourceView(paymentSource: paymentSource);
+      },
+    );
+  }
+
+  /// 支払い元の開閉状態用StateProvider
+  final paymentSourceExpandedProvider = StateProvider<Map<String, bool>>((ref) => {});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final paymentSources = ref.watch(paymentSourceProvider);
+
+    return Scaffold(
+      body: CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation(context),
+        navigationBar: CupertinoNavigationBar(
+          middle: const Text('支払い元一覧'),
+          trailing: CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+            onPressed: () {
+              _showInputPaymentSourceModal(context);
+            },
+          ),
+        ),
+        child: SafeArea(
+          child:
+              paymentSources.isEmpty
+                  ? _noDataView()
+                  : _paymentSourceList(paymentSources, ref),
+        ),
+      ),
+    );
+  }
+
+  /// NoData EmptyView
+  Widget _noDataView() {
+    return const Center(child: CustomText(text: '登録された支払い元データがありません'));
+  }
+
+  /// 支払い元リスト
+  Widget _paymentSourceList(List<PaymentSource> paymentSources, WidgetRef ref) {
+    return ListView.builder(
+      itemCount: paymentSources.length,
+      itemBuilder: (context, index) {
+
+        final paymentSource = paymentSources[index];
+
+        /// アイテムの開閉状態を取得
+        final expandedStates = ref.watch(paymentSourceExpandedProvider);
+        bool isExpanded = expandedStates[paymentSource.id] ?? false;
+
+        return InkWell(
+          onTap: () {
+            _showUpdatePaymentSourceModal(context, paymentSource);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
+            decoration: BoxDecoration(
+              color: CustomColors.background(context),
+              // 角丸
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // アイコン
+                PaymentIconView(paymentSource: paymentSource),
+
+                const SizedBox(width: 20),
+
+                // 名前 + メモ
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 名前は常に表示
+                      CustomText(
+                        text: paymentSource.name,
+                        fontWeight: FontWeight.bold,
+                      ),
+
+                      // メモと開閉アイコン
+                      if (paymentSource.memo != null && paymentSource.memo!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: CustomText(
+                                  text: paymentSource.memo!,
+                                  color: CustomColors.text(context).withAlpha(80),
+                                  maxLines: isExpanded ? null : 1,
+                                ),
+                              ),
+                              // 開閉アイコン
+                              GestureDetector(
+                                onTap: () {
+                                  ref.read(paymentSourceExpandedProvider.notifier).update((state) {
+                                    final newState = Map<String, bool>.from(state);
+                                    newState[paymentSource.id] = !isExpanded;
+                                    return newState;
+                                  });
+                                },
+                                child: Icon(
+                                  isExpanded
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                  size: 20,
+                                  color: CustomColors.text(context).withAlpha(80),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+
+                // 削除ボタン
+                IconButton(
+                  onPressed: () {
+                    _showConfirmDeleteAlert(context, ref, paymentSource);
+                  },
+                  icon: const Icon(
+                    CupertinoIcons.trash_fill,
+                    color: CustomColors.negative,
+                  ),
+                  iconSize: 20,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

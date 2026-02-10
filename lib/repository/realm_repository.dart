@@ -1,6 +1,6 @@
 import 'package:realm/realm.dart';
 import 'package:salary/core/config/realm_schema_config.dart';
-import 'package:salary/models/salary.dart';
+import 'package:salary/core/models/salary.dart';
 
 /// Realm DB Repository クラス
 /// シングルトン設計

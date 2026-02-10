@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salary/models/salary.dart';
+import 'package:salary/core/models/salary.dart';
 
 /// PaymentSourceのアイコン
 class PaymentIconView extends StatelessWidget {
