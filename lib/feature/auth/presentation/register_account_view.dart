@@ -5,10 +5,9 @@ import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/feature/setting/register_account/register_account_state.dart';
-import 'package:salary/feature/setting/register_account/register_account_view_model.dart';
+import 'package:salary/feature/auth/application/register_account_state.dart';
+import 'package:salary/feature/auth/application/register_account_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-
 
 class RegisterAccountView extends StatelessWidget {
   const RegisterAccountView({super.key});

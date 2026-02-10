@@ -1,7 +1,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/feature/setting/register_account/register_account_state.dart';
-import 'package:salary/feature/setting/register_account/register_account_view.dart';
+import 'package:salary/feature/auth/application/register_account_state.dart';
+import 'package:salary/feature/auth/presentation/register_account_view.dart';
 
 final registerAccountProvider =
 StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>(
