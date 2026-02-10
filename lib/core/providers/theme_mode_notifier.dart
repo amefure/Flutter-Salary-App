@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/repository/shared_prefs_repository.dart';
+import 'package:salary/core/repository/shared_prefs_repository.dart';
 
 enum AppThemeMode {
   light,

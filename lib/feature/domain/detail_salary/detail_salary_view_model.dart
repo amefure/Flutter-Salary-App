@@ -3,7 +3,7 @@ import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/domain/detail_salary/detail_salary_state.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/repository/realm_repository.dart';
+import 'package:salary/core/repository/realm_repository.dart';
 
 final detailSalaryProvider =
 StateNotifierProvider.autoDispose.family<DetailSalaryViewModel, DetailSalaryState, String>(

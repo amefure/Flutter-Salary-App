@@ -5,7 +5,7 @@ import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/providers/payment_source_notifier.dart';
+import 'package:salary/core/providers/payment_source_notifier.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/domain/input_payment_source/input_payment_source_view.dart';

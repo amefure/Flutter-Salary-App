@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/repository/realm_repository.dart';
+import 'package:salary/core/repository/realm_repository.dart';
 
 final paymentSourceProvider =
     StateNotifierProvider<PaymentSourceNotifier, List<PaymentSource>>((ref) {

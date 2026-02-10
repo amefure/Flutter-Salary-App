@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/providers/theme_mode_notifier.dart';
+import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/setting/home/setting_view_model.dart';
 import 'package:salary/feature/setting/register_account/register_account_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';

@@ -7,8 +7,8 @@ import 'package:salary/feature/domain/input_payment_source/input_payment_source_
 import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/repository/realm_repository.dart';
-import 'package:salary/providers/payment_source_notifier.dart';
+import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/providers/payment_source_notifier.dart';
 
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
