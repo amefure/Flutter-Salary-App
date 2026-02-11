@@ -113,6 +113,7 @@ class _Body extends ConsumerState<_BodyWidget> {
   Widget build(BuildContext context) {
     final state = ref.watch(registerAccountProvider);
     final viewModel = ref.read(registerAccountProvider.notifier);
+
     return SingleChildScrollView(
       child: Column(
         spacing: 24,
@@ -351,7 +352,6 @@ class _Body extends ConsumerState<_BodyWidget> {
       },
     );
   }
-
 }
 
 abstract class ProfileConfig {

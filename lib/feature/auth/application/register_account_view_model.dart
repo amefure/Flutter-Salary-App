@@ -1,5 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/auth/application/register_account_state.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
@@ -8,27 +9,32 @@ import 'package:salary/feature/auth/presentation/register_account_view.dart';
 final registerAccountProvider =
 StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>((ref) {
     final authRepository = ref.read(authRepositoryProvider);
-    return RegisterAccountViewModel(authRepository);
+    return RegisterAccountViewModel(ref, authRepository);
 });
 
 class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
 
-  RegisterAccountViewModel(this._authRepository) : super(RegisterAccountState.initial());
+  RegisterAccountViewModel(this._ref, this._authRepository) : super(RegisterAccountState.initial());
 
+  final Ref _ref;
   final AuthRepository _authRepository;
 
-  void registerAccount() {
-    if (state.birthday == null) { return; }
-    _authRepository.register(
+  Future<void> registerAccount() async {
+    if (state.birthday == null) return;
+
+    await _ref.runWithGlobalHandling(() async {
+      await _authRepository.register(
         name: state.name,
         email: state.email,
         password: state.password,
         passwordConfirm: state.passwordConfirm,
         region: state.region,
         birthday: state.birthday!,
-        job: state.job
-    );
+        job: state.job,
+      );
+    });
   }
+
 
   void updateName(String value) {
     final isCompleted = _isAllValidation(name: value);
@@ -86,7 +92,8 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     );
   }
 
-  /// バリデーション
+  /// バリデーション(登録ボタンの活性判定に使用)
+  /// バリデーションの通らない値はそもそも送信できない設計になっている
   bool _isAllValidation({
     String? name,
     String? email,

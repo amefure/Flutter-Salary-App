@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:salary/core/common/global_error_overlay.dart';
+import 'package:salary/core/common/global_loading_overlay.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
@@ -64,6 +68,10 @@ class MyApp extends ConsumerWidget {
       AppThemeMode.light => Brightness.light,
       AppThemeMode.dark => Brightness.dark,
     };
+
+    final loadingState = ref.watch(globalLoadingProvider);
+    final errorMessage = ref.watch(globalErrorProvider);
+
     // IOS デザインアプリ
     return CupertinoApp(
       title: 'シンプル給料記録',
@@ -93,7 +101,20 @@ class MyApp extends ConsumerWidget {
         // => Barが不透明扱いでUIに高さが認識されなくなりスクロールに食われる
         barBackgroundColor: CupertinoColors.systemBackground,
       ),
-      home: startScreen,
+      home: Stack(
+        children: [
+          startScreen,
+
+          if (loadingState.isLoading)
+            const GlobalLoadingOverlay(),
+
+          if (errorMessage != null)
+            GlobalErrorOverlay(
+              message: errorMessage,
+              onDismissed: () { ref.read(globalErrorProvider.notifier).clear(); },
+            ),
+        ],
+      ),
     );
   }
 }
