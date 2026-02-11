@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:salary/core/api/api_error_mapper.dart';
 import 'package:salary/core/api/api_exception.dart';
+import 'package:salary/core/utils/logger.dart';
 
 class ApiClient {
   ApiClient({
@@ -33,6 +35,9 @@ class ApiClient {
       String path, {
         Map<String, String>? headers,
       }) async {
+    logger('======= GET Request Header =======');
+    logger(headers);
+    logger('======= GET Request Header =======');
     final response = await _client.get(
       _buildUri(path),
       headers: _mergeHeaders(headers),
@@ -46,6 +51,9 @@ class ApiClient {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
       }) async {
+    logger('======= POST Request body =======');
+    logger(body);
+    logger('======= POST Request body =======');
     final response = await _client.post(
       _buildUri(path),
       headers: _mergeHeaders(headers),
@@ -60,6 +68,9 @@ class ApiClient {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
       }) async {
+    logger('======= PUT Request body =======');
+    logger(body);
+    logger('======= PUT Request body =======');
     final response = await _client.put(
       _buildUri(path),
       headers: _mergeHeaders(headers),
@@ -74,6 +85,9 @@ class ApiClient {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
       }) async {
+    logger('======= PATCH Request body =======');
+    logger(body);
+    logger('======= PATCH Request body =======');
     final response = await _client.patch(
       _buildUri(path),
       headers: _mergeHeaders(headers),
@@ -88,6 +102,9 @@ class ApiClient {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
       }) async {
+    logger('======= DELETE Request body =======');
+    logger(body);
+    logger('======= DELETE Request body =======');
     final response = await _client.delete(
       _buildUri(path),
       headers: _mergeHeaders(headers),
@@ -100,17 +117,19 @@ class ApiClient {
   Map<String, dynamic> _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
 
+    final result =
+    jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+
     if (statusCode >= 200 && statusCode < 300) {
       if (response.body.isEmpty) {
         return {};
       }
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      logger('======= Success API Response =======');
+      logger(result);
+      logger('======= Success API Response =======');
+      return result;
     }
-
-    throw ApiException(
-      statusCode: statusCode,
-      message: response.body,
-    );
+    throw ApiErrorMapper.fromResponse(statusCode, result);
   }
 
   void dispose() {

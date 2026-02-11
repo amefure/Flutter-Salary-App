@@ -4,9 +4,11 @@ import 'package:salary/feature/auth/domain/auth_user.dart';
 abstract class AuthRepository {
   /// 会員登録
   Future<void> register({
+    required String name,
     required String email,
     required String password,
-    required String prefecture,
+    required String passwordConfirm,
+    required String region,
     required DateTime birthday,
     required String job,
   });

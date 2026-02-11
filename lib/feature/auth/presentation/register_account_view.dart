@@ -42,8 +42,10 @@ class _BodyWidget extends ConsumerStatefulWidget {
 
 class _Body extends ConsumerState<_BodyWidget> {
 
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passWordController = TextEditingController();
+  final TextEditingController _passWordConfirmController = TextEditingController();
   late final ProviderSubscription<RegisterAccountState> _subscription;
 
   @override
@@ -61,8 +63,10 @@ class _Body extends ConsumerState<_BodyWidget> {
       registerAccountProvider,
       fireImmediately: true,
           (prev, next) {
+        _syncController(_nameController, next.name);
         _syncController(_emailController, next.email);
         _syncController(_passWordController, next.password);
+        _syncController(_passWordConfirmController, next.passwordConfirm);
       },
     );
   }
@@ -71,11 +75,17 @@ class _Body extends ConsumerState<_BodyWidget> {
   void _bindControllersToState() {
     final vm = ref.read(registerAccountProvider.notifier);
     // 入力されたらViewModelに反映
+    _nameController.addListener(() {
+      vm.updateName(_nameController.text);
+    });
     _emailController.addListener(() {
       vm.updateEmail(_emailController.text);
     });
     _passWordController.addListener(() {
       vm.updatePassWord(_passWordController.text);
+    });
+    _passWordConfirmController.addListener(() {
+      vm.updatePassWordConfirm(_passWordConfirmController.text);
     });
   }
 
@@ -103,84 +113,105 @@ class _Body extends ConsumerState<_BodyWidget> {
   Widget build(BuildContext context) {
     final state = ref.watch(registerAccountProvider);
     final viewModel = ref.read(registerAccountProvider.notifier);
+    return SingleChildScrollView(
+      child: Column(
+        spacing: 24,
+        children: [
 
-    return Column(
-      spacing: 24,
-      children: [
+          /// アカウント名
+          CustomTextField(
+            controller: _nameController,
+            labelText: 'アカウント名',
+            prefixIcon: CupertinoIcons.person_crop_square_fill,
+            keyboardType: TextInputType.name,
+          ),
 
-        /// メールアドレス入力ボックス
-        CustomTextField(
-          controller: _emailController,
-          labelText: 'メールアドレス',
-          prefixIcon: CupertinoIcons.mail_solid,
-          keyboardType: TextInputType.emailAddress,
-        ),
+          /// メールアドレス入力ボックス
+          CustomTextField(
+            controller: _emailController,
+            labelText: 'メールアドレス',
+            prefixIcon: CupertinoIcons.mail_solid,
+            keyboardType: TextInputType.emailAddress,
+          ),
 
-        Column(
-          children: [
-            /// パスワード入力ボックス
-            CustomTextField(
-              controller: _passWordController,
-              labelText: 'パスワード',
-              prefixIcon: CupertinoIcons.lock_fill,
-              keyboardType: TextInputType.visiblePassword,
-            ),
-
-            const CustomText(
-              text: 'パスワードは8文字以上で、英数字を混載したものを使用してください',
-              textSize: TextSize.SS,
-              maxLines: 2,
-            )
-          ],
-        ),
-
-        /// 都道府県
-        _rowTile(
-          title: '都道府県',
-          value: state.prefecture,
-          onTap: () =>
-              _showPrefecturePicker(
-                context,
-                state.prefecture,
-                viewModel.updatePrefecture,
+          Column(
+            children: [
+              /// パスワード入力ボックス
+              CustomTextField(
+                controller: _passWordController,
+                labelText: 'パスワード',
+                prefixIcon: CupertinoIcons.lock_fill,
+                keyboardType: TextInputType.visiblePassword,
               ),
-        ),
 
-        /// 生年月日
-        _rowTile(
-            title: '生年月日',
-            value: _formatDate(state.birthday),
-            onTap: () {
-              final date = state.birthday ?? ProfileConfig.defaultDateTime;
+              const SizedBox(height: 24),
 
-              viewModel.updateBirthday(date);
-
-              _showBirthdayPicker(
-                context,
-                date,
-                viewModel.updateBirthday,
-              );
-            }
-        ),
-
-        /// 職業
-        _rowTile(
-          title: '職業',
-          value: state.job,
-          onTap: () =>
-              _showJobPicker(
-                context,
-                state.job,
-                viewModel.updateJob,
+              /// パスワード確認用入力ボックス
+              CustomTextField(
+                controller: _passWordConfirmController,
+                labelText: 'パスワード確認用',
+                prefixIcon: CupertinoIcons.lock_fill,
+                keyboardType: TextInputType.visiblePassword,
               ),
-        ),
 
-        CustomElevatedButton(
-            text: '登録する',
-            backgroundColor: state.isCompleted ? ThemaColor.blue.color : ThemaColor.gray.color,
-            onPressed: () {}
-        )
-      ],
+              const CustomText(
+                text: 'パスワードは8文字以上で、英数字を混載したものを使用してください',
+                textSize: TextSize.SS,
+                maxLines: 2,
+              )
+            ],
+          ),
+
+          /// 都道府県
+          _rowTile(
+            title: '都道府県',
+            value: state.region,
+            onTap: () =>
+                _showPrefecturePicker(
+                  context,
+                  state.region,
+                  viewModel.updateRegion,
+                ),
+          ),
+
+          /// 生年月日
+          _rowTile(
+              title: '生年月日',
+              value: _formatDate(state.birthday),
+              onTap: () {
+                final date = state.birthday ?? ProfileConfig.defaultDateTime;
+
+                viewModel.updateBirthday(date);
+
+                _showBirthdayPicker(
+                  context,
+                  date,
+                  viewModel.updateBirthday,
+                );
+              }
+          ),
+
+          /// 職業
+          _rowTile(
+            title: '職業',
+            value: state.job,
+            onTap: () =>
+                _showJobPicker(
+                  context,
+                  state.job,
+                  viewModel.updateJob,
+                ),
+          ),
+
+          CustomElevatedButton(
+              text: '登録する',
+              backgroundColor: state.isCompleted ? ThemaColor.blue.color : ThemaColor.gray.color,
+              onPressed: () {
+                viewModel.registerAccount();
+              }
+          )
+        ],
+      ),
     );
   }
 
