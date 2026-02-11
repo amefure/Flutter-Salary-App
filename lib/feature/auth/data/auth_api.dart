@@ -5,12 +5,12 @@ class AuthApi {
 
   final ApiClient _client;
 
-  Future<void> register(Map<String, dynamic> body) async {
-    await _client.post('/register', body: body);
+  Future<Map<String, dynamic>> register(Map<String, dynamic> body) async {
+    return await _client.post('/register', body: body);
   }
 
-  Future<void> login(Map<String, dynamic> body) async {
-    await _client.post('/login', body: body);
+  Future<Map<String, dynamic>> login(Map<String, dynamic> body) async {
+    return await _client.post('/login', body: body);
   }
 
   Future<void> logout() async {

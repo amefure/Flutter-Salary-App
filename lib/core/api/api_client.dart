@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:salary/core/api/api_error_mapper.dart';
-import 'package:salary/core/api/api_exception.dart';
+import 'package:salary/core/api/token_storage.dart';
 import 'package:salary/core/utils/logger.dart';
 
 class ApiClient {
   ApiClient({
     required this.baseUrl,
+    required this.tokenStorage,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
+  final TokenStorage tokenStorage;
 
   /// 共通ヘッダー
   Map<String, String> get _defaultHeaders => {
@@ -19,15 +21,19 @@ class ApiClient {
     'Accept': 'application/json',
   };
 
-  Uri _buildUri(String path) {
-    return Uri.parse('$baseUrl$path');
-  }
+  Future<Map<String, String>> _authorizedHeaders(
+      Map<String, String>? headers) async {
+    final token = await tokenStorage.read();
 
-  Map<String, String> _mergeHeaders(Map<String, String>? headers) {
     return {
       ..._defaultHeaders,
+      if (token != null) 'Authorization': 'Bearer $token',
       ...?headers,
     };
+  }
+
+  Uri _buildUri(String path) {
+    return Uri.parse('$baseUrl$path');
   }
 
   /// HTTP Methods GET
@@ -40,7 +46,7 @@ class ApiClient {
     logger('======= GET Request Header =======');
     final response = await _client.get(
       _buildUri(path),
-      headers: _mergeHeaders(headers),
+      headers: await _authorizedHeaders(headers),
     );
     return _handleResponse(response);
   }
@@ -56,7 +62,7 @@ class ApiClient {
     logger('======= POST Request body =======');
     final response = await _client.post(
       _buildUri(path),
-      headers: _mergeHeaders(headers),
+      headers: await _authorizedHeaders(headers),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -73,7 +79,7 @@ class ApiClient {
     logger('======= PUT Request body =======');
     final response = await _client.put(
       _buildUri(path),
-      headers: _mergeHeaders(headers),
+      headers: await _authorizedHeaders(headers),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -90,7 +96,7 @@ class ApiClient {
     logger('======= PATCH Request body =======');
     final response = await _client.patch(
       _buildUri(path),
-      headers: _mergeHeaders(headers),
+      headers: await _authorizedHeaders(headers),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -107,7 +113,7 @@ class ApiClient {
     logger('======= DELETE Request body =======');
     final response = await _client.delete(
       _buildUri(path),
-      headers: _mergeHeaders(headers),
+      headers: await _authorizedHeaders(headers),
       body: body != null ? jsonEncode(body) : null,
     );
     return _handleResponse(response);
@@ -129,6 +135,12 @@ class ApiClient {
       logger('======= Success API Response =======');
       return result;
     }
+
+    // 認証エラーはストレージをクリア
+    if (statusCode == 401) {
+      tokenStorage.clear();
+    }
+
     throw ApiErrorMapper.fromResponse(statusCode, result);
   }
 

@@ -1,35 +1,44 @@
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 
 class AuthUserDto {
   final int id;
   final String email;
-  final String prefecture;
+  final String region;
   final String birthday;
   final String job;
 
   AuthUserDto({
     required this.id,
     required this.email,
-    required this.prefecture,
+    required this.region,
     required this.birthday,
     required this.job,
   });
 
   factory AuthUserDto.fromJson(Map<String, dynamic> json) {
-    return AuthUserDto(
-      id: json['id'],
-      email: json['email'],
-      prefecture: json['prefecture'],
-      birthday: json['birthday'],
-      job: json['job'],
+    final data = json['data'];
+    final user = data['user'];
+    final profile = data['profile'];
+
+    final dto = AuthUserDto(
+      id: user['id'],
+      email: user['email'],
+      region: profile['region'],
+      birthday: profile['birthday'],
+      job: profile['job'],
     );
+    logger('======= AuthUser fromJson =======');
+    logger(dto);
+    logger('======= AuthUser fromJson =======');
+    return dto;
   }
 
   AuthUser toDomain() {
     return AuthUser(
       id: id,
       email: email,
-      prefecture: prefecture,
+      region: region,
       birthday: DateTime.parse(birthday),
       job: job,
     );
