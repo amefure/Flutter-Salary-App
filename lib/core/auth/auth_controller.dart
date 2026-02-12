@@ -56,5 +56,6 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> logout() async {
     _authRepository.logout();
+    state = state.copyWith(null);
   }
 }

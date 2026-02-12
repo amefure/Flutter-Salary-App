@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/setting/home/setting_view_model.dart';
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/setting/app_lock_setting_view.dart';
@@ -65,7 +65,7 @@ class SettingView extends StatelessWidget {
                           'ログアウト',
                           CupertinoIcons.person_add_solid,
                               () {
-                            ref.read(authControllerProvider.notifier).logout();
+                                _showConfirmLogoutDialog(context, ref);
                           }
                       );
                     } else {
@@ -196,6 +196,63 @@ class SettingView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showConfirmLogoutDialog(
+      BuildContext context,
+      WidgetRef ref
+      ) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return CupertinoAlertDialog(
+          title: const Text('確認'),
+          content: const Text('本当にログアウトしますか？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('キャンセル'),
+            ),
+
+            TextButton(
+              onPressed: () {
+                ref.read(authControllerProvider.notifier).logout();
+                Navigator.of(dialogContext).pop();
+                _showSuccessLogoutDialog(context);
+              },
+              child: const CustomText(
+                text: 'ログアウト',
+                fontWeight: FontWeight.bold,
+                color: CustomColors.negative,
+                textSize: TextSize.MS,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showSuccessLogoutDialog(BuildContext context) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return CupertinoAlertDialog(
+          title: const Text('成功'),
+          content: const Text('ログアウトしました。'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
