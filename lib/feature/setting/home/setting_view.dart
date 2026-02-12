@@ -4,8 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
+import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/setting/home/setting_view_model.dart';
-import 'package:salary/feature/auth/presentation/register_account_view.dart';
+import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/setting/app_lock_setting_view.dart';
@@ -61,25 +62,21 @@ class SettingView extends StatelessWidget {
                     if (state.isLogin) {
                       return _settingListTile(
                           context,
-                          'アカウント情報',
+                          'ログアウト',
                           CupertinoIcons.person_add_solid,
                               () {
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) => const RegisterAccountView(),
-                              ),
-                            );
+                            ref.read(authControllerProvider.notifier).logout();
                           }
                       );
                     } else {
                       return _settingListTile(
                           context,
-                          'アカウント作成',
+                          'ログイン・アカウント作成',
                           CupertinoIcons.person_add_solid,
                               () {
                             Navigator.of(context).push(
                               CupertinoPageRoute(
-                                builder: (context) => const RegisterAccountView(),
+                                builder: (context) => const LoginScreen(),
                               ),
                             );
                           }

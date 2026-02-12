@@ -2,8 +2,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
-import 'package:salary/feature/auth/application/register_account_state.dart';
-import 'package:salary/feature/auth/presentation/register_account_view.dart';
+import 'package:salary/core/utils/validation_utils.dart';
+import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
+import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 
 final registerAccountProvider =
 StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>((ref) {
@@ -118,45 +119,23 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     /// メールバリデーション
     final hasEmail =
         currentEmail.isNotEmpty &&
-            _isValidEmail(currentEmail);
+            ValidationUtils.isValidEmail(currentEmail);
 
     /// パスワードバリデーション
     final hasPassword =
         currentPassword.isNotEmpty &&
-            _isValidPassword(currentPassword);
+            ValidationUtils.isValidPassword(currentPassword);
 
     /// パスワードバリデーション
     final hasPasswordConfirm =
         currentPasswordConfirm.isNotEmpty &&
-            _isValidPassword(currentPasswordConfirm) &&
+            ValidationUtils.isValidPassword(currentPasswordConfirm) &&
             currentPassword == currentPasswordConfirm;
 
     final hasRegion = currentRegion != ProfileConfig.undefined;
     final hasBirthday = currentBirthday != null;
     final hasJob = currentJob != ProfileConfig.undefined;
     return hasName && hasEmail && hasPassword && hasPasswordConfirm && hasRegion && hasBirthday && hasJob;
-  }
-
-  /// 空でない
-  ///  @ と . を含む（正規表現）
-  ///  先頭・末尾に空白がない
-  bool _isValidEmail(String email) {
-    final emailRegExp = RegExp(
-      r'^[\w\.-]+@[\w\.-]+\.\w+$',
-    );
-    return emailRegExp.hasMatch(email);
-  }
-
-  /// 空でない
-  /// 8文字以上
-  /// 英数字混在（最低限）
-  bool _isValidPassword(String password) {
-    if (password.length < 8) return false;
-
-    final hasLetter = RegExp(r'[A-Za-z]').hasMatch(password);
-    final hasNumber = RegExp(r'\d').hasMatch(password);
-
-    return hasLetter && hasNumber;
   }
 
 }

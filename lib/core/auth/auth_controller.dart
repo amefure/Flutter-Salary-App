@@ -42,6 +42,17 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(user);
   }
 
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    final user =  await _authRepository.login(
+      email: email,
+      password: password,
+    );
+    state = state.copyWith(user);
+  }
+
 
   Future<void> logout() async {
     _authRepository.logout();

@@ -5,12 +5,13 @@ import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/feature/auth/application/register_account_state.dart';
-import 'package:salary/feature/auth/application/register_account_view_model.dart';
+import 'package:salary/feature/auth/application/register_account/register_account_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
+import 'package:salary/feature/auth/presentation/login_screen.dart';
 
-class RegisterAccountView extends StatelessWidget {
-  const RegisterAccountView({super.key});
+class RegisterAccountScreen extends StatelessWidget {
+  const RegisterAccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +93,10 @@ class _Body extends ConsumerState<_BodyWidget> {
   @override
   void dispose() {
     _subscription.close();
+    _nameController.dispose();
     _emailController.dispose();
     _passWordController.dispose();
+    _passWordConfirmController.dispose();
     super.dispose();
   }
 
