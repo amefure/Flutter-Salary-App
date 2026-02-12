@@ -1,29 +1,30 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/auth/application/register_account_state.dart';
-import 'package:salary/feature/auth/data/auth_repository_impl.dart';
-import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/presentation/register_account_view.dart';
 
 final registerAccountProvider =
 StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>((ref) {
-    final authRepository = ref.read(authRepositoryProvider);
-    return RegisterAccountViewModel(ref, authRepository);
+    final authController = ref.read(authControllerProvider.notifier);
+    return RegisterAccountViewModel(ref, authController);
 });
 
 class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
 
-  RegisterAccountViewModel(this._ref, this._authRepository) : super(RegisterAccountState.initial());
+  RegisterAccountViewModel(
+      this._ref,
+      this._authController,
+      ) : super(RegisterAccountState.initial());
 
   final Ref _ref;
-  final AuthRepository _authRepository;
+  final AuthController _authController;
 
   Future<void> registerAccount() async {
     if (state.birthday == null) return;
-
     await _ref.runWithGlobalHandling(() async {
-      await _authRepository.register(
+      await _authController.registerAccount(
         name: state.name,
         email: state.email,
         password: state.password,

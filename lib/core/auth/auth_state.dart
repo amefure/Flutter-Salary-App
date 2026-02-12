@@ -1,16 +1,18 @@
 
+import 'package:salary/feature/auth/domain/auth_user.dart';
+
 class AuthState {
-  final bool isLoggedIn;
+  final AuthUser? user;
 
   const AuthState({
-    this.isLoggedIn = false,
+    this.user,
   });
 
-  AuthState copyWith({
-    bool? isLoggedIn
-  }) {
+  bool get isLogin => user != null;
+
+  AuthState copyWith(AuthUser? user) {
     return AuthState(
-        isLoggedIn: isLoggedIn ?? this.isLoggedIn
+        user: user
     );
   }
 }

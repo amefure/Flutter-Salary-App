@@ -20,6 +20,7 @@ class GlobalErrorNotifier extends StateNotifier<String?> {
 }
 
 
+/// ローディングとエラー表示ハンドリング
 extension AsyncHandlingExtension on Ref {
   Future<T?> runWithGlobalHandling<T>(
       Future<T> Function() action,

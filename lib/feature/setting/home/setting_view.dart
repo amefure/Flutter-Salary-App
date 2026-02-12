@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/setting/home/setting_view_model.dart';
 import 'package:salary/feature/auth/presentation/register_account_view.dart';
@@ -54,17 +55,37 @@ class SettingView extends StatelessWidget {
                     }
                 ),
 
-                _settingListTile(
-                    context,
-                    'アカウント作成',
-                    CupertinoIcons.person_add_solid,
-                        () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => RegisterAccountView(),
-                        ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final state = ref.watch(authControllerProvider);
+                    if (state.isLogin) {
+                      return _settingListTile(
+                          context,
+                          'アカウント情報',
+                          CupertinoIcons.person_add_solid,
+                              () {
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => const RegisterAccountView(),
+                              ),
+                            );
+                          }
+                      );
+                    } else {
+                      return _settingListTile(
+                          context,
+                          'アカウント作成',
+                          CupertinoIcons.person_add_solid,
+                              () {
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => const RegisterAccountView(),
+                              ),
+                            );
+                          }
                       );
                     }
+                  },
                 ),
 
                 _settingListTile(
