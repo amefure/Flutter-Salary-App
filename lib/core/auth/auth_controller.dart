@@ -69,8 +69,7 @@ class AuthController extends StateNotifier<AuthState> {
     } on ApiException catch (e) {
       // 認証エラーならログアウト処理
       if (e.type == ApiErrorType.unauthorized) {
-        await _authRepository.clearCachedUser();
-        state = state.copyWith(null);
+        _clearUser();
         return;
       }
     } catch (_) {
@@ -81,6 +80,20 @@ class AuthController extends StateNotifier<AuthState> {
   /// ログアウト
   Future<void> logout() async {
     _authRepository.logout();
+    _clearUser();
+  }
+
+  /// 退会(アカウント削除)
+  Future<void> withdrawal() async {
+    _authRepository.withdrawal();
+    _clearUser();
+  }
+
+  Future<void> _clearUser() async {
+    // ローカルキャッシュユーザーを削除
+    await _authRepository.clearCachedUser();
+    // UIも更新
     state = state.copyWith(null);
   }
+
 }

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
+import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/setting/home/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
@@ -107,6 +108,7 @@ class SettingView extends StatelessWidget {
                     activeTrackColor: CustomColors.thema,
                     value: isAppLockEnabled,
                     onChanged: (bool value) async {
+                      final viewModel = ref.read(settingProvider.notifier);
                       if (value) {
                         // 結果を受け取りハンドリング
                         final result = await showCupertinoModalPopup<bool>(
@@ -115,13 +117,13 @@ class SettingView extends StatelessWidget {
                         );
 
                         if (result == true) {
-                          ref.read(settingProvider.notifier).setAppLockEnabled(true);
+                          viewModel.setAppLockEnabled(true);
                         }
                       } else {
                         // 状態を更新
-                        ref.read(settingProvider.notifier).setAppLockEnabled(value);
+                        viewModel.setAppLockEnabled(value);
                         // OFFにされたらパスワードをリセット
-                        ref.read(settingProvider.notifier).resetPassword();
+                        viewModel.resetPassword();
                       }
                     },
                   );
@@ -142,13 +144,37 @@ class SettingView extends StatelessWidget {
           builder: (context, ref, child) {
             final state = ref.watch(authControllerProvider);
             if (state.isLogin) {
-              return _settingListTile(
-                  context,
-                  'ログアウト',
-                  CupertinoIcons.person_add_solid,
-                      () {
-                    _showConfirmLogoutDialog(context, ref);
-                  }
+              return Column(
+                children: [
+                  _settingListTile(
+                      context,
+                      'アカウント情報',
+                      CupertinoIcons.person_crop_rectangle,
+                          () {
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => const UserInfoScreen(),
+                              ),
+                            );
+                      }
+                  ),
+                  _settingListTile(
+                      context,
+                      'ログアウト',
+                      CupertinoIcons.person_badge_minus_fill,
+                          () {
+                        _showConfirmLogoutDialog(context, ref);
+                      }
+                  ),
+                  _settingListTile(
+                      context,
+                      'アカウントを削除する',
+                      CupertinoIcons.delete_right_fill,
+                          () {
+                        _showConfirmWithdrawalDialog(context, ref);
+                      }
+                  )
+                ],
               );
             } else {
               return _settingListTile(
@@ -235,10 +261,14 @@ class SettingView extends StatelessWidget {
             ),
 
             TextButton(
-              onPressed: () {
-                ref.read(authControllerProvider.notifier).logout();
-                Navigator.of(dialogContext).pop();
-                _showSuccessLogoutDialog(context);
+              onPressed: () async {
+                final viewModel = ref.read(settingProvider.notifier);
+                final result = await viewModel.logout();
+                if (result) {
+                  Navigator.of(dialogContext).pop();
+                  _showSuccessDialog(context, 'ログアウトしました。');
+                }
+
               },
               child: const CustomText(
                 text: 'ログアウト',
@@ -253,13 +283,57 @@ class SettingView extends StatelessWidget {
     );
   }
 
-  Future<void> _showSuccessLogoutDialog(BuildContext context) async {
+  Future<void> _showConfirmWithdrawalDialog(
+      BuildContext context,
+      WidgetRef ref
+      ) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return CupertinoAlertDialog(
+          title: const Text('確認'),
+          content: const Text('アカウントを削除しても、アプリ内のデータは消失しませんが、バックアップ機能は無効になります。\n本当にアカウント削除しますか？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('キャンセル'),
+            ),
+
+            TextButton(
+              onPressed: () async {
+                final viewModel = ref.read(settingProvider.notifier);
+                viewModel.withdrawal();
+                final result = await viewModel.withdrawal();
+                if (result) {
+                  Navigator.of(dialogContext).pop();
+                  _showSuccessDialog(context, 'アカウントを削除しました。');
+                }
+              },
+              child: const CustomText(
+                text: '削除する',
+                fontWeight: FontWeight.bold,
+                color: CustomColors.negative,
+                textSize: TextSize.MS,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showSuccessDialog(
+      BuildContext context,
+      String content
+      ) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
           title: const Text('成功'),
-          content: const Text('ログアウトしました。'),
+          content: Text(content),
           actions: [
             TextButton(
               onPressed: () {

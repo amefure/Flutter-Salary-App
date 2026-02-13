@@ -25,6 +25,7 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
   Future<void> registerAccount() async {
     if (state.birthday == null) return;
     await _ref.runWithGlobalHandling(() async {
+      // 成功すれば_authControllerのステータスが変化し、ログイン状態にUIも変わる
       await _authController.registerAccount(
         name: state.name,
         email: state.email,

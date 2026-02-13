@@ -22,32 +22,35 @@ class GlobalErrorNotifier extends StateNotifier<String?> {
 
 /// ローディングとエラー表示ハンドリング
 extension AsyncHandlingExtension on Ref {
-  Future<T?> runWithGlobalHandling<T>(
-      Future<T> Function() action,
+  Future<bool> runWithGlobalHandling(
+      Future<void> Function() action,
       ) async {
     final loading = read(globalLoadingProvider.notifier);
     final error = read(globalErrorProvider.notifier);
 
     try {
       loading.show();
-      return await action();
+      await action();
+      return true;
 
     } on ApiException catch (e) {
       error.show(_mapApiExceptionToMessage(e));
+      return false;
 
     } catch (_) {
       error.show('予期せぬエラーが発生しました');
+      return false;
+
     } finally {
       loading.hide();
     }
-
-    return null;
   }
+
 
   String _mapApiExceptionToMessage(ApiException e) {
     switch (e.type) {
       case ApiErrorType.validation:
-        return e.message ?? '入力内容に誤りがあります';
+        return e.message;
 
       case ApiErrorType.unauthorized:
         return '認証に失敗しました。再度ログインしてください。';
@@ -62,7 +65,7 @@ extension AsyncHandlingExtension on Ref {
         return 'サーバーエラーが発生しました。時間をおいて再度お試しください。';
 
       case ApiErrorType.unknown:
-        return e.message ?? 'エラーが発生しました';
+        return e.message;
     }
   }
 
