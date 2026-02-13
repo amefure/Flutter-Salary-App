@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum SharedPreferencesKeys {
   removeAds('removeAds'),
@@ -7,6 +8,11 @@ enum SharedPreferencesKeys {
   final String key;
   const SharedPreferencesKeys(this.key);
 }
+
+///
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError();
+});
 
 class SharedPreferencesService {
   static final SharedPreferencesService _instance =

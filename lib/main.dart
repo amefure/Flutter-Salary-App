@@ -12,8 +12,10 @@ import 'package:salary/core/repository/shared_prefs_repository.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/setting/app_lock_setting_view.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
@@ -30,6 +32,7 @@ void main() async {
   // FirebaseAnalyticsのインスタンスを作成
   FirebaseAnalytics _ = FirebaseAnalytics.instance;
 
+  final prefs = await SharedPreferences.getInstance();
   // SharedPreferencesの初期化
   await SharedPreferencesService().init();
 
@@ -40,6 +43,9 @@ void main() async {
   runApp(
     // Riverpod用のスコープをProviderScopeで構築
     ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
       child: MyApp(
         startScreen:
             isLockEnabled

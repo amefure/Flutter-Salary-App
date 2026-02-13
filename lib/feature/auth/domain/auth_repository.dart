@@ -25,6 +25,10 @@ abstract class AuthRepository {
   /// 退会
   Future<void> withdrawal();
 
+
+  /// ログイン中ユーザー取得(ローカル)
+  Future<AuthUser?> getCachedUser();
+
   /// ログイン中ユーザー取得
-  Future<AuthUser> fetchUser();
+  Future<AuthUser> fetchUserFromApi();
 }
