@@ -1,4 +1,10 @@
 import 'package:salary/core/api/api_client.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final authApiProvider = Provider<AuthApi>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+  return AuthApi(apiClient);
+});
 
 class AuthApi {
   AuthApi(this._client);

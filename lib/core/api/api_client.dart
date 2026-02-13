@@ -1,8 +1,18 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:salary/core/api/api_error_mapper.dart';
 import 'package:salary/core/api/token_storage.dart';
+import 'package:salary/core/models/secrets.dart';
 import 'package:salary/core/utils/logger.dart';
+
+final apiClientProvider = Provider<ApiClient>((ref) {
+  return ApiClient(
+      baseUrl: StaticKey.baseURL,
+      tokenStorage: ref.read(tokenStorageProvider)
+  );
+});
+
 
 class ApiClient {
   ApiClient({
