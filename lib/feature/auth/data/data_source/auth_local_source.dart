@@ -27,6 +27,7 @@ class AuthLocalSourceImpl implements AuthLocalSource {
   Future<void> saveUser(AuthUser user) async {
     final json = jsonEncode({
       'id': user.id,
+      'name': user.name,
       'email': user.email,
       'region': user.region,
       'birthday': user.birthday.toIso8601String(),
@@ -45,6 +46,7 @@ class AuthLocalSourceImpl implements AuthLocalSource {
 
     return AuthUser(
       id: map['id'],
+      name: map['name'],
       email: map['email'],
       region: map['region'],
       birthday: DateTime.parse(map['birthday']),

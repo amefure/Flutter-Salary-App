@@ -3,6 +3,7 @@ import 'package:salary/feature/auth/domain/auth_user.dart';
 
 class AuthUserDto {
   final int id;
+  final String name;
   final String email;
   final String region;
   final String birthday;
@@ -10,6 +11,7 @@ class AuthUserDto {
 
   AuthUserDto({
     required this.id,
+    required this.name,
     required this.email,
     required this.region,
     required this.birthday,
@@ -23,6 +25,7 @@ class AuthUserDto {
 
     final dto = AuthUserDto(
       id: user['id'],
+      name: user['name'],
       email: user['email'],
       region: profile['region'],
       birthday: profile['birthday'],
@@ -37,9 +40,11 @@ class AuthUserDto {
   AuthUser toDomain() {
     return AuthUser(
       id: id,
+      name: name,
       email: email,
       region: region,
-      birthday: DateTime.parse(birthday),
+      // toLocalでJTCに変更する
+      birthday: DateTime.parse(birthday).toLocal(),
       job: job,
     );
   }
