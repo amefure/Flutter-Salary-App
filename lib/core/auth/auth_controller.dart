@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/auth/auth_state.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
@@ -65,11 +66,17 @@ class AuthController extends StateNotifier<AuthState> {
     try {
       final freshUser = await _authRepository.fetchUserFromApi();
       state = state.copyWith(freshUser);
+    } on ApiException catch (e) {
+      // 認証エラーならログアウト処理
+      if (e.type == ApiErrorType.unauthorized) {
+        await _authRepository.clearCachedUser();
+        state = state.copyWith(null);
+        return;
+      }
     } catch (_) {
-      // API失敗は無視（UX優先）
+      // 通信エラーなどは無視
     }
   }
-
 
   /// ログアウト
   Future<void> logout() async {

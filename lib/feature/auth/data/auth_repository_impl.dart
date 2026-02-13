@@ -93,4 +93,9 @@ class AuthRepositoryImpl implements AuthRepository {
     await _local.saveUser(user);
     return user;
   }
+
+  @override
+  Future<void> clearCachedUser() async {
+    await _local.clear();
+  }
 }

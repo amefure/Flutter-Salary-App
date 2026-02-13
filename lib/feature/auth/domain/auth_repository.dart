@@ -1,6 +1,7 @@
 
 import 'package:salary/feature/auth/domain/auth_user.dart';
 
+/// 実態：[AuthRepositoryImpl]
 abstract class AuthRepository {
   /// 会員登録
   Future<AuthUser> register({
@@ -31,4 +32,8 @@ abstract class AuthRepository {
 
   /// ログイン中ユーザー取得
   Future<AuthUser> fetchUserFromApi();
+
+  /// ローカルキャッシュユーザー情報の削除
+  Future<void> clearCachedUser();
+
 }
