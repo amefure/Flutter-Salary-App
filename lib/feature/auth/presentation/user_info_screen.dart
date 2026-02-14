@@ -6,10 +6,12 @@ import 'package:salary/core/common/components/cupertino_date_picker_modal.dart';
 import 'package:salary/core/common/components/cupertino_picker_modal.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/user_info_row_tile.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/application/user_info/user_info_view_model.dart';
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
+import 'package:salary/core/config/profile_config.dart';
 
 class UserInfoScreen extends StatelessWidget {
   const UserInfoScreen({super.key});
@@ -56,7 +58,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           CustomText(text: state.email),
 
           /// 都道府県
-          _rowTile(
+          UserInfoRowTile(
             title: '都道府県',
             value: state.region,
             onTap: () =>
@@ -70,9 +72,9 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           /// 生年月日
-          _rowTile(
+          UserInfoRowTile(
               title: '生年月日',
-              value: _formatDate(state.birthday),
+              value: viewModel.displayDate(state.birthday),
               onTap: () {
                 final date = state.birthday ?? ProfileConfig.defaultDateTime;
 
@@ -87,7 +89,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           /// 職業
-          _rowTile(
+          UserInfoRowTile(
             title: '職業',
             value: state.job,
             onTap: () =>
@@ -116,92 +118,6 @@ class _Body extends ConsumerState<_BodyWidget> {
           )
         ],
       ),
-    );
-  }
-
-  Widget _rowTile({
-    required String title,
-    required String value,
-    required VoidCallback onTap
-  }) {
-    return Row(
-      children: [
-
-        if (value == ProfileConfig.undefined)
-          const Icon(
-            CupertinoIcons.check_mark_circled,
-            size: 28,
-          ),
-
-        if (value != ProfileConfig.undefined)
-          const Icon(
-            CupertinoIcons.check_mark_circled_solid,
-            size: 28,
-          ),
-
-        const SizedBox(width: 8),
-
-        CustomText(
-          text: title,
-          fontWeight: FontWeight.bold,
-        ),
-
-        const Spacer(),
-
-        TextButton(
-          onPressed: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            width: 140,
-            decoration: BoxDecoration(
-              color: value == ProfileConfig.undefined ? ThemaColor.gray.color : ThemaColor.blue.color,
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Spacer(),
-                CustomText(
-                  text: value,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  textSize: TextSize.S,
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ),
-
-      ],
-    );
-  }
-
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return ProfileConfig.undefined;
-    return '${date.year}年${date.month.toString()}月${date.day.toString()}日';
-  }
-
-
-  Future<void> _showSuccessDialog(BuildContext context) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('成功'),
-          content: const Text('プロフィールを更新しました。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

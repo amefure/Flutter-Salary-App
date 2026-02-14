@@ -8,6 +8,8 @@ import 'package:salary/core/common/components/cupertino_picker_modal.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/user_info_row_tile.dart';
+import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -182,7 +184,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           /// 都道府県
-          _rowTile(
+          UserInfoRowTile(
             title: '都道府県',
             value: state.region,
             onTap: () =>
@@ -196,9 +198,9 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           /// 生年月日
-          _rowTile(
+          UserInfoRowTile(
               title: '生年月日',
-              value: _formatDate(state.birthday),
+              value: viewModel.displayDate(state.birthday),
               onTap: () {
                 final date = state.birthday ?? ProfileConfig.defaultDateTime;
 
@@ -213,7 +215,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           /// 職業
-          _rowTile(
+          UserInfoRowTile(
             title: '職業',
             value: state.job,
             onTap: () =>
@@ -237,98 +239,4 @@ class _Body extends ConsumerState<_BodyWidget> {
       ),
     );
   }
-
-  Widget _rowTile({
-    required String title,
-    required String value,
-    required VoidCallback onTap
-  }) {
-    return Row(
-      children: [
-
-        if (value == ProfileConfig.undefined)
-          const Icon(
-            CupertinoIcons.check_mark_circled,
-            size: 28,
-          ),
-
-        if (value != ProfileConfig.undefined)
-          const Icon(
-            CupertinoIcons.check_mark_circled_solid,
-            size: 28,
-          ),
-
-        const SizedBox(width: 8),
-
-        CustomText(
-          text: title,
-          fontWeight: FontWeight.bold,
-        ),
-
-        const Spacer(),
-
-        TextButton(
-          onPressed: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            width: 140,
-            decoration: BoxDecoration(
-              color: value == ProfileConfig.undefined ? ThemaColor.gray.color : ThemaColor.blue.color,
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Spacer(),
-                CustomText(
-                  text: value,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  textSize: TextSize.S,
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ),
-
-      ],
-    );
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return ProfileConfig.undefined;
-    return '${date.year}年${date.month.toString()}月${date.day.toString()}日';
-  }
-}
-
-abstract class ProfileConfig {
-
-  static const empty = '';
-  static const undefined = '未設定';
-  static final defaultDateTime = DateTime(2026, 1, 1);
-
-  static const List<String> prefectures = [
-    '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
-    '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
-    '新潟県','富山県','石川県','福井県','山梨県','長野県',
-    '岐阜県','静岡県','愛知県','三重県',
-    '滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県',
-    '鳥取県','島根県','岡山県','広島県','山口県',
-    '徳島県','香川県','愛媛県','高知県',
-    '福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県',
-    '沖縄県',
-  ];
-
-  static const List<String> jobs = [
-    '会社員',
-    '自営業',
-    '公務員',
-    '学生',
-    '主婦・主夫',
-    '農業',
-    'フリーランス',
-    '無職',
-    'その他',
-  ];
 }

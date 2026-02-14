@@ -6,6 +6,7 @@ import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/feature/auth/application/user_info/user_info_state.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
+import 'package:salary/core/config/profile_config.dart';
 
 
 final userInfoProvider =

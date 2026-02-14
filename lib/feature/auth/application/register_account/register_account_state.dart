@@ -1,4 +1,5 @@
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
+import 'package:salary/core/config/profile_config.dart';
 
 class RegisterAccountState {
 
