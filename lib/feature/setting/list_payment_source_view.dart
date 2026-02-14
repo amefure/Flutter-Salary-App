@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
@@ -14,45 +15,8 @@ import 'package:salary/feature/domain/input_payment_source/input_payment_source_
 class ListPaymentSourceView extends ConsumerWidget {
   ListPaymentSourceView({super.key});
 
-  /// 削除確認ダイアログ
-  void _showConfirmDeleteAlert(
-    BuildContext context,
-    WidgetRef ref,
-    PaymentSource paymentSource,
-  ) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('確認'),
-          content: Text('「${paymentSource.name}」を本当に削除しますか？'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('キャンセル'),
-            ),
-            TextButton(
-              onPressed: () {
-                _deletePaymentSource(dialogContext, ref, paymentSource);
-              },
-              child: const CustomText(
-                text: '削除',
-                fontWeight: FontWeight.bold,
-                color: CustomColors.negative,
-                textSize: TextSize.MS,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   /// 支払い元の削除
   void _deletePaymentSource(
-    BuildContext dialogContext,
     WidgetRef ref,
     PaymentSource paymentSource,
   ) {
@@ -61,8 +25,6 @@ class ListPaymentSourceView extends ConsumerWidget {
     ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ
     ref.read(listSalaryProvider.notifier).refresh();
-    // ダイアログを閉じる(コンテキストが異なるので注意)
-    Navigator.of(dialogContext).pop();
   }
 
   /// 支払い元追加画面を表示
@@ -208,8 +170,17 @@ class ListPaymentSourceView extends ConsumerWidget {
 
                 // 削除ボタン
                 IconButton(
-                  onPressed: () {
-                    _showConfirmDeleteAlert(context, ref, paymentSource);
+                  onPressed: () async {
+                    final result = await AppDialog.show(
+                      context: context,
+                      message: '「${paymentSource.name}」を本当に削除しますか？',
+                      type: DialogType.confirm,
+                      positiveTitle: '削除',
+                      isPositiveNegativeType: true
+                    );
+                    if (result ?? false) {
+                      _deletePaymentSource(ref, paymentSource);
+                    }
                   },
                   icon: const Icon(
                     CupertinoIcons.trash_fill,

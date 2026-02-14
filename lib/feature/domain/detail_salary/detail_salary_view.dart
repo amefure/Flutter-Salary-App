@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/payment_source_label_view.dart';
 import 'package:salary/feature/domain/detail_salary/detail_salary_state.dart';
 import 'package:salary/feature/domain/detail_salary/detail_salary_view_model.dart';
@@ -76,48 +77,27 @@ class DetailSalaryView extends ConsumerWidget {
       BuildContext context,
       WidgetRef ref,
       Salary salary,
-      ) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('確認'),
-          content: const Text('給料情報を本当に削除しますか？'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('キャンセル'),
-            ),
-            TextButton(
-              onPressed: () {
-                _deleteSalary(context, dialogContext, ref, salary);
-              },
-              child: const CustomText(
-                text: '削除',
-                fontWeight: FontWeight.bold,
-                color: CustomColors.negative,
-                textSize: TextSize.MS,
-              ),
-            ),
-          ],
-        );
-      },
+      ) async {
+    final result = await AppDialog.show(
+        context: context,
+        message: '「給料情報を本当に削除しますか？',
+        type: DialogType.confirm,
+        positiveTitle: '削除',
+        isPositiveNegativeType: true
     );
+    if (result ?? false) {
+      _deleteSalary(context, ref, salary);
+    }
   }
 
   void _deleteSalary(
       BuildContext context,
-      BuildContext dialogContext,
       WidgetRef ref,
       Salary salary,
       ) {
     // 削除処理を実行
     ref.read(detailSalaryProvider(id).notifier).delete(salary);
-    // ダイアログを閉じる(コンテキストが異なるので注意)
-    Navigator.of(dialogContext).pop();
-    // リスト画面に戻る(コンテキストが異なるので注意)
+    // リスト画面に戻る
     Navigator.of(context).pop();
   }
 

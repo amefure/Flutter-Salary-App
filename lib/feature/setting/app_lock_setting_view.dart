@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -30,52 +31,6 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     }
   }
 
-  /// パスワード登録成功アラート
-  void _showSuccessAlert(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('お知らせ'),
-          content: const Text('パスワードでアプリをロックしました。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                // 成功時にはtrueを明示的に返す
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// パスワード認証失敗アラート
-  void _showValidateErrorAlert(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: const Text('パスワードが違います。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // 入力パスワードを初期化
-                _input.clear();
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _validatePassword() async {
     String? storedPassword = await _passwordService.getPassword();
     String password = _input.join('');
@@ -86,7 +41,13 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
         MaterialPageRoute(builder: (context) => const RootTabViewView()),
       );
     } else {
-      _showValidateErrorAlert(context);
+      final _ = await AppDialog.show(
+        context: context,
+        message: 'パスワードが違います。',
+        type: DialogType.error,
+      );
+      // 入力パスワードを初期化
+      _input.clear();
     }
   }
 
@@ -107,7 +68,13 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
       String password = _input.join('');
       await PasswordService().setPassword(password);
       if (!mounted) return;
-      _showSuccessAlert(context);
+      final _ = await AppDialog.show(
+        context: context,
+        message: 'パスワードでアプリをロックしました。',
+        type: DialogType.success,
+      );
+      // 成功時にはtrueを明示的に返す
+      Navigator.of(context).pop(true);
     }
   }
 

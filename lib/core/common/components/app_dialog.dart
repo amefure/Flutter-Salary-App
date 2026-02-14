@@ -4,7 +4,7 @@ import 'package:salary/core/utils/custom_colors.dart';
 
 enum DialogType {
   success('成功'),
-  error('エラー'),
+  error('Error'),
   confirm('確認');
 
   final String defaultTitle;
