@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
@@ -162,16 +162,52 @@ class SettingView extends StatelessWidget {
                       context,
                       'ログアウト',
                       CupertinoIcons.person_badge_minus_fill,
-                          () {
-                        _showConfirmLogoutDialog(context, ref);
+                          () async {
+                            final result = await AppDialog.show(
+                                context: context,
+                                message: '本当にログアウトしますか？',
+                                type: DialogType.confirm,
+                                positiveTitle: 'ログアウト',
+                                isPositiveNegativeType: true
+                            );
+                            if (result ?? false) {
+                              final viewModel = ref.read(settingProvider.notifier);
+                              final result = await viewModel.logout();
+                              if (result) {
+                                final _ = await AppDialog.show(
+                                    context: context,
+                                    message: 'ログアウトしました。',
+                                    type: DialogType.success,
+                                );
+                              }
+                            }
+
                       }
                   ),
                   _settingListTile(
                       context,
                       'アカウントを削除する',
                       CupertinoIcons.delete_right_fill,
-                          () {
-                        _showConfirmWithdrawalDialog(context, ref);
+                          () async {
+                            final result = await AppDialog.show(
+                                context: context,
+                                message: 'アカウントを削除しても、アプリ内のデータは消失しませんが、バックアップ機能は無効になります。\n本当にアカウント削除しますか？',
+                                type: DialogType.confirm,
+                                positiveTitle: '削除する',
+                                isPositiveNegativeType: true
+                            );
+                            if (result ?? false) {
+                              final viewModel = ref.read(settingProvider.notifier);
+                              viewModel.withdrawal();
+                              final result = await viewModel.withdrawal();
+                              if (result) {
+                                final _ = await AppDialog.show(
+                                  context: context,
+                                  message: 'アカウントを削除しました。',
+                                  type: DialogType.success,
+                                );
+                              }
+                            }
                       }
                   )
                 ],
@@ -239,111 +275,6 @@ class SettingView extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-
-  Future<void> _showConfirmLogoutDialog(
-      BuildContext context,
-      WidgetRef ref
-      ) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('確認'),
-          content: const Text('本当にログアウトしますか？'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('キャンセル'),
-            ),
-
-            TextButton(
-              onPressed: () async {
-                final viewModel = ref.read(settingProvider.notifier);
-                final result = await viewModel.logout();
-                if (result) {
-                  Navigator.of(dialogContext).pop();
-                  _showSuccessDialog(context, 'ログアウトしました。');
-                }
-
-              },
-              child: const CustomText(
-                text: 'ログアウト',
-                fontWeight: FontWeight.bold,
-                color: CustomColors.negative,
-                textSize: TextSize.MS,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showConfirmWithdrawalDialog(
-      BuildContext context,
-      WidgetRef ref
-      ) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('確認'),
-          content: const Text('アカウントを削除しても、アプリ内のデータは消失しませんが、バックアップ機能は無効になります。\n本当にアカウント削除しますか？'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('キャンセル'),
-            ),
-
-            TextButton(
-              onPressed: () async {
-                final viewModel = ref.read(settingProvider.notifier);
-                viewModel.withdrawal();
-                final result = await viewModel.withdrawal();
-                if (result) {
-                  Navigator.of(dialogContext).pop();
-                  _showSuccessDialog(context, 'アカウントを削除しました。');
-                }
-              },
-              child: const CustomText(
-                text: '削除する',
-                fontWeight: FontWeight.bold,
-                color: CustomColors.negative,
-                textSize: TextSize.MS,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showSuccessDialog(
-      BuildContext context,
-      String content
-      ) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('成功'),
-          content: Text(content),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 

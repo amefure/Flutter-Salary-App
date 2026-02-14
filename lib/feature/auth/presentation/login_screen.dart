@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
@@ -105,9 +106,15 @@ class _Body extends ConsumerState<_BodyWidget> {
     final state = ref.watch(loginProvider);
     final viewModel = ref.read(loginProvider.notifier);
 
-    ref.listen(authControllerProvider, (previous, next) {
+    ref.listen(authControllerProvider, (previous, next) async {
       if (previous?.isLogin == false && next.isLogin == true) {
-        _showSuccessDialog(context);
+        final _ = await AppDialog.show(
+            context: context,
+            message: 'ログインしました。',
+            type: DialogType.success
+        );
+        // 画面戻る
+        Navigator.of(context).pop();
       }
     });
 
@@ -166,27 +173,6 @@ class _Body extends ConsumerState<_BodyWidget> {
           )
         ],
       ),
-    );
-  }
-
-  Future<void> _showSuccessDialog(BuildContext context) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('成功'),
-          content: const Text('ログインしました。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 

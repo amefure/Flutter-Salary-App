@@ -1,6 +1,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/feature/auth/application/user_info/user_info_state.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
@@ -37,9 +38,20 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
     );
   }
 
+  /// 日付表示用整形
   String displayDate(DateTime? date) {
     if (date == null) return ProfileConfig.undefined;
     return DateTimeUtils.format(dateTime: date, pattern: 'yyyy年M月d日');
+  }
+
+  Future<bool> updateUserInfo() async {
+    return await _ref.runWithGlobalHandling(() async {
+      await _authController.updateProfile(
+        region: state.region,
+        birthday: state.birthday!,
+        job: state.job,
+      );
+    });
   }
 
   void updateRegion(String value) {

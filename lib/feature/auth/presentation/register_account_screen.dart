@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/components/cupertino_date_picker_modal.dart';
+import 'package:salary/core/common/components/cupertino_picker_modal.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
@@ -9,7 +12,6 @@ import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
-import 'package:salary/feature/auth/presentation/login_screen.dart';
 
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({super.key});
@@ -118,9 +120,15 @@ class _Body extends ConsumerState<_BodyWidget> {
     final state = ref.watch(registerAccountProvider);
     final viewModel = ref.read(registerAccountProvider.notifier);
 
-    ref.listen(authControllerProvider, (previous, next) {
+    ref.listen(authControllerProvider, (previous, next) async {
       if (previous?.isLogin == false && next.isLogin == true) {
-        _showSuccessDialog(context);
+        final _ = await AppDialog.show(
+          context: context,
+          message: 'アカウントを作成しました。',
+          type: DialogType.success
+        );
+        // 画面戻る
+        Navigator.of(context).pop();
       }
     });
 
@@ -178,11 +186,13 @@ class _Body extends ConsumerState<_BodyWidget> {
             title: '都道府県',
             value: state.region,
             onTap: () =>
-                _showPrefecturePicker(
-                  context,
-                  state.region,
-                  viewModel.updateRegion,
-                ),
+                CupertinoPickerModal.show<String>(
+                  context: context,
+                  items: ProfileConfig.prefectures,
+                  currentValue: state.region,
+                  labelBuilder: (region) => region,
+                  onSelected: viewModel.updateRegion,
+                )
           ),
 
           /// 生年月日
@@ -194,10 +204,10 @@ class _Body extends ConsumerState<_BodyWidget> {
 
                 viewModel.updateBirthday(date);
 
-                _showBirthdayPicker(
-                  context,
-                  date,
-                  viewModel.updateBirthday,
+                CupertinoDatePickerModal.show(
+                  context: context,
+                  initialDate: date,
+                  onSelected: viewModel.updateBirthday,
                 );
               }
           ),
@@ -207,11 +217,13 @@ class _Body extends ConsumerState<_BodyWidget> {
             title: '職業',
             value: state.job,
             onTap: () =>
-                _showJobPicker(
-                  context,
-                  state.job,
-                  viewModel.updateJob,
-                ),
+                CupertinoPickerModal.show<String>(
+                  context: context,
+                  items: ProfileConfig.jobs,
+                  currentValue: state.job,
+                  labelBuilder: (job) => job,
+                  onSelected: viewModel.updateJob,
+                )
           ),
 
           CustomElevatedButton(
@@ -284,104 +296,9 @@ class _Body extends ConsumerState<_BodyWidget> {
     );
   }
 
-  void _showPrefecturePicker(
-      BuildContext context,
-      String current,
-      void Function(String) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoPicker(
-            itemExtent: 36,
-            scrollController: FixedExtentScrollController(
-              initialItem: ProfileConfig.prefectures.indexOf(current),
-            ),
-            onSelectedItemChanged: (index) {
-              onSelected(ProfileConfig.prefectures[index]);
-            },
-            children: ProfileConfig.prefectures.map(Text.new).toList(),
-          ),
-        );
-      },
-    );
-  }
-
   String _formatDate(DateTime? date) {
     if (date == null) return ProfileConfig.undefined;
     return '${date.year}年${date.month.toString()}月${date.day.toString()}日';
-  }
-  void _showBirthdayPicker(
-      BuildContext context,
-      DateTime current,
-      void Function(DateTime) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.date,
-            initialDateTime: current,
-            maximumDate: DateTime.now(),
-            minimumYear: 1900,
-            onDateTimeChanged: onSelected,
-          ),
-        );
-      },
-    );
-  }
-
-  void _showJobPicker(
-      BuildContext context,
-      String current,
-      void Function(String) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoPicker(
-            itemExtent: 36,
-            scrollController: FixedExtentScrollController(
-              initialItem: ProfileConfig.jobs.indexOf(current),
-            ),
-            onSelectedItemChanged: (index) {
-              onSelected(ProfileConfig.jobs[index]);
-            },
-            children: ProfileConfig.jobs.map(Text.new).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showSuccessDialog(BuildContext context) async {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('成功'),
-          content: const Text('アカウントを作成しました。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }
 

@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/components/cupertino_date_picker_modal.dart';
+import 'package:salary/core/common/components/cupertino_picker_modal.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/models/thema_color.dart';
@@ -57,11 +60,13 @@ class _Body extends ConsumerState<_BodyWidget> {
             title: '都道府県',
             value: state.region,
             onTap: () =>
-                _showPrefecturePicker(
-                  context,
-                  state.region,
-                  viewModel.updateRegion,
-                ),
+              CupertinoPickerModal.show<String>(
+                context: context,
+                items: ProfileConfig.prefectures,
+                currentValue: state.region,
+                labelBuilder: (region) => region,
+                onSelected: viewModel.updateRegion,
+              )
           ),
 
           /// 生年月日
@@ -73,10 +78,10 @@ class _Body extends ConsumerState<_BodyWidget> {
 
                 viewModel.updateBirthday(date);
 
-                _showBirthdayPicker(
-                  context,
-                  date,
-                  viewModel.updateBirthday,
+                CupertinoDatePickerModal.show(
+                  context: context,
+                  initialDate: date,
+                  onSelected: viewModel.updateBirthday,
                 );
               }
           ),
@@ -86,17 +91,27 @@ class _Body extends ConsumerState<_BodyWidget> {
             title: '職業',
             value: state.job,
             onTap: () =>
-                _showJobPicker(
-                  context,
-                  state.job,
-                  viewModel.updateJob,
-                ),
+              CupertinoPickerModal.show<String>(
+                context: context,
+                items: ProfileConfig.jobs,
+                currentValue: state.job,
+                labelBuilder: (job) => job,
+                onSelected: viewModel.updateJob,
+              )
           ),
 
-          CustomElevatedButton(
-              text: '登録する',
+        CustomElevatedButton(
+              text: '更新する',
               backgroundColor: state.isCompleted ? ThemaColor.blue.color : ThemaColor.gray.color,
-              onPressed: () {
+              onPressed: () async {
+                final result = await viewModel.updateUserInfo();
+                if (result) {
+                  final _ = await AppDialog.show(
+                      context: context,
+                      message: 'プロフィールを更新しました。',
+                      type: DialogType.success
+                  );
+                }
               }
           )
         ],
@@ -162,84 +177,12 @@ class _Body extends ConsumerState<_BodyWidget> {
     );
   }
 
-  void _showPrefecturePicker(
-      BuildContext context,
-      String current,
-      void Function(String) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoPicker(
-            itemExtent: 36,
-            scrollController: FixedExtentScrollController(
-              initialItem: ProfileConfig.prefectures.indexOf(current),
-            ),
-            onSelectedItemChanged: (index) {
-              onSelected(ProfileConfig.prefectures[index]);
-            },
-            children: ProfileConfig.prefectures.map(Text.new).toList(),
-          ),
-        );
-      },
-    );
-  }
 
   String _formatDate(DateTime? date) {
     if (date == null) return ProfileConfig.undefined;
     return '${date.year}年${date.month.toString()}月${date.day.toString()}日';
   }
-  void _showBirthdayPicker(
-      BuildContext context,
-      DateTime current,
-      void Function(DateTime) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.date,
-            initialDateTime: current,
-            maximumDate: DateTime.now(),
-            minimumYear: 1900,
-            onDateTimeChanged: onSelected,
-          ),
-        );
-      },
-    );
-  }
 
-  void _showJobPicker(
-      BuildContext context,
-      String current,
-      void Function(String) onSelected,
-      ) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) {
-        return Container(
-          height: 250,
-          color: CustomColors.foundation(context),
-          child: CupertinoPicker(
-            itemExtent: 36,
-            scrollController: FixedExtentScrollController(
-              initialItem: ProfileConfig.jobs.indexOf(current),
-            ),
-            onSelectedItemChanged: (index) {
-              onSelected(ProfileConfig.jobs[index]);
-            },
-            children: ProfileConfig.jobs.map(Text.new).toList(),
-          ),
-        );
-      },
-    );
-  }
 
   Future<void> _showSuccessDialog(BuildContext context) async {
     showCupertinoDialog(
@@ -247,7 +190,7 @@ class _Body extends ConsumerState<_BodyWidget> {
       builder: (BuildContext dialogContext) {
         return CupertinoAlertDialog(
           title: const Text('成功'),
-          content: const Text('アカウントを作成しました。'),
+          content: const Text('プロフィールを更新しました。'),
           actions: [
             TextButton(
               onPressed: () {

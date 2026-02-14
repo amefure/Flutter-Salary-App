@@ -11,6 +11,7 @@ class AuthApi {
 
   final ApiClient _client;
 
+  /// ======== ユーザー認証まわり ========
   Future<Map<String, dynamic>> register(Map<String, dynamic> body) async {
     return await _client.post('/register', body: body);
   }
@@ -29,5 +30,9 @@ class AuthApi {
 
   Future<Map<String, dynamic>> fetchUser() async {
     return await _client.get('/user');
+  }
+
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> body) async {
+    return await _client.patch('/profile');
   }
 }

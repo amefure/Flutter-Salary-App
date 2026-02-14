@@ -36,4 +36,11 @@ abstract class AuthRepository {
   /// ローカルキャッシュユーザー情報の削除
   Future<void> clearCachedUser();
 
+  /// プロフィール更新
+  Future<void> updateProfile({
+    required String region,
+    required DateTime birthday,
+    required String job
+  });
+
 }

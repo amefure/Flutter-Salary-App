@@ -96,4 +96,23 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(null);
   }
 
+  /// プロフィール情報更新
+  Future<void> updateProfile({
+    required String region,
+    required DateTime birthday,
+    required String job
+  }) async {
+    await _authRepository.updateProfile(
+        region: region,
+        birthday: birthday,
+        job: job
+    );
+    final updateUser = state.user?.copyWith(
+        region: region,
+        birthday: birthday,
+        job: job
+    );
+    state = state.copyWith(updateUser);
+  }
+
 }
