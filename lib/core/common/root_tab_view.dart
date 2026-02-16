@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:salary/feature/charts/view/chart_salary_screen.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view.dart';
 import 'package:salary/feature/setting/home/setting_view.dart';
+import 'package:salary/feature/timeline/time_line_root_screen.dart';
 
 class RootTabViewView extends StatefulWidget {
   const RootTabViewView({super.key});
@@ -26,6 +27,10 @@ class _RootTabViewViewState extends State<RootTabViewView> {
             label: 'MyData',
           ),
           BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.globe),
+            label: 'Timeline',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear_alt_fill),
             label: 'Settings',
           ),
@@ -48,6 +53,8 @@ class _RootTabViewViewState extends State<RootTabViewView> {
       case 1:
         return const ChartSalaryScreen();
       case 2:
+        return const TimeLineRootScreen();
+      case 3:
         return const SettingView();
       default:
         return const SalaryListView();
