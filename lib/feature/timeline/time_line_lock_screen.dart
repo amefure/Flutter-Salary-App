@@ -4,6 +4,8 @@ import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/auth/auth_state.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/auth/presentation/login_screen.dart';
+import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
 
 class TimelineLockScreen extends ConsumerWidget {
   const TimelineLockScreen({super.key});
@@ -22,7 +24,7 @@ class TimelineLockScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: CustomColors.themaOrange.withOpacity(0.1),
+              color: CustomColors.themaOrange.withAlpha(20),
             ),
             child: const Icon(
               CupertinoIcons.lock_fill,
@@ -53,10 +55,10 @@ class _PremiumCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: CustomColors.foundation(context),
+        color: CustomColors.background(context),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.systemGrey.withOpacity(0.15),
+            color: CupertinoColors.systemGrey.withAlpha(30),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -126,10 +128,10 @@ class _RequirementCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: CustomColors.foundation(context),
+        color: CustomColors.background(context),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.systemGrey.withOpacity(0.1),
+            color: CupertinoColors.systemGrey.withAlpha(30),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -161,18 +163,39 @@ class _RequirementCard extends StatelessWidget {
             number: 1,
             title: 'アカウント作成(ログイン)',
             isCompleted: authState.isLogin,
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              );
+            },
           ),
 
           _StepItem(
             number: 2,
             title: '給料データを公開',
             isCompleted: false,
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => const InAppPurchaseView(),
+                ),
+              );
+            },
           ),
 
           _StepItem(
             number: 3,
             title: 'プレミアム登録',
             isCompleted: authState.isLogin,
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => const InAppPurchaseView(),
+                ),
+              );
+            },
           ),
 
         ],
@@ -198,7 +221,7 @@ class _PremiumPoint extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: CustomColors.themaBlue.withOpacity(0.05),
+        color: CustomColors.themaBlue.withAlpha(20),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,7 +231,7 @@ class _PremiumPoint extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: CustomColors.themaBlue.withOpacity(0.15),
+              color: CustomColors.themaBlue.withAlpha(25),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -227,13 +250,13 @@ class _PremiumPoint extends StatelessWidget {
               children: [
                 CustomText(
                   text: title,
-                  textSize: TextSize.M,
+                  textSize: TextSize.S,
                   fontWeight: FontWeight.w600,
                 ),
                 const SizedBox(height: 4),
                 CustomText(
                   text: description,
-                  textSize: TextSize.S,
+                  textSize: TextSize.SS,
                   color: CupertinoColors.systemGrey,
                 ),
               ],
@@ -250,88 +273,97 @@ class _StepItem extends StatelessWidget {
     required this.number,
     required this.title,
     required this.isCompleted,
+    this.onTap,
   });
 
   final int number;
   final String title;
   final bool isCompleted;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.symmetric(
-        vertical: 12,
-        horizontal: 14,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: isCompleted
-            ? CustomColors.themaBlue.withOpacity(0.08)
-            : CustomColors.foundation(context),
-      ),
-      child: Row(
-        children: [
+    final isClickable = !isCompleted && onTap != null;
 
-          /// 丸アイコン
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isCompleted
-                  ? CustomColors.themaBlue
-                  : CustomColors.themaBlack,
-            ),
-            child: Center(
-              child: isCompleted
-                  ? const Icon(
-                CupertinoIcons.check_mark,
-                size: 16,
-                color: CupertinoColors.white,
-              )
-                  : CustomText(
-                text: number.toString(),
-                textSize: TextSize.S,
-                color: CupertinoColors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+    return GestureDetector(
+      onTap: isClickable ? onTap : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 16,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: isCompleted
+              ? CustomColors.themaBlue.withAlpha(20)
+              : isClickable
+              ? CustomColors.themaOrange.withAlpha(20)
+              : CupertinoColors.systemGrey6,
+          border: isClickable
+              ? Border.all(
+            color: CustomColors.themaBlue.withAlpha(3),
+          )
+              : null,
+        ),
+        child: Row(
+          children: [
 
-          const SizedBox(width: 12),
-
-          /// タイトル
-          Expanded(
-            child: CustomText(
-              text: title,
-              textSize: TextSize.M,
-              fontWeight:
-              isCompleted ? FontWeight.w600 : FontWeight.normal,
-              color: CustomColors.text(context),
-            ),
-          ),
-
-          /// 完了ラベル
-          if (isCompleted)
+            /// 丸アイコン
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: CustomColors.themaBlue.withOpacity(0.15),
+                shape: BoxShape.circle,
+                color: isCompleted
+                    ? CustomColors.themaBlue
+                    : CustomColors.themaBlack,
               ),
-              child: const CustomText(
+              child: Center(
+                child: isCompleted
+                    ? const Icon(
+                  CupertinoIcons.check_mark,
+                  size: 16,
+                  color: CupertinoColors.white,
+                )
+                    : CustomText(
+                  text: number.toString(),
+                  textSize: TextSize.S,
+                  color: CupertinoColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            /// タイトル
+            Expanded(
+              child: CustomText(
+                text: title,
+                textSize: TextSize.S,
+                fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
+                color: CustomColors.text(context),
+              ),
+            ),
+
+            /// 右側UI
+            if (isCompleted)
+              const CustomText(
                 text: '完了',
                 textSize: TextSize.S,
                 fontWeight: FontWeight.w600,
                 color: CustomColors.themaBlue,
+              )
+            else if (isClickable)
+              const Icon(
+                CupertinoIcons.chevron_forward,
+                size: 18,
+                color: CupertinoColors.systemGrey,
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
