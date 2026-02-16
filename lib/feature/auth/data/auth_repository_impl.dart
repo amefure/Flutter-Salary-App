@@ -101,16 +101,17 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> updateProfile({
+    required String name,
     required String region,
     required DateTime birthday,
     required String job
   }) async {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
     await _api.updateProfile({
-          'region': region,
-          'birthday': formatted,
-          'job': job,
-        }
-    );
+      'name': name,
+      'region': region,
+      'birthday': formatted,
+      'job': job,
+    });
   }
 }

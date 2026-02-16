@@ -33,6 +33,6 @@ class AuthApi {
   }
 
   Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> body) async {
-    return await _client.patch('/profile');
+    return await _client.patch('/profile', body: body);
   }
 }

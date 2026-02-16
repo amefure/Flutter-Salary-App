@@ -38,6 +38,7 @@ abstract class AuthRepository {
 
   /// プロフィール更新
   Future<void> updateProfile({
+    required String name,
     required String region,
     required DateTime birthday,
     required String job

@@ -3,6 +3,7 @@ import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/auth/auth_state.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
+import 'package:salary/feature/auth/domain/auth_user.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, AuthState>((ref) {
   final authRepository = ref.read(authRepositoryProvider);
@@ -14,7 +15,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   AuthController(this._authRepository) : super(const AuthState()) {
     // 初回インスタンス化時にユーザー情報を取得する
-    fetchUser();
+    _fetchAndSetUpUser();
   }
 
   final AuthRepository _authRepository;
@@ -53,10 +54,12 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(user);
   }
 
-  /// ユーザー情報取得
-  Future<void> fetchUser() async {
-    // すでにログイン済みなら取得しない
-    if (state.isLogin) { return; }
+  /// ユーザー情報取得 & State更新
+  Future<void> _fetchAndSetUpUser({
+    bool isForce = false
+  }) async {
+    // すでにログイン済みなら取得しない && 強制取得かどうか
+    if (state.isLogin && !isForce) { return; }
     // ローカルからキャッシュユーザーを取得
     final cachedUser = await _authRepository.getCachedUser();
     if (cachedUser != null) {
@@ -74,6 +77,25 @@ class AuthController extends StateNotifier<AuthState> {
       }
     } catch (_) {
       // 通信エラーなどは無視
+    }
+  }
+
+  /// ユーザー情報取得
+  Future<AuthUser> fetchUser() async {
+    // 時間のかかるAPIは後から取得する
+    try {
+      final freshUser = await _authRepository.fetchUserFromApi();
+      state = state.copyWith(freshUser);
+      return freshUser;
+    } on ApiException catch (e) {
+      // 認証エラーならログアウト処理
+      if (e.type == ApiErrorType.unauthorized) {
+        _clearUser();
+      }
+      rethrow;
+    } catch (_) {
+      // 通信エラーなどは無視
+      rethrow;
     }
   }
 
@@ -98,16 +120,19 @@ class AuthController extends StateNotifier<AuthState> {
 
   /// プロフィール情報更新
   Future<void> updateProfile({
+    required String name,
     required String region,
     required DateTime birthday,
     required String job
   }) async {
     await _authRepository.updateProfile(
+        name: name,
         region: region,
         birthday: birthday,
         job: job
     );
     final updateUser = state.user?.copyWith(
+        name: name,
         region: region,
         birthday: birthday,
         job: job

@@ -8,6 +8,7 @@ class UserInfoState {
 
   /// 入力ボックスの入力完了フラグ
   final bool isCompleted;
+  final bool isEdit;
 
   const UserInfoState({
     required this.name,
@@ -16,6 +17,7 @@ class UserInfoState {
     required this.birthday,
     required this.job,
     this.isCompleted = false,
+    this.isEdit = false,
   });
 
   factory UserInfoState.initial() {
@@ -34,7 +36,8 @@ class UserInfoState {
     String? region,
     DateTime? birthday,
     String? job,
-    bool? isCompleted
+    bool? isCompleted,
+    bool? isEdit
   }) {
     return UserInfoState(
         name: name ?? this.name,
@@ -42,7 +45,8 @@ class UserInfoState {
         region: region ?? this.region,
         birthday: birthday ?? this.birthday,
         job: job ?? this.job,
-        isCompleted: isCompleted ?? this.isCompleted
+        isCompleted: isCompleted ?? this.isCompleted,
+        isEdit: isEdit ?? this.isEdit
     );
   }
 }

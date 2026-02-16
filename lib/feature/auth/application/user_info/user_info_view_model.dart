@@ -4,16 +4,19 @@ import 'package:salary/core/auth/auth_controller.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/feature/auth/application/user_info/user_info_state.dart';
-import 'package:salary/feature/auth/domain/auth_user.dart';
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/core/config/profile_config.dart';
-
+import 'package:salary/feature/auth/domain/auth_user.dart';
 
 final userInfoProvider =
 StateNotifierProvider.autoDispose<UserInfoViewModel, UserInfoState>((ref) {
   final state = ref.read(authControllerProvider);
   final authController = ref.read(authControllerProvider.notifier);
-  return UserInfoViewModel(ref, state.user, authController);
+  final viewModel = UserInfoViewModel(ref, state.user, authController);
+  Future.microtask(() {
+    // build完了後に最新のユーザー情報を取得
+    viewModel._fetchRefreshUser();
+  });
+  return viewModel;
 });
 
 class UserInfoViewModel extends StateNotifier<UserInfoState>{
@@ -29,14 +32,25 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
   final Ref _ref;
   final AuthController _authController;
 
-  void _setUpUserInfo(AuthUser? initialUser) {
+  Future<void> _setUpUserInfo(AuthUser? initialUser) async {
     state = state.copyWith(
-        name: initialUser?.name,
-        email: initialUser?.email,
-        region: initialUser?.region,
-        birthday: initialUser?.birthday,
-        job: initialUser?.job,
+      name: initialUser?.name,
+      email: initialUser?.email,
+      region: initialUser?.region,
+      birthday: initialUser?.birthday,
+      job: initialUser?.job,
     );
+    final isCompleted = _isAllValidation();
+    state = state.copyWith(
+        isCompleted: isCompleted
+    );
+  }
+
+  Future<void> _fetchRefreshUser() async {
+    await _ref.runWithGlobalHandling(() async {
+      final user = await _authController.fetchUser();
+      _setUpUserInfo(user);
+    });
   }
 
   /// 日付表示用整形
@@ -45,14 +59,29 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
     return DateTimeUtils.format(dateTime: date, pattern: 'yyyy年M月d日');
   }
 
+  void toggleIsEdit() {
+    state = state.copyWith(
+        isEdit: !state.isEdit
+    );
+  }
+
   Future<bool> updateUserInfo() async {
     return await _ref.runWithGlobalHandling(() async {
       await _authController.updateProfile(
+        name: state.name,
         region: state.region,
         birthday: state.birthday!,
         job: state.job,
       );
     });
+  }
+
+  void updateName(String value) {
+    final isCompleted = _isAllValidation(name: value);
+    state = state.copyWith(
+        name: value,
+        isCompleted: isCompleted
+    );
   }
 
   void updateRegion(String value) {
