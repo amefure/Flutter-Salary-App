@@ -78,7 +78,7 @@ class _PremiumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: CustomColors.foundation(context),
@@ -90,43 +90,39 @@ class _PremiumCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          CustomText(
-            text: 'プレミアムタイムライン',
-            textSize: TextSize.L,
-            fontWeight: FontWeight.bold,
-          ),
-
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           CustomText(
-            text: 'あなたの市場価値を、データで可視化。',
+            text: 'あなたの市場価値を、データで見える化。',
             textSize: TextSize.M,
             fontWeight: FontWeight.w600,
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           CustomText(
             text:
-            '同年代・同業種のリアルな給与データから\n'
-                '今の立ち位置と未来の可能性が見えてきます。',
+            '同年代・同業種のリアルな給料データから\n'
+                '今の立ち位置を比較してみよう。',
             textSize: TextSize.S,
+            fontWeight: FontWeight.w600,
             color: CupertinoColors.systemGrey,
+            maxLines: 2,
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 12),
 
           _PremiumPoint(
             icon: CupertinoIcons.money_yen_circle_fill,
-            title: '月々のリアル給与を閲覧',
+            title: '月々のリアル給料を閲覧',
             description: 'みんなの実際の月収データをチェック',
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: 12),
 
           _PremiumPoint(
             icon: CupertinoIcons.chart_bar_alt_fill,
@@ -134,7 +130,7 @@ class _PremiumCard extends StatelessWidget {
             description: '自分のポジションが一目で分かる',
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: 12),
 
           _PremiumPoint(
             icon: CupertinoIcons.gift_fill,
@@ -155,7 +151,7 @@ class _RequirementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: CustomColors.foundation(context),
@@ -171,13 +167,23 @@ class _RequirementCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          CustomText(
+          const CustomText(
             text: '利用条件',
             textSize: TextSize.M,
             fontWeight: FontWeight.bold,
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+
+          const CustomText(
+            text: '以下の条件を満たすことで機能が解放されます。',
+            textSize: TextSize.S,
+            fontWeight: FontWeight.w600,
+            color: CupertinoColors.systemGrey,
+            maxLines: 2,
+          ),
+
+          const SizedBox(height: 12),
 
           _StepItem(
             number: 1,
@@ -197,14 +203,6 @@ class _RequirementCard extends StatelessWidget {
             isCompleted: authState.isLogin,
           ),
 
-          const SizedBox(height: 16),
-
-          if (!authState.isLogin)
-            CustomText(
-              text: 'すべての条件を満たすと\nタイムラインが利用できます。',
-              textSize: TextSize.S,
-              color: CupertinoColors.systemGrey,
-            ),
         ],
       ),
     );
@@ -298,7 +296,7 @@ class _StepItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         color: isCompleted
             ? CustomColors.themaBlue.withOpacity(0.08)
-            : CupertinoColors.systemGrey6,
+            : CustomColors.foundation(context),
       ),
       child: Row(
         children: [
@@ -351,10 +349,10 @@ class _StepItem extends StatelessWidget {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(8),
                 color: CustomColors.themaBlue.withOpacity(0.15),
               ),
-              child: CustomText(
+              child: const CustomText(
                 text: '完了',
                 textSize: TextSize.S,
                 fontWeight: FontWeight.w600,
