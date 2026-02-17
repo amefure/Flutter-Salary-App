@@ -12,7 +12,7 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/setting/app_lock_setting_view.dart';
 import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
-import 'package:salary/feature/setting/list_payment_source_view.dart';
+import 'package:salary/feature/setting/list_payment_source/list_payment_source_screen.dart';
 import 'package:salary/feature/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,7 +61,7 @@ class SettingView extends StatelessWidget {
                 () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => ListPaymentSourceView(),
+                  builder: (context) => ListPaymentSourceScreen(),
                 ),
               );
             }

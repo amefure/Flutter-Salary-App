@@ -6,25 +6,35 @@ import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/core/providers/payment_source_notifier.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/domain/input_payment_source/input_payment_source_view.dart';
+import 'package:salary/feature/setting/list_payment_source/list_payment_source_view_model.dart';
 
-/// [ConsumerWidget]でUI更新
-class ListPaymentSourceView extends ConsumerWidget {
-  ListPaymentSourceView({super.key});
+class ListPaymentSourceScreen extends StatelessWidget {
+  const ListPaymentSourceScreen({super.key});
 
-  /// 支払い元の削除
-  void _deletePaymentSource(
-    WidgetRef ref,
-    PaymentSource paymentSource,
-  ) {
-    ref.read(paymentSourceProvider.notifier).delete(paymentSource);
-    // MyData画面のリフレッシュ
-    ref.read(chartSalaryProvider.notifier).refresh();
-    // Homeリスト画面のリフレッシュ
-    ref.read(listSalaryProvider.notifier).refresh();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CupertinoPageScaffold(
+        backgroundColor: CustomColors.foundation(context),
+        navigationBar: CupertinoNavigationBar(
+          middle: const CustomText(
+            text: '支払い元一覧',
+            fontWeight: FontWeight.bold,
+          ),
+          trailing: CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+            onPressed: () {
+              _showInputPaymentSourceModal(context);
+            },
+          ),
+        ),
+        child: const _Body(),
+      ),
+    );
   }
 
   /// 支払い元追加画面を表示
@@ -36,6 +46,25 @@ class ListPaymentSourceView extends ConsumerWidget {
         return const InputPaymentSourceView();
       },
     );
+  }
+}
+
+
+/// [ConsumerWidget]でUI更新
+class _Body extends ConsumerWidget {
+  const _Body();
+
+  /// 支払い元の削除
+  void _deletePaymentSource(
+    WidgetRef ref,
+    PaymentSource paymentSource,
+  ) {
+    // 削除
+    ref.read(listPaymentSourceProvider.notifier).delete(paymentSource);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
   }
 
   /// 支払い元更新画面を表示
@@ -52,33 +81,13 @@ class ListPaymentSourceView extends ConsumerWidget {
     );
   }
 
-  /// 支払い元の開閉状態用StateProvider
-  final paymentSourceExpandedProvider = StateProvider<Map<String, bool>>((ref) => {});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentSources = ref.watch(paymentSourceProvider);
-
-    return Scaffold(
-      body: CupertinoPageScaffold(
-        backgroundColor: CustomColors.foundation(context),
-        navigationBar: CupertinoNavigationBar(
-          middle: const Text('支払い元一覧'),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
-            onPressed: () {
-              _showInputPaymentSourceModal(context);
-            },
-          ),
-        ),
-        child: SafeArea(
-          child:
-              paymentSources.isEmpty
-                  ? _noDataView()
-                  : _paymentSourceList(paymentSources, ref),
-        ),
-      ),
+    final paymentSources = ref.watch(listPaymentSourceProvider.select((s) => s.paymentSources));
+    return SafeArea(
+      child: paymentSources.isEmpty
+          ? _noDataView()
+          : _paymentSourceList(paymentSources, ref),
     );
   }
 
@@ -94,9 +103,10 @@ class ListPaymentSourceView extends ConsumerWidget {
       itemBuilder: (context, index) {
 
         final paymentSource = paymentSources[index];
+        final viewModel = ref.read(listPaymentSourceProvider.notifier);
 
         /// アイテムの開閉状態を取得
-        final expandedStates = ref.watch(paymentSourceExpandedProvider);
+        final expandedStates = ref.watch(listPaymentSourceProvider.select((s) => s.expandedMap));
         bool isExpanded = expandedStates[paymentSource.id] ?? false;
 
         return InkWell(
@@ -147,11 +157,7 @@ class ListPaymentSourceView extends ConsumerWidget {
                               // 開閉アイコン
                               GestureDetector(
                                 onTap: () {
-                                  ref.read(paymentSourceExpandedProvider.notifier).update((state) {
-                                    final newState = Map<String, bool>.from(state);
-                                    newState[paymentSource.id] = !isExpanded;
-                                    return newState;
-                                  });
+                                  viewModel.updateExpanded(paymentSource.id, isExpanded);
                                 },
                                 child: Icon(
                                   isExpanded
