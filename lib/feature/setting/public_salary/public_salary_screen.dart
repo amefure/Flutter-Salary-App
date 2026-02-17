@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/core/models/salary.dart';
@@ -11,9 +12,8 @@ class PublicSalaryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentSources =
-    ref.watch(publicSalaryProvider.select((s) => s.paymentSources));
-
+    final paymentSources = ref.watch(publicSalaryProvider.select((s) => s.paymentSources));
+    final viewModel = ref.read(publicSalaryProvider.notifier);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
@@ -29,23 +29,44 @@ class PublicSalaryScreen extends ConsumerWidget {
           itemBuilder: (context, index) {
             final source = paymentSources[index];
 
-            /// 👇 ViewModel側で返す想定
-            final isPublic = true; // 公開中か
-            final canPublic = false; // 公開可能か（条件クリア）
+            final canPublic = viewModel.canPublic(source);
 
             return _PublicSalaryItem(
               paymentSource: source,
-              isPublic: isPublic,
+              isPublic: source.isPublic,
               canPublic: canPublic,
-              onChanged: (value) {
+              onChanged: (isPublic) {
                 if (!canPublic) return;
                 // ViewModelに通知（後で実装）
+                _confirmAlertPublic(context, ref, source, isPublic);
               },
             );
           },
         ),
       ),
     );
+  }
+
+  void _confirmAlertPublic(
+      BuildContext context,
+      WidgetRef ref,
+      PaymentSource source,
+      bool isPublic
+      ) async {
+    /// isPublicは変化対象の値なのでtrueなら元は非公開ステータスのものになる
+    final msg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？';
+    final positiveTitle = !isPublic ? '非公開にする' : '公開する';
+    final result = await AppDialog.show(
+        context: context,
+        message: msg,
+        type: DialogType.confirm,
+        positiveTitle: positiveTitle,
+        isPositiveNegativeType: !isPublic
+    );
+    if (result ?? false) {
+      final viewModel = ref.read(publicSalaryProvider.notifier);
+      viewModel.updatePaymentSource(source, isPublic);
+    }
   }
 }
 

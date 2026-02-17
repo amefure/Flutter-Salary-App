@@ -15,11 +15,16 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   final RealmRepository _repository;
 
   PublicSalaryViewModel(this._repository): super(PublicSalaryState.initial()) {
-    fetchAll();
+    _fetchAllPaymentSource();
+    _fetchAllSalaries();
   }
 
+  /// 公開条件(件数 & 総支給額合計)
+  static const int minSalaryCountForPublic = 3;//12;
+  static const int minTotalPaymentAmountForPublic = 10000;
+
   /// 全取得
-  void fetchAll() {
+  void _fetchAllPaymentSource() {
     final results = _repository.fetchAll<PaymentSource>()
       ..sort((a, b) {
         final aValue = a.isMain ? 1 : 0;
@@ -27,5 +32,50 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
         return bValue - aValue;
       });
     state = state.copyWith(paymentSources: results);
+  }
+
+  /// 更新
+  void updatePaymentSource(
+      PaymentSource current,
+      bool isPublic
+      ) {
+    _repository.updateById(current.id, (PaymentSource paymentSource) {
+      paymentSource.name = current.name;
+      paymentSource.isMain = current.isMain;
+      paymentSource.themaColor = current.themaColor;
+      paymentSource.memo = current.memo;
+      paymentSource.isPublic = isPublic;
+    });
+    _fetchAllPaymentSource();
+  }
+
+  bool canPublic(PaymentSource target) {
+    /// 対象PaymentSourceの給与のみ抽出
+    final targetSalaries = state.salaries
+        .where((salary) => salary.source?.id == target.id)
+        .toList();
+
+    /// 件数チェック
+    if (targetSalaries.length < minSalaryCountForPublic) {
+      return false;
+    }
+
+    /// 支給額合計チェック
+    final totalPaymentAmount = targetSalaries.fold<int>(0, (sum, salary) => sum + salary.paymentAmount,);
+
+    if (totalPaymentAmount < minTotalPaymentAmountForPublic) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void _fetchAllSalaries() {
+    final allSalaries = _repository.fetchAll<Salary>();
+    // モック(確認用)
+    // final allSalaries = SalaryMockFactory.allGenerateYears();
+    state = state.copyWith(
+      salaries: allSalaries,
+    );
   }
 }

@@ -1,23 +1,28 @@
 import 'package:salary/core/models/salary.dart';
 
 class PublicSalaryState {
+  final List<Salary> salaries;
   final List<PaymentSource> paymentSources;
 
   PublicSalaryState({
+    required this.salaries,
     required this.paymentSources,
   });
 
   static PublicSalaryState initial() {
     return PublicSalaryState(
-        paymentSources: List.empty(),
+      salaries: List.empty(),
+      paymentSources: List.empty(),
     );
   }
 
   PublicSalaryState copyWith({
+    List<Salary>? salaries,
     List<PaymentSource>? paymentSources,
   }) {
     return PublicSalaryState(
-        paymentSources: paymentSources ?? this.paymentSources,
+      salaries: salaries ?? this.salaries,
+      paymentSources: paymentSources ?? this.paymentSources,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
+import 'package:salary/feature/setting/public_salary/public_salary_screen.dart';
 
 class TimelineLockScreen extends ConsumerWidget {
   const TimelineLockScreen({super.key});
@@ -179,7 +180,7 @@ class _RequirementCard extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => const InAppPurchaseView(),
+                  builder: (context) => const PublicSalaryScreen(),
                 ),
               );
             },
