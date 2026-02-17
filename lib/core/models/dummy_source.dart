@@ -11,6 +11,7 @@ class DummySource {
       Uuid.v4().toString(),
       ALL_TITLE,
       ThemaColor.blue.value,
+      false,
       false
   );
 
@@ -19,6 +20,7 @@ class DummySource {
       Uuid.v4().toString(),
       UNSET_TITLE,
       ThemaColor.blue.value,
+      false,
       false
   );
 }

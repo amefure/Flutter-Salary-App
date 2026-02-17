@@ -278,7 +278,8 @@ class PaymentSource extends _PaymentSource
     String id,
     String name,
     int themaColor,
-    bool isMain, {
+    bool isMain,
+    bool isPublic, {
     String? memo,
   }) {
     RealmObjectBase.set(this, 'id', id);
@@ -286,6 +287,7 @@ class PaymentSource extends _PaymentSource
     RealmObjectBase.set(this, 'themaColor', themaColor);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'isMain', isMain);
+    RealmObjectBase.set(this, 'isPublic', isPublic);
   }
 
   PaymentSource._();
@@ -316,6 +318,11 @@ class PaymentSource extends _PaymentSource
   set isMain(bool value) => RealmObjectBase.set(this, 'isMain', value);
 
   @override
+  bool get isPublic => RealmObjectBase.get<bool>(this, 'isPublic') as bool;
+  @override
+  set isPublic(bool value) => RealmObjectBase.set(this, 'isPublic', value);
+
+  @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
       RealmObjectBase.getChanges<PaymentSource>(this);
 
@@ -334,6 +341,7 @@ class PaymentSource extends _PaymentSource
       'themaColor': themaColor.toEJson(),
       'memo': memo.toEJson(),
       'isMain': isMain.toEJson(),
+      'isPublic': isPublic.toEJson(),
     };
   }
 
@@ -346,12 +354,14 @@ class PaymentSource extends _PaymentSource
         'name': EJsonValue name,
         'themaColor': EJsonValue themaColor,
         'isMain': EJsonValue isMain,
+        'isPublic': EJsonValue isPublic,
       } =>
         PaymentSource(
           fromEJson(id),
           fromEJson(name),
           fromEJson(themaColor),
           fromEJson(isMain),
+          fromEJson(isPublic),
           memo: fromEJson(ejson['memo']),
         ),
       _ => raiseInvalidEJson(ejson),
@@ -371,6 +381,7 @@ class PaymentSource extends _PaymentSource
         SchemaProperty('themaColor', RealmPropertyType.int),
         SchemaProperty('memo', RealmPropertyType.string, optional: true),
         SchemaProperty('isMain', RealmPropertyType.bool),
+        SchemaProperty('isPublic', RealmPropertyType.bool),
       ],
     );
   }();

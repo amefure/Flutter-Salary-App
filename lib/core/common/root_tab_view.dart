@@ -23,7 +23,7 @@ class _RootTabViewViewState extends State<RootTabViewView> {
             label: 'History',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chart_bar_fill),
+            icon: Icon(CupertinoIcons.chart_bar_alt_fill),
             label: 'MyData',
           ),
           BottomNavigationBarItem(

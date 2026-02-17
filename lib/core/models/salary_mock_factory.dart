@@ -103,6 +103,7 @@ class SalaryMockFactory {
       '株式会社ame',
       ThemaColor.orange.value,
       true,
+      false,
       memo: '本業',
     );
   }
@@ -113,6 +114,7 @@ class SalaryMockFactory {
       'source_sub_company',
       'ABCデザイン',
       ThemaColor.yellow.value,
+      false,
       false,
       memo: '副業',
     );

@@ -78,6 +78,7 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
         state.name,
         state.selectedColor.value,
         state.isMain,
+        false,
         memo: state.memo,
       );
       ref.read(paymentSourceProvider.notifier).add(payment);

@@ -4,5 +4,6 @@ class RealmSchemaConfig {
   /// 2・・・[_PaymentSource]に[memo]プロパティを追加
   /// 3・・・[_Salary]に[isBonus]プロパティを追加
   /// 4・・・[_PaymentSource]に[isMain]プロパティを追加
-  static int schemaVersion = 4;
+  /// 5・・・[_PaymentSource]に[isPublic]プロパティを追加
+  static int schemaVersion = 5;
 }
