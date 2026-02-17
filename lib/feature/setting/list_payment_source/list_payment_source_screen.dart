@@ -117,29 +117,28 @@ class _Body extends ConsumerWidget {
             _showUpdatePaymentSourceModal(context, paymentSource, ref);
           },
           child: Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 2,
+            ),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: CustomColors.background(context),
-              // 角丸
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color:
+                  CupertinoColors.systemGrey.withAlpha(20),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 /// アイコン
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: CustomColors.themaBlue.withAlpha(20),
-                    borderRadius:
-                    BorderRadius.circular(8),
-                  ),
-                  child: PaymentIconView(
-                    paymentSource: paymentSource,
-                  ),
-                ),
-
+                PaymentIconWrapView(paymentSource: paymentSource),
 
                 const SizedBox(width: 20),
 

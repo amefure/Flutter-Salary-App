@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_controller.dart';
@@ -13,6 +12,7 @@ import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/setting/app_lock_setting_view.dart';
 import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
 import 'package:salary/feature/setting/list_payment_source/list_payment_source_screen.dart';
+import 'package:salary/feature/setting/public_salary/public_salary_screen.dart';
 import 'package:salary/feature/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,10 +61,33 @@ class SettingView extends StatelessWidget {
                 () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => ListPaymentSourceScreen(),
+                  builder: (context) => const ListPaymentSourceScreen(),
                 ),
               );
             }
+        ),
+
+        Consumer(
+          builder: (context, ref, _) {
+            final state = ref.watch(authControllerProvider);
+
+            if (!state.isLogin) {
+              return const SizedBox.shrink();
+            }
+            return _settingListTile(
+              context,
+              '給料公開設定',
+              CupertinoIcons.globe,
+                  () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) =>
+                    const PublicSalaryScreen(),
+                  ),
+                );
+              },
+            );
+          },
         ),
 
         _settingListTile(

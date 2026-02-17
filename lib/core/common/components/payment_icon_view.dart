@@ -1,6 +1,31 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/utils/custom_colors.dart';
+
+/// PaymentSourceのアイコンを薄いレイヤーでラップしたUI
+class PaymentIconWrapView extends StatelessWidget {
+  const PaymentIconWrapView({
+    super.key,
+    required this.paymentSource,
+  });
+  final PaymentSource paymentSource;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: CustomColors.themaBlue.withAlpha(20),
+          borderRadius:
+          BorderRadius.circular(8),
+        ),
+        child: PaymentIconView(
+          paymentSource: paymentSource,
+        ),
+      );
+  }
+}
 
 /// PaymentSourceのアイコン
 class PaymentIconView extends StatelessWidget {
