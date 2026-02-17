@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
@@ -129,7 +130,7 @@ class _PublicSalaryItem extends StatelessWidget {
           /// ステータスボタン
           canPublic
               ? _publicStateButton()
-              : _canNotPublicStatus(),
+              : _canNotPublicStatus(context),
         ],
       ),
     );
@@ -170,33 +171,185 @@ class _PublicSalaryItem extends StatelessWidget {
   }
 
   /// 条件未達成ステータス
-  Widget _canNotPublicStatus() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
+  Widget _canNotPublicStatus(BuildContext context) {
+    return GestureDetector(
+      onTap: () => {
+        _showPublicConditionModal(
+          context,
+          currentCount: 10,
+          currentTotal: 3000,
+          requiredCount: PublicSalaryViewModel.minSalaryCountForPublic,
+          requiredTotal: PublicSalaryViewModel.minTotalPaymentAmountForPublic,
+        )
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: CustomColors.themaOrange.withAlpha(40),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              CupertinoIcons.lock_fill,
+              size: 14,
+              color: CustomColors.themaOrange,
+            ),
+            SizedBox(width: 4),
+            CustomText(
+              text: '条件未達',
+              color: CustomColors.themaOrange,
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.SS,
+            ),
+          ],
+        ),
+      )
+    );
+  }
+
+  void _showPublicConditionModal(
+      BuildContext context, {
+        required int currentCount,
+        required int currentTotal,
+        required int requiredCount,
+        required int requiredTotal,
+      }) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) {
+        return _PublicConditionModal(
+          currentCount: currentCount,
+          currentTotal: currentTotal,
+          requiredCount: requiredCount,
+          requiredTotal: requiredTotal,
+        );
+      },
+    );
+  }
+
+}
+
+
+class _PublicConditionModal extends StatelessWidget {
+  const _PublicConditionModal({
+    required this.currentCount,
+    required this.currentTotal,
+    required this.requiredCount,
+    required this.requiredTotal,
+  });
+
+  final int currentCount;
+  final int currentTotal;
+  final int requiredCount;
+  final int requiredTotal;
+
+  @override
+  Widget build(BuildContext context) {
+    final countProgress =
+    (currentCount / requiredCount).clamp(0.0, 1.0);
+
+    final amountProgress =
+    (currentTotal / requiredTotal).clamp(0.0, 1.0);
+
+    return CupertinoPopupSurface(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            const CustomText(
+              text: '公開条件',
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.L,
+            ),
+
+            const SizedBox(height: 20),
+
+            _ConditionProgress(
+              title: '登録件数',
+              current: currentCount,
+              required: requiredCount,
+              progress: countProgress,
+            ),
+
+            const SizedBox(height: 16),
+
+            _ConditionProgress(
+              title: '支給額合計',
+              current: currentTotal,
+              required: requiredTotal,
+              progress: amountProgress,
+              isMoney: true,
+            ),
+
+            const SizedBox(height: 20),
+
+            CupertinoButton(
+              child: const Text('閉じる'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       ),
-      decoration: BoxDecoration(
-        color: CustomColors.themaOrange.withAlpha(40),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            CupertinoIcons.lock_fill,
-            size: 14,
-            color: CustomColors.themaOrange,
+    );
+  }
+}
+
+class _ConditionProgress extends StatelessWidget {
+  const _ConditionProgress({
+    required this.title,
+    required this.current,
+    required this.required,
+    required this.progress,
+    this.isMoney = false,
+  });
+
+  final String title;
+  final int current;
+  final int required;
+  final double progress;
+  final bool isMoney;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        CustomText(
+          text: title,
+          fontWeight: FontWeight.bold,
+        ),
+
+        const SizedBox(height: 6),
+
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 8,
+            backgroundColor:
+            CupertinoColors.systemGrey.withOpacity(0.2),
+            valueColor: const AlwaysStoppedAnimation(
+                CustomColors.thema),
           ),
-          SizedBox(width: 4),
-          CustomText(
-            text: '条件未達',
-            color: CustomColors.themaOrange,
-            fontWeight: FontWeight.bold,
-            textSize: TextSize.SS,
-          ),
-        ],
-      ),
+        ),
+
+        const SizedBox(height: 4),
+
+        CustomText(
+          text: isMoney
+              ? '¥$current / ¥$required'
+              : '$current / $required 件',
+          textSize: TextSize.S,
+        ),
+      ],
     );
   }
 }
