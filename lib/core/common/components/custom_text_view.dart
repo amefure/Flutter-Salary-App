@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 
 // フォントサイズのサイズを管理するEnum
-enum TextSize { SS, S, MS, M, ML, L }
+enum TextSize { SSS, SS, S, MS, M, ML, L }
 
 class CustomText extends StatelessWidget {
   final String text; // 表示するテキスト
@@ -25,6 +25,9 @@ class CustomText extends StatelessWidget {
     // サイズによってフォントサイズを設定
     double fontSize;
     switch (textSize) {
+      case TextSize.SSS:
+        fontSize = 10.0;
+        break;
       case TextSize.SS:
         fontSize = 12.0;
         break;

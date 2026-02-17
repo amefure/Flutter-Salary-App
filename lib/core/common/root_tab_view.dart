@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/charts/view/chart_salary_screen.dart';
 import 'package:salary/feature/domain/list_salary/list_salary_view.dart';
 import 'package:salary/feature/setting/home/setting_view.dart';
@@ -17,20 +19,17 @@ class _RootTabViewViewState extends State<RootTabViewView> {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         height: 60,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
             label: 'History',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.chart_bar_alt_fill),
             label: 'MyData',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.globe),
-            label: 'Timeline',
-          ),
-          BottomNavigationBarItem(
+          _timeLineTabItem(),
+          const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear_alt_fill),
             label: 'Settings',
           ),
@@ -43,6 +42,43 @@ class _RootTabViewViewState extends State<RootTabViewView> {
           },
         );
       },
+    );
+  }
+
+  BottomNavigationBarItem _timeLineTabItem() {
+    return BottomNavigationBarItem(
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+
+          const Icon(CupertinoIcons.globe),
+
+          /// バッジ
+          Positioned(
+            right: -18,
+            top: -3,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                color: CustomColors.negative,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(
+                minWidth: 18,
+                minHeight: 18,
+              ),
+              child: const Center(
+                child: CustomText(
+                  text: 'NEW',
+                  textSize: TextSize.SSS,
+                  color: CupertinoColors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      label: 'Timeline',
     );
   }
 
