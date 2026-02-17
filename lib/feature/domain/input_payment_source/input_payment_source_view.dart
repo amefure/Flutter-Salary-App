@@ -251,7 +251,7 @@ class _SubmitButton extends ConsumerWidget {
         onPressed: () {
           vm.createOrUpdate(
               onComplete: (){
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
               },
               onError: (){
                 _showErrorDialog(context);

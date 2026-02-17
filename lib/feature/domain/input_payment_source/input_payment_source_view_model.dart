@@ -8,7 +8,6 @@ import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/repository/realm_repository.dart';
-import 'package:salary/core/providers/payment_source_notifier.dart';
 
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
@@ -68,9 +67,7 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
 
     if (paymentSource case PaymentSource paymentSource) {
       // 更新
-      ref
-          .read(paymentSourceProvider.notifier)
-          .update(paymentSource.id, state.name, state.selectedColor, state.memo, state.isMain);
+      _updatePaymentSource(paymentSource.id, state.name, state.selectedColor, state.memo, state.isMain);
     } else {
       // 新規登録
       final payment = PaymentSource(
@@ -81,13 +78,28 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
         false,
         memo: state.memo,
       );
-      ref.read(paymentSourceProvider.notifier).add(payment);
+      _addPaymentSource(payment);
     }
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ
     ref.read(listSalaryProvider.notifier).refresh();
     onComplete();
+  }
+
+  /// 追加
+  void _addPaymentSource(PaymentSource paymentSource) {
+    _repository.add<PaymentSource>(paymentSource);
+  }
+
+  /// 更新
+  void _updatePaymentSource(String id, String name, ThemaColor color, String? memo, bool isMain) {
+    _repository.updateById(id, (PaymentSource paymentSource) {
+      paymentSource.name = name;
+      paymentSource.isMain = isMain;
+      paymentSource.themaColor = color.value;
+      paymentSource.memo = memo;
+    });
   }
 
   void updateName(String name) {

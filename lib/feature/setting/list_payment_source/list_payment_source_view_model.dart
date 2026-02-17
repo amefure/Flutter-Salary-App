@@ -16,11 +16,11 @@ class ListPaymentSourceViewModel extends StateNotifier<ListPaymentSourceState> {
   final RealmRepository _repository;
 
   ListPaymentSourceViewModel(this._repository): super(ListPaymentSourceState.initial()) {
-    _fetchAll();
+    fetchAll();
   }
 
   /// 全取得
-  void _fetchAll() {
+  void fetchAll() {
     final results = _repository.fetchAll<PaymentSource>()
       ..sort((a, b) {
         final aValue = a.isMain ? 1 : 0;
@@ -29,28 +29,11 @@ class ListPaymentSourceViewModel extends StateNotifier<ListPaymentSourceState> {
       });
     state = state.copyWith(paymentSources: results);
   }
-  //
-  // /// 追加
-  // void add(PaymentSource paymentSource) {
-  //   _repository.add<PaymentSource>(paymentSource);
-  //   _fetchAll();
-  // }
-  //
-  // /// 更新
-  // void update(String id, String name, ThemaColor color, String? memo, bool isMain) {
-  //   _repository.updateById(id, (PaymentSource paymentSource) {
-  //     paymentSource.name = name;
-  //     paymentSource.isMain = isMain;
-  //     paymentSource.themaColor = color.value;
-  //     paymentSource.memo = memo;
-  //   });
-  //   _fetchAll();
-  // }
 
   /// 削除
   void delete(PaymentSource paymentSource) {
     _repository.deleteById<PaymentSource>(paymentSource.id);
-    _fetchAll();
+    fetchAll();
   }
 
   void updateExpanded(String id, bool isExpanded) {

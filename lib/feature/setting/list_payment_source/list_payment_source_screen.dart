@@ -24,12 +24,16 @@ class ListPaymentSourceScreen extends StatelessWidget {
             text: '支払い元一覧',
             fontWeight: FontWeight.bold,
           ),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
-            onPressed: () {
-              _showInputPaymentSourceModal(context);
-            },
+          trailing: Consumer(
+              builder: (context, ref, _) {
+                return CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+                  onPressed: () {
+                    _showInputPaymentSourceModal(context, ref);
+                  },
+                );
+              }
           ),
         ),
         child: const _Body(),
@@ -38,14 +42,22 @@ class ListPaymentSourceScreen extends StatelessWidget {
   }
 
   /// 支払い元追加画面を表示
-  Future<void> _showInputPaymentSourceModal(BuildContext context) async {
-    showModalBottomSheet(
+  Future<void> _showInputPaymentSourceModal(
+      BuildContext context,
+      WidgetRef ref
+      ) async {
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       builder: (context) {
         return const InputPaymentSourceView();
       },
     );
+
+    /// 保存された場合のみ更新
+    if (result == true) {
+      ref.read(listPaymentSourceProvider.notifier).fetchAll();
+    }
   }
 }
 
@@ -55,16 +67,21 @@ class _Body extends ConsumerWidget {
   const _Body();
   /// 支払い元更新画面を表示
   Future<void> _showUpdatePaymentSourceModal(
-    BuildContext context,
-    PaymentSource paymentSource,
+      BuildContext context,
+      PaymentSource paymentSource,
+      WidgetRef ref
   ) async {
-    showModalBottomSheet(
+    final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
         return InputPaymentSourceView(paymentSource: paymentSource);
       },
     );
+    /// 保存された場合のみ更新
+    if (result == true) {
+      ref.read(listPaymentSourceProvider.notifier).fetchAll();
+    }
   }
 
   @override
@@ -97,7 +114,7 @@ class _Body extends ConsumerWidget {
 
         return InkWell(
           onTap: () {
-            _showUpdatePaymentSourceModal(context, paymentSource);
+            _showUpdatePaymentSourceModal(context, paymentSource, ref);
           },
           child: Container(
             padding: const EdgeInsets.all(10),
@@ -210,7 +227,7 @@ class _DeleteButtonState extends State<_DeleteButton> {
     // Homeリスト画面のリフレッシュ
     ref.read(listSalaryProvider.notifier).refresh();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
