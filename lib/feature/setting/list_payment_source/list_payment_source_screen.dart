@@ -53,20 +53,6 @@ class ListPaymentSourceScreen extends StatelessWidget {
 /// [ConsumerWidget]でUI更新
 class _Body extends ConsumerWidget {
   const _Body();
-
-  /// 支払い元の削除
-  void _deletePaymentSource(
-    WidgetRef ref,
-    PaymentSource paymentSource,
-  ) {
-    // 削除
-    ref.read(listPaymentSourceProvider.notifier).delete(paymentSource);
-    // MyData画面のリフレッシュ
-    ref.read(chartSalaryProvider.notifier).refresh();
-    // Homeリスト画面のリフレッシュ
-    ref.read(listSalaryProvider.notifier).refresh();
-  }
-
   /// 支払い元更新画面を表示
   Future<void> _showUpdatePaymentSourceModal(
     BuildContext context,
@@ -124,8 +110,19 @@ class _Body extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // アイコン
-                PaymentIconView(paymentSource: paymentSource),
+                /// アイコン
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: CustomColors.themaBlue.withAlpha(20),
+                    borderRadius:
+                    BorderRadius.circular(8),
+                  ),
+                  child: PaymentIconView(
+                    paymentSource: paymentSource,
+                  ),
+                ),
+
 
                 const SizedBox(width: 20),
 
@@ -175,30 +172,85 @@ class _Body extends ConsumerWidget {
                 ),
 
                 // 削除ボタン
-                IconButton(
-                  onPressed: () async {
-                    final result = await AppDialog.show(
-                      context: context,
-                      message: '「${paymentSource.name}」を本当に削除しますか？',
-                      type: DialogType.confirm,
-                      positiveTitle: '削除',
-                      isPositiveNegativeType: true
-                    );
-                    if (result ?? false) {
-                      _deletePaymentSource(ref, paymentSource);
-                    }
-                  },
-                  icon: const Icon(
-                    CupertinoIcons.trash_fill,
-                    color: CustomColors.negative,
-                  ),
-                  iconSize: 20,
-                ),
+                _DeleteButton(paymentSource: paymentSource, ref: ref)
               ],
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _DeleteButton extends StatefulWidget {
+  const _DeleteButton({
+    required this.paymentSource,
+    required this.ref,
+  });
+
+  final PaymentSource paymentSource;
+  final WidgetRef ref;
+
+  @override
+  State<_DeleteButton> createState() => _DeleteButtonState();
+}
+
+class _DeleteButtonState extends State<_DeleteButton> {
+  bool isPressed = false;
+
+  /// 支払い元の削除
+  void _deletePaymentSource(
+      WidgetRef ref,
+      PaymentSource paymentSource,
+      ) {
+    // 削除
+    ref.read(listPaymentSourceProvider.notifier).delete(paymentSource);
+    // MyData画面のリフレッシュ
+    ref.read(chartSalaryProvider.notifier).refresh();
+    // Homeリスト画面のリフレッシュ
+    ref.read(listSalaryProvider.notifier).refresh();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => isPressed = true),
+      onTapUp: (_) => setState(() => isPressed = false),
+      onTapCancel: () => setState(() => isPressed = false),
+      onTap: () async {
+        final result = await AppDialog.show(
+          context: context,
+          message:
+          '「${widget.paymentSource.name}」を本当に削除しますか？',
+          type: DialogType.confirm,
+          positiveTitle: '削除',
+          isPositiveNegativeType: true,
+        );
+
+        if (result ?? false) {
+          _deletePaymentSource(
+              widget.ref, widget.paymentSource);
+        }
+      },
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 100),
+        scale: isPressed ? 0.9 : 1,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isPressed
+                ? CustomColors.negative.withAlpha(40)
+                : CustomColors.negative.withAlpha(20),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            CupertinoIcons.trash_fill,
+            size: 18,
+            color: CustomColors.negative,
+          ),
+        ),
+      ),
     );
   }
 }
