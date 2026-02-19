@@ -3,6 +3,7 @@ class CommonJsonKeys {
   static const data = 'data';
   static const user = 'user';
   static const profile = 'profile';
+  static const salaries = 'salaries';
   static const paymentSources = 'payment_sources';
   static const accessToken = 'access_token';
 

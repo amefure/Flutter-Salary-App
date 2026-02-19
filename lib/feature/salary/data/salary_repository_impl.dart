@@ -1,26 +1,31 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/feature/payment_source/data/payment_api.dart';
-import 'package:salary/feature/payment_source/data/payment_source_dto.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/salary/data/salary_api.dart';
+import 'package:salary/feature/salary/data/salary_dto.dart';
+import 'package:salary/feature/salary/domain/salary_repository.dart';
 
-final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
-  final apiSource = ref.read(paymentApiProvider);
-  return PaymentRepositoryImpl(apiSource);
+final paymentRepositoryProvider = Provider<SalaryRepository>((ref) {
+  final apiSource = ref.read(salaryApiProvider);
+  return SalaryRepositoryImpl(apiSource);
 });
 
-class PaymentRepositoryImpl implements PaymentRepository {
-  PaymentRepositoryImpl(this._api);
+class SalaryRepositoryImpl implements SalaryRepository {
+  SalaryRepositoryImpl(this._api);
 
-  final PaymentApi _api;
+  final SalaryApi _api;
 
   @override
-  Future<List<PaymentSource>> fetchAllUserList() async {
+  Future<List<Salary>> fetchAllUserList() async {
     final result = await _api.fetchAllUserList();
+    final List<dynamic> list = result[CommonJsonKeys.data][CommonJsonKeys.salaries];
+    return list.map((json) => SalaryDto.fromJson(json).toDomain()).toList();
+  }
 
-    final List<dynamic> list = result[CommonJsonKeys.data][CommonJsonKeys.paymentSources];
-    return list.map((json) => PaymentSourceDto.fromJson(json).toDomain()).toList();
+  @override
+  Future<List<Salary>> fetchAllList() {
+    // TODO: implement fetchAllList
+    throw UnimplementedError();
   }
 
   @override
