@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
 import 'package:salary/feature/setting/public_salary/public_salary_screen.dart';
-import 'package:salary/feature/timeline/time_line_lock/time_line_lock_view_model.dart';
 
 class TimelineLockScreen extends StatelessWidget {
   const TimelineLockScreen({super.key});
@@ -127,7 +127,7 @@ class _RequirementCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
-    final state = ref.watch(timeLineLockProvider);
+    final premiumState = ref.watch(premiumFunctionStateProvider);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -179,7 +179,7 @@ class _RequirementCard extends ConsumerWidget {
           _StepItem(
             number: 2,
             title: '給料データを公開',
-            isCompleted: state.isPublic,
+            isCompleted: premiumState.isPublicData,
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
@@ -192,7 +192,7 @@ class _RequirementCard extends ConsumerWidget {
           _StepItem(
             number: 3,
             title: 'プレミアム登録',
-            isCompleted: authState.isLogin,
+            isCompleted: premiumState.isSubscribed,
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(

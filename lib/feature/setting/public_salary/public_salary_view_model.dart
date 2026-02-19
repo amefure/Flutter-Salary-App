@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/feature/setting/public_salary/public_salary_state.dart';
 
@@ -51,6 +52,8 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       paymentSource.publicUsrId = publicUsrId;
     });
     _fetchAllPaymentSource();
+    /// 公開状態の変化を通知
+    _ref.read(premiumFunctionStateProvider.notifier).checkAllPaymentSource();
   }
 
   bool canPublic(PaymentSource target) {
