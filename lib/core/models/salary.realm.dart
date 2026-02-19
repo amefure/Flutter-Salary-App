@@ -280,14 +280,14 @@ class PaymentSource extends _PaymentSource
     int themaColor,
     bool isMain, {
     String? memo,
-    int? publicUsrId,
+    int? publicUserId,
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'themaColor', themaColor);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'isMain', isMain);
-    RealmObjectBase.set(this, 'publicUsrId', publicUsrId);
+    RealmObjectBase.set(this, 'publicUserId', publicUserId);
   }
 
   PaymentSource._();
@@ -318,10 +318,11 @@ class PaymentSource extends _PaymentSource
   set isMain(bool value) => RealmObjectBase.set(this, 'isMain', value);
 
   @override
-  int? get publicUsrId => RealmObjectBase.get<int>(this, 'publicUsrId') as int?;
+  int? get publicUserId =>
+      RealmObjectBase.get<int>(this, 'publicUserId') as int?;
   @override
-  set publicUsrId(int? value) =>
-      RealmObjectBase.set(this, 'publicUsrId', value);
+  set publicUserId(int? value) =>
+      RealmObjectBase.set(this, 'publicUserId', value);
 
   @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
@@ -342,7 +343,7 @@ class PaymentSource extends _PaymentSource
       'themaColor': themaColor.toEJson(),
       'memo': memo.toEJson(),
       'isMain': isMain.toEJson(),
-      'publicUsrId': publicUsrId.toEJson(),
+      'publicUserId': publicUserId.toEJson(),
     };
   }
 
@@ -362,7 +363,7 @@ class PaymentSource extends _PaymentSource
           fromEJson(themaColor),
           fromEJson(isMain),
           memo: fromEJson(ejson['memo']),
-          publicUsrId: fromEJson(ejson['publicUsrId']),
+          publicUserId: fromEJson(ejson['publicUserId']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -381,7 +382,7 @@ class PaymentSource extends _PaymentSource
         SchemaProperty('themaColor', RealmPropertyType.int),
         SchemaProperty('memo', RealmPropertyType.string, optional: true),
         SchemaProperty('isMain', RealmPropertyType.bool),
-        SchemaProperty('publicUsrId', RealmPropertyType.int, optional: true),
+        SchemaProperty('publicUserId', RealmPropertyType.int, optional: true),
       ],
     );
   }();

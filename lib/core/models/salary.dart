@@ -49,20 +49,20 @@ class _PaymentSource {
   late String id;
   /// 名称
   late String name;
-  /// カラー
+  /// カラー them"e"Colorのスペルミス
   late int themaColor;
   /// MEMO
   late String? memo;
   /// 本業フラグ
   late bool isMain;
   /// 対象ユーザーID(公開)
-  late int? publicUsrId;
+  late int? publicUserId;
 
   /// ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
 
   /// 公開済みかどうか
-  bool get isPublic => publicUsrId != null;
+  bool get isPublic => publicUserId != null;
 
   /// ThemaColor を設定
   set themaColorEnum(ThemaColor color) => themaColor = color.value;

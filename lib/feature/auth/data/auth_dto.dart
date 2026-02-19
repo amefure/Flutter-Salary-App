@@ -1,3 +1,4 @@
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 
@@ -19,17 +20,17 @@ class AuthUserDto {
   });
 
   factory AuthUserDto.fromJson(Map<String, dynamic> json) {
-    final data = json['data'];
-    final user = data['user'];
-    final profile = data['profile'];
+    final data = json[CommonJsonKeys.data];
+    final user = data[CommonJsonKeys.user];
+    final profile = data[CommonJsonKeys.profile];
 
     final dto = AuthUserDto(
-      id: user['id'],
-      name: user['name'],
-      email: user['email'],
-      region: profile['region'],
-      birthday: profile['birthday'],
-      job: profile['job'],
+      id: user[AuthJsonKeys.id],
+      name: user[AuthJsonKeys.name],
+      email: user[AuthJsonKeys.email],
+      region: profile[AuthJsonKeys.region],
+      birthday: profile[AuthJsonKeys.birthday],
+      job: profile[AuthJsonKeys.job],
     );
     logger('======= AuthUser fromJson =======');
     logger(dto);

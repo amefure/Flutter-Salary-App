@@ -43,13 +43,13 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       bool isPublic
       ) {
     final user = _ref.read(authStateProvider).user;
-    final publicUsrId = isPublic ? user?.id : null;
+    final publicUserId = isPublic ? user?.id : null;
     _repository.updateById(current.id, (PaymentSource paymentSource) {
       paymentSource.name = current.name;
       paymentSource.isMain = current.isMain;
       paymentSource.themaColor = current.themaColor;
       paymentSource.memo = current.memo;
-      paymentSource.publicUsrId = publicUsrId;
+      paymentSource.publicUserId = publicUserId;
     });
     _fetchAllPaymentSource();
     /// 公開状態の変化を通知

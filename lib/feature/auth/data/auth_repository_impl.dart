@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/api/token_storage.dart';
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/feature/auth/data/data_source/auth_api.dart';
 import 'package:salary/feature/auth/data/auth_dto.dart';
 import 'package:salary/feature/auth/data/data_source/auth_local_source.dart';
@@ -22,8 +23,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final TokenStorage _tokenStorage;
 
   Future<void> saveToken(Map<String, dynamic> result) async {
-    final data = result['data'];
-    final token = data['access_token'];
+    final data = result[CommonJsonKeys.data];
+    final token = data[CommonJsonKeys.accessToken];
     await _tokenStorage.save(token);
   }
 
@@ -42,14 +43,15 @@ class AuthRepositoryImpl implements AuthRepository {
     required String job,
   }) async {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
+
     final result = await _api.register({
-      'name': name,
-      'email': email,
-      'password': password,
-      'password_confirmation': passwordConfirm,
-      'region': region,
-      'birthday': formatted,
-      'job': job,
+      AuthJsonKeys.name : name,
+      AuthJsonKeys.email: email,
+      AuthJsonKeys.password: password,
+      AuthJsonKeys.passwordConfirmation: passwordConfirm,
+      AuthJsonKeys.region: region,
+      AuthJsonKeys.birthday: formatted,
+      AuthJsonKeys.job: job,
     });
 
     await saveToken(result);
@@ -62,8 +64,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     final result = await _api.login({
-      'email': email,
-      'password': password,
+      AuthJsonKeys.email: email,
+      AuthJsonKeys.password: password,
     });
     await saveToken(result);
     return AuthUserDto.fromJson(result).toDomain();
@@ -108,10 +110,10 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
     await _api.updateProfile({
-      'name': name,
-      'region': region,
-      'birthday': formatted,
-      'job': job,
+      AuthJsonKeys.name: name,
+      AuthJsonKeys.region: region,
+      AuthJsonKeys.birthday: formatted,
+      AuthJsonKeys.job: job,
     });
   }
 }
