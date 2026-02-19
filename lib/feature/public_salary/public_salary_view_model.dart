@@ -2,22 +2,31 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/public_salary/public_salary_state.dart';
 
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {
   final repository = RealmRepository();
-  return PublicSalaryViewModel(ref, repository);
+  final paymentRepository = ref.read(paymentRepositoryProvider);
+  return PublicSalaryViewModel(ref, repository, paymentRepository);
 });
 
 class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
 
   final Ref _ref;
   final RealmRepository _repository;
+  final PaymentRepository _paymentRepository;
 
-  PublicSalaryViewModel(this._ref, this._repository): super(PublicSalaryState.initial()) {
+  PublicSalaryViewModel(
+      this._ref,
+      this._repository,
+      this._paymentRepository
+      ): super(PublicSalaryState.initial()) {
     _fetchAllPaymentSource();
     _fetchAllSalaries();
   }
@@ -37,11 +46,11 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     state = state.copyWith(paymentSources: results);
   }
 
-  /// 更新
+  /// ローカル情報の更新
   void updatePaymentSource(
       PaymentSource current,
       bool isPublic
-      ) {
+      ) async {
     final user = _ref.read(authStateProvider).user;
     final publicUserId = isPublic ? user?.id : null;
     _repository.updateById(current.id, (PaymentSource paymentSource) {
@@ -52,8 +61,30 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       paymentSource.publicUserId = publicUserId;
     });
     _fetchAllPaymentSource();
+    await _update(current, isPublic);
     /// 公開状態の変化を通知
     _ref.read(premiumFunctionStateProvider.notifier).checkAllPaymentSource();
+  }
+
+  Future<void> _update(
+      PaymentSource current,
+      bool isPublic
+      ) async {
+    await _ref.runWithGlobalHandling(() async {
+      if (isPublic) {
+        await _paymentRepository.create(
+            id: current.id,
+            name: current.name,
+            themeColor: current.themaColor,
+            memo: current.memo,
+            isMain: current.isMain
+        );
+        // TODO 上記支払いもとの給料情報を全てアップロードする
+        
+      } else {
+        await  _paymentRepository.delete(current.id);
+      }
+    });
   }
 
   bool canPublic(PaymentSource target) {
