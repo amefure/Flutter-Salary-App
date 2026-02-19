@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
-import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
-import 'package:salary/feature/domain/detail_salary/detail_salary_view.dart';
-import 'package:salary/feature/domain/input_salary/input_salary_view.dart';
+import 'package:salary/feature/salary/detail_salary/detail_salary_view.dart';
+import 'package:salary/feature/salary/input_salary/input_salary_view.dart';
+import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 class SalaryListScreen extends StatelessWidget {
 
@@ -37,7 +37,7 @@ class SalaryListScreen extends StatelessWidget {
                 },
               ),
             ),
-            child: const SalaryListView()
+            child: const _SalaryListView()
         )
     );
   }
@@ -109,9 +109,9 @@ class BuildSourceSelector extends ConsumerWidget {
   }
 }
 
-class SalaryListView extends ConsumerWidget {
+class _SalaryListView extends ConsumerWidget {
 
-  const SalaryListView({super.key});
+  const _SalaryListView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

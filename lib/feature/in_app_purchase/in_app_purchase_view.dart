@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
-import 'in_app_purchase_state.dart';
-import 'in_app_purchase_viewmodel.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_state.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_viewmodel.dart';
 
 class InAppPurchaseView extends ConsumerWidget {
   const InAppPurchaseView({super.key});

@@ -4,7 +4,7 @@ import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/repository/realm_repository.dart';
-import 'package:salary/feature/setting/public_salary/public_salary_state.dart';
+import 'package:salary/feature/public_salary/public_salary_state.dart';
 
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {

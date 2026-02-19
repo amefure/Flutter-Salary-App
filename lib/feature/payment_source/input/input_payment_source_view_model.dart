@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
-import 'package:salary/feature/domain/input_payment_source/input_payment_source_state.dart';
-import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
+import 'package:salary/feature/payment_source/input/input_payment_source_state.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {

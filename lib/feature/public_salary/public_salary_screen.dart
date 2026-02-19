@@ -6,7 +6,7 @@ import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/setting/public_salary/public_salary_view_model.dart';
+import 'package:salary/feature/public_salary/public_salary_view_model.dart';
 
 class PublicSalaryScreen extends ConsumerWidget {
   const PublicSalaryScreen({super.key});

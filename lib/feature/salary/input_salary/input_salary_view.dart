@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/feature/domain/input_salary/input_salary_state.dart';
-import 'package:salary/feature/domain/input_salary/input_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
@@ -11,8 +9,10 @@ import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom_label_view.dart';
 import 'package:salary/core/common/components/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
-import 'package:salary/feature/domain/detail_input_view.dart';
-import 'package:salary/feature/domain/input_payment_source/input_payment_source_view.dart';
+import 'package:salary/feature/payment_source/input/input_payment_source_view.dart';
+import 'package:salary/feature/salary/detail_input_view.dart';
+import 'package:salary/feature/salary/input_salary/input_salary_state.dart';
+import 'package:salary/feature/salary/input_salary/input_salary_view_model.dart';
 
 /// 給料入力画面
 class InputSalaryView extends ConsumerWidget {

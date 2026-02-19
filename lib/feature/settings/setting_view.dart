@@ -6,13 +6,13 @@ import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
-import 'package:salary/feature/setting/home/setting_view_model.dart';
+import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
+import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
-import 'package:salary/feature/setting/app_lock_setting_view.dart';
-import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
-import 'package:salary/feature/setting/list_payment_source/list_payment_source_screen.dart';
-import 'package:salary/feature/setting/public_salary/public_salary_screen.dart';
+import 'package:salary/feature/app_lock/app_lock_setting_view.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_view.dart';
+import 'package:salary/feature/public_salary/public_salary_screen.dart';
 import 'package:salary/feature/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 

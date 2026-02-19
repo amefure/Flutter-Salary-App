@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
-import 'package:salary/feature/setting/list_payment_source/list_payment_source_state.dart';
+import 'package:salary/feature/payment_source/list/list_payment_source_state.dart';
 
 final listPaymentSourceProvider =
 StateNotifierProvider.autoDispose<ListPaymentSourceViewModel, ListPaymentSourceState>((ref) {

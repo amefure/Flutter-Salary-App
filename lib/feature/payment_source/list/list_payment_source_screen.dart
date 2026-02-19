@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/common/components/payment_icon_view.dart';
-import 'package:salary/feature/domain/list_salary/list_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
-import 'package:salary/feature/domain/input_payment_source/input_payment_source_view.dart';
-import 'package:salary/feature/setting/list_payment_source/list_payment_source_view_model.dart';
+import 'package:salary/feature/payment_source/input/input_payment_source_view.dart';
+import 'package:salary/feature/payment_source/list/list_payment_source_view_model.dart';
+import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 class ListPaymentSourceScreen extends StatelessWidget {
   const ListPaymentSourceScreen({super.key});
