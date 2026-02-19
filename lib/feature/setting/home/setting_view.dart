@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
@@ -69,7 +69,7 @@ class SettingView extends StatelessWidget {
 
         Consumer(
           builder: (context, ref, _) {
-            final state = ref.watch(authControllerProvider);
+            final state = ref.watch(authStateProvider);
 
             if (!state.isLogin) {
               return const SizedBox.shrink();
@@ -165,7 +165,7 @@ class SettingView extends StatelessWidget {
 
         Consumer(
           builder: (context, ref, child) {
-            final state = ref.watch(authControllerProvider);
+            final state = ref.watch(authStateProvider);
             if (state.isLogin) {
               return Column(
                 children: [

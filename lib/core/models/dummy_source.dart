@@ -12,7 +12,6 @@ class DummySource {
       ALL_TITLE,
       ThemaColor.blue.value,
       false,
-      false
   );
 
   /// "未設定" を表すダミーの PaymentSource を作成
@@ -21,6 +20,5 @@ class DummySource {
       UNSET_TITLE,
       ThemaColor.blue.value,
       false,
-      false
   );
 }

@@ -55,11 +55,14 @@ class _PaymentSource {
   late String? memo;
   /// 本業フラグ
   late bool isMain;
-  /// 公開フラグ
-  late bool isPublic;
+  /// 対象ユーザーID(公開)
+  late int? publicUsrId;
 
   /// ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
+
+  /// 公開済みかどうか
+  bool get isPublic => publicUsrId != null;
 
   /// ThemaColor を設定
   set themaColorEnum(ThemaColor color) => themaColor = color.value;

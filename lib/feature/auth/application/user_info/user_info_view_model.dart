@@ -1,6 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/feature/auth/application/user_info/user_info_state.dart';
@@ -9,8 +9,8 @@ import 'package:salary/feature/auth/domain/auth_user.dart';
 
 final userInfoProvider =
 StateNotifierProvider.autoDispose<UserInfoViewModel, UserInfoState>((ref) {
-  final state = ref.read(authControllerProvider);
-  final authController = ref.read(authControllerProvider.notifier);
+  final state = ref.read(authStateProvider);
+  final authController = ref.read(authStateProvider.notifier);
   final viewModel = UserInfoViewModel(ref, state.user, authController);
   Future.microtask(() {
     // build完了後に最新のユーザー情報を取得
@@ -24,13 +24,13 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
   UserInfoViewModel(
       this._ref,
       AuthUser? initialUser,
-      this._authController,
+      this._authProvider,
       ): super(UserInfoState.initial()) {
     _setUpUserInfo(initialUser);
   }
 
   final Ref _ref;
-  final AuthController _authController;
+  final AuthStateNotifier _authProvider;
 
   Future<void> _setUpUserInfo(AuthUser? initialUser) async {
     state = state.copyWith(
@@ -48,7 +48,7 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
 
   Future<void> _fetchRefreshUser() async {
     await _ref.runWithGlobalHandling(() async {
-      final user = await _authController.fetchUser();
+      final user = await _authProvider.fetchUser();
       _setUpUserInfo(user);
     });
   }
@@ -67,7 +67,7 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
 
   Future<bool> updateUserInfo() async {
     return await _ref.runWithGlobalHandling(() async {
-      await _authController.updateProfile(
+      await _authProvider.updateProfile(
         name: state.name,
         region: state.region,
         birthday: state.birthday!,

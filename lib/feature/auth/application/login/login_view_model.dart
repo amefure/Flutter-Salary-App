@@ -1,29 +1,29 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/validation_utils.dart';
 import 'package:salary/feature/auth/application/login/login_state.dart';
 
 final loginProvider =
 StateNotifierProvider.autoDispose<LoginViewModel, LoginState>((ref) {
-  final authController = ref.read(authControllerProvider.notifier);
-  return LoginViewModel(ref, authController);
+  final authProvider = ref.read(authStateProvider.notifier);
+  return LoginViewModel(ref, authProvider);
 });
 
 class LoginViewModel extends StateNotifier<LoginState> {
 
   LoginViewModel(
       this._ref,
-      this._authController,
+      this._authProvider,
       ) : super(LoginState.initial());
 
   final Ref _ref;
-  final AuthController _authController;
+  final AuthStateNotifier _authProvider;
 
   Future<void> login() async {
     await _ref.runWithGlobalHandling(() async {
-      await _authController.login(
+      await _authProvider.login(
         email: state.email,
         password: state.password,
       );

@@ -5,15 +5,15 @@ import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 
-final authControllerProvider = StateNotifierProvider<AuthController, AuthState>((ref) {
+final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
   final authRepository = ref.read(authRepositoryProvider);
-  return AuthController(authRepository);
+  return AuthStateNotifier(authRepository);
   },
 );
 
-class AuthController extends StateNotifier<AuthState> {
+class AuthStateNotifier extends StateNotifier<AuthState> {
 
-  AuthController(this._authRepository) : super(const AuthState()) {
+  AuthStateNotifier(this._authRepository) : super(const AuthState()) {
     // 初回インスタンス化時にユーザー情報を取得する
     _fetchAndSetUpUser();
   }

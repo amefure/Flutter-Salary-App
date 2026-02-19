@@ -1,34 +1,33 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_controller.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/core/utils/validation_utils.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/core/config/profile_config.dart';
 
 final registerAccountProvider =
 StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>((ref) {
-    final authController = ref.read(authControllerProvider.notifier);
-    return RegisterAccountViewModel(ref, authController);
+    final authProvider = ref.read(authStateProvider.notifier);
+    return RegisterAccountViewModel(ref, authProvider);
 });
 
 class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
 
   RegisterAccountViewModel(
       this._ref,
-      this._authController,
+      this._authProvider,
       ) : super(RegisterAccountState.initial());
 
   final Ref _ref;
-  final AuthController _authController;
+  final AuthStateNotifier _authProvider;
 
   Future<void> registerAccount() async {
     if (state.birthday == null) return;
     await _ref.runWithGlobalHandling(() async {
-      // 成功すれば_authControllerのステータスが変化し、ログイン状態にUIも変わる
-      await _authController.registerAccount(
+      // 成功すれば_authProviderのステータスが変化し、ログイン状態にUIも変わる
+      await _authProvider.registerAccount(
         name: state.name,
         email: state.email,
         password: state.password,

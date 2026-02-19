@@ -1,5 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/feature/setting/public_salary/public_salary_state.dart';
@@ -7,14 +8,15 @@ import 'package:salary/feature/setting/public_salary/public_salary_state.dart';
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {
   final repository = RealmRepository();
-  return PublicSalaryViewModel(repository);
+  return PublicSalaryViewModel(ref, repository);
 });
 
 class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
 
+  final Ref _ref;
   final RealmRepository _repository;
 
-  PublicSalaryViewModel(this._repository): super(PublicSalaryState.initial()) {
+  PublicSalaryViewModel(this._ref, this._repository): super(PublicSalaryState.initial()) {
     _fetchAllPaymentSource();
     _fetchAllSalaries();
   }
@@ -39,12 +41,14 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       PaymentSource current,
       bool isPublic
       ) {
+    final user = _ref.read(authStateProvider).user;
+    final publicUsrId = isPublic ? user?.id : null;
     _repository.updateById(current.id, (PaymentSource paymentSource) {
       paymentSource.name = current.name;
       paymentSource.isMain = current.isMain;
       paymentSource.themaColor = current.themaColor;
       paymentSource.memo = current.memo;
-      paymentSource.isPublic = isPublic;
+      paymentSource.publicUsrId = publicUsrId;
     });
     _fetchAllPaymentSource();
   }

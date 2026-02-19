@@ -264,7 +264,7 @@ class _PublicConditionModal extends StatelessWidget {
           children: [
 
             const CustomText(
-              text: '公開条件',
+              text: '支払い元公開条件',
               fontWeight: FontWeight.bold,
               textSize: TextSize.L,
             ),
@@ -272,7 +272,7 @@ class _PublicConditionModal extends StatelessWidget {
             const SizedBox(height: 20),
 
             _ConditionProgress(
-              title: '登録件数',
+              title: '給料登録件数',
               current: currentCount,
               required: requiredCount,
               progress: countProgress,
@@ -281,7 +281,7 @@ class _PublicConditionModal extends StatelessWidget {
             const SizedBox(height: 16),
 
             _ConditionProgress(
-              title: '支給額合計',
+              title: '合計金額',
               current: currentTotal,
               required: requiredTotal,
               progress: amountProgress,

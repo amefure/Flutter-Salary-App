@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_controller.dart';
-import 'package:salary/core/auth/auth_state.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/setting/in_app_purchase/in_app_purchase_view.dart';
 import 'package:salary/feature/setting/public_salary/public_salary_screen.dart';
+import 'package:salary/feature/timeline/time_line_lock/time_line_lock_view_model.dart';
 
-class TimelineLockScreen extends ConsumerWidget {
+class TimelineLockScreen extends StatelessWidget {
   const TimelineLockScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authControllerProvider);
-
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -36,20 +34,24 @@ class TimelineLockScreen extends ConsumerWidget {
 
           const SizedBox(height: 8),
 
-          /// 💎 プレミアム説明カード
-          _PremiumCard(),
+          /// プレミアム機能説明カード
+          const _PremiumCard(),
 
           const SizedBox(height: 24),
 
-          /// ✅ 条件カード
-          _RequirementCard(authState: authState),
+          /// 必須条件カード
+          const _RequirementCard()
         ],
       ),
     );
   }
 }
 
+
+/// プレミアム機能説明カード
 class _PremiumCard extends StatelessWidget {
+  const _PremiumCard();
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -118,13 +120,14 @@ class _PremiumCard extends StatelessWidget {
   }
 }
 
-class _RequirementCard extends StatelessWidget {
-  const _RequirementCard({required this.authState});
-
-  final AuthState authState;
+/// 必須条件カード
+class _RequirementCard extends ConsumerWidget {
+  const _RequirementCard();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+    final state = ref.watch(timeLineLockProvider);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -176,7 +179,7 @@ class _RequirementCard extends StatelessWidget {
           _StepItem(
             number: 2,
             title: '給料データを公開',
-            isCompleted: false,
+            isCompleted: state.isPublic,
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(

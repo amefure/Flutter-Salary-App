@@ -278,16 +278,16 @@ class PaymentSource extends _PaymentSource
     String id,
     String name,
     int themaColor,
-    bool isMain,
-    bool isPublic, {
+    bool isMain, {
     String? memo,
+    int? publicUsrId,
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'themaColor', themaColor);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'isMain', isMain);
-    RealmObjectBase.set(this, 'isPublic', isPublic);
+    RealmObjectBase.set(this, 'publicUsrId', publicUsrId);
   }
 
   PaymentSource._();
@@ -318,9 +318,10 @@ class PaymentSource extends _PaymentSource
   set isMain(bool value) => RealmObjectBase.set(this, 'isMain', value);
 
   @override
-  bool get isPublic => RealmObjectBase.get<bool>(this, 'isPublic') as bool;
+  int? get publicUsrId => RealmObjectBase.get<int>(this, 'publicUsrId') as int?;
   @override
-  set isPublic(bool value) => RealmObjectBase.set(this, 'isPublic', value);
+  set publicUsrId(int? value) =>
+      RealmObjectBase.set(this, 'publicUsrId', value);
 
   @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
@@ -341,7 +342,7 @@ class PaymentSource extends _PaymentSource
       'themaColor': themaColor.toEJson(),
       'memo': memo.toEJson(),
       'isMain': isMain.toEJson(),
-      'isPublic': isPublic.toEJson(),
+      'publicUsrId': publicUsrId.toEJson(),
     };
   }
 
@@ -354,15 +355,14 @@ class PaymentSource extends _PaymentSource
         'name': EJsonValue name,
         'themaColor': EJsonValue themaColor,
         'isMain': EJsonValue isMain,
-        'isPublic': EJsonValue isPublic,
       } =>
         PaymentSource(
           fromEJson(id),
           fromEJson(name),
           fromEJson(themaColor),
           fromEJson(isMain),
-          fromEJson(isPublic),
           memo: fromEJson(ejson['memo']),
+          publicUsrId: fromEJson(ejson['publicUsrId']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -381,7 +381,7 @@ class PaymentSource extends _PaymentSource
         SchemaProperty('themaColor', RealmPropertyType.int),
         SchemaProperty('memo', RealmPropertyType.string, optional: true),
         SchemaProperty('isMain', RealmPropertyType.bool),
-        SchemaProperty('isPublic', RealmPropertyType.bool),
+        SchemaProperty('publicUsrId', RealmPropertyType.int, optional: true),
       ],
     );
   }();
