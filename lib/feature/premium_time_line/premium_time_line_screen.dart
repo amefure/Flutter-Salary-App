@@ -1,32 +1,22 @@
 
 import 'package:flutter/cupertino.dart';
-import 'package:salary/core/utils/custom_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/domain/salary_list_view.dart';
+import 'package:salary/feature/premium_time_line/premium_time_line_view_model.dart';
 
-class PremiumTimeLineScreen extends StatelessWidget {
+class PremiumTimeLineScreen extends ConsumerWidget {
   const PremiumTimeLineScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
+  Widget build(BuildContext context, WidgetRef ref) {
 
-          /// 🔒 上部アイコン
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: CustomColors.themaOrange.withAlpha(20),
-            ),
-            child: const Icon(
-              CupertinoIcons.lock_fill,
-              size: 32,
-              color: CustomColors.themaOrange,
-            ),
-          ),
-        ]
-      )
+    final salaries = ref.watch(premiumTimeLineProvider.select((s) => s.salaries));
+
+    return SalaryListView(
+      salaries: salaries,
+      onTap: (salary) {
+      },
     );
   }
 }

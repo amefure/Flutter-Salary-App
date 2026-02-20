@@ -25,7 +25,7 @@ class SalaryListScreen extends ConsumerWidget {
             text: 'シンプル給料記録',
             fontWeight: FontWeight.bold,
           ),
-          leading: const BuildSourceSelector(),
+          leading: const _BuildSourceSelector(),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             child: const Icon(
@@ -60,9 +60,9 @@ class SalaryListScreen extends ConsumerWidget {
 }
 
 /// **給与の支払い元を選択するUI (MenuAnchor)**
-class BuildSourceSelector extends ConsumerWidget {
+class _BuildSourceSelector extends ConsumerWidget {
 
-  const BuildSourceSelector({super.key});
+  const _BuildSourceSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

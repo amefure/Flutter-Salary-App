@@ -52,7 +52,8 @@ class ApiClient {
         Map<String, String>? headers,
       }) async {
     logger('======= GET Request Header =======');
-    logger(headers);
+    logger('path：$path');
+    logger('headers：$headers');
     logger('======= GET Request Header =======');
     final response = await _client.get(
       _buildUri(path),
@@ -68,7 +69,8 @@ class ApiClient {
         Map<String, String>? headers,
       }) async {
     logger('======= POST Request body =======');
-    logger(body);
+    logger('path：$path');
+    logger('body：$body');
     logger('======= POST Request body =======');
     final response = await _client.post(
       _buildUri(path),
@@ -85,7 +87,8 @@ class ApiClient {
         Map<String, String>? headers,
       }) async {
     logger('======= PUT Request body =======');
-    logger(body);
+    logger('path：$path');
+    logger('body：$body');
     logger('======= PUT Request body =======');
     final response = await _client.put(
       _buildUri(path),
@@ -102,7 +105,8 @@ class ApiClient {
         Map<String, String>? headers,
       }) async {
     logger('======= PATCH Request body =======');
-    logger(body);
+    logger('path：$path');
+    logger('body：$body');
     logger('======= PATCH Request body =======');
     final response = await _client.patch(
       _buildUri(path),
@@ -119,7 +123,8 @@ class ApiClient {
         Map<String, String>? headers,
       }) async {
     logger('======= DELETE Request body =======');
-    logger(body);
+    logger('path：$path');
+    logger('body：$body');
     logger('======= DELETE Request body =======');
     final response = await _client.delete(
       _buildUri(path),
