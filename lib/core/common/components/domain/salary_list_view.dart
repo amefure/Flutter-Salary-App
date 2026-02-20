@@ -10,11 +10,18 @@ class SalaryListView extends StatelessWidget {
   final void Function(Salary salary)? onTap;
   final bool showAd;
 
+  final VoidCallback? onLoadMore;
+  final bool hasMore;
+  final bool isLoadingMore;
+
   const SalaryListView({
     super.key,
     required this.salaries,
     this.onTap,
     this.showAd = true,
+    this.onLoadMore,
+    this.hasMore = false,
+    this.isLoadingMore = false,
   });
 
   @override
@@ -32,8 +39,23 @@ class SalaryListView extends StatelessWidget {
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: salaries.length,
+            itemCount: salaries.length + (hasMore ? 1 : 0),
             itemBuilder: (context, index) {
+
+              /// 🔥 最後のセル = ロードトリガー
+              if (index == salaries.length) {
+                if (onLoadMore != null && !isLoadingMore) {
+                  onLoadMore!();
+                }
+
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
               final salary = salaries[index];
 
               return GestureDetector(

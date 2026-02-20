@@ -13,10 +13,16 @@ class PremiumTimeLineScreen extends ConsumerWidget {
 
     final salaries = ref.watch(premiumTimeLineProvider.select((s) => s.salaries));
 
+    final state = ref.watch(premiumTimeLineProvider);
+
     return SalaryListView(
-      salaries: salaries,
-      onTap: (salary) {
+      salaries: state.salaries,
+      hasMore: (state.currentPage) < (state.lastPage ),
+      isLoadingMore: state.isLoadingMore,
+      onLoadMore: () {
+        ref.read(premiumTimeLineProvider.notifier).loadNextPage();
       },
     );
+
   }
 }
