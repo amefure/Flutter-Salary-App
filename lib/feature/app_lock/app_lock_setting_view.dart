@@ -4,8 +4,8 @@ import 'package:salary/core/common/components/app_dialog.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/core/common/components/custom_elevated_button.dart';
-import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
+import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/root_tab_view.dart';
 
 class AppLockSettingView extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
-import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';

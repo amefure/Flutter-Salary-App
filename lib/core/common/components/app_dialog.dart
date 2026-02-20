@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:salary/core/common/components/custom_text_view.dart';
+import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 
 enum DialogType {
