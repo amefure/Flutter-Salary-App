@@ -14,6 +14,8 @@ class PaymentSourceDto {
   final bool isMain;
   /// 対象ユーザーID(公開)
   final int? publicUserId;
+  /// 支払い元名の公開許容フラグ
+  final bool isPublicName;
 
   PaymentSourceDto({
     required this.id,
@@ -22,6 +24,7 @@ class PaymentSourceDto {
     required this.memo,
     required this.isMain,
     required this.publicUserId,
+    required this.isPublicName,
   });
 
   factory PaymentSourceDto.fromJson(Map<String, dynamic> json) {
@@ -32,6 +35,7 @@ class PaymentSourceDto {
       memo: json[PaymentSourceJsonKeys.memo],
       isMain: json[PaymentSourceJsonKeys.isMain],
       publicUserId: json[PaymentSourceJsonKeys.userId],
+      isPublicName: json[PaymentSourceJsonKeys.isPublicName],
     );
   }
 
@@ -42,6 +46,7 @@ class PaymentSourceDto {
         themeColor,
         memo: memo,
         isMain,
+        isPublicName,
         publicUserId: publicUserId
     );
   }

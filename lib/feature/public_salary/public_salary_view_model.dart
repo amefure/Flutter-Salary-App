@@ -123,25 +123,38 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     });
   }
 
-  bool canPublic(PaymentSource target) {
+  PublicCheckResult canPublic(PaymentSource target) {
     /// 対象PaymentSourceの給与のみ抽出
     final targetSalaries = state.salaries
         .where((salary) => salary.source?.id == target.id)
         .toList();
 
-    /// 件数チェック
-    if (targetSalaries.length < minSalaryCountForPublic) {
-      return false;
-    }
-
-    /// 支給額合計チェック
+    /// 件数
+    final count = targetSalaries.length;
+    /// 支給額合計
     final totalPaymentAmount = targetSalaries.fold<int>(0, (sum, salary) => sum + salary.paymentAmount,);
-
+    /// 件数チェック
+    if (count < minSalaryCountForPublic) {
+      return PublicCheckResult(
+        count: count,
+        totalAmount: totalPaymentAmount,
+        canPublic: false,
+      );
+    }
+    /// 合計チェック
     if (totalPaymentAmount < minTotalPaymentAmountForPublic) {
-      return false;
+      return PublicCheckResult(
+        count: count,
+        totalAmount: totalPaymentAmount,
+        canPublic: false,
+      );
     }
 
-    return true;
+    return PublicCheckResult(
+      count: count,
+      totalAmount: totalPaymentAmount,
+      canPublic: true,
+    );
   }
 
   void _fetchAllSalaries() {
@@ -152,4 +165,16 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       salaries: allSalaries,
     );
   }
+}
+
+class PublicCheckResult {
+  final int count;
+  final int totalAmount;
+  final bool canPublic;
+
+  const PublicCheckResult({
+    required this.count,
+    required this.totalAmount,
+    required this.canPublic,
+  });
 }

@@ -30,15 +30,16 @@ class PublicSalaryScreen extends ConsumerWidget {
           itemBuilder: (context, index) {
             final source = paymentSources[index];
 
-            final canPublic = viewModel.canPublic(source);
+            final publicCheckResult = viewModel.canPublic(source);
 
             return _PublicSalaryItem(
               paymentSource: source,
               isPublic: source.isPublic,
-              canPublic: canPublic,
+              canPublic: publicCheckResult.canPublic,
+              currentCount: publicCheckResult.count,
+              currentTotal: publicCheckResult.totalAmount,
               onChanged: (isPublic) {
-                // viewModel.test();
-                if (!canPublic) return;
+                if (!publicCheckResult.canPublic) return;
                 // // ViewModelに通知（後で実装）
                 _confirmAlertPublic(context, ref, source, isPublic);
               },
@@ -56,18 +57,26 @@ class PublicSalaryScreen extends ConsumerWidget {
       bool isPublic
       ) async {
     /// isPublicは変化対象の値なのでtrueなら元は非公開ステータスのものになる
-    final msg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？';
+    final confirmMsg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？';
     final positiveTitle = !isPublic ? '非公開にする' : '公開する';
     final result = await AppDialog.show(
         context: context,
-        message: msg,
+        message: confirmMsg,
         type: DialogType.confirm,
         positiveTitle: positiveTitle,
         isPositiveNegativeType: !isPublic
     );
     if (result ?? false) {
       final viewModel = ref.read(publicSalaryProvider.notifier);
-      viewModel.updatePaymentSource(source, isPublic);
+      final result = await viewModel.updatePaymentSource(source, isPublic);
+      if (result) {
+        final successMsg = !isPublic ? '給料情報を非公開にしました。' : 'ありがとうございます。\n給料情報を公開しました。';
+        final _ = await AppDialog.show(
+            context: context,
+            message: successMsg,
+            type: DialogType.success,
+        );
+      }
     }
   }
 }
@@ -78,11 +87,15 @@ class _PublicSalaryItem extends StatelessWidget {
     required this.isPublic,
     required this.canPublic,
     required this.onChanged,
+    required this.currentCount,
+    required this.currentTotal,
   });
 
   final PaymentSource paymentSource;
   final bool isPublic;
   final bool canPublic;
+  final int currentCount;
+  final int currentTotal;
   final ValueChanged<bool> onChanged;
 
   @override
@@ -131,7 +144,7 @@ class _PublicSalaryItem extends StatelessWidget {
           /// ステータスボタン
           canPublic
               ? _publicStateButton()
-              : _canNotPublicStatus(context),
+              : _canNotPublicStatus(context, currentCount, currentTotal),
         ],
       ),
     );
@@ -172,13 +185,17 @@ class _PublicSalaryItem extends StatelessWidget {
   }
 
   /// 条件未達成ステータス
-  Widget _canNotPublicStatus(BuildContext context) {
+  Widget _canNotPublicStatus(
+      BuildContext context,
+      int currentCount,
+      int currentTotal,
+      ) {
     return GestureDetector(
       onTap: () => {
         _showPublicConditionModal(
           context,
-          currentCount: 10,
-          currentTotal: 3000,
+          currentCount: currentCount,
+          currentTotal: currentTotal,
           requiredCount: PublicSalaryViewModel.minSalaryCountForPublic,
           requiredTotal: PublicSalaryViewModel.minTotalPaymentAmountForPublic,
         )

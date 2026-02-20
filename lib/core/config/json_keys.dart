@@ -38,6 +38,7 @@ class PaymentSourceJsonKeys {
   static const memo = 'memo';
   static const isMain = 'is_main';
   static const userId = 'user_id';
+  static const isPublicName = 'is_public_name';
 }
 
 class AuthJsonKeys {

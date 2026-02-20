@@ -278,7 +278,8 @@ class PaymentSource extends _PaymentSource
     String id,
     String name,
     int themaColor,
-    bool isMain, {
+    bool isMain,
+    bool isPublicName, {
     String? memo,
     int? publicUserId,
   }) {
@@ -288,6 +289,7 @@ class PaymentSource extends _PaymentSource
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'isMain', isMain);
     RealmObjectBase.set(this, 'publicUserId', publicUserId);
+    RealmObjectBase.set(this, 'isPublicName', isPublicName);
   }
 
   PaymentSource._();
@@ -325,6 +327,13 @@ class PaymentSource extends _PaymentSource
       RealmObjectBase.set(this, 'publicUserId', value);
 
   @override
+  bool get isPublicName =>
+      RealmObjectBase.get<bool>(this, 'isPublicName') as bool;
+  @override
+  set isPublicName(bool value) =>
+      RealmObjectBase.set(this, 'isPublicName', value);
+
+  @override
   Stream<RealmObjectChanges<PaymentSource>> get changes =>
       RealmObjectBase.getChanges<PaymentSource>(this);
 
@@ -344,6 +353,7 @@ class PaymentSource extends _PaymentSource
       'memo': memo.toEJson(),
       'isMain': isMain.toEJson(),
       'publicUserId': publicUserId.toEJson(),
+      'isPublicName': isPublicName.toEJson(),
     };
   }
 
@@ -356,12 +366,14 @@ class PaymentSource extends _PaymentSource
         'name': EJsonValue name,
         'themaColor': EJsonValue themaColor,
         'isMain': EJsonValue isMain,
+        'isPublicName': EJsonValue isPublicName,
       } =>
         PaymentSource(
           fromEJson(id),
           fromEJson(name),
           fromEJson(themaColor),
           fromEJson(isMain),
+          fromEJson(isPublicName),
           memo: fromEJson(ejson['memo']),
           publicUserId: fromEJson(ejson['publicUserId']),
         ),
@@ -383,6 +395,7 @@ class PaymentSource extends _PaymentSource
         SchemaProperty('memo', RealmPropertyType.string, optional: true),
         SchemaProperty('isMain', RealmPropertyType.bool),
         SchemaProperty('publicUserId', RealmPropertyType.int, optional: true),
+        SchemaProperty('isPublicName', RealmPropertyType.bool),
       ],
     );
   }();

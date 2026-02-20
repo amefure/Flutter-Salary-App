@@ -82,6 +82,8 @@ class _PaymentSource {
   late bool isMain;
   /// 対象ユーザーID(公開)
   late int? publicUserId;
+  /// 支払い元名の公開許容フラグ
+  late bool isPublicName;
 
   /// ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
