@@ -32,10 +32,18 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
 
   void fetchAllSalaries() async {
     await _ref.runWithGlobalHandling(() async {
-      final allSalaries = await _salaryRepository.fetchAllUserList();
+      // final allSalaries = await _salaryRepository.fetchAllUserList();
+      final page = await _salaryRepository.fetchAllUserList();
+
       state = state.copyWith(
-        salaries: allSalaries,
+        salaries: page.salaries.map((e) => e.toDomain()).toList(),
+        // currentPage: page.currentPage,
+        // lastPage: page.lastPage,
       );
+      //
+      // state = state.copyWith(
+      //   salaries: allSalaries,
+      // );
     });
   }
 }

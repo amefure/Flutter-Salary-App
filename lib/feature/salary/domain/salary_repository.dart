@@ -1,13 +1,14 @@
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/feature/salary/data/salary_page_dto.dart';
 
 /// 実態：[SalaryRepositoryImpl]
 abstract class SalaryRepository {
 
-  /// ユーザーに紐づいたデータのみ取得
-  Future<List<Salary>> fetchAllUserList();
+  /// ユーザーに紐づいたデータのみ取得(ページネーションあり)
+  Future<SalaryPageDto> fetchAllUserList({int page = 1});
 
-  /// 全ユーザーのデータ取得
-  Future<List<Salary>> fetchAllList();
+  /// 全ユーザーのデータ取得(ページネーションあり)
+  Future<SalaryPageDto> fetchAllList({int page = 1});
 
   /// 一括作成
   Future<void> create({ required List<Salary> salaries });

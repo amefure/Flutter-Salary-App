@@ -7,7 +7,12 @@ class CommonJsonKeys {
   static const salaries = 'salaries';
   static const paymentSources = 'payment_sources';
   static const accessToken = 'access_token';
+}
 
+class SalaryPageKeys {
+  static const currentPage = 'current_page';
+  static const lastPage = 'last_page';
+  static const total = 'total';
 }
 
 class SalaryJsonKeys {

@@ -4,6 +4,7 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/salary/data/salary_api.dart';
 import 'package:salary/feature/salary/data/salary_dto.dart';
+import 'package:salary/feature/salary/data/salary_page_dto.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
 
 final salaryRepositoryProvider = Provider<SalaryRepository>((ref) {
@@ -17,19 +18,17 @@ class SalaryRepositoryImpl implements SalaryRepository {
   final SalaryApi _api;
 
   @override
-  Future<List<Salary>> fetchAllUserList() async {
-    final result = await _api.fetchAllUserList();
+  Future<SalaryPageDto> fetchAllUserList({int page = 1}) async {
+    final result = await _api.fetchAllUserList(page: page);
     logger(result);
-    final List<dynamic> list = result[CommonJsonKeys.data][CommonJsonKeys.salaries];
-    return list.map((json) => SalaryDto.fromJson(json).toDomain()).toList();
+    return SalaryPageDto.fromJson(result);
   }
 
   @override
-  Future<List<Salary>> fetchAllList() async {
-    final result = await _api.fetchAllList();
+  Future<SalaryPageDto> fetchAllList({int page = 1}) async {
+    final result = await _api.fetchAllList(page: page);
     logger(result);
-    final List<dynamic> list = result[CommonJsonKeys.data][CommonJsonKeys.salaries];
-    return list.map((json) => SalaryDto.fromJson(json).toDomain()).toList();
+    return SalaryPageDto.fromJson(result);
   }
 
   @override
