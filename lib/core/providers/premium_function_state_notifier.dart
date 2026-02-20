@@ -16,7 +16,7 @@ class PremiumFunctionState {
 
   PremiumFunctionState({
     this.isPublicData = false,
-    this.isSubscribed = false,
+    this.isSubscribed = true,
   });
 
   PremiumFunctionState copyWith({

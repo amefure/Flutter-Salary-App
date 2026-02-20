@@ -1,0 +1,52 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
+import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
+import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/premium_time_line/premium_time_line_state.dart';
+import 'package:salary/feature/public_salary/public_salary_state.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
+import 'package:salary/feature/salary/domain/salary_repository.dart';
+
+final premiumTimeLineProvider =
+StateNotifierProvider.autoDispose<PremiumTimeLineViewModel, PremiumTimeLineState>((ref) {
+  final paymentRepository = ref.read(paymentRepositoryProvider);
+  final salaryRepository = ref.read(salaryRepositoryProvider);
+  return PremiumTimeLineViewModel(ref, paymentRepository, salaryRepository);
+});
+
+class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
+
+  final Ref _ref;
+  final PaymentRepository _paymentRepository;
+  final SalaryRepository _salaryRepository;
+
+  PremiumTimeLineViewModel(
+      this._ref,
+      this._paymentRepository,
+      this._salaryRepository
+      ): super(PremiumTimeLineState.initial()) {
+    _fetchAllSalaries();
+  }
+
+
+  /// 全取得
+  void test() async {
+    await _ref.runWithGlobalHandling(() async {
+      await _salaryRepository.fetchAllUserList();
+
+      //await _salaryRepository.fetchAllList();
+    });
+  }
+
+
+  void _fetchAllSalaries() async {
+    final allSalaries = await _salaryRepository.fetchAllUserList();
+    state = state.copyWith(
+      salaries: allSalaries,
+    );
+  }
+}
