@@ -145,6 +145,9 @@ class ApiClient {
       logger('======= Success API Response =======');
       return result;
     }
+    logger('======= ❌ Error API Response =======');
+    logger(result);
+    logger('======= ❌ Error API Response =======');
 
     // 認証エラーはストレージをクリア
     if (statusCode == 401) {

@@ -9,14 +9,8 @@ abstract class SalaryRepository {
   /// 全ユーザーのデータ取得
   Future<List<Salary>> fetchAllList();
 
-  /// 作成
-  Future<void> create({
-    required String id,
-    required String name,
-    required int themeColor,
-    required String? memo,
-    required bool isMain,
-  });
+  /// 一括作成
+  Future<void> create({ required List<Salary> salaries });
 
   /// 更新
   Future<void> update({
@@ -28,7 +22,6 @@ abstract class SalaryRepository {
   });
 
   /// 削除
-  Future<void> delete(String id);
-
+  Future<void> delete({ required List<Salary> salaries });
 
 }

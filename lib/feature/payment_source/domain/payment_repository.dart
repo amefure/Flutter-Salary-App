@@ -5,6 +5,7 @@ abstract class PaymentRepository {
   /// 取得
   Future<List<PaymentSource>> fetchAllUserList();
 
+
   /// 作成
   Future<void> create({
     required String id,

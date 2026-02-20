@@ -8,12 +8,15 @@ import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/public_salary/public_salary_state.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
+import 'package:salary/feature/salary/domain/salary_repository.dart';
 
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {
   final repository = RealmRepository();
   final paymentRepository = ref.read(paymentRepositoryProvider);
-  return PublicSalaryViewModel(ref, repository, paymentRepository);
+  final salaryRepository = ref.read(salaryRepositoryProvider);
+  return PublicSalaryViewModel(ref, repository, paymentRepository, salaryRepository);
 });
 
 class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
@@ -21,13 +24,15 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   final Ref _ref;
   final RealmRepository _repository;
   final PaymentRepository _paymentRepository;
+  final SalaryRepository _salaryRepository;
 
   PublicSalaryViewModel(
       this._ref,
       this._repository,
-      this._paymentRepository
+      this._paymentRepository,
+      this._salaryRepository
       ): super(PublicSalaryState.initial()) {
-    _fetchAllPaymentSource();
+    _fetchAllLocalPaymentSource();
     _fetchAllSalaries();
   }
 
@@ -36,7 +41,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   static const int minTotalPaymentAmountForPublic = 10000;
 
   /// 全取得
-  void _fetchAllPaymentSource() {
+  void _fetchAllLocalPaymentSource() {
     final results = _repository.fetchAll<PaymentSource>()
       ..sort((a, b) {
         final aValue = a.isMain ? 1 : 0;
@@ -46,8 +51,36 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     state = state.copyWith(paymentSources: results);
   }
 
+  /// 全取得
+  void test() async {
+    await _ref.runWithGlobalHandling(() async {
+      await _salaryRepository.fetchAllUserList();
+
+      //await _salaryRepository.fetchAllList();
+    });
+  }
+
   /// ローカル情報の更新
-  void updatePaymentSource(
+  Future<bool> updatePaymentSource(
+      PaymentSource current,
+      bool isPublic
+      ) async {
+    /// ローカルのpublicUserIdプロパティの更新
+    _updatePublicUserIdLocalPaymentSource(current, isPublic);
+    /// クラウドのPaymentSourceを更新 + 給料情報のアップロード
+    final result = await _createOrDeleteCloudPaymentSource(current, isPublic);
+    if (result) {
+      /// 成功時のみ
+      /// ローカル再取得(State更新)
+      _fetchAllLocalPaymentSource();
+      /// 公開状態の変化を通知
+      _ref.read(premiumFunctionStateProvider.notifier).checkAllPaymentSource();
+    }
+    return result;
+  }
+
+  /// ローカルの[publicUserId]プロパティの更新
+  Future<void> _updatePublicUserIdLocalPaymentSource(
       PaymentSource current,
       bool isPublic
       ) async {
@@ -60,17 +93,18 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       paymentSource.memo = current.memo;
       paymentSource.publicUserId = publicUserId;
     });
-    _fetchAllPaymentSource();
-    await _update(current, isPublic);
-    /// 公開状態の変化を通知
-    _ref.read(premiumFunctionStateProvider.notifier).checkAllPaymentSource();
   }
 
-  Future<void> _update(
+  /// クラウドのPaymentSourceを更新 + 給料情報のアップロード
+  Future<bool> _createOrDeleteCloudPaymentSource(
       PaymentSource current,
       bool isPublic
       ) async {
-    await _ref.runWithGlobalHandling(() async {
+    return await _ref.runWithGlobalHandling(() async {
+      /// 対象PaymentSourceの給与のみ抽出
+      final targetSalaries = state.salaries
+          .where((salary) => salary.source?.id == current.id)
+          .toList();
       if (isPublic) {
         await _paymentRepository.create(
             id: current.id,
@@ -79,10 +113,12 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
             memo: current.memo,
             isMain: current.isMain
         );
-        // TODO 上記支払いもとの給料情報を全てアップロードする
-        
+        /// 一括登録
+        await _salaryRepository.create(salaries: targetSalaries);
       } else {
         await  _paymentRepository.delete(current.id);
+        /// 一括登録
+        await _salaryRepository.delete(salaries: targetSalaries);
       }
     });
   }

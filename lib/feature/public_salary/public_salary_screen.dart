@@ -37,8 +37,9 @@ class PublicSalaryScreen extends ConsumerWidget {
               isPublic: source.isPublic,
               canPublic: canPublic,
               onChanged: (isPublic) {
+                // viewModel.test();
                 if (!canPublic) return;
-                // ViewModelに通知（後で実装）
+                // // ViewModelに通知（後で実装）
                 _confirmAlertPublic(context, ref, source, isPublic);
               },
             );

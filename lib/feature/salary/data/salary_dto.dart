@@ -1,20 +1,9 @@
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/payment_source/data/payment_source_dto.dart';
 import 'package:salary/feature/salary/data/amount_item_dto.dart';
 
 class SalaryDto {
-
-  static const keyId = 'id';
-  static const keyPaymentAmount = 'payment_amount';
-  static const keyDeductionAmount = 'deduction_amount';
-  static const keyNetSalary = 'net_salary';
-  static const keyPaidAt = 'paid_at';
-  static const keyIsBonus = 'is_bonus';
-  static const keyMemo = 'memo';
-  static const keyPaymentItems = 'payment_items';
-  static const keyDeductionItems = 'deduction_items';
-  static const keyPaymentSource = 'payment_source';
-  static const keyPublication = 'publication';
 
   final String id;
   final int paymentAmount;
@@ -42,21 +31,21 @@ class SalaryDto {
 
   factory SalaryDto.fromJson(Map<String, dynamic> json) {
     return SalaryDto(
-      id: json[keyId],
-      paymentAmount: json[keyPaymentAmount],
-      deductionAmount: json[keyDeductionAmount],
-      netSalary: json[keyNetSalary],
-      paidAt: DateTime.parse(json[keyPaidAt]),
-      isBonus: json[keyIsBonus],
-      memo: json[keyMemo] ?? '',
-      paymentItems: (json[keyPaymentItems] as List)
+      id: json[SalaryJsonKeys.id],
+      paymentAmount: json[SalaryJsonKeys.paymentAmount],
+      deductionAmount: json[SalaryJsonKeys.deductionAmount],
+      netSalary: json[SalaryJsonKeys.netSalary],
+      paidAt: DateTime.parse(json[SalaryJsonKeys.paidAt]),
+      isBonus: json[SalaryJsonKeys.isBonus],
+      memo: json[SalaryJsonKeys.memo] ?? '',
+      paymentItems: (json[SalaryJsonKeys.paymentItems] as List)
           .map((e) => AmountItemDto.fromJson(e))
           .toList(),
-      deductionItems: (json[keyDeductionItems] as List)
+      deductionItems: (json[SalaryJsonKeys.deductionItems] as List)
           .map((e) => AmountItemDto.fromJson(e))
           .toList(),
-      paymentSource: json[keyPaymentSource] != null
-          ? PaymentSourceDto.fromJson(json[keyPaymentSource])
+      paymentSource: json[SalaryJsonKeys.paymentSource] != null
+          ? PaymentSourceDto.fromJson(json[SalaryJsonKeys.paymentSource])
           : null,
     );
   }

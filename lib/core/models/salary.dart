@@ -1,5 +1,6 @@
 import 'package:realm/realm.dart';
 import 'package:salary/core/models/thema_color.dart';
+import 'package:salary/core/config/json_keys.dart';
 
 // 自動生成コード
 part 'salary.realm.dart';
@@ -30,6 +31,22 @@ class _Salary {
   late bool isBonus;
   /// メモ
   late String memo;
+
+  Map<String, dynamic> toJson() {
+    return {
+      SalaryJsonKeys.id: id,
+      SalaryJsonKeys.paymentAmount: paymentAmount,
+      SalaryJsonKeys.deductionAmount: deductionAmount,
+      SalaryJsonKeys.netSalary: netSalary,
+      SalaryJsonKeys.paidAt: createdAt.toIso8601String(),
+      SalaryJsonKeys.paymentSourceId: source?.id,
+      SalaryJsonKeys.isBonus: isBonus,
+      SalaryJsonKeys.memo: memo,
+      SalaryJsonKeys.paymentItems: paymentAmountItems.map((e) => e.toJson()).toList(),
+      SalaryJsonKeys.deductionItems: deductionAmountItems.map((e) => e.toJson()).toList(),
+    };
+  }
+
 }
 
 /// 金額項目
@@ -39,6 +56,14 @@ class _AmountItem {
   late String id;
   late String key;
   late int value;
+
+  Map<String, dynamic> toJson() {
+    return {
+      AmountItemJsonKeys.id: id,
+      AmountItemJsonKeys.key: key,
+      AmountItemJsonKeys.value: value,
+    };
+  }
 }
 
 /// 支払い元

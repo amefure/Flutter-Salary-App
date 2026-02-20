@@ -1,9 +1,7 @@
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 
 class AmountItemDto {
-  static const keyId = 'id';
-  static const keyKey = 'key';
-  static const keyValue = 'value';
 
   final String id;
   final String key;
@@ -17,9 +15,9 @@ class AmountItemDto {
 
   factory AmountItemDto.fromJson(Map<String, dynamic> json) {
     return AmountItemDto(
-      id: json[keyId],
-      key: json[keyKey],
-      value: json[keyValue],
+      id: json[AmountItemJsonKeys.id],
+      key: json[AmountItemJsonKeys.key],
+      value: json[AmountItemJsonKeys.value],
     );
   }
 

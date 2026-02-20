@@ -31,8 +31,8 @@ class SalaryApi {
     await _client.put('$_END_POINT/$id', body: body);
   }
 
-  Future<void> delete(String id) async {
-    await _client.delete('$_END_POINT/$id');
+  Future<void> delete(Map<String, dynamic> body) async {
+    await _client.delete(_END_POINT, body: body);
   }
 
 }
