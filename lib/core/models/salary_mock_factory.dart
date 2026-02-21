@@ -1,3 +1,4 @@
+import 'package:realm/realm.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 
@@ -40,14 +41,14 @@ class SalaryMockFactory {
       final netSalary = paymentAmount - deductionAmount;
 
       return Salary(
-        'salary_$year\_$month',
+        Uuid.v4().toString(),
         paymentAmount,
         deductionAmount,
         netSalary,
         DateTime(year, month, 25),
         paymentAmountItems: _paymentItems(paymentAmount, isBonus),
         deductionAmountItems: _deductionItems(deductionAmount),
-        source: isMainSource ? _paymentMainSource() : _paymentSubSource(),
+        source: isMainSource ? _mainSource : _subSource,
         isBonus,
         isBonus ? '$month月 ボーナス' : '$month月分の給料',
       );
@@ -59,7 +60,7 @@ class SalaryMockFactory {
     if (isBonus) {
       return [
         AmountItem(
-          'bonus',
+          Uuid.v4().toString(),
           '賞与',
           total,
         ),
@@ -68,12 +69,12 @@ class SalaryMockFactory {
 
     return [
       AmountItem(
-        'base',
+        Uuid.v4().toString(),
         '基本給',
         (total * 0.8).round(),
       ),
       AmountItem(
-        'overtime',
+        Uuid.v4().toString(),
         '残業代',
         (total * 0.2).round(),
       ),
@@ -84,41 +85,38 @@ class SalaryMockFactory {
   static List<AmountItem> _deductionItems(int total) {
     return [
       AmountItem(
-        'health',
+        Uuid.v4().toString(),
         '健康保険',
         (total * 0.4).round(),
       ),
       AmountItem(
-        'pension',
+        Uuid.v4().toString(),
         '年金',
         (total * 0.6).round(),
       ),
     ];
   }
 
-  /// 支払い元
-  static PaymentSource _paymentMainSource() {
-    return PaymentSource(
-      'source_main_company',
-      '株式会社ame',
-      ThemaColor.orange.value,
-      true,
-      false,
-      publicUserId: null,
-      memo: '本業',
-    );
-  }
+  static const _mainSourceId = 'ac17429c-064a-4bb6-a3a6-091325c1119a';
+  static const _subSourceId  = 'ac17429c-064a-4bb6-a3a6-091325c1119b';
 
-  /// 支払い元
-  static PaymentSource _paymentSubSource() {
-    return PaymentSource(
-      'source_sub_company',
-      'ABCデザイン',
-      ThemaColor.yellow.value,
-      false,
-      false,
-      publicUserId: null,
-      memo: '副業',
-    );
-  }
+  static final PaymentSource _mainSource = PaymentSource(
+    _mainSourceId,
+    '株式会社ame',
+    ThemaColor.orange.value,
+    true,
+    false,
+    publicUserId: null,
+    memo: '本業',
+  );
+
+  static final PaymentSource _subSource = PaymentSource(
+    _subSourceId,
+    'ABCデザイン',
+    ThemaColor.yellow.value,
+    false,
+    false,
+    publicUserId: null,
+    memo: '副業',
+  );
 }

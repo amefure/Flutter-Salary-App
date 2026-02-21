@@ -32,8 +32,12 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   /// Realm から Salary を取得
   void _loadSalaries() {
     final allSalariesTmp = _repository.fetchAll<Salary>();
-    // モック(確認用)
-    // final allSalariesTmp = SalaryMockFactory.allGenerateYears();
+    // DEBUG：モック(確認用)
+    // final allSalariesTmp2 = SalaryMockFactory.allGenerateYears();
+    // DEBUG：モックローカル保存処理
+    // for (var item in allSalariesTmp2) {
+    //   _repository.add(item);
+    // }
     // 日付の降順
     allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     state = state.copyWith(

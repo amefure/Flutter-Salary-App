@@ -39,10 +39,9 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
     });
   }
 
+  /// ページング読み込み
   Future<void> loadNextPage() async {
-    if (state.currentPage >= state.lastPage) {
-      return;
-    }
+    if (state.currentPage >= state.lastPage) { return; }
 
     if (state.isLoadingMore) return;
 
@@ -61,6 +60,16 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
       lastPage: page.lastPage,
       isLoadingMore: false,
     );
+  }
+
+  /// リフレッシュ処理
+  Future<void> refresh() async {
+    state = state.copyWith(
+      salaries: [],
+      currentPage: 1,
+      lastPage: null,
+    );
+    await fetchAllSalaries();
   }
 
 }

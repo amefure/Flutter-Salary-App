@@ -5,12 +5,14 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 
-class SalaryListView extends StatelessWidget {
+class SalaryListView extends StatefulWidget {
   final List<Salary> salaries;
   final void Function(Salary salary)? onTap;
   final bool showAd;
 
   final VoidCallback? onLoadMore;
+  final Future<void> Function()? onRefresh;
+
   final bool hasMore;
   final bool isLoadingMore;
 
@@ -20,17 +22,54 @@ class SalaryListView extends StatelessWidget {
     this.onTap,
     this.showAd = true,
     this.onLoadMore,
+    this.onRefresh,
     this.hasMore = false,
     this.isLoadingMore = false,
   });
 
   @override
+  State<SalaryListView> createState() => _SalaryListViewState();
+}
+
+class _SalaryListViewState extends State<SalaryListView> {
+  final _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.addListener(() {
+      if (!_controller.hasClients) return;
+
+      final threshold =
+          _controller.position.maxScrollExtent * 0.8;
+
+      if (_controller.position.pixels >= threshold) {
+        if (widget.hasMore &&
+            !widget.isLoadingMore &&
+            widget.onLoadMore != null) {
+          widget.onLoadMore!();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (salaries.isEmpty) {
-      return const Center(
-        child: CustomText(
-          text: 'データがありません',
-          fontWeight: FontWeight.bold,
+    if (widget.salaries.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: widget.onRefresh ?? () async {},
+        child: const Center(
+          child: CustomText(
+            text: 'データがありません',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
     }
@@ -38,35 +77,36 @@ class SalaryListView extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
-            itemCount: salaries.length + (hasMore ? 1 : 0),
-            itemBuilder: (context, index) {
-
-              /// 🔥 最後のセル = ロードトリガー
-              if (index == salaries.length) {
-                if (onLoadMore != null && !isLoadingMore) {
-                  onLoadMore!();
+          child: RefreshIndicator(
+            onRefresh: widget.onRefresh ?? () async {},
+            child: ListView.builder(
+              controller: _controller,
+              itemCount:
+              widget.salaries.length +
+                  (widget.hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == widget.salaries.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 }
 
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                final salary = widget.salaries[index];
+
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () =>
+                      widget.onTap?.call(salary),
+                  child: _SalaryItem(salary: salary),
                 );
-              }
-
-              final salary = salaries[index];
-
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => onTap?.call(salary),
-                child: _SalaryItem(salary: salary),
-              );
-            },
+              },
+            ),
           ),
         ),
-        if (showAd) const AdMobBannerWidget(),
+        if (widget.showAd) const AdMobBannerWidget(),
       ],
     );
   }

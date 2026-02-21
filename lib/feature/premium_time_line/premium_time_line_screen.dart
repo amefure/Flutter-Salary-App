@@ -11,18 +11,21 @@ class PremiumTimeLineScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final salaries = ref.watch(premiumTimeLineProvider.select((s) => s.salaries));
-
     final state = ref.watch(premiumTimeLineProvider);
 
     return SalaryListView(
       salaries: state.salaries,
-      hasMore: (state.currentPage) < (state.lastPage ),
+      hasMore: (state.currentPage ?? 1) < (state.lastPage ?? 1),
       isLoadingMore: state.isLoadingMore,
       onLoadMore: () {
-        ref.read(premiumTimeLineProvider.notifier).loadNextPage();
+        ref.read(premiumTimeLineProvider.notifier)
+            .loadNextPage();
+      },
+      onRefresh: () {
+        return ref
+            .read(premiumTimeLineProvider.notifier)
+            .refresh();
       },
     );
-
   }
 }
