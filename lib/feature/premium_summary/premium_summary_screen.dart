@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/domain/salary_list_view.dart';
 import 'package:salary/feature/premium_time_line/premium_time_line_view_model.dart';
 
-class PremiumTimeLineScreen extends ConsumerWidget {
-  const PremiumTimeLineScreen({super.key});
+class PremiumSummaryScreen extends ConsumerWidget {
+  const PremiumSummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

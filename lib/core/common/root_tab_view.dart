@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/charts/view/chart_salary_screen.dart';
+import 'package:salary/feature/premium_root/premium_root_screen.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
 import 'package:salary/feature/settings/setting_view.dart';
-import 'package:salary/feature/timeline/time_line_root_screen.dart';
 
 class RootTabViewView extends StatefulWidget {
   const RootTabViewView({super.key});
@@ -89,7 +89,7 @@ class _RootTabViewViewState extends State<RootTabViewView> {
       case 1:
         return const ChartSalaryScreen();
       case 2:
-        return const TimeLineRootScreen();
+        return const PremiumRootScreen();
       case 3:
         return const SettingView();
       default:

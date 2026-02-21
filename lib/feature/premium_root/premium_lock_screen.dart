@@ -8,8 +8,8 @@ import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_view.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 
-class TimelineLockScreen extends StatelessWidget {
-  const TimelineLockScreen({super.key});
+class PremiumLockScreen extends StatelessWidget {
+  const PremiumLockScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
