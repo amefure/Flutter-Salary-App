@@ -1,10 +1,12 @@
+import 'package:salary/core/config/profile_config.dart';
+
 class UserInfoState {
 
   final String name;
   final String email;
   final String region;
   final DateTime? birthday;
-  final String job;
+  final Job job;
 
   /// 入力ボックスの入力完了フラグ
   final bool isCompleted;
@@ -24,9 +26,9 @@ class UserInfoState {
     return const UserInfoState(
       name: '',
       email: '',
-      region: '',
+      region: ProfileConfig.undefined,
       birthday: null,
-      job: '',
+      job: ProfileConfig.undefinedJob,
     );
   }
 
@@ -35,7 +37,7 @@ class UserInfoState {
     String? email,
     String? region,
     DateTime? birthday,
-    String? job,
+    Job? job,
     bool? isCompleted,
     bool? isEdit
   }) {

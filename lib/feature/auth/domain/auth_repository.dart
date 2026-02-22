@@ -12,6 +12,7 @@ abstract class AuthRepository {
     required String region,
     required DateTime birthday,
     required String job,
+    required String jobCategory,
   });
 
   /// ログイン
@@ -41,7 +42,8 @@ abstract class AuthRepository {
     required String name,
     required String region,
     required DateTime birthday,
-    required String job
+    required String job,
+    required String jobCategory
   });
 
   /// プロフィール更新(ポリシー限定)

@@ -5,6 +5,7 @@ class AuthUser {
   final String region;
   final DateTime birthday;
   final String job;
+  final String jobCategory;
   /// 公開規約同意日時
   final DateTime? publishAgreedAt;
   /// 公開規約バージョン 形式:vX.X.X
@@ -18,6 +19,7 @@ class AuthUser {
     required this.region,
     required this.birthday,
     required this.job,
+    required this.jobCategory,
     required this.publishAgreedAt,
     required this.publishPolicyVersion,
   });
@@ -28,6 +30,7 @@ class AuthUser {
     String? region,
     DateTime? birthday,
     String? job,
+    String? jobCategory,
     DateTime? publishAgreedAt,
     String? publishPolicyVersion,
   }) {
@@ -38,6 +41,7 @@ class AuthUser {
       region: region ?? this.region,
       birthday: birthday ?? this.birthday,
       job: job ?? this.job,
+      jobCategory: jobCategory ?? this.jobCategory,
       publishAgreedAt: publishAgreedAt,
       publishPolicyVersion: publishPolicyVersion,
     );

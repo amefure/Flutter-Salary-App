@@ -2,6 +2,7 @@ abstract class ProfileConfig {
 
   static const empty = '';
   static const undefined = '未設定';
+  static const undefinedJob = Job(category: '未設定', name: '未設定');
   static final defaultDateTime = DateTime(2026, 1, 1);
 
   static const List<String> prefectures = [
@@ -20,7 +21,8 @@ abstract class ProfileConfig {
     JobCategory(
       name: 'IT・テクノロジー',
       jobs: [
-        'フロントエンドエンジニア',
+        'フロントエンド(Web)エンジニア',
+        'モバイルアプリエンジニア',
         'バックエンドエンジニア',
         'フルスタックエンジニア',
         'インフラエンジニア',
@@ -159,6 +161,13 @@ abstract class ProfileConfig {
     ),
   ];
 }
+
+class Job {
+  final String category;
+  final String name;
+  const Job({required this.category, required this.name});
+}
+
 class JobCategory {
   final String name;
   final List<String> jobs;

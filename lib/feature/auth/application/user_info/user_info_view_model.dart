@@ -33,12 +33,13 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
   final AuthStateNotifier _authProvider;
 
   Future<void> _setUpUserInfo(AuthUser? initialUser) async {
+    final job = initialUser != null ? Job(category: initialUser.jobCategory, name: initialUser.job) : null;
     state = state.copyWith(
       name: initialUser?.name,
       email: initialUser?.email,
       region: initialUser?.region,
       birthday: initialUser?.birthday,
-      job: initialUser?.job,
+      job: job,
     );
     final isCompleted = _isAllValidation();
     state = state.copyWith(
@@ -71,7 +72,8 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
         name: state.name,
         region: state.region,
         birthday: state.birthday!,
-        job: state.job,
+        job: state.job.name,
+        jobCategory: state.job.category,
       );
     });
   }
@@ -100,7 +102,7 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
     );
   }
 
-  void updateJob(String value) {
+  void updateJob(Job value) {
     final isCompleted = _isAllValidation(job: value);
     state = state.copyWith(
         job: value,
@@ -114,7 +116,7 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
     String? name,
     String? region,
     DateTime? birthday,
-    String? job,
+    Job? job,
   }) {
     final currentName = name ?? state.name;
     final currentRegion = region ?? state.region;
@@ -126,7 +128,7 @@ class UserInfoViewModel extends StateNotifier<UserInfoState>{
 
     final hasRegion = currentRegion != ProfileConfig.undefined;
     final hasBirthday = currentBirthday != null;
-    final hasJob = currentJob != ProfileConfig.undefined;
+    final hasJob = currentJob != ProfileConfig.undefinedJob;
     return hasName && hasRegion && hasBirthday && hasJob;
   }
 }

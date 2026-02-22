@@ -1,4 +1,3 @@
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/core/config/profile_config.dart';
 
 class RegisterAccountState {
@@ -9,7 +8,7 @@ class RegisterAccountState {
   final String passwordConfirm;
   final String region;
   final DateTime? birthday;
-  final String job;
+  final Job job;
 
   /// 入力ボックスの入力完了フラグ
   final bool isCompleted;
@@ -33,7 +32,7 @@ class RegisterAccountState {
       passwordConfirm: 'password123', // ProfileConfig.empty,
       region: ProfileConfig.undefined,
       birthday: null,
-      job: ProfileConfig.undefined,
+      job: ProfileConfig.undefinedJob,
     );
   }
 
@@ -44,7 +43,7 @@ class RegisterAccountState {
     String? passwordConfirm,
     String? region,
     DateTime? birthday,
-    String? job,
+    Job? job,
     bool? isCompleted
   }) {
     return RegisterAccountState(

@@ -34,7 +34,8 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
         passwordConfirm: state.passwordConfirm,
         region: state.region,
         birthday: state.birthday!,
-        job: state.job,
+        job: state.job.name,
+        jobCategory: state.job.category,
       );
     });
   }
@@ -93,7 +94,7 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     );
   }
 
-  void updateJob(String value) {
+  void updateJob(Job value) {
     final isCompleted = _isAllValidation(job: value);
     state = state.copyWith(
         job: value,
@@ -110,7 +111,7 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     String? passwordConfirm,
     String? region,
     DateTime? birthday,
-    String? job,
+    Job? job,
   }) {
     final currentName = name ?? state.name;
     final currentEmail = email ?? state.email;
@@ -141,7 +142,7 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
 
     final hasRegion = currentRegion != ProfileConfig.undefined;
     final hasBirthday = currentBirthday != null;
-    final hasJob = currentJob != ProfileConfig.undefined;
+    final hasJob = currentJob != ProfileConfig.undefinedJob;
     return hasName && hasEmail && hasPassword && hasPasswordConfirm && hasRegion && hasBirthday && hasJob;
   }
 

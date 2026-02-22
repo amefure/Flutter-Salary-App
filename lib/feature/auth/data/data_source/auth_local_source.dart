@@ -34,6 +34,7 @@ class AuthLocalSourceImpl implements AuthLocalSource {
       AuthJsonKeys.region : user.region,
       AuthJsonKeys.birthday : user.birthday.toIso8601String(),
       AuthJsonKeys.job : user.job,
+      AuthJsonKeys.jobCategory : user.jobCategory,
       AuthJsonKeys.publishAgreedAt: user.publishAgreedAt?.toIso8601String(),
       AuthJsonKeys.publishPolicyVersion: user.publishPolicyVersion,
     });
@@ -56,6 +57,7 @@ class AuthLocalSourceImpl implements AuthLocalSource {
       region: map[AuthJsonKeys.region],
       birthday: DateTime.parse(map[AuthJsonKeys.birthday]),
       job: map[AuthJsonKeys.job],
+      jobCategory: map[AuthJsonKeys.jobCategory],
       /// nullではないならDateTimeにパースする
       publishAgreedAt: publishAgreedAtStr != null ? DateTime.parse(publishAgreedAtStr) : null,
       publishPolicyVersion: map[AuthJsonKeys.publishPolicyVersion],

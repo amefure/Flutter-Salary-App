@@ -9,6 +9,7 @@ class AuthUserDto {
   final String region;
   final String birthday;
   final String job;
+  final String jobCategory;
   /// 公開規約同意日時
   final String? publishAgreedAt;
   /// 公開規約バージョン 形式:vX.X.X
@@ -21,6 +22,7 @@ class AuthUserDto {
     required this.region,
     required this.birthday,
     required this.job,
+    required this.jobCategory,
     required this.publishAgreedAt,
     required this.publishPolicyVersion,
   });
@@ -37,6 +39,7 @@ class AuthUserDto {
       region: profile[AuthJsonKeys.region],
       birthday: profile[AuthJsonKeys.birthday],
       job: profile[AuthJsonKeys.job],
+      jobCategory: profile[AuthJsonKeys.jobCategory],
       publishAgreedAt: profile[AuthJsonKeys.publishAgreedAt],
       publishPolicyVersion: profile[AuthJsonKeys.publishPolicyVersion],
     );
@@ -57,6 +60,7 @@ class AuthUserDto {
       // toLocalでJTCに変更する
       birthday: birthday,
       job: job,
+      jobCategory: jobCategory,
       // toLocalでJTCに変更する
       publishAgreedAt: publishAgreedAt,
       publishPolicyVersion: publishPolicyVersion

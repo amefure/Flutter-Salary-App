@@ -41,6 +41,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String region,
     required DateTime birthday,
     required String job,
+    required String jobCategory,
   }) async {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
 
@@ -52,6 +53,7 @@ class AuthRepositoryImpl implements AuthRepository {
       AuthJsonKeys.region: region,
       AuthJsonKeys.birthday: formatted,
       AuthJsonKeys.job: job,
+      AuthJsonKeys.jobCategory: jobCategory,
     });
 
     await saveToken(result);
@@ -106,7 +108,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String region,
     required DateTime birthday,
-    required String job
+    required String job,
+    required String jobCategory
   }) async {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
     await _api.updateProfile({
@@ -114,6 +117,7 @@ class AuthRepositoryImpl implements AuthRepository {
       AuthJsonKeys.region: region,
       AuthJsonKeys.birthday: formatted,
       AuthJsonKeys.job: job,
+      AuthJsonKeys.jobCategory: jobCategory,
     });
   }
 

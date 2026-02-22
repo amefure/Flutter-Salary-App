@@ -4,7 +4,7 @@ import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 
 class JobPickerModal extends StatefulWidget {
-  final String currentJob;
+  final Job currentJob;
 
   const JobPickerModal({super.key, required this.currentJob});
 
@@ -15,14 +15,16 @@ class JobPickerModal extends StatefulWidget {
 class _JobPickerModalState extends State<JobPickerModal> {
   int _selectedCategoryIndex = 0;
   String? _selectedJob;
+  String? _selectedJobCategory;
 
   @override
   void initState() {
     super.initState();
     for (var i = 0; i < ProfileConfig.jobCategories.length; i++) {
-      if (ProfileConfig.jobCategories[i].jobs.contains(widget.currentJob)) {
+      if (ProfileConfig.jobCategories[i].jobs.contains(widget.currentJob.name)) {
         _selectedCategoryIndex = i;
-        _selectedJob = widget.currentJob;
+        _selectedJobCategory = ProfileConfig.jobCategories[i].name;
+        _selectedJob = widget.currentJob.name;
         break;
       }
     }
@@ -98,6 +100,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
+                            _selectedJobCategory = ProfileConfig.jobCategories[index].name;
                             _selectedJob = job;
                           });
                         },
@@ -140,7 +143,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _selectedJob != null
-                    ? () => Navigator.pop(context, _selectedJob)
+                    ? () => Navigator.pop(context, Job(category: _selectedJobCategory!, name: _selectedJob!))
                     : null,
                 child: const CustomText(
                   text: '決定',

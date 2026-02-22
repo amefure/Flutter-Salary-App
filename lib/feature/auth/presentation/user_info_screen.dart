@@ -179,10 +179,10 @@ class _Body extends ConsumerState<_BodyWidget> {
           /// 職業
           UserInfoRowTile(
             title: '職業',
-            value: state.job,
+            value: state.job.name,
             isEdit: state.isEdit,
               onTap: () async {
-                final selected = await showModalBottomSheet<String>(
+                final selected = await showModalBottomSheet<Job>(
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,

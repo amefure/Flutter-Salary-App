@@ -30,6 +30,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     required String region,
     required DateTime birthday,
     required String job,
+    required String jobCategory,
 }) async {
     final user =  await _authRepository.register(
       name: name,
@@ -39,6 +40,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       region: region,
       birthday: birthday,
       job: job,
+      jobCategory: jobCategory
     );
     state = state.copyWith(user);
   }
@@ -124,13 +126,15 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     required String name,
     required String region,
     required DateTime birthday,
-    required String job
+    required String job,
+    required String jobCategory,
   }) async {
     await _authRepository.updateProfile(
         name: name,
         region: region,
         birthday: birthday,
-        job: job
+        job: job,
+        jobCategory: jobCategory
     );
     final updateUser = state.user?.copyWith(
         name: name,
