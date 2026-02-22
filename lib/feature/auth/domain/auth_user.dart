@@ -6,9 +6,9 @@ class AuthUser {
   final DateTime birthday;
   final String job;
   /// 公開規約同意日時
-  final DateTime publishAgreedAt;
+  final DateTime? publishAgreedAt;
   /// 公開規約バージョン 形式:vX.X.X
-  final String publishPolicyVersion;
+  final String? publishPolicyVersion;
 
 
   const AuthUser({
@@ -38,8 +38,8 @@ class AuthUser {
       region: region ?? this.region,
       birthday: birthday ?? this.birthday,
       job: job ?? this.job,
-      publishAgreedAt: publishAgreedAt ?? this.publishAgreedAt,
-      publishPolicyVersion: publishPolicyVersion ?? this.publishPolicyVersion,
+      publishAgreedAt: publishAgreedAt,
+      publishPolicyVersion: publishPolicyVersion,
     );
   }
 }

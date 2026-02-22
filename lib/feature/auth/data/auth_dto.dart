@@ -10,9 +10,9 @@ class AuthUserDto {
   final String birthday;
   final String job;
   /// 公開規約同意日時
-  final DateTime publishAgreedAt;
+  final String? publishAgreedAt;
   /// 公開規約バージョン 形式:vX.X.X
-  final String publishPolicyVersion;
+  final String? publishPolicyVersion;
 
   AuthUserDto({
     required this.id,
@@ -47,15 +47,19 @@ class AuthUserDto {
   }
 
   AuthUser toDomain() {
+    final birthday = DateTime.parse(this.birthday).toLocal();
+    final publishAgreedAt = this.publishAgreedAt?.isNotEmpty ?? false ? DateTime.parse(this.publishAgreedAt!).toLocal() : null;
+
     return AuthUser(
       id: id,
       name: name,
       email: email,
       region: region,
       // toLocalでJTCに変更する
-      birthday: DateTime.parse(birthday).toLocal(),
+      birthday: birthday,
       job: job,
-      publishAgreedAt: DateTime.parse(birthday).toLocal(),
+      // toLocalでJTCに変更する
+      publishAgreedAt: publishAgreedAt,
       publishPolicyVersion: publishPolicyVersion
     );
   }

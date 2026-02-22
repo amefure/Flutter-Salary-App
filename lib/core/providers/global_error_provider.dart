@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
+import 'package:salary/core/utils/logger.dart';
 
 final globalErrorProvider =
 StateNotifierProvider<GlobalErrorNotifier, String?>(
@@ -37,7 +38,10 @@ extension AsyncHandlingExtension on Ref {
       error.show(_mapApiExceptionToMessage(e));
       return false;
 
-    } catch (_) {
+    } catch (e) {
+      logger('======= ❌ Error Other Response =======');
+      logger(e);
+      logger('======= ❌ Error Other Response =======');
       error.show('予期せぬエラーが発生しました');
       return false;
 

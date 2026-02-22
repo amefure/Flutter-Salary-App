@@ -1,5 +1,5 @@
 
-class CommonJsonKeys {
+abstract class CommonJsonKeys {
   static const ids = 'ids';
   static const data = 'data';
   static const user = 'user';
@@ -9,13 +9,13 @@ class CommonJsonKeys {
   static const accessToken = 'access_token';
 }
 
-class SalaryPageKeys {
+abstract class SalaryPageKeys {
   static const currentPage = 'current_page';
   static const lastPage = 'last_page';
   static const total = 'total';
 }
 
-class SalaryJsonKeys {
+abstract class SalaryJsonKeys {
   static const id = 'id';
   static const paymentAmount = 'payment_amount';
   static const deductionAmount = 'deduction_amount';
@@ -30,13 +30,13 @@ class SalaryJsonKeys {
   static const publication = 'publication';
 }
 
-class AmountItemJsonKeys {
+abstract class AmountItemJsonKeys {
   static const id = 'id';
   static const key = 'key';
   static const value = 'value';
 }
 
-class PaymentSourceJsonKeys {
+abstract class PaymentSourceJsonKeys {
   static const id = 'id';
   static const name = 'name';
   static const themeColor = 'theme_color';
@@ -46,7 +46,7 @@ class PaymentSourceJsonKeys {
   static const isPublicName = 'is_public_name';
 }
 
-class AuthJsonKeys {
+abstract class AuthJsonKeys {
   static const id = 'id';
   static const name = 'name';
   static const email = 'email';
