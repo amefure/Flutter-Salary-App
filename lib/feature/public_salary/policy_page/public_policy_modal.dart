@@ -69,7 +69,6 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
               text: PublicPolicyConfig.title,
               textSize: TextSize.ML,
               fontWeight: FontWeight.bold,
-              maxLines: null,
             ),
           ),
 
@@ -110,7 +109,7 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
                 builder: (context, ref, _) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child:  CustomElevatedButton(
+                    child: CustomElevatedButton(
                       text: '同意して公開する',
                       backgroundColor: isEnabled ? CustomColors.thema : CustomColors.themaBlack.withAlpha(70),
                       onPressed: () async {
@@ -171,7 +170,7 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
 
   Widget _section(String title, String content) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -179,13 +178,12 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
             text: title,
             textSize: TextSize.MS,
             fontWeight: FontWeight.bold,
-            maxLines: null,
           ),
           const SizedBox(height: 8),
           CustomText(
             text: content,
             textSize: TextSize.S,
-            maxLines: null,
+            maxLines: 10,
           ),
         ],
       ),

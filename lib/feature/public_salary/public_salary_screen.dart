@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
+import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -31,8 +32,8 @@ class PublicSalaryScreen extends ConsumerWidget {
           onPressed: () {
             ExplanationOverlay.show(
               context: context,
-              title: '',
-              description: '',
+              title: PublicSimplePolicyConfig.title,
+              description: PublicSimplePolicyConfig.description,
             );
           },
         ),

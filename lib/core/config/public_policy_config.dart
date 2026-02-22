@@ -6,7 +6,7 @@ abstract class PublicPolicyConfig {
 
   static const String version = 'v1.0.0';
   static const String effectiveDate = '2026-02-21';
-  static const String title = '給与情報公開機能 利用ポリシー';
+  static const String title = '給料情報公開機能 利用ポリシー';
 
   // ==============================
   // 公開対象データ（限定列挙）
@@ -41,7 +41,8 @@ abstract class PublicPolicyConfig {
 
   static const String userResponsibilityClause = '''
 利用者は、公開情報の正確性について責任を負います。
-虚偽情報の登録または第三者の権利を侵害する行為は禁止されます。
+虚偽情報の登録や第三者の権利侵害、会社の規則違反を行わないことを誓約します。
+利用者は自身の所属企業の規約・秘密保持契約に従って行動するものとします。
 ''';
 
   // ==============================
@@ -55,6 +56,7 @@ abstract class PublicPolicyConfig {
 ・スクレイピング等による大量取得
 ・営利目的での再利用
 ・法令違反行為
+・所属企業の規則違反行為
 ''';
 
   // ==============================
@@ -76,7 +78,7 @@ abstract class PublicPolicyConfig {
 
   static const String deletionRightClause = '''
 利用者はいつでも公開を停止できます。
-ただし、第三者が既に取得した情報について運営は管理できません。
+ただし第三者が既に取得した情報について、管理の対象外となり運営は責任を負いません。
 ''';
 
   // ==============================
@@ -84,9 +86,9 @@ abstract class PublicPolicyConfig {
   // ==============================
 
   static const String liabilityLimitationClause = '''
-本機能に関連して生じた損害について、
-運営の責任は、故意または重過失がある場合を除き、
-直近12ヶ月間に当該利用者が支払った利用料金を上限とします。
+本機能に関連して生じた損害について、運営は一切の責任を負いません。
+運営の責任は、故意または重過失がある場合を除き、利用者が自己の責任で公開した情報による損害については免責されます。
+利用者は自身の所属組織や法律に従い、自己責任で公開を行うものとします。
 ''';
 
   // ==============================
@@ -95,6 +97,7 @@ abstract class PublicPolicyConfig {
 
   static const String serviceModificationClause = '''
 運営は、本機能を予告なく変更または終了することがあります。
+運営は、サービス変更による利用者の損害について一切責任を負いません。
 ''';
 
   // ==============================
@@ -122,5 +125,23 @@ abstract class PublicPolicyConfig {
 本ポリシーは日本法に準拠します。
 紛争が生じた場合、東京地方裁判所を第一審の専属的合意管轄とします。
 ''';
+}
 
+abstract class PublicSimplePolicyConfig {
+
+  static const String title = '公開される情報について';
+
+  static const String description = '''
+本機能を利用すると、以下の情報が公開されます。
+
+・給料金額（総支給・手取り）
+・支給年月
+・給与項目の内訳
+・支払い元（任意選択）
+・職種（任意選択）
+・年代（任意選択）
+
+ユーザー情報(メールアドレスや生年月日)や給料ごとに設定したメモなどの個人情報は公開されませんのでご安心ください。
+公開後も削除することが可能です。
+''';
 }
