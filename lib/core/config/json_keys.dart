@@ -55,4 +55,6 @@ class AuthJsonKeys {
   static const region = 'region';
   static const birthday = 'birthday';
   static const job = 'job';
+  static const publishAgreedAt = 'publish_agreed_at';
+  static const publishPolicyVersion = 'publish_policy_version';
 }

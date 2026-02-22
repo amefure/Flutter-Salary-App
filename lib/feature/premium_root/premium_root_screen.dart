@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -87,16 +84,14 @@ class PremiumRootScreen extends StatelessWidget {
                         width: 30,
                         child: CupertinoButton(
                           padding: EdgeInsets.zero,
-                          child: const Icon(CupertinoIcons.info),
+                          child: const Icon(CupertinoIcons.question_circle_fill),
                           onPressed: () {
-                            final currentTab =
-                            ref.read(premiumTabProvider);
+                            final currentTab = ref.read(premiumTabProvider);
+
                             ExplanationOverlay.show(
                               context: context,
-                              title: 'タイムライン',
-                              description:
-                              '投稿の一覧を時系列で確認できます。\n'
-                                  '最新の情報をすぐチェックできます。',
+                              title: currentTab.title,
+                              description: currentTab.description,
                             );
                           },
                         ),
@@ -131,9 +126,24 @@ StateProvider<PremiumTab>((ref) {
 });
 
 enum PremiumTab {
-  timeline,
-  summary,
+  timeline(
+    title: 'タイムライン',
+    description: 'みんなの月単位での給料情報投稿を時系列で確認できます。\n最新の情報をすぐチェックできます。',
+  ),
+  summary(
+    title: 'サマリー',
+    description: '月別・年別のデータを\nグラフで確認できます。',
+  );
+
+  final String title;
+  final String description;
+
+  const PremiumTab({
+    required this.title,
+    required this.description,
+  });
 }
+
 
 
 

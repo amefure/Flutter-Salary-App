@@ -9,6 +9,10 @@ class AuthUserDto {
   final String region;
   final String birthday;
   final String job;
+  /// 公開規約同意日時
+  final DateTime publishAgreedAt;
+  /// 公開規約バージョン 形式:vX.X.X
+  final String publishPolicyVersion;
 
   AuthUserDto({
     required this.id,
@@ -17,6 +21,8 @@ class AuthUserDto {
     required this.region,
     required this.birthday,
     required this.job,
+    required this.publishAgreedAt,
+    required this.publishPolicyVersion,
   });
 
   factory AuthUserDto.fromJson(Map<String, dynamic> json) {
@@ -31,6 +37,8 @@ class AuthUserDto {
       region: profile[AuthJsonKeys.region],
       birthday: profile[AuthJsonKeys.birthday],
       job: profile[AuthJsonKeys.job],
+      publishAgreedAt: profile[AuthJsonKeys.publishAgreedAt],
+      publishPolicyVersion: profile[AuthJsonKeys.publishPolicyVersion],
     );
     logger('======= AuthUser fromJson =======');
     logger(dto);
@@ -47,6 +55,8 @@ class AuthUserDto {
       // toLocalでJTCに変更する
       birthday: DateTime.parse(birthday).toLocal(),
       job: job,
+      publishAgreedAt: DateTime.parse(birthday).toLocal(),
+      publishPolicyVersion: publishPolicyVersion
     );
   }
 }

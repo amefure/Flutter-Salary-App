@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/repository/shared_prefs_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,12 +27,15 @@ class AuthLocalSourceImpl implements AuthLocalSource {
   @override
   Future<void> saveUser(AuthUser user) async {
     final json = jsonEncode({
-      'id': user.id,
-      'name': user.name,
-      'email': user.email,
-      'region': user.region,
-      'birthday': user.birthday.toIso8601String(),
-      'job': user.job,
+      AuthJsonKeys.id : user.id,
+      AuthJsonKeys.name : user.name,
+      AuthJsonKeys.email : user.email,
+      AuthJsonKeys.region : user.region,
+      AuthJsonKeys.birthday : user.birthday.toIso8601String(),
+      AuthJsonKeys.job : user.job,
+      AuthJsonKeys.publishAgreedAt: user.publishAgreedAt,
+      AuthJsonKeys.publishPolicyVersion: user.publishPolicyVersion,
+
     });
 
     await _prefs.setString(_key, json);
@@ -45,12 +49,14 @@ class AuthLocalSourceImpl implements AuthLocalSource {
     final map = jsonDecode(jsonString);
 
     return AuthUser(
-      id: map['id'],
-      name: map['name'],
-      email: map['email'],
-      region: map['region'],
-      birthday: DateTime.parse(map['birthday']),
-      job: map['job'],
+      id: map[AuthJsonKeys.id],
+      name: map[AuthJsonKeys.name],
+      email: map[AuthJsonKeys.email],
+      region: map[AuthJsonKeys.region],
+      birthday: DateTime.parse(map[AuthJsonKeys.birthday]),
+      job: map[AuthJsonKeys.job],
+      publishAgreedAt: map[AuthJsonKeys.publishAgreedAt],
+      publishPolicyVersion: map[AuthJsonKeys.publishPolicyVersion],
     );
   }
 

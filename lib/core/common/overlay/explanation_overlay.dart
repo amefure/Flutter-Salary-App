@@ -90,6 +90,7 @@ class ExplanationOverlay extends StatelessWidget {
                         CustomText(
                           text: description,
                           textSize: TextSize.M,
+                          maxLines: 20,
                         ),
                       ],
                     ),

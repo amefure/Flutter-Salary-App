@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
+import 'package:salary/core/common/overlay/explanation_overlay.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/public_salary/public_salary_view_model.dart';
@@ -17,10 +18,21 @@ class PublicSalaryScreen extends ConsumerWidget {
     final viewModel = ref.read(publicSalaryProvider.notifier);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
-      navigationBar: const CupertinoNavigationBar(
-        middle: CustomText(
+      navigationBar: CupertinoNavigationBar(
+        middle: const CustomText(
           text: '給料公開設定',
           fontWeight: FontWeight.bold,
+        ),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: const Icon(CupertinoIcons.question_circle_fill),
+          onPressed: () {
+            ExplanationOverlay.show(
+              context: context,
+              title: '',
+              description: '',
+            );
+          },
         ),
       ),
       child: SafeArea(
