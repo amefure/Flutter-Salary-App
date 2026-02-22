@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';

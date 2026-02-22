@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
-import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';

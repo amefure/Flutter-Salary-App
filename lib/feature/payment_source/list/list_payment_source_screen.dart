@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';

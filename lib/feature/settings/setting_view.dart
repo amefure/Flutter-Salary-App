@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
-import 'package:salary/core/common/components/app_dialog.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
