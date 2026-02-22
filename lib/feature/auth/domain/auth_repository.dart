@@ -44,4 +44,10 @@ abstract class AuthRepository {
     required String job
   });
 
+  /// プロフィール更新(ポリシー限定)
+  /// 同意日はサーバー側で生成する
+  Future<void> updatePolicyProfile({
+    required String publishPolicyVersion
+  });
+
 }

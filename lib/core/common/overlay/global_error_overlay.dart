@@ -64,11 +64,11 @@ class _GlobalErrorOverlayState extends State<GlobalErrorOverlay>
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.red.shade600.withAlpha(80),
+                color: Colors.red.shade600.withAlpha(230),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(20),
+                    color: Colors.black.withAlpha(100),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -85,7 +85,7 @@ class _GlobalErrorOverlayState extends State<GlobalErrorOverlay>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(20),
+                        color: Colors.white.withAlpha(80),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(

@@ -51,15 +51,6 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     state = state.copyWith(paymentSources: results);
   }
 
-  /// 全取得
-  void test() async {
-    await _ref.runWithGlobalHandling(() async {
-      await _salaryRepository.fetchAllUserList();
-
-      //await _salaryRepository.fetchAllList();
-    });
-  }
-
   /// ローカル情報の更新
   Future<bool> updatePaymentSource(
       PaymentSource current,

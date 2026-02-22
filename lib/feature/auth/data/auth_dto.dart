@@ -49,7 +49,6 @@ class AuthUserDto {
   AuthUser toDomain() {
     final birthday = DateTime.parse(this.birthday).toLocal();
     final publishAgreedAt = this.publishAgreedAt?.isNotEmpty ?? false ? DateTime.parse(this.publishAgreedAt!).toLocal() : null;
-
     return AuthUser(
       id: id,
       name: name,

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/auth/auth_state.dart';
+import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
@@ -138,6 +139,15 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         job: job
     );
     state = state.copyWith(updateUser);
+  }
+
+  /// プロフィール情報更新
+  Future<void> updatePolicyProfile() async {
+    await _authRepository.updatePolicyProfile(
+        publishPolicyVersion: PublicPolicyConfig.version,
+    );
+    // 同意日が更新されているので念のため再度取得する
+    await fetchUser();
   }
 
 }

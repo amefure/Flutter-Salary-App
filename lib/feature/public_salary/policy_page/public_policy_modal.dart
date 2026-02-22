@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/public_salary/policy_page/public_policy_service.dart';
 
 Future<bool?> showPublicPolicyModal(BuildContext context) {
   return showModalBottomSheet<bool>(
@@ -91,19 +95,26 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
           ),
 
           /// 同意ボタン
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child:  CustomElevatedButton(
-              text: '同意して公開する',
-              backgroundColor: isEnabled ? CustomColors.thema : CustomColors.themaBlack.withAlpha(70),
-              onPressed: () {
-                isEnabled
-                    ? () => Navigator.pop(context, true)
-                    : null;
-              },
-            ),
-          )
-
+         Consumer(
+             builder: (context, ref, _) {
+               return Padding(
+                   padding: const EdgeInsets.symmetric(vertical: 10),
+                   child:  CustomElevatedButton(
+                     text: '同意して公開する',
+                     backgroundColor: isEnabled ? CustomColors.thema : CustomColors.themaBlack.withAlpha(70),
+                     onPressed: () async {
+                       if (isEnabled) {
+                         final result = await ref.read(publicPolicyProvider).updatePolicyProfile();
+                         if (result) {
+                           // ポリシー規約に同意し、サーバー情報も更新成功したのでtrueで戻る
+                           Navigator.of(context).pop(true);
+                         }
+                       }
+                     },
+                   ),
+                 );
+             }
+         )
         ],
       ),
     );

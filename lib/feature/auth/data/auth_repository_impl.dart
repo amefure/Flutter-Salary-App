@@ -116,4 +116,15 @@ class AuthRepositoryImpl implements AuthRepository {
       AuthJsonKeys.job: job,
     });
   }
+
+  /// プロフィール更新(ポリシー限定)
+  /// 同意日はサーバー側で生成するためバージョンのみ送信
+  @override
+  Future<void> updatePolicyProfile({
+    required String publishPolicyVersion
+  }) async {
+    await _api.updateProfile({
+      AuthJsonKeys.publishPolicyVersion: publishPolicyVersion,
+    });
+  }
 }

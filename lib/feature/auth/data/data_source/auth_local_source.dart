@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/repository/shared_prefs_repository.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,9 +34,8 @@ class AuthLocalSourceImpl implements AuthLocalSource {
       AuthJsonKeys.region : user.region,
       AuthJsonKeys.birthday : user.birthday.toIso8601String(),
       AuthJsonKeys.job : user.job,
-      AuthJsonKeys.publishAgreedAt: user.publishAgreedAt,
+      AuthJsonKeys.publishAgreedAt: user.publishAgreedAt?.toIso8601String(),
       AuthJsonKeys.publishPolicyVersion: user.publishPolicyVersion,
-
     });
 
     await _prefs.setString(_key, json);
@@ -48,6 +48,7 @@ class AuthLocalSourceImpl implements AuthLocalSource {
 
     final map = jsonDecode(jsonString);
 
+    final publishAgreedAtStr = map[AuthJsonKeys.publishAgreedAt];
     return AuthUser(
       id: map[AuthJsonKeys.id],
       name: map[AuthJsonKeys.name],
@@ -55,7 +56,8 @@ class AuthLocalSourceImpl implements AuthLocalSource {
       region: map[AuthJsonKeys.region],
       birthday: DateTime.parse(map[AuthJsonKeys.birthday]),
       job: map[AuthJsonKeys.job],
-      publishAgreedAt: map[AuthJsonKeys.publishAgreedAt],
+      /// nullではないならDateTimeにパースする
+      publishAgreedAt: publishAgreedAtStr != null ? DateTime.parse(publishAgreedAtStr) : null,
       publishPolicyVersion: map[AuthJsonKeys.publishPolicyVersion],
     );
   }

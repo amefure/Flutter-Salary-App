@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/common/components/public_policy_modal.dart';
+import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
@@ -60,8 +60,6 @@ class PublicSalaryScreen extends ConsumerWidget {
                   // // ViewModelに通知（後で実装）
                   _confirmAlertPublic(context, ref, source, isPublic);
                 }
-
-
               },
             );
           },
