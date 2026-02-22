@@ -8,12 +8,13 @@ import 'package:salary/core/common/components/cupertino_picker_modal.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
-import 'package:salary/core/common/components/user_info_row_tile.dart';
+import 'package:salary/feature/auth/presentation/components/user_info_row_tile.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
+import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
 
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({super.key});
@@ -218,14 +219,18 @@ class _Body extends ConsumerState<_BodyWidget> {
           UserInfoRowTile(
             title: '職業',
             value: state.job,
-            onTap: () =>
-                CupertinoPickerModal.show<String>(
-                  context: context,
-                  items: ProfileConfig.jobs,
-                  currentValue: state.job,
-                  labelBuilder: (job) => job,
-                  onSelected: viewModel.updateJob,
-                )
+            onTap: () async {
+              final selected = await showModalBottomSheet<String>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => JobPickerModal(currentJob: state.job),
+              );
+
+              if (selected != null) {
+                viewModel.updateJob(selected);
+              }
+            }
           ),
 
           CustomElevatedButton(

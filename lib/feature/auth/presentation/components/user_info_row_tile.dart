@@ -57,28 +57,25 @@ class UserInfoRowTile extends StatelessWidget {
         TextButton(
           onPressed: isEdit ? onTap : () {},
           child: Container(
-            padding: const EdgeInsets.all(10),
-            width: 140,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            constraints: const BoxConstraints(
+              minWidth: 140,
+            ),
             decoration: BoxDecoration(
               color: value == ProfileConfig.undefined ? ThemaColor.gray.color : ThemaColor.blue.color,
               borderRadius: BorderRadius.circular(3),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Spacer(),
-                CustomText(
-                  text: value,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  textSize: TextSize.S,
-                ),
-                const Spacer(),
-              ],
+            child: Center(
+              child: CustomText(
+                text: value,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                textSize: TextSize.S,
+                maxLines: 2,
+              ),
             ),
           ),
         ),
-
       ],
     );
   }

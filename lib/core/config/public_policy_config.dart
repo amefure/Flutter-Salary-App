@@ -17,8 +17,9 @@ abstract class PublicPolicyConfig {
     '手取り額',
     '支給年月',
     '支払い元名（任意設定時）',
+    '年代',
+    '地域',
     '職種（任意設定時）',
-    '地域（任意設定時）',
   ];
 
   static const String publishScopeDescription = '''
@@ -138,8 +139,9 @@ abstract class PublicSimplePolicyConfig {
 ・支給年月
 ・給与項目の内訳
 ・支払い元（任意選択）
+・年代
+・地域
 ・職種（任意選択）
-・年代（任意選択）
 
 ユーザー情報(メールアドレスや生年月日)や給料ごとに設定したメモなどの個人情報は公開されませんのでご安心ください。
 公開後も削除することが可能です。
