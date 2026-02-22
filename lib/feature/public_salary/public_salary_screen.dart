@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -54,11 +55,15 @@ class PublicSalaryScreen extends ConsumerWidget {
               onChanged: (isPublic) async {
                 if (!publicCheckResult.canPublic) return;
 
-                final agreed = await showPublicPolicyModal(context);
-
-                if (agreed == true) {
-                  // // ViewModelに通知（後で実装）
+                final state = ref.read(authStateProvider);
+                if (state.isPolicyAgreed) {
                   _confirmAlertPublic(context, ref, source, isPublic);
+                } else {
+                  // ポリシー未同意済みユーザーなら同意を求める
+                  final agreed = await showPublicPolicyModal(context, showAgreeButton: true);
+                  if (agreed == true) {
+                    _confirmAlertPublic(context, ref, source, isPublic);
+                  }
                 }
               },
             );

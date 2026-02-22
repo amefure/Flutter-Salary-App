@@ -9,6 +9,7 @@ class AuthState {
   });
 
   bool get isLogin => user != null;
+  bool get isPolicyAgreed => user?.publishAgreedAt != null;
 
   AuthState copyWith(AuthUser? user) {
     return AuthState(

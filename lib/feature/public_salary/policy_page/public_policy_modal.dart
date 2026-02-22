@@ -1,29 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
-import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_service.dart';
 
-Future<bool?> showPublicPolicyModal(BuildContext context) {
+Future<bool?> showPublicPolicyModal(
+    BuildContext context, {
+      bool showAgreeButton = false,
+    }) {
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Colors.white,
-    builder: (_) => const PublicPolicyModal(),
+    builder: (_) => PublicPolicyModal(
+      showAgreeButton: showAgreeButton,
+    ),
   );
 }
 
+
 class PublicPolicyModal extends StatefulWidget {
-  const PublicPolicyModal({super.key});
+  final bool showAgreeButton;
+
+  const PublicPolicyModal({
+    super.key,
+    this.showAgreeButton = false,
+  });
 
   @override
   State<PublicPolicyModal> createState() => _PublicPolicyModalState();
 }
+
 
 class _PublicPolicyModalState extends State<PublicPolicyModal> {
   final ScrollController _scrollController = ScrollController();
@@ -74,47 +84,49 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
             ),
           ),
 
-          const Divider(height: 1),
+          if (widget.showAgreeButton)...[
+            const Divider(height: 1),
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Checkbox(
-                value: _isChecked,
-                onChanged: (value) {
-                  setState(() {
-                    _isChecked = value ?? false;
-                  });
-                },
-              ),
-              CustomText(
-                text: _isChecked == true && _hasScrolledToBottom == false ? '最後までスクロールして内容を確認してください。' : '上記内容を確認し、同意します。' ,
-                textSize: TextSize.S,
-              )
-            ],
-          ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Checkbox(
+                  value: _isChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      _isChecked = value ?? false;
+                    });
+                  },
+                ),
+                CustomText(
+                  text: _isChecked == true && _hasScrolledToBottom == false ? '最後までスクロールして内容を確認してください。' : '上記内容を確認し、同意します。' ,
+                  textSize: TextSize.S,
+                )
+              ],
+            ),
 
-          /// 同意ボタン
-         Consumer(
-             builder: (context, ref, _) {
-               return Padding(
-                   padding: const EdgeInsets.symmetric(vertical: 10),
-                   child:  CustomElevatedButton(
-                     text: '同意して公開する',
-                     backgroundColor: isEnabled ? CustomColors.thema : CustomColors.themaBlack.withAlpha(70),
-                     onPressed: () async {
-                       if (isEnabled) {
-                         final result = await ref.read(publicPolicyProvider).updatePolicyProfile();
-                         if (result) {
-                           // ポリシー規約に同意し、サーバー情報も更新成功したのでtrueで戻る
-                           Navigator.of(context).pop(true);
-                         }
-                       }
-                     },
-                   ),
-                 );
-             }
-         )
+            /// 同意ボタン
+            Consumer(
+                builder: (context, ref, _) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child:  CustomElevatedButton(
+                      text: '同意して公開する',
+                      backgroundColor: isEnabled ? CustomColors.thema : CustomColors.themaBlack.withAlpha(70),
+                      onPressed: () async {
+                        if (isEnabled) {
+                          final result = await ref.read(publicPolicyProvider).updatePolicyProfile();
+                          if (result) {
+                            // ポリシー規約に同意し、サーバー情報も更新成功したのでtrueで戻る
+                            Navigator.of(context).pop(true);
+                          }
+                        }
+                      },
+                    ),
+                  );
+                }
+            )
+          ]
         ],
       ),
     );

@@ -7,6 +7,7 @@ import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
+import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -181,6 +182,16 @@ class SettingView extends StatelessWidget {
                             );
                       }
                   ),
+
+                  _settingListTile(
+                      context,
+                      '公開規約ポリシー',
+                      CupertinoIcons.person_crop_circle_badge_checkmark,
+                          () {
+                        showPublicPolicyModal(context);
+                      }
+                  ),
+
                   _settingListTile(
                       context,
                       'ログアウト',
