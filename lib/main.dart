@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:salary/core/common/global_error_overlay.dart';
-import 'package:salary/core/common/global_loading_overlay.dart';
+import 'package:salary/core/common/overlay/global_error_overlay.dart';
+import 'package:salary/core/common/overlay/global_loading_overlay.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';

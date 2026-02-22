@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/explanation_overlay.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/premium_lock_screen.dart';
@@ -44,32 +48,60 @@ class PremiumRootScreen extends StatelessWidget {
             return Column(
               children: [
 
-                /// 🔥 上部タブ
                 Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: CupertinoSlidingSegmentedControl<
-                      PremiumTab>(
-                    groupValue: currentTab,
-                    children: const {
-                      PremiumTab.timeline: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12),
-                        child: Text('タイムライン'),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child:  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 30),
+                      const Spacer(),
+                      /// 🔥 上部タブ
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: CupertinoSlidingSegmentedControl<
+                            PremiumTab>(
+                          groupValue: currentTab,
+                          children: const {
+                            PremiumTab.timeline: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12),
+                              child: Text('タイムライン'),
+                            ),
+                            PremiumTab.summary: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12),
+                              child: Text('集計'),
+                            ),
+                          },
+                          onValueChanged: (value) {
+                            if (value != null) {
+                              ref.read(premiumTabProvider.notifier).state = value;
+                            }
+                          },
+                        ),
                       ),
-                      PremiumTab.summary: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12),
-                        child: Text('集計'),
+
+                      const Spacer(),
+
+                      SizedBox(
+                        width: 30,
+                        child: CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Icon(CupertinoIcons.info),
+                          onPressed: () {
+                            final currentTab =
+                            ref.read(premiumTabProvider);
+                            ExplanationOverlay.show(
+                              context: context,
+                              title: 'タイムライン',
+                              description:
+                              '投稿の一覧を時系列で確認できます。\n'
+                                  '最新の情報をすぐチェックできます。',
+                            );
+                          },
+                        ),
                       ),
-                    },
-                    onValueChanged: (value) {
-                      if (value != null) {
-                        ref
-                            .read(
-                            premiumTabProvider.notifier)
-                            .state = value;
-                      }
-                    },
+                    ],
                   ),
                 ),
 
@@ -102,5 +134,6 @@ enum PremiumTab {
   timeline,
   summary,
 }
+
 
 
