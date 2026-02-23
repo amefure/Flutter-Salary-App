@@ -6,6 +6,9 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
 
+/// ===============================
+/// Base List View（完全共通）
+/// ===============================
 class BaseSalaryListView<T> extends StatefulWidget {
   final List<T> items;
   final Widget Function(BuildContext context, T item) itemBuilder;
@@ -116,14 +119,185 @@ class _BaseSalaryListViewState<T>
   }
 }
 
+/// ===============================
+/// 共通カードUI
+/// ===============================
+class SalaryCard extends StatelessWidget {
+  final DateTime date;
+  final bool isBonus;
+  final Color color;
+  final String sourceName;
+  final bool isMain;
+  final int paymentAmount;
+  final int netSalary;
+
+  const SalaryCard({
+    super.key,
+    required this.date,
+    required this.isBonus,
+    required this.color,
+    required this.sourceName,
+    required this.paymentAmount,
+    required this.netSalary,
+    this.isMain = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin:
+      const EdgeInsets.only(left: 20, right: 20, top: 1),
+      decoration: BoxDecoration(
+        color: CustomColors.background(context),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          _DateBox(
+            date: date,
+            isBonus: isBonus,
+            color: color,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (isMain)
+                      const Icon(
+                        Icons.star,
+                        size: 14,
+                        color: Colors.amber,
+                      ),
+                    CustomText(
+                      text: sourceName,
+                      textSize: TextSize.S,
+                      color: CustomColors.text(context)
+                          .withValues(alpha: 0.7),
+                    ),
+                  ],
+                ),
+                _SalaryRow(
+                  label: '総支給',
+                  amount: paymentAmount,
+                ),
+                _SalaryRow(
+                  label: '手取り',
+                  amount: netSalary,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ===============================
+/// 日付Box
+/// ===============================
+class _DateBox extends StatelessWidget {
+  final DateTime date;
+  final bool isBonus;
+  final Color color;
+
+  const _DateBox({
+    required this.date,
+    required this.isBonus,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment:
+        MainAxisAlignment.spaceBetween,
+        children: [
+          CustomText(
+            text: '${date.year}年',
+            textSize: TextSize.S,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText(
+            text: !isBonus
+                ? '${date.month}月'
+                : '${date.month}月(賞)',
+            textSize:
+            !isBonus ? TextSize.ML : TextSize.SS,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ===============================
+/// 金額Row
+/// ===============================
+class _SalaryRow extends StatelessWidget {
+  final String label;
+  final int amount;
+
+  const _SalaryRow({
+    required this.label,
+    required this.amount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Spacer(),
+        CustomText(text: label, textSize: TextSize.S),
+        const SizedBox(width: 15),
+        Row(
+          crossAxisAlignment:
+          CrossAxisAlignment.end,
+          children: [
+            CustomText(
+              text:
+              NumberUtils.formatWithComma(amount),
+              textSize: TextSize.L,
+              color: CustomColors.thema,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(width: 5),
+            const CustomText(
+              text: '円',
+              textSize: TextSize.S,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// ===============================
+/// Salary 用
+/// ===============================
 class SalaryListView extends StatelessWidget {
   final List<Salary> salaries;
   final void Function(Salary salary)? onTap;
   final bool showAd;
-
   final VoidCallback? onLoadMore;
   final Future<void> Function()? onRefresh;
-
   final bool hasMore;
   final bool isLoadingMore;
 
@@ -148,123 +322,29 @@ class SalaryListView extends StatelessWidget {
       onRefresh: onRefresh,
       hasMore: hasMore,
       isLoadingMore: isLoadingMore,
-      itemBuilder: (_, salary) =>
-          _SalaryItem(salary: salary),
+      itemBuilder: (_, salary) => SalaryCard(
+        date: salary.createdAt,
+        isBonus: salary.isBonus,
+        color: salary.source?.themaColorEnum.color
+            ?? CustomColors.thema,
+        sourceName: salary.source?.name ?? '未設定',
+        isMain: salary.source?.isMain ?? false,
+        paymentAmount: salary.paymentAmount,
+        netSalary: salary.netSalary,
+      ),
     );
   }
 }
 
-class _SalaryItem extends StatelessWidget {
-  final Salary salary;
-
-  const _SalaryItem({required this.salary});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
-      decoration: BoxDecoration(
-        color: CustomColors.background(context),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          _buildDateBox(),
-          const SizedBox(width: 10),
-          Expanded(child: _buildRightContent(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDateBox() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-        color: salary.source?.themaColorEnum.color ??
-            CustomColors.thema,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomText(
-            text: '${salary.createdAt.year}年',
-            textSize: TextSize.S,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          CustomText(
-            text: !salary.isBonus
-                ? '${salary.createdAt.month}月'
-                : '${salary.createdAt.month}月(賞)',
-            textSize:
-            !salary.isBonus ? TextSize.ML : TextSize.SS,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRightContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (salary.source?.isMain ?? false)
-              const Icon(Icons.star, size: 14, color: Colors.amber),
-            CustomText(
-              text: salary.source?.name ?? '未設定',
-              textSize: TextSize.S,
-              color:
-              CustomColors.text(context).withValues(alpha: 0.7),
-            ),
-          ],
-        ),
-        _buildSalaryRow('総支給', salary.paymentAmount),
-        _buildSalaryRow('手取り', salary.netSalary),
-      ],
-    );
-  }
-
-  Widget _buildSalaryRow(String label, int amount) {
-    return Row(
-      children: [
-        const Spacer(),
-        CustomText(text: label, textSize: TextSize.S),
-        const SizedBox(width: 15),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            CustomText(
-              text: NumberUtils.formatWithComma(amount),
-              textSize: TextSize.L,
-              color: CustomColors.thema,
-              fontWeight: FontWeight.bold,
-            ),
-            const SizedBox(width: 5),
-            const CustomText(text: '円', textSize: TextSize.S),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
+/// ===============================
+/// PublicSalary 用
+/// ===============================
 class PublicSalaryListView extends StatelessWidget {
   final List<PublicSalary> salaries;
   final void Function(PublicSalary salary)? onTap;
   final bool showAd;
-
   final VoidCallback? onLoadMore;
   final Future<void> Function()? onRefresh;
-
   final bool hasMore;
   final bool isLoadingMore;
 
@@ -289,110 +369,15 @@ class PublicSalaryListView extends StatelessWidget {
       onRefresh: onRefresh,
       hasMore: hasMore,
       isLoadingMore: isLoadingMore,
-      itemBuilder: (_, salary) =>
-          _PublicSalaryItem(salary: salary),
-    );
-  }
-}
-
-class _PublicSalaryItem extends StatelessWidget {
-  final PublicSalary salary;
-
-  const _PublicSalaryItem({required this.salary});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 1),
-      decoration: BoxDecoration(
-        color: CustomColors.background(context),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          _buildDateBox(),
-          const SizedBox(width: 10),
-          Expanded(child: _buildRightContent(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDateBox() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
+      itemBuilder: (_, salary) => SalaryCard(
+        date: salary.paidAt,
+        isBonus: salary.isBonus,
         color: CustomColors.thema,
-        borderRadius: BorderRadius.circular(8),
+        sourceName:
+        salary.paymentSource?.displayName ?? '未設定',
+        paymentAmount: salary.paymentAmount,
+        netSalary: salary.netSalary,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomText(
-            text: '${salary.paidAt.year}年',
-            textSize: TextSize.S,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          CustomText(
-            text: !salary.isBonus
-                ? '${salary.paidAt.month}月'
-                : '${salary.paidAt.month}月(賞)',
-            textSize:
-            !salary.isBonus ? TextSize.ML : TextSize.SS,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRightContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (false)
-              const Icon(Icons.star, size: 14, color: Colors.amber),
-            CustomText(
-              text: salary.paymentSource?.displayName ?? '未設定',
-              textSize: TextSize.S,
-              color:
-              CustomColors.text(context).withValues(alpha: 0.7),
-            ),
-          ],
-        ),
-        _buildSalaryRow('総支給', salary.paymentAmount),
-        _buildSalaryRow('手取り', salary.netSalary),
-      ],
-    );
-  }
-
-  Widget _buildSalaryRow(String label, int amount) {
-    return Row(
-      children: [
-        const Spacer(),
-        CustomText(text: label, textSize: TextSize.S),
-        const SizedBox(width: 15),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            CustomText(
-              text: NumberUtils.formatWithComma(amount),
-              textSize: TextSize.L,
-              color: CustomColors.thema,
-              fontWeight: FontWeight.bold,
-            ),
-            const SizedBox(width: 5),
-            const CustomText(text: '円', textSize: TextSize.S),
-          ],
-        ),
-      ],
     );
   }
 }
