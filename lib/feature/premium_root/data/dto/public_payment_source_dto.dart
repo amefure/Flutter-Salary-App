@@ -1,5 +1,6 @@
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/feature/premium_root/domain/model/public_payment_source.dart';
 
 class PublicPaymentSourceDto {
 
@@ -17,16 +18,13 @@ class PublicPaymentSourceDto {
       publicName: json[PaymentSourceJsonKeys.publicName],
     );
   }
+}
 
-  PaymentSource toDomain() {
-    return PaymentSource(
-        id,
-        publicName,
-        0,
-        memo: '',
-        false,
-        true,
-        publicUserId: null
+extension PublicPaymentSourceDtoMapper on PublicPaymentSourceDto {
+  PublicPaymentSource toDomain() {
+    return PublicPaymentSource(
+      id: id,
+      publicName: publicName,
     );
   }
 }

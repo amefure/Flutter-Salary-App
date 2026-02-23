@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/premium_root/data/dto/public_salary_page_dto.dart';
 import 'package:salary/feature/premium_root/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium_root/domain/public_salary_repository.dart';
 import 'package:salary/feature/premium_root/premium_time_line/premium_time_line_state.dart';
@@ -37,7 +38,7 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
     await _ref.runWithGlobalHandling(() async {
       final page = await _publicSalaryRepository.fetchAllList();
       state = state.copyWith(
-        salaries: page.salaries.map((e) => e.toDomain()).toList(),
+        salaries: page.toDomain(),
         currentPage: page.currentPage,
         lastPage: page.lastPage,
       );
@@ -59,7 +60,7 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
     state = state.copyWith(
       salaries: [
         ...state.salaries,
-        ...page.salaries.map((e) => e.toDomain()),
+        ...page.toDomain(),
       ],
       currentPage: page.currentPage,
       lastPage: page.lastPage,

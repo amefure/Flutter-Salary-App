@@ -13,7 +13,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
 
     final state = ref.watch(premiumTimeLineProvider);
 
-    return SalaryListView(
+    return PublicSalaryListView(
       salaries: state.salaries,
       hasMore: (state.currentPage) < (state.lastPage),
       isLoadingMore: state.isLoadingMore,

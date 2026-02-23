@@ -1,8 +1,9 @@
 
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
 
 class PremiumTimeLineState {
-  final List<Salary> salaries;
+  final List<PublicSalary> salaries;
   final List<PaymentSource> paymentSources;
   final int currentPage;
   final int lastPage;
@@ -27,7 +28,7 @@ class PremiumTimeLineState {
   }
 
   PremiumTimeLineState copyWith({
-    List<Salary>? salaries,
+    List<PublicSalary>? salaries,
     List<PaymentSource>? paymentSources,
     int? currentPage,
     int? lastPage,

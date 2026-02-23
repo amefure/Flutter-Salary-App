@@ -2,6 +2,7 @@ import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/premium_root/data/dto/public_payment_source_dto.dart';
 import 'package:salary/feature/premium_root/data/dto/public_user_dto.dart';
+import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
 
 class PublicSalaryDto {
 
@@ -39,20 +40,20 @@ class PublicSalaryDto {
       user: PublicUserDto.fromJson(json[CommonJsonKeys.user]),
     );
   }
+}
 
-
-  Salary toDomain() {
-    return Salary(
-      id,
-      paymentAmount,
-      deductionAmount,
-      netSalary,
-      paidAt.toLocal(),
-      isBonus,
-      '',
-      paymentAmountItems: List.empty(),
-      deductionAmountItems: List.empty(),
-      source: paymentSource?.toDomain(),
+extension PublicSalaryDtoMapper on PublicSalaryDto {
+  PublicSalary toDomain() {
+    return PublicSalary(
+      id: id,
+      paymentAmount: paymentAmount,
+      deductionAmount: deductionAmount,
+      netSalary: netSalary,
+      paidAt: paidAt,
+      isBonus: isBonus,
+      paymentSource: paymentSource?.toDomain(),
+      user: user.toDomain(),
     );
   }
 }
+

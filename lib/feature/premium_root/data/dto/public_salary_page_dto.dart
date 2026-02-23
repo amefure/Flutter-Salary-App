@@ -1,5 +1,8 @@
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/feature/premium_root/data/dto/public_salary_dto.dart';
+import 'package:salary/feature/premium_root/data/dto/public_user_dto.dart';
+import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
+import 'package:salary/feature/premium_root/domain/model/public_user.dart';
 
 class PublicSalaryPageDto {
 
@@ -25,5 +28,10 @@ class PublicSalaryPageDto {
       total: json[PageKeys.total],
 
     );
+  }
+}
+extension PublicSalaryPageDtoMapper on PublicSalaryPageDto {
+  List<PublicSalary> toDomain() {
+    return salaries.map((e) => e.toDomain()).toList();
   }
 }
