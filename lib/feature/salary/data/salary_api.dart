@@ -19,6 +19,7 @@ class SalaryApi {
   }
 
   /// 全ユーザーのデータ
+  @Deprecated('公開・非公開に紐づかないデータ取得なので使用しない')
   Future<Map<String, dynamic>> fetchAllList({ required int page }) async {
     return await _client.get('$_END_POINT/all?page=$page');
   }

@@ -6,8 +6,8 @@ import 'package:salary/core/common/overlay/explanation_overlay.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/premium_lock_screen.dart';
-import 'package:salary/feature/premium_summary/premium_summary_screen.dart';
-import 'package:salary/feature/premium_time_line/premium_time_line_screen.dart';
+import 'package:salary/feature/premium_root/premium_summary/premium_summary_screen.dart';
+import 'package:salary/feature/premium_root/premium_time_line/premium_time_line_screen.dart';
 
 class PremiumRootScreen extends StatelessWidget {
   const PremiumRootScreen({super.key});

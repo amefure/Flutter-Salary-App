@@ -31,12 +31,12 @@ class AuthLocalSourceImpl implements AuthLocalSource {
       AuthJsonKeys.id : user.id,
       AuthJsonKeys.name : user.name,
       AuthJsonKeys.email : user.email,
-      AuthJsonKeys.region : user.region,
-      AuthJsonKeys.birthday : user.birthday.toIso8601String(),
-      AuthJsonKeys.job : user.job,
-      AuthJsonKeys.jobCategory : user.jobCategory,
-      AuthJsonKeys.publishAgreedAt: user.publishAgreedAt?.toIso8601String(),
-      AuthJsonKeys.publishPolicyVersion: user.publishPolicyVersion,
+      AuthProfileJsonKeys.region : user.region,
+      AuthProfileJsonKeys.birthday : user.birthday.toIso8601String(),
+      AuthProfileJsonKeys.job : user.job,
+      AuthProfileJsonKeys.jobCategory : user.jobCategory,
+      AuthProfileJsonKeys.publishAgreedAt: user.publishAgreedAt?.toIso8601String(),
+      AuthProfileJsonKeys.publishPolicyVersion: user.publishPolicyVersion,
     });
 
     await _prefs.setString(_key, json);
@@ -49,18 +49,18 @@ class AuthLocalSourceImpl implements AuthLocalSource {
 
     final map = jsonDecode(jsonString);
 
-    final publishAgreedAtStr = map[AuthJsonKeys.publishAgreedAt];
+    final publishAgreedAtStr = map[AuthProfileJsonKeys.publishAgreedAt];
     return AuthUser(
       id: map[AuthJsonKeys.id],
       name: map[AuthJsonKeys.name],
       email: map[AuthJsonKeys.email],
-      region: map[AuthJsonKeys.region],
-      birthday: DateTime.parse(map[AuthJsonKeys.birthday]),
-      job: map[AuthJsonKeys.job],
-      jobCategory: map[AuthJsonKeys.jobCategory],
+      region: map[AuthProfileJsonKeys.region],
+      birthday: DateTime.parse(map[AuthProfileJsonKeys.birthday]),
+      job: map[AuthProfileJsonKeys.job],
+      jobCategory: map[AuthProfileJsonKeys.jobCategory],
       /// nullではないならDateTimeにパースする
       publishAgreedAt: publishAgreedAtStr != null ? DateTime.parse(publishAgreedAtStr) : null,
-      publishPolicyVersion: map[AuthJsonKeys.publishPolicyVersion],
+      publishPolicyVersion: map[AuthProfileJsonKeys.publishPolicyVersion],
     );
   }
 

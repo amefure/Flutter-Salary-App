@@ -1,7 +1,7 @@
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/payment_source/data/payment_source_dto.dart';
-import 'package:salary/feature/salary/data/amount_item_dto.dart';
+import 'package:salary/feature/salary/data/dto/amount_item_dto.dart';
 
 class SalaryDto {
 

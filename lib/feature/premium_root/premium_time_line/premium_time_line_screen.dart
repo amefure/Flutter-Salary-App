@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/domain/salary_list_view.dart';
-import 'package:salary/feature/premium_time_line/premium_time_line_view_model.dart';
+import 'package:salary/feature/premium_root/premium_time_line/premium_time_line_view_model.dart';
 
 class PremiumTimeLineScreen extends ConsumerWidget {
   const PremiumTimeLineScreen({super.key});

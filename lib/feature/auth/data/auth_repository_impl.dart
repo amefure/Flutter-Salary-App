@@ -50,10 +50,10 @@ class AuthRepositoryImpl implements AuthRepository {
       AuthJsonKeys.email: email,
       AuthJsonKeys.password: password,
       AuthJsonKeys.passwordConfirmation: passwordConfirm,
-      AuthJsonKeys.region: region,
-      AuthJsonKeys.birthday: formatted,
-      AuthJsonKeys.job: job,
-      AuthJsonKeys.jobCategory: jobCategory,
+      AuthProfileJsonKeys.region: region,
+      AuthProfileJsonKeys.birthday: formatted,
+      AuthProfileJsonKeys.job: job,
+      AuthProfileJsonKeys.jobCategory: jobCategory,
     });
 
     await saveToken(result);
@@ -114,10 +114,10 @@ class AuthRepositoryImpl implements AuthRepository {
     final formatted = DateFormat('yyyy-MM-dd').format(birthday);
     await _api.updateProfile({
       AuthJsonKeys.name: name,
-      AuthJsonKeys.region: region,
-      AuthJsonKeys.birthday: formatted,
-      AuthJsonKeys.job: job,
-      AuthJsonKeys.jobCategory: jobCategory,
+      AuthProfileJsonKeys.region: region,
+      AuthProfileJsonKeys.birthday: formatted,
+      AuthProfileJsonKeys.job: job,
+      AuthProfileJsonKeys.jobCategory: jobCategory,
     });
   }
 
@@ -128,7 +128,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String publishPolicyVersion
   }) async {
     await _api.updateProfile({
-      AuthJsonKeys.publishPolicyVersion: publishPolicyVersion,
+      AuthProfileJsonKeys.publishPolicyVersion: publishPolicyVersion,
     });
   }
 }

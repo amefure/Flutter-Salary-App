@@ -36,12 +36,12 @@ class AuthUserDto {
       id: user[AuthJsonKeys.id],
       name: user[AuthJsonKeys.name],
       email: user[AuthJsonKeys.email],
-      region: profile[AuthJsonKeys.region],
-      birthday: profile[AuthJsonKeys.birthday],
-      job: profile[AuthJsonKeys.job],
-      jobCategory: profile[AuthJsonKeys.jobCategory],
-      publishAgreedAt: profile[AuthJsonKeys.publishAgreedAt],
-      publishPolicyVersion: profile[AuthJsonKeys.publishPolicyVersion],
+      region: profile[AuthProfileJsonKeys.region],
+      birthday: profile[AuthProfileJsonKeys.birthday],
+      job: profile[AuthProfileJsonKeys.job],
+      jobCategory: profile[AuthProfileJsonKeys.jobCategory],
+      publishAgreedAt: profile[AuthProfileJsonKeys.publishAgreedAt],
+      publishPolicyVersion: profile[AuthProfileJsonKeys.publishPolicyVersion],
     );
     logger('======= AuthUser fromJson =======');
     logger(dto);

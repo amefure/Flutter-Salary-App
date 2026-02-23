@@ -9,7 +9,7 @@ abstract class CommonJsonKeys {
   static const accessToken = 'access_token';
 }
 
-abstract class SalaryPageKeys {
+abstract class PageKeys {
   static const currentPage = 'current_page';
   static const lastPage = 'last_page';
   static const total = 'total';
@@ -44,6 +44,7 @@ abstract class PaymentSourceJsonKeys {
   static const isMain = 'is_main';
   static const userId = 'user_id';
   static const isPublicName = 'is_public_name';
+  static const publicName = 'public_name';
 }
 
 abstract class AuthJsonKeys {
@@ -52,8 +53,12 @@ abstract class AuthJsonKeys {
   static const email = 'email';
   static const password = 'password';
   static const passwordConfirmation = 'password_confirmation';
+}
+
+abstract class AuthProfileJsonKeys {
   static const region = 'region';
   static const birthday = 'birthday';
+  static const ageRange = 'age_range';
   static const job = 'job';
   static const jobCategory = 'job_category';
   static const publishAgreedAt = 'publish_agreed_at';

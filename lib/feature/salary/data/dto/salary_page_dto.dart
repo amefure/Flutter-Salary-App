@@ -1,5 +1,5 @@
 import 'package:salary/core/config/json_keys.dart';
-import 'package:salary/feature/salary/data/salary_dto.dart';
+import 'package:salary/feature/salary/data/dto/salary_dto.dart';
 
 class SalaryPageDto {
   final List<SalaryDto> salaries;
@@ -21,9 +21,9 @@ class SalaryPageDto {
       salaries: (salariesJson[CommonJsonKeys.data] as List)
           .map((e) => SalaryDto.fromJson(e))
           .toList(),
-      currentPage: salariesJson[SalaryPageKeys.currentPage],
-      lastPage: salariesJson[SalaryPageKeys.lastPage],
-      total: salariesJson[SalaryPageKeys.total],
+      currentPage: salariesJson[PageKeys.currentPage],
+      lastPage: salariesJson[PageKeys.lastPage],
+      total: salariesJson[PageKeys.total],
     );
   }
 }
