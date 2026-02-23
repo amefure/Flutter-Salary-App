@@ -6,20 +6,22 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
 
-class SalaryListView extends StatefulWidget {
-  final List<Salary> salaries;
-  final void Function(Salary salary)? onTap;
-  final bool showAd;
+class BaseSalaryListView<T> extends StatefulWidget {
+  final List<T> items;
+  final Widget Function(BuildContext context, T item) itemBuilder;
+  final void Function(T item)? onTap;
 
+  final bool showAd;
   final VoidCallback? onLoadMore;
   final Future<void> Function()? onRefresh;
 
   final bool hasMore;
   final bool isLoadingMore;
 
-  const SalaryListView({
+  const BaseSalaryListView({
     super.key,
-    required this.salaries,
+    required this.items,
+    required this.itemBuilder,
     this.onTap,
     this.showAd = true,
     this.onLoadMore,
@@ -29,10 +31,12 @@ class SalaryListView extends StatefulWidget {
   });
 
   @override
-  State<SalaryListView> createState() => _SalaryListViewState();
+  State<BaseSalaryListView<T>> createState() =>
+      _BaseSalaryListViewState<T>();
 }
 
-class _SalaryListViewState extends State<SalaryListView> {
+class _BaseSalaryListViewState<T>
+    extends State<BaseSalaryListView<T>> {
   final _controller = ScrollController();
 
   @override
@@ -63,7 +67,7 @@ class _SalaryListViewState extends State<SalaryListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.salaries.isEmpty) {
+    if (widget.items.isEmpty) {
       return RefreshIndicator(
         onRefresh: widget.onRefresh ?? () async {},
         child: const Center(
@@ -83,10 +87,10 @@ class _SalaryListViewState extends State<SalaryListView> {
             child: ListView.builder(
               controller: _controller,
               itemCount:
-              widget.salaries.length +
+              widget.items.length +
                   (widget.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == widget.salaries.length) {
+                if (index == widget.items.length) {
                   return const Padding(
                     padding: EdgeInsets.all(16),
                     child: Center(
@@ -95,13 +99,12 @@ class _SalaryListViewState extends State<SalaryListView> {
                   );
                 }
 
-                final salary = widget.salaries[index];
+                final item = widget.items[index];
 
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () =>
-                      widget.onTap?.call(salary),
-                  child: _SalaryItem(salary: salary),
+                  onTap: () => widget.onTap?.call(item),
+                  child: widget.itemBuilder(context, item),
                 );
               },
             ),
@@ -113,6 +116,43 @@ class _SalaryListViewState extends State<SalaryListView> {
   }
 }
 
+class SalaryListView extends StatelessWidget {
+  final List<Salary> salaries;
+  final void Function(Salary salary)? onTap;
+  final bool showAd;
+
+  final VoidCallback? onLoadMore;
+  final Future<void> Function()? onRefresh;
+
+  final bool hasMore;
+  final bool isLoadingMore;
+
+  const SalaryListView({
+    super.key,
+    required this.salaries,
+    this.onTap,
+    this.showAd = true,
+    this.onLoadMore,
+    this.onRefresh,
+    this.hasMore = false,
+    this.isLoadingMore = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseSalaryListView<Salary>(
+      items: salaries,
+      onTap: onTap,
+      showAd: showAd,
+      onLoadMore: onLoadMore,
+      onRefresh: onRefresh,
+      hasMore: hasMore,
+      isLoadingMore: isLoadingMore,
+      itemBuilder: (_, salary) =>
+          _SalaryItem(salary: salary),
+    );
+  }
+}
 
 class _SalaryItem extends StatelessWidget {
   final Salary salary;
@@ -217,8 +257,7 @@ class _SalaryItem extends StatelessWidget {
   }
 }
 
-
-class PublicSalaryListView extends StatefulWidget {
+class PublicSalaryListView extends StatelessWidget {
   final List<PublicSalary> salaries;
   final void Function(PublicSalary salary)? onTap;
   final bool showAd;
@@ -241,90 +280,20 @@ class PublicSalaryListView extends StatefulWidget {
   });
 
   @override
-  State<PublicSalaryListView> createState() => _PublicSalaryListViewState();
-}
-
-class _PublicSalaryListViewState extends State<PublicSalaryListView> {
-  final _controller = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller.addListener(() {
-      if (!_controller.hasClients) return;
-
-      final threshold =
-          _controller.position.maxScrollExtent * 0.8;
-
-      if (_controller.position.pixels >= threshold) {
-        if (widget.hasMore &&
-            !widget.isLoadingMore &&
-            widget.onLoadMore != null) {
-          widget.onLoadMore!();
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.salaries.isEmpty) {
-      return RefreshIndicator(
-        onRefresh: widget.onRefresh ?? () async {},
-        child: const Center(
-          child: CustomText(
-            text: 'データがありません',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: widget.onRefresh ?? () async {},
-            child: ListView.builder(
-              controller: _controller,
-              itemCount:
-              widget.salaries.length +
-                  (widget.hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == widget.salaries.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-
-                final salary = widget.salaries[index];
-
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () =>
-                      widget.onTap?.call(salary),
-                  child: _PublicSalaryItem(salary: salary),
-                );
-              },
-            ),
-          ),
-        ),
-        if (widget.showAd) const AdMobBannerWidget(),
-      ],
+    return BaseSalaryListView<PublicSalary>(
+      items: salaries,
+      onTap: onTap,
+      showAd: showAd,
+      onLoadMore: onLoadMore,
+      onRefresh: onRefresh,
+      hasMore: hasMore,
+      isLoadingMore: isLoadingMore,
+      itemBuilder: (_, salary) =>
+          _PublicSalaryItem(salary: salary),
     );
   }
 }
-
 
 class _PublicSalaryItem extends StatelessWidget {
   final PublicSalary salary;
