@@ -47,7 +47,11 @@ class ChartSalaryScreen extends StatelessWidget {
 
                       SizedBox(
                           width: screen.width * 0.95,
-                          child: const CustomLabelView(labelText: '月別合計金額')
+                          child: const CustomLabelView(
+                            labelText: '月別合計金額',
+                            icon: CupertinoIcons.money_yen_circle_fill,
+                            size: 25,
+                          )
                       ),
 
                       const SizedBox(height: 8),
@@ -79,7 +83,11 @@ class ChartSalaryScreen extends StatelessWidget {
 
                       SizedBox(
                           width: screen.width * 0.95,
-                          child: const CustomLabelView(labelText: '年別合計金額(10年間)')
+                          child: const CustomLabelView(
+                            labelText: '年別合計金額(10年間)',
+                            icon: CupertinoIcons.chart_bar_alt_fill,
+                            size: 25,
+                          )
                       ),
 
                       const SizedBox(height: 8),

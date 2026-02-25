@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
 import 'package:salary/feature/premium_root/premium_summary/premium_summary_view_model.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:salary/feature/premium_root/premium_summary/presentation/income_bar_chart.dart';
 
 class PremiumSummaryScreen extends ConsumerWidget {
   const PremiumSummaryScreen({super.key});
@@ -13,6 +12,8 @@ class PremiumSummaryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(premiumSummaryProvider);
+    // 画面サイズを取得
+    final screen = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -21,12 +22,15 @@ class PremiumSummaryScreen extends ConsumerWidget {
         children: [
 
           /// ====== ランキング ======
-          const Text(
-            '🏆 年収ランキング TOP10',
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
+          SizedBox(
+              width: screen.width * 0.95,
+              child: const CustomLabelView(
+                labelText: '年収ランキング TOP10',
+                icon: CupertinoIcons.profile_circled,
+                size: 25,
+              )
           ),
+
           const SizedBox(height: 16),
 
           ...?summary.summaryDto?.top10.asMap().entries.map((entry) {
@@ -102,73 +106,22 @@ class PremiumSummaryScreen extends ConsumerWidget {
           const SizedBox(height: 40),
 
           /// ====== 分布 ======
-          const Text(
-            '📊 年収分布',
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
+
+          SizedBox(
+              width: screen.width * 0.95,
+              child: const CustomLabelView(
+                labelText: '年収分布',
+                icon: CupertinoIcons.chart_bar_alt_fill,
+                size: 25,
+              )
           ),
-          const SizedBox(height: 20),
+
+          const SizedBox(height: 8),
 
           if (summary.summaryDto?.distribution != null)
-            SizedBox(
-              height: 250,
-              child: _IncomeBarChart(summary.summaryDto!.distribution.withZeroFilled()),
-            ),
+            IncomeBarChart(summary.summaryDto!.distribution.withZeroFilled().reversed.toList()),
         ],
       ),
-    );
-  }
-}
-
-class _IncomeBarChart extends StatelessWidget {
-  final List<IncomeDistributionDto> distribution;
-
-  const _IncomeBarChart(this.distribution);
-
-  @override
-  Widget build(BuildContext context) {
-    final tooltipBehavior = TooltipBehavior(enable: true);
-
-    return SfCartesianChart(
-      plotAreaBorderWidth: 0,
-      tooltipBehavior: tooltipBehavior,
-      primaryXAxis: const CategoryAxis(
-        majorGridLines: MajorGridLines(width: 0),
-        axisLine: AxisLine(width: 0),
-        labelStyle: TextStyle(fontSize: 11),
-      ),
-      primaryYAxis: const NumericAxis(
-        isVisible: false,
-        majorGridLines: MajorGridLines(width: 0),
-        edgeLabelPlacement: EdgeLabelPlacement.hide,
-      ),
-      series: <CartesianSeries>[
-        BarSeries<IncomeDistributionDto, String>(
-          dataSource: distribution.reversed.toList(),
-          xValueMapper: (data, _) => data.incomeRange,
-          yValueMapper: (data, _) => data.userCount,
-          borderRadius:
-          const BorderRadius.all(Radius.circular(8)),
-          dataLabelSettings: const DataLabelSettings(
-            isVisible: true,
-            labelAlignment:
-            ChartDataLabelAlignment.outer,
-            textStyle: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          gradient: const LinearGradient(
-            colors: [
-              CustomColors.thema,
-              CustomColors.thema
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-        ),
-      ],
     );
   }
 }
