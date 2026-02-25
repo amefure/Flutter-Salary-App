@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
 import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
@@ -15,15 +16,17 @@ class PremiumSummaryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(premiumSummaryProvider);
-    // 画面サイズを取得
     final screen = MediaQuery.of(context).size;
+
+    // データが存在するかどうかの判定
+    final hasRanking = summary.summaryDto?.top10.isNotEmpty ?? false;
+    final hasDistribution = summary.summaryDto?.distribution.isNotEmpty ?? false;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           /// ====== ランキング ======
           SizedBox(
               width: screen.width * 0.95,
@@ -31,40 +34,50 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 labelText: '年収ランキング TOP10',
                 icon: CupertinoIcons.profile_circled,
                 size: 25,
-              )
-          ),
+              )),
 
           const SizedBox(height: 16),
 
-          ...?summary.summaryDto?.top10.asMap().entries.map((entry) {
-            return _RankingItem(
-              index: entry.key,
-              ranking: entry.value,
-            );
-          }),
+          if (hasRanking)
+            ...summary.summaryDto!.top10.asMap().entries.map((entry) {
+              return _RankingItem(
+                index: entry.key,
+                ranking: entry.value,
+              );
+            })
+          else
+            const EmptyStateView(
+              message: 'ランキングデータがまだありません',
+              icon: CupertinoIcons.person_badge_minus,
+            ),
 
           const SizedBox(height: 40),
 
           /// ====== 分布 ======
-
           SizedBox(
               width: screen.width * 0.95,
               child: const CustomLabelView(
                 labelText: '年収分布',
                 icon: CupertinoIcons.chart_bar_alt_fill,
                 size: 25,
-              )
-          ),
+              )),
 
           const SizedBox(height: 8),
 
-          if (summary.summaryDto?.distribution != null)
-            IncomeBarChart(summary.summaryDto!.distribution.withZeroFilled().reversed.toList()),
+          if (hasDistribution)
+            IncomeBarChart(summary.summaryDto!.distribution
+                .withZeroFilled()
+                .reversed
+                .toList())
+          else
+            const EmptyStateView(
+              message: '分布データが集計されていません',
+              icon: CupertinoIcons.chart_pie,
+            ),
         ],
       ),
     );
   }
-
 }
 
 

@@ -27,10 +27,10 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
 
   Future<void> fetchAllSalaries() async {
     await _ref.runWithGlobalHandling(() async {
-      // final summaryDto = await _summaryRepository.dashboard();
-      final summaryDto = SummaryMockFactory.create();
+      final summaryDto = await _summaryRepository.dashboard();
+      final summaryDto2 = SummaryMockFactory.create();
       state = state.copyWith(
-        summaryDto: summaryDto
+        summaryDto: summaryDto2
       );
     });
   }

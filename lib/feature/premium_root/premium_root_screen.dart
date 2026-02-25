@@ -62,12 +62,20 @@ class PremiumRootScreen extends StatelessWidget {
                             PremiumTab.timeline: Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12),
-                              child: Text('タイムライン'),
+                              child: CustomText(
+                                text: 'タイムライン',
+                                textSize: TextSize.S,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             PremiumTab.summary: Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12),
-                              child: Text('集計'),
+                              child: CustomText(
+                                text: '集計',
+                                textSize: TextSize.S,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           },
                           onValueChanged: (value) {

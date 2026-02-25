@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 
 class EmptyChartView extends StatelessWidget {
@@ -10,16 +11,11 @@ class EmptyChartView extends StatelessWidget {
       width: double.infinity,
       height: 300,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: CustomColors.background(context),
-        borderRadius: BorderRadius.circular(8),
-      ),
+
       alignment: Alignment.center,
-      child: const CustomText(
-        text: 'データがありません',
-        textSize: TextSize.M,
-        fontWeight: FontWeight.bold,
-        color: CupertinoColors.systemGrey,
+      child: const EmptyStateView(
+        message: '給料データがありません',
+        icon: CupertinoIcons.cube,
       ),
     );
   }
