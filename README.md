@@ -84,6 +84,7 @@ $ fvm install
 
 ## UI
 - **[fl_chart](https://pub.dev/packages/fl_chart) (0.70.2)** - グラフ描画
+- **[syncfusion_flutter_charts](https://pub.dev/packages/syncfusion_flutter_charts) (32.2.7)** - グラフ描画(横向き)
 - **[webview_flutter](https://pub.dev/packages/webview_flutter) (4.10.0)** - WebView
 
 ## Service

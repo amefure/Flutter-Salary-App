@@ -44,7 +44,7 @@ class BarChartYearlyView extends ConsumerWidget {
           barRods: [
             BarChartRodData(
               toY: amounts[i].toDouble(),
-              color: Colors.blue,
+              color: CustomColors.thema,
               width: 20,
               borderRadius: BorderRadius.zero,
             ),
