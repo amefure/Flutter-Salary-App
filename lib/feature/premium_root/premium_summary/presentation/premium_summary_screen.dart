@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
+import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
+import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
 import 'package:salary/feature/premium_root/premium_summary/premium_summary_view_model.dart';
 import 'package:salary/feature/premium_root/premium_summary/presentation/income_bar_chart.dart';
 
@@ -34,72 +37,9 @@ class PremiumSummaryScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           ...?summary.summaryDto?.top10.asMap().entries.map((entry) {
-            final index = entry.key;
-            final e = entry.value;
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF4A90E2),
-                    Color(0xFF6FB1FC),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  )
-                ],
-              ),
-              child: CupertinoListTile(
-                padding:
-                const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 12),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Text(
-                  e.user.name,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  '${e.user.profile.job} / ${e.user.profile.region} / ${e.user.profile.ageRange}',
-                  style: const TextStyle(
-                      color: Colors.white70),
-                ),
-                trailing: Column(
-                  mainAxisAlignment:
-                  MainAxisAlignment.center,
-                  crossAxisAlignment:
-                  CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${(e.totalPaymentAmount / 10000).toStringAsFixed(0)}万円',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '手取り ${(e.totalNetSalary / 10000).toStringAsFixed(0)}万円',
-                      style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
+            return _RankingItem(
+              index: entry.key,
+              ranking: entry.value,
             );
           }),
 
@@ -124,4 +64,139 @@ class PremiumSummaryScreen extends ConsumerWidget {
       ),
     );
   }
+
 }
+
+
+class _RankingItem extends StatelessWidget {
+  final int index;
+  final RankingDto ranking;
+
+  const _RankingItem({
+    required this.index,
+    required this.ranking,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = ranking.user.profile;
+
+    // 1, 2, 3位のメダルカラー判定
+    Color medalColor;
+    switch (index) {
+      case 0: medalColor = const Color(0xFFD4AF37); break; // 金
+      case 1: medalColor = const Color(0xFFC0C0C0); break; // 銀
+      case 2: medalColor = const Color(0xFFCD7F32); break; // 銅
+      default: medalColor = CustomColors.foundation(context);
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+      decoration: BoxDecoration(
+        color: CustomColors.background(context),
+        borderRadius: BorderRadius.circular(12),
+        // 上位3位のみ薄いボーダーをつける
+        border: index < 3
+            ? Border.all(color: medalColor.withOpacity(0.3), width: 1)
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            // 順位表示
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: medalColor,
+                shape: BoxShape.circle,
+                boxShadow: index < 3 ? [
+                  BoxShadow(
+                      color: medalColor.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2)
+                  )
+                ] : null,
+              ),
+              alignment: Alignment.center,
+              child: CustomText(
+                text: '${index + 1}',
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+                color: index < 3 ? Colors.white : CustomColors.text(context),
+              ),
+            ),
+            const SizedBox(width: 14),
+
+            // メイン情報 (職種と属性タグ)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: profile.job,
+                    textSize: TextSize.MS,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      _buildAttributeTag(context, profile.region, CustomColors.themaBlue),
+                      const SizedBox(width: 6),
+                      _buildAttributeTag(context, profile.ageRange, CustomColors.themaGreen),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // 金額情報
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CustomText(
+                  text: '${(ranking.totalPaymentAmount / 10000).toStringAsFixed(0)}万円',
+                  textSize: TextSize.M,
+                  fontWeight: FontWeight.bold,
+                  color: index == 0 ? medalColor : CustomColors.themaBlue,
+                ),
+                const SizedBox(height: 2),
+                CustomText(
+                  text: '手取り ${(ranking.totalNetSalary / 10000).toStringAsFixed(0)}万',
+                  textSize: TextSize.SSS,
+                  color: CustomColors.themaGray,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 属性タグ用ヘルパー
+  Widget _buildAttributeTag(BuildContext context, String text, Color baseColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: baseColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: CustomText(
+        text: text,
+        textSize: TextSize.SSS,
+        color: baseColor,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}
+

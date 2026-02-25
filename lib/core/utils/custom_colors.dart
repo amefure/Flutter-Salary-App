@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// カスタムカラーを定義
-class CustomColors {
+abstract class CustomColors {
 
   /// バックグラウンドカラー(ダークなら黒 / ライトなら白)
   static Color background(BuildContext context) {

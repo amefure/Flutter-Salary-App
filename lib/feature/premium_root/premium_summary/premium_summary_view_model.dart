@@ -1,5 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/mock/summary_mock_factory.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/premium_root/data/summary_repository_impl.dart';
 import 'package:salary/feature/premium_root/domain/summary_repository.dart';
@@ -26,7 +27,8 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
 
   Future<void> fetchAllSalaries() async {
     await _ref.runWithGlobalHandling(() async {
-      final summaryDto = await _summaryRepository.dashboard();
+      // final summaryDto = await _summaryRepository.dashboard();
+      final summaryDto = SummaryMockFactory.create();
       state = state.copyWith(
         summaryDto: summaryDto
       );

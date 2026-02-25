@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/feature/charts/chart_salary_state.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/models/salary_mock_factory.dart';
+import 'package:salary/core/mock/salary_mock_factory.dart';
 import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/feature/charts/chart_display_mode.dart';
 
