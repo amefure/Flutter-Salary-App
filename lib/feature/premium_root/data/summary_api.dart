@@ -14,7 +14,7 @@ class SummaryApi {
   static const String _END_POINT = '/summary';
 
   /// 公開されているサマリー情報
-  Future<Map<String, dynamic>> dashboard() async {
-    return await _client.get('$_END_POINT/dashboard');
+  Future<Map<String, dynamic>> dashboard({Map<String, dynamic>? queries}) async {
+    return await _client.get('$_END_POINT/dashboard', queryParameters: queries);
   }
 }

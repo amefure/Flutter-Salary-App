@@ -41,22 +41,33 @@ class ApiClient {
       ...?headers,
     };
   }
-
-  Uri _buildUri(String path) {
-    return Uri.parse('$baseUrl$path');
+  /// Uriを組み立てるメソッド
+  Uri _buildUri(String path, [Map<String, String>? queryParameters]) {
+    final uri = Uri.parse('$baseUrl$path');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      // 既存のURLにクエリパラメータをマージして新しいUriを返す
+      return uri.replace(queryParameters: {
+        ...uri.queryParameters,
+        ...queryParameters,
+      });
+    }
+    return uri;
   }
-
   /// HTTP Methods GET
   Future<Map<String, dynamic>> get(
       String path, {
         Map<String, String>? headers,
+        Map<String, dynamic>? queryParameters,
       }) async {
-    logger('======= GET Request Header =======');
+    // queryParameters を String に変換 (Uri.https 等で使うため)
+    final stringQuery = queryParameters?.map((key, value) => MapEntry(key, value.toString()));
+
+    logger('======= GET Request =======');
     logger('path：$path');
-    logger('headers：$headers');
-    logger('======= GET Request Header =======');
+    logger('queries：$queryParameters');
+    logger('======= GET Request =======');
     final response = await _client.get(
-      _buildUri(path),
+      _buildUri(path, stringQuery),
       headers: await _authorizedHeaders(headers),
     );
     return _handleResponse(response);

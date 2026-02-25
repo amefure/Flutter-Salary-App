@@ -4,5 +4,5 @@ import 'package:salary/feature/premium_root/data/dto/summary_dto.dart';
 abstract class SummaryRepository {
 
   /// 公開されている給料情報一覧(タイムライン用)
-  Future<SummaryDto> dashboard();
+  Future<SummaryDto> dashboard({Map<String, dynamic>? queries});
 }

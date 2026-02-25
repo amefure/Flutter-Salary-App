@@ -15,9 +15,8 @@ class SummaryRepositoryImpl implements SummaryRepository {
   final SummaryApi _api;
 
   @override
-  Future<SummaryDto> dashboard() async {
-    final result = await _api.dashboard();
-    logger(result);
+  Future<SummaryDto> dashboard({Map<String, dynamic>? queries}) async {
+    final result = await _api.dashboard(queries: queries);
     return SummaryDto.fromJson(result);
   }
 }

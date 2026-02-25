@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
+import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
 import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
@@ -15,18 +16,43 @@ class PremiumSummaryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summary = ref.watch(premiumSummaryProvider);
+    final state = ref.watch(premiumSummaryProvider);
+    final viewModel = ref.read(premiumSummaryProvider.notifier);
     final screen = MediaQuery.of(context).size;
 
     // データが存在するかどうかの判定
-    final hasRanking = summary.summaryDto?.top10.isNotEmpty ?? false;
-    final hasDistribution = summary.summaryDto?.distribution.isNotEmpty ?? false;
+    final hasRanking = state.summaryDto?.top10.isNotEmpty ?? false;
+    final hasDistribution = state.summaryDto?.distribution.isNotEmpty ?? false;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
+          /// ====== フィルターエリア ======
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _FilterChip(
+                  label: '${state.selectedYear}年',
+                  onTap: () => _showYearPicker(context, viewModel),
+                ),
+                _FilterChip(
+                  label: state.selectedRegion ?? 'すべての地域',
+                  onTap: () => _showRegionPicker(context, viewModel),
+                ),
+                _FilterChip(
+                  label: state.selectedAgeRange ?? 'すべての年代',
+                  onTap: () => _showAgePicker(context, viewModel),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           /// ====== ランキング ======
           SizedBox(
               width: screen.width * 0.95,
@@ -39,7 +65,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           if (hasRanking)
-            ...summary.summaryDto!.top10.asMap().entries.map((entry) {
+            ...state.summaryDto!.top10.asMap().entries.map((entry) {
               return _RankingItem(
                 index: entry.key,
                 ranking: entry.value,
@@ -65,7 +91,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
           const SizedBox(height: 8),
 
           if (hasDistribution)
-            IncomeBarChart(summary.summaryDto!.distribution
+            IncomeBarChart(state.summaryDto!.distribution
                 .withZeroFilled()
                 .reversed
                 .toList())
@@ -74,12 +100,117 @@ class PremiumSummaryScreen extends ConsumerWidget {
               message: '分布データが集計されていません',
               icon: CupertinoIcons.chart_pie,
             ),
+
         ],
+      ),
+    );
+  }
+
+  /// 年選択ピッカー
+  void _showYearPicker(BuildContext context, PremiumSummaryViewModel notifier) {
+    // 2023年から2026年までのリスト（必要に応じて増やしてください）
+    final years = [2026, 2025, 2024, 2023];
+
+    _showCupertinoPicker(
+      context,
+      title: '対象年を選択',
+      items: years.map((y) => y.toString()).toList(),
+      onSelected: (selected) {
+        notifier.updateFilter(year: int.parse(selected));
+      },
+    );
+  }
+
+  /// 地域選択ピッカー
+  void _showRegionPicker(BuildContext context, PremiumSummaryViewModel notifier) {
+    _showCupertinoPicker(
+      context,
+      title: '地域を選択',
+      // 「指定なし」を先頭に追加
+      items: ['指定なし', ...ProfileConfig.prefectures],
+      onSelected: (selected) {
+        notifier.updateFilter(region: selected);
+      },
+    );
+  }
+
+  /// 年代選択ピッカー
+  void _showAgePicker(BuildContext context, PremiumSummaryViewModel notifier) {
+    final ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
+
+    _showCupertinoPicker(
+      context,
+      title: '年代を選択',
+      items: ages,
+      onSelected: (selected) {
+        notifier.updateFilter(ageRange: selected);
+      },
+    );
+  }
+
+  /// 共通のCupertinoアクションシート表示
+  void _showCupertinoPicker(
+      BuildContext context, {
+        required String title,
+        required List<String> items,
+        required Function(String) onSelected,
+      }) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        title: CustomText(text: title, textSize: TextSize.S, fontWeight: FontWeight.bold),
+        actions: items.map((item) {
+          return CupertinoActionSheetAction(
+            onPressed: () {
+              onSelected(item);
+              Navigator.pop(context);
+            },
+            child: CustomText(
+                text: item,
+                textSize: TextSize.M,
+                color: CustomColors.themaBlue
+            ),
+          );
+        }).toList(),
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+          child: const CustomText(text: 'キャンセル', color: CustomColors.negative),
+        ),
       ),
     );
   }
 }
 
+/// フィルター用のおしゃれなチップ
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _FilterChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: CustomColors.foundation(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: CustomColors.themaBlue.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            CustomText(text: label, textSize: TextSize.SS, color: CustomColors.themaBlue, fontWeight: FontWeight.bold),
+            const Icon(Icons.arrow_drop_down, color: CustomColors.themaBlue, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _RankingItem extends StatelessWidget {
   final int index;
