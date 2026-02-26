@@ -26,97 +26,100 @@ class PremiumSummaryScreen extends ConsumerWidget {
     final hasRanking = state.summaryDto?.top10.isNotEmpty ?? false;
     final hasDistribution = state.summaryDto?.distribution.isNotEmpty ?? false;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Column(
+      children: [
 
-          /// ====== フィルターエリア ======
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _FilterChip(
-                  label: '${state.selectedYear}年',
-                  onTap: () => _showYearPicker(context, viewModel, state),
-                ),
-                _FilterChip(
-                  label: state.selectedRegion ?? 'すべての地域',
-                  onTap: () => _showRegionPicker(context, viewModel, state),
-                ),
-                _FilterChip(
-                  label: state.selectedAgeRange ?? 'すべての年代',
-                  onTap: () => _showAgePicker(context, viewModel, state),
-                ),
-              ],
-            ),
+        /// ====== フィルターエリア ======
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _FilterChip(
+                label: '${state.selectedYear}年',
+                onTap: () => _showYearPicker(context, viewModel, state),
+              ),
+              _FilterChip(
+                label: state.selectedRegion ?? 'すべての地域',
+                onTap: () => _showRegionPicker(context, viewModel, state),
+              ),
+              _FilterChip(
+                label: state.selectedAgeRange ?? 'すべての年代',
+                onTap: () => _showAgePicker(context, viewModel, state),
+              ),
+            ],
           ),
+        ),
 
-          const SizedBox(height: 16),
+        const SizedBox(height: 8),
 
-          /// ====== ランキング ======
-          SizedBox(
-              width: screen.width * 0.95,
-              child: const CustomLabelView(
-                labelText: '年収ランキング TOP10',
-                icon: CupertinoIcons.profile_circled,
-                size: 25,
-              )),
+        Expanded(child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-          const SizedBox(height: 16),
+              /// ====== ランキング ======
+              SizedBox(
+                  width: screen.width * 0.95,
+                  child: const CustomLabelView(
+                    labelText: '年収ランキング TOP10',
+                    icon: CupertinoIcons.profile_circled,
+                    size: 25,
+                  )),
 
-          if (hasRanking)
-            ...state.summaryDto!.top10.asMap().entries.map((entry) {
-              return _RankingItem(
-                index: entry.key,
-                ranking: entry.value,
-              );
-            })
-          else
-            const EmptyStateView(
-              message: 'ランキングデータがまだありません',
-              icon: CupertinoIcons.person_badge_minus,
-            ),
+              const SizedBox(height: 16),
 
-          const SizedBox(height: 40),
+              if (hasRanking)
+                ...state.summaryDto!.top10.asMap().entries.map((entry) {
+                  return _RankingItem(
+                    index: entry.key,
+                    ranking: entry.value,
+                  );
+                })
+              else
+                const EmptyStateView(
+                  message: 'ランキングデータがまだありません',
+                  icon: CupertinoIcons.person_badge_minus,
+                ),
 
-          /// ====== 分布 ======
-          SizedBox(
-              width: screen.width * 0.95,
-              child: const CustomLabelView(
-                labelText: '年収分布',
-                icon: CupertinoIcons.chart_bar_alt_fill,
-                size: 25,
-              )),
+              const SizedBox(height: 40),
 
-          const SizedBox(height: 8),
+              /// ====== 分布 ======
+              SizedBox(
+                  width: screen.width * 0.95,
+                  child: const CustomLabelView(
+                    labelText: '年収分布',
+                    icon: CupertinoIcons.chart_bar_alt_fill,
+                    size: 25,
+                  )),
 
-          if (hasDistribution)
-            IncomeBarChart(state.summaryDto!.distribution
-                .withZeroFilled()
-                .reversed
-                .toList())
-          else
-            const EmptyStateView(
-              message: '分布データが集計されていません',
-              icon: CupertinoIcons.chart_pie,
-            ),
+              const SizedBox(height: 8),
 
-        ],
-      ),
+              if (hasDistribution)
+                IncomeBarChart(state.summaryDto!.distribution
+                    .withZeroFilled()
+                    .reversed
+                    .toList())
+              else
+                const EmptyStateView(
+                  message: '分布データが集計されていません',
+                  icon: CupertinoIcons.chart_pie,
+                ),
+
+            ],
+          ),
+        ))
+      ],
     );
   }
 
   /// 年選択ピッカー
   void _showYearPicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
-    // 2023年から2026年までのリスト（必要に応じて増やしてください）
-    final years = [2026, 2025, 2024, 2023];
 
     CustomActionPicker.show<String>(
       context: context,
       title: '対象年を選択',
-      items: years.map((y) => y.toString()).toList(),
+      items: PremiumSummaryViewModel.years.map((y) => y.toString()).toList(),
       // 現在の状態（state）から選択中の値を渡す
       currentValue: state.selectedYear.toString(),
       // リストの各要素をどう表示するか（今回はStringなのでそのまま）
@@ -133,9 +136,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
       context: context,
       title: '地域を選択',
       items: ['指定なし', ...ProfileConfig.prefectures],
-      // 現在の状態（state）から選択中の値を渡す
       currentValue: state.selectedRegion ?? '指定なし',
-      // リストの各要素をどう表示するか（今回はStringなのでそのまま）
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(region: selected);
@@ -144,15 +145,12 @@ class PremiumSummaryScreen extends ConsumerWidget {
   }
   /// 年代選択ピッカー
   void _showAgePicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
-    final ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
 
     CustomActionPicker.show<String>(
       context: context,
       title: '年代を選択',
-      items: ages,
-      // 現在の状態（state）から選択中の値を渡す
+      items: PremiumSummaryViewModel.ages,
       currentValue: state.selectedAgeRange ?? '指定なし',
-      // リストの各要素をどう表示するか（今回はStringなのでそのまま）
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(ageRange: selected);
@@ -161,7 +159,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
   }
 }
 
-/// フィルター用のおしゃれなチップ
+/// フィルター用チップ
 class _FilterChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;

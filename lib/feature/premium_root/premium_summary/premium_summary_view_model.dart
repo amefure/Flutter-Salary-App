@@ -23,6 +23,18 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
       this._summaryRepository
       ): super(PremiumSummaryState.initial());
 
+  // 下限の年を設定
+  static const int _startYear = 2010;
+
+  // 現在の年から下限までを格納したリスト
+  // static final にすることで、アプリ起動時に動的に生成されます
+  static final List<int> years = List.generate(
+    DateTime.now().year - _startYear + 1,
+        (index) => DateTime.now().year - index,
+  );
+
+  static const ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
+
   Future<void> fetchAllSalaries() async {
     // フィルタ文字列をAPI用のパラメータに変換
     final Map<String, dynamic> queries = {
@@ -42,9 +54,9 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
       }
     }
     await _ref.runWithGlobalHandling(() async {
-      final summaryDto = await _summaryRepository.dashboard(queries: queries);
-      // final summaryDto2 = SummaryMockFactory.create();
-      state = state.copyWith(summaryDto: summaryDto);
+      //final summaryDto = await _summaryRepository.dashboard(queries: queries);
+      final summaryDto2 = SummaryMockFactory.create();
+      state = state.copyWith(summaryDto: summaryDto2);
     });
   }
 

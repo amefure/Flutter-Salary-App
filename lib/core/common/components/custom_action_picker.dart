@@ -21,7 +21,6 @@ class CustomActionPicker {
           fontWeight: FontWeight.bold,
         ),
         actions: items.map((item) {
-          // 現在選択されている値かどうかを判定（テキスト色を強調するため）
           final isSelected = (item == currentValue);
 
           return CupertinoActionSheetAction(
