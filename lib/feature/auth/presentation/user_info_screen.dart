@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/cupertino_date_picker_modal.dart';
-import 'package:salary/core/common/components/cupertino_picker_modal.dart';
+import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -149,8 +149,9 @@ class _Body extends ConsumerState<_BodyWidget> {
               value: state.region,
               isEdit: state.isEdit,
               onTap: () =>
-                  CupertinoPickerModal.show<String>(
+                  CustomActionPicker.show<String>(
                     context: context,
+                    title: '都道府県',
                     items: ProfileConfig.prefectures,
                     currentValue: state.region,
                     labelBuilder: (region) => region,

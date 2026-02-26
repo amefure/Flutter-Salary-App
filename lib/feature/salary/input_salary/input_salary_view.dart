@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
@@ -172,7 +173,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           children: [
             // 給料履歴一覧
             if (state.historyList.isNotEmpty)
-              _historyCitingSalaryButton(state.historyList, vm.copySalaryFromPast),
+              _historyCitingSalaryButton(context, state.historyList, vm.copySalaryFromPast),
 
             // 支払い元ピッカー
             _paymentSourcePicker(
@@ -181,13 +182,20 @@ class _Body extends ConsumerState<_BodyWidget> {
                 onTapped: () {
                   // 支払い元表示前に再取得 & Stateリフレッシュ
                   final paymentSources = vm.fetchAndRefreshPaymentSources();
-                  // ピッカー表示
-                  _showPaymentSourcePicker(
-                      context,
-                      // Stateリフレッシュは反映されないので取得してそのまま渡す
-                      paymentSources,
-                      vm.updateSelectPaymentSource
-                  );
+
+                  if (paymentSources.isEmpty) {
+                    // 未登録なら新規登録を促す
+                    _showInputPaymentSourceModal(context);
+                  } else {
+                    CustomActionPicker.show<PaymentSource>(
+                      context: context,
+                      title: '支払い元を選択してください',
+                      items: paymentSources,
+                      currentValue: state.selectPaymentSource,
+                      labelBuilder: (source) => source.name,
+                      onSelected: vm.updateSelectPaymentSource,
+                    );
+                  }
                 }
             ),
 
@@ -513,38 +521,9 @@ class _Body extends ConsumerState<_BodyWidget> {
     }
   }
 
-  /// 支払い元ピッカーを表示
-  void _showPaymentSourcePicker(
-      BuildContext context,
-      List<PaymentSource> paymentSource,
-      void Function(PaymentSource source) onPressed
-      ) {
-    if (paymentSource.isEmpty) {
-      // 未登録なら新規登録を促す
-      _showInputPaymentSourceModal(context);
-    } else {
-      // 登録済みのリストをピッカーで表示
-      showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: const Text('支払い元を選択してください'),
-            actions:
-            paymentSource
-                .map((source) => _pickerItemButton(context, source, onPressed))
-                .toList(),
-            cancelButton: CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('キャンセル'),
-            ),
-          );
-        },
-      );
-    }
-  }
-
   /// 過去の給料情報表示ボタン
   Widget _historyCitingSalaryButton(
+      BuildContext context,
       List<Salary> pastSalaries,
       void Function(Salary salary) onSelected
       ) {
@@ -564,7 +543,7 @@ class _Body extends ConsumerState<_BodyWidget> {
             ],
           ),
           onPressed: () {
-            _showSelectPastSalarySheet(pastSalaries, onSelected);
+            _showSelectPastSalarySheet(context, pastSalaries, onSelected);
           },
         ),
       ],
@@ -573,34 +552,26 @@ class _Body extends ConsumerState<_BodyWidget> {
 
   /// 過去の給料情報選択アクションシートを表示
   void _showSelectPastSalarySheet(
+      BuildContext context,
       List<Salary> pastSalaries,
-      void Function(Salary salary) onSelected
+      void Function(Salary salary) onSelected,
       ) {
-    showCupertinoModalPopup(
+    CustomActionPicker.show<Salary>(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return CupertinoActionSheet(
-          title: const Text('引用する過去の情報を選択'),
-          actions:
-          pastSalaries.map((salary) {
-            final dateStr = DateTimeUtils.format(
-              dateTime: salary.createdAt,
-            );
-            return CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                onSelected(salary);
-              },
-              child: CustomText(
-                text: '$dateStr${salary.isBonus ? '(賞)': ''} - ${salary.source?.name ?? "未設定"} ',
-              ),
-            );
-          }).toList(),
-          cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('キャンセル'),
-          ),
+      title: '引用する過去の情報を選択',
+      items: pastSalaries,
+      currentValue: null,
+      labelBuilder: (salary) {
+        final dateStr = DateTimeUtils.format(
+          dateTime: salary.createdAt,
         );
+        final bonusStr = salary.isBonus ? '(賞)' : '';
+        final sourceStr = salary.source?.name ?? '未設定';
+
+        return '$dateStr$bonusStr - $sourceStr';
+      },
+      onSelected: (salary) {
+        onSelected(salary);
       },
     );
   }
@@ -616,20 +587,4 @@ class _Body extends ConsumerState<_BodyWidget> {
       },
     );
   }
-
-
-  /// 支払い元選択肢のボタン
-  CupertinoActionSheetAction _pickerItemButton(
-      BuildContext context, PaymentSource source,
-      void Function(PaymentSource source) onPressed
-      ) {
-    return CupertinoActionSheetAction(
-      onPressed: () {
-        onPressed(source);
-        Navigator.pop(context);
-      },
-      child: CustomText(text: source.name),
-    );
-  }
-
 }

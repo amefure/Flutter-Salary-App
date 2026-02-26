@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
@@ -8,6 +9,7 @@ import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
 import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
+import 'package:salary/feature/premium_root/premium_summary/premium_summary_state.dart';
 import 'package:salary/feature/premium_root/premium_summary/premium_summary_view_model.dart';
 import 'package:salary/feature/premium_root/premium_summary/presentation/income_bar_chart.dart';
 
@@ -37,15 +39,15 @@ class PremiumSummaryScreen extends ConsumerWidget {
               children: [
                 _FilterChip(
                   label: '${state.selectedYear}年',
-                  onTap: () => _showYearPicker(context, viewModel),
+                  onTap: () => _showYearPicker(context, viewModel, state),
                 ),
                 _FilterChip(
                   label: state.selectedRegion ?? 'すべての地域',
-                  onTap: () => _showRegionPicker(context, viewModel),
+                  onTap: () => _showRegionPicker(context, viewModel, state),
                 ),
                 _FilterChip(
                   label: state.selectedAgeRange ?? 'すべての年代',
-                  onTap: () => _showAgePicker(context, viewModel),
+                  onTap: () => _showAgePicker(context, viewModel, state),
                 ),
               ],
             ),
@@ -107,77 +109,54 @@ class PremiumSummaryScreen extends ConsumerWidget {
   }
 
   /// 年選択ピッカー
-  void _showYearPicker(BuildContext context, PremiumSummaryViewModel notifier) {
+  void _showYearPicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
     // 2023年から2026年までのリスト（必要に応じて増やしてください）
     final years = [2026, 2025, 2024, 2023];
 
-    _showCupertinoPicker(
-      context,
+    CustomActionPicker.show<String>(
+      context: context,
       title: '対象年を選択',
       items: years.map((y) => y.toString()).toList(),
+      // 現在の状態（state）から選択中の値を渡す
+      currentValue: state.selectedYear.toString(),
+      // リストの各要素をどう表示するか（今回はStringなのでそのまま）
+      labelBuilder: (item) => item,
       onSelected: (selected) {
-        notifier.updateFilter(year: int.parse(selected));
+    notifier.updateFilter(year: int.parse(selected));
       },
     );
   }
 
   /// 地域選択ピッカー
-  void _showRegionPicker(BuildContext context, PremiumSummaryViewModel notifier) {
-    _showCupertinoPicker(
-      context,
+  void _showRegionPicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
+    CustomActionPicker.show<String>(
+      context: context,
       title: '地域を選択',
-      // 「指定なし」を先頭に追加
       items: ['指定なし', ...ProfileConfig.prefectures],
+      // 現在の状態（state）から選択中の値を渡す
+      currentValue: state.selectedRegion ?? '指定なし',
+      // リストの各要素をどう表示するか（今回はStringなのでそのまま）
+      labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(region: selected);
       },
     );
   }
-
   /// 年代選択ピッカー
-  void _showAgePicker(BuildContext context, PremiumSummaryViewModel notifier) {
+  void _showAgePicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
     final ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
 
-    _showCupertinoPicker(
-      context,
+    CustomActionPicker.show<String>(
+      context: context,
       title: '年代を選択',
       items: ages,
+      // 現在の状態（state）から選択中の値を渡す
+      currentValue: state.selectedAgeRange ?? '指定なし',
+      // リストの各要素をどう表示するか（今回はStringなのでそのまま）
+      labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(ageRange: selected);
       },
-    );
-  }
-
-  /// 共通のCupertinoアクションシート表示
-  void _showCupertinoPicker(
-      BuildContext context, {
-        required String title,
-        required List<String> items,
-        required Function(String) onSelected,
-      }) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) => CupertinoActionSheet(
-        title: CustomText(text: title, textSize: TextSize.S, fontWeight: FontWeight.bold),
-        actions: items.map((item) {
-          return CupertinoActionSheetAction(
-            onPressed: () {
-              onSelected(item);
-              Navigator.pop(context);
-            },
-            child: CustomText(
-                text: item,
-                textSize: TextSize.M,
-                color: CustomColors.themaBlue
-            ),
-          );
-        }).toList(),
-        cancelButton: CupertinoActionSheetAction(
-          isDefaultAction: true,
-          onPressed: () => Navigator.pop(context),
-          child: const CustomText(text: 'キャンセル', color: CustomColors.negative),
-        ),
-      ),
     );
   }
 }
