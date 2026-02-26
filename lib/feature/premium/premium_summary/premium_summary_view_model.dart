@@ -11,7 +11,7 @@ final premiumSummaryProvider = StateNotifierProvider.autoDispose<PremiumSummaryV
   final publicSalaryRepository = ref.read(summaryRepositoryImplProvider);
   final vm = PremiumSummaryViewModel(ref, publicSalaryRepository);
   /// build完了後に実行
-  Future.microtask(() => vm.fetchAllSalaries());
+  Future.microtask(() => vm.fetchDashboard());
   return vm;
 });
 
@@ -49,7 +49,7 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
 
   static const ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
 
-  Future<void> fetchAllSalaries() async {
+  Future<void> fetchDashboard() async {
     // フィルタ文字列をAPI用のパラメータに変換
     final Map<String, dynamic> queries = {
       'year': state.selectedYear,
@@ -83,12 +83,11 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
       selectedAgeRange: ageRange == null ? null : () => (ageRange == '指定なし' ? null : ageRange),
     );
 
-    // API叩き直し
-    await fetchAllSalaries();
+    await fetchDashboard();
   }
 
   /// リフレッシュ処理
   Future<void> refresh() async {
-    await fetchAllSalaries();
+    await fetchDashboard();
   }
 }

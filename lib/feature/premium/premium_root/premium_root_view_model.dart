@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_state.dart';
 
 final premiumRootProvider = StateNotifierProvider.autoDispose<PremiumRootViewModel, PremiumRootState>((ref) {
@@ -17,7 +16,6 @@ class PremiumRootViewModel extends StateNotifier<PremiumRootState> {
   }
 
   void refresh() {
-    logger('refresh');
     state = state.copyWith(
         isRefresh: true
     );
