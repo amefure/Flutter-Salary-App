@@ -5,9 +5,12 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/explanation_overlay.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/premium_root/premium_lock_screen.dart';
-import 'package:salary/feature/premium_root/premium_summary/presentation/premium_summary_screen.dart';
-import 'package:salary/feature/premium_root/premium_time_line/premium_time_line_screen.dart';
+import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/premium/premium_lock_screen.dart';
+import 'package:salary/feature/premium/premium_root/premium_root_state.dart';
+import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
+import 'package:salary/feature/premium/premium_summary/presentation/premium_summary_screen.dart';
+import 'package:salary/feature/premium/premium_time_line/premium_time_line_screen.dart';
 
 class PremiumRootScreen extends StatelessWidget {
   const PremiumRootScreen({super.key});
@@ -16,18 +19,31 @@ class PremiumRootScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
-      navigationBar: const CupertinoNavigationBar(
-        middle: CustomText(
+      navigationBar: CupertinoNavigationBar(
+        middle: const CustomText(
           text: 'プレミアム機能',
           fontWeight: FontWeight.bold,
         ),
+        trailing: Consumer(
+            builder: (context, ref, _) {
+              return CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: const Icon(
+                  CupertinoIcons.refresh_circled,
+                  size: 28,
+                ),
+                onPressed: () {
+                  final viewModel = ref.read(premiumRootProvider.notifier);
+                  viewModel.refresh();
+                },
+              );
+            }),
       ),
       child: SafeArea(
         child: Consumer(
           builder: (context, ref, _) {
             final authState = ref.watch(authStateProvider);
-            final premiumState =
-            ref.watch(premiumFunctionStateProvider);
+            final premiumState = ref.watch(premiumFunctionStateProvider);
 
             final isRelease = authState.isLogin &&
                 premiumState.isPublicData &&
@@ -38,9 +54,8 @@ class PremiumRootScreen extends StatelessWidget {
               return const PremiumLockScreen();
             }
 
-            /// 🔓 ここからPremium表示
-            final currentTab =
-            ref.watch(premiumTabProvider);
+            final state = ref.watch(premiumRootProvider);
+            final viewModel = ref.read(premiumRootProvider.notifier);
 
             return Column(
               children: [
@@ -52,12 +67,11 @@ class PremiumRootScreen extends StatelessWidget {
                     children: [
                       const SizedBox(width: 30),
                       const Spacer(),
-                      /// 🔥 上部タブ
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: CupertinoSlidingSegmentedControl<
                             PremiumTab>(
-                          groupValue: currentTab,
+                          groupValue: state.currentTab,
                           children: const {
                             PremiumTab.timeline: Padding(
                               padding: EdgeInsets.symmetric(
@@ -80,7 +94,7 @@ class PremiumRootScreen extends StatelessWidget {
                           },
                           onValueChanged: (value) {
                             if (value != null) {
-                              ref.read(premiumTabProvider.notifier).state = value;
+                              viewModel.updateTab(value);
                             }
                           },
                         ),
@@ -92,9 +106,12 @@ class PremiumRootScreen extends StatelessWidget {
                         width: 30,
                         child: CupertinoButton(
                           padding: EdgeInsets.zero,
-                          child: const Icon(CupertinoIcons.question_circle_fill),
+                          child: const Icon(
+                            CupertinoIcons.question_circle_fill,
+                            size: 28,
+                          ),
                           onPressed: () {
-                            final currentTab = ref.read(premiumTabProvider);
+                            final currentTab = state.currentTab;
 
                             ExplanationOverlay.show(
                               context: context,
@@ -113,7 +130,7 @@ class PremiumRootScreen extends StatelessWidget {
                   child: AnimatedSwitcher(
                     duration:
                     const Duration(milliseconds: 250),
-                    child: currentTab ==
+                    child: state.currentTab ==
                         PremiumTab.timeline
                         ? const PremiumTimeLineScreen()
                         : const PremiumSummaryScreen(),
@@ -127,31 +144,3 @@ class PremiumRootScreen extends StatelessWidget {
     );
   }
 }
-
-final premiumTabProvider =
-StateProvider<PremiumTab>((ref) {
-  return PremiumTab.timeline;
-});
-
-enum PremiumTab {
-  timeline(
-    title: 'タイムライン',
-    description: 'みんなの月単位での給料情報投稿を時系列で確認できます。\n最新の情報をすぐチェックできます。',
-  ),
-  summary(
-    title: 'サマリー',
-    description: '月別・年別のデータを\nグラフで確認できます。',
-  );
-
-  final String title;
-  final String description;
-
-  const PremiumTab({
-    required this.title,
-    required this.description,
-  });
-}
-
-
-
-

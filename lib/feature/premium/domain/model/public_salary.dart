@@ -1,5 +1,5 @@
-import 'package:salary/feature/premium_root/domain/model/public_payment_source.dart';
-import 'package:salary/feature/premium_root/domain/model/public_user.dart';
+import 'package:salary/feature/premium/domain/model/public_payment_source.dart';
+import 'package:salary/feature/premium/domain/model/public_user.dart';
 
 class PublicSalary {
 

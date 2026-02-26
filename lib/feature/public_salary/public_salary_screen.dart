@@ -28,7 +28,10 @@ class PublicSalaryScreen extends ConsumerWidget {
         ),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.question_circle_fill),
+          child: const Icon(
+            CupertinoIcons.question_circle_fill,
+            size: 28,
+          ),
           onPressed: () {
             ExplanationOverlay.show(
               context: context,

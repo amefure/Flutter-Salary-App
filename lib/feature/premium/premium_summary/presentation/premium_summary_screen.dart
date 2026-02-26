@@ -7,11 +7,11 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
-import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
-import 'package:salary/feature/premium_root/premium_summary/premium_summary_state.dart';
-import 'package:salary/feature/premium_root/premium_summary/premium_summary_view_model.dart';
-import 'package:salary/feature/premium_root/premium_summary/presentation/income_bar_chart.dart';
+import 'package:salary/feature/premium/data/dto/income_distribution_dto.dart';
+import 'package:salary/feature/premium/data/dto/ranking_dto.dart';
+import 'package:salary/feature/premium/premium_summary/premium_summary_state.dart';
+import 'package:salary/feature/premium/premium_summary/premium_summary_view_model.dart';
+import 'package:salary/feature/premium/premium_summary/presentation/income_bar_chart.dart';
 
 class PremiumSummaryScreen extends ConsumerWidget {
   const PremiumSummaryScreen({super.key});

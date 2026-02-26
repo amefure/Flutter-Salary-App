@@ -1,5 +1,5 @@
-import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
-import 'package:salary/feature/premium_root/data/dto/ranking_dto.dart';
+import 'package:salary/feature/premium/data/dto/income_distribution_dto.dart';
+import 'package:salary/feature/premium/data/dto/ranking_dto.dart';
 
 class SummaryDto {
   final List<RankingDto> top10;

@@ -1,4 +1,4 @@
-import 'package:salary/feature/premium_root/data/dto/public_salary_page_dto.dart';
+import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
 
 /// 実態：[PublicSalaryRepositoryImpl]
 abstract class PublicSalaryRepository {

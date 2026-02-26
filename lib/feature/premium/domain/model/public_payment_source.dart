@@ -8,5 +8,5 @@ class PublicPaymentSource {
     required this.publicName,
   });
 
-  String get displayName => publicName.isEmpty ? '未設定' : publicName;
+  String get displayName => publicName.isEmpty ? '非公開' : publicName;
 }

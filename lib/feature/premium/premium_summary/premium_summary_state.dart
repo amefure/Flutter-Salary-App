@@ -1,4 +1,4 @@
-import 'package:salary/feature/premium_root/data/dto/summary_dto.dart';
+import 'package:salary/feature/premium/data/dto/summary_dto.dart';
 
 class PremiumSummaryState {
   final SummaryDto? summaryDto;

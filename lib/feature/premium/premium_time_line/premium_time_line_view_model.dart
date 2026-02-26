@@ -2,10 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/payment_repository.dart';
-import 'package:salary/feature/premium_root/data/dto/public_salary_page_dto.dart';
-import 'package:salary/feature/premium_root/data/public_salary_repository_impl.dart';
-import 'package:salary/feature/premium_root/domain/public_salary_repository.dart';
-import 'package:salary/feature/premium_root/premium_time_line/premium_time_line_state.dart';
+import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
+import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
+import 'package:salary/feature/premium/domain/public_salary_repository.dart';
+import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
+import 'package:salary/feature/premium/premium_time_line/premium_time_line_state.dart';
 import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
 
@@ -32,7 +33,17 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
       this._paymentRepository,
       this._salaryRepository,
       this._publicSalaryRepository
-      ): super(PremiumTimeLineState.initial());
+      ): super(PremiumTimeLineState.initial()) {
+    _ref.listen<bool>(
+      premiumRootProvider.select((s) => s.isRefresh),
+          (previous, next) {
+        if (next == true && previous != true) {
+          refresh();
+          _ref.read(premiumRootProvider.notifier).clearIsRefresh();
+        }
+      },
+    );
+  }
 
   Future<void> fetchAllSalaries() async {
     await _ref.runWithGlobalHandling(() async {

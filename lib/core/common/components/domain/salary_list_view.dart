@@ -4,7 +4,7 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
-import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
+import 'package:salary/feature/premium/domain/model/public_salary.dart';
 
 /// ===============================
 /// Base List View（完全共通）
@@ -373,8 +373,7 @@ class PublicSalaryListView extends StatelessWidget {
         date: salary.paidAt,
         isBonus: salary.isBonus,
         color: CustomColors.thema,
-        sourceName:
-        salary.paymentSource?.displayName ?? '未設定',
+        sourceName: salary.user.profile.job,
         paymentAmount: salary.paymentAmount,
         netSalary: salary.netSalary,
       ),

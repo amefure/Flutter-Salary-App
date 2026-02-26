@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/premium_root/data/dto/income_distribution_dto.dart';
+import 'package:salary/feature/premium/data/dto/income_distribution_dto.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class IncomeBarChart extends StatelessWidget {

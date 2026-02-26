@@ -1,8 +1,6 @@
 import 'package:salary/core/config/json_keys.dart';
-import 'package:salary/feature/premium_root/data/dto/public_salary_dto.dart';
-import 'package:salary/feature/premium_root/data/dto/public_user_dto.dart';
-import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
-import 'package:salary/feature/premium_root/domain/model/public_user.dart';
+import 'package:salary/feature/premium/data/dto/public_salary_dto.dart';
+import 'package:salary/feature/premium/domain/model/public_salary.dart';
 
 class PublicSalaryPageDto {
 

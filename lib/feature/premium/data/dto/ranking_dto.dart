@@ -1,4 +1,4 @@
-import 'package:salary/feature/premium_root/data/dto/public_user_dto.dart';
+import 'package:salary/feature/premium/data/dto/public_user_dto.dart';
 
 class RankingDto {
   final int userId;

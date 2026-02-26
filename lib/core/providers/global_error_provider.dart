@@ -38,9 +38,10 @@ extension AsyncHandlingExtension on Ref {
       error.show(_mapApiExceptionToMessage(e));
       return false;
 
-    } catch (e) {
+    } catch (e, stackTrace) {
       logger('======= ❌ Error Other Response =======');
       logger(e);
+      logger('StackTrace: $stackTrace'); // これで発生行を特定
       logger('======= ❌ Error Other Response =======');
       error.show('予期せぬエラーが発生しました');
       return false;

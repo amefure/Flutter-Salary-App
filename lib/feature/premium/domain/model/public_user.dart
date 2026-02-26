@@ -1,4 +1,4 @@
-import 'package:salary/feature/premium_root/domain/model/public_profile.dart';
+import 'package:salary/feature/premium/domain/model/public_profile.dart';
 
 class PublicUser {
 

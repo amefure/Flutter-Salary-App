@@ -1,6 +1,6 @@
 
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/feature/premium_root/domain/model/public_salary.dart';
+import 'package:salary/feature/premium/domain/model/public_salary.dart';
 
 class PremiumTimeLineState {
   final List<PublicSalary> salaries;

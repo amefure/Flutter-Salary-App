@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/mock/summary_mock_factory.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
-import 'package:salary/feature/premium_root/data/summary_repository_impl.dart';
-import 'package:salary/feature/premium_root/domain/summary_repository.dart';
-import 'package:salary/feature/premium_root/premium_summary/premium_summary_state.dart';
+import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/premium/data/summary_repository_impl.dart';
+import 'package:salary/feature/premium/domain/summary_repository.dart';
+import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
+import 'package:salary/feature/premium/premium_summary/premium_summary_state.dart';
 
 final premiumSummaryProvider = StateNotifierProvider.autoDispose<PremiumSummaryViewModel, PremiumSummaryState>((ref) {
   final publicSalaryRepository = ref.read(summaryRepositoryImplProvider);
@@ -21,7 +23,19 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
   PremiumSummaryViewModel(
       this._ref,
       this._summaryRepository
-      ): super(PremiumSummaryState.initial());
+      ): super(PremiumSummaryState.initial()) {
+    _ref.listen<bool>(
+      premiumRootProvider.select((s) => s.isRefresh),
+          (previous, next) {
+        logger(next);
+        logger(previous);
+        if (next == true && previous != true) {
+          refresh();
+          _ref.read(premiumRootProvider.notifier).clearIsRefresh();
+        }
+      },
+    );
+  }
 
   // 下限の年を設定
   static const int _startYear = 2010;
@@ -54,14 +68,14 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
       }
     }
     await _ref.runWithGlobalHandling(() async {
-      //final summaryDto = await _summaryRepository.dashboard(queries: queries);
-      final summaryDto2 = SummaryMockFactory.create();
-      state = state.copyWith(summaryDto: summaryDto2);
+      final summaryDto = await _summaryRepository.dashboard(queries: queries);
+      // final summaryDto = SummaryMockFactory.create();
+      state = state.copyWith(summaryDto: summaryDto);
     });
   }
 
   /// フィルタを更新して再取得
-  void updateFilter({int? year, String? region, String? ageRange}) {
+  void updateFilter({int? year, String? region, String? ageRange}) async {
     state = state.copyWith(
       selectedYear: year,
       // '指定なし' が選ばれたら null をセットする
@@ -70,6 +84,11 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
     );
 
     // API叩き直し
-    fetchAllSalaries();
+    await fetchAllSalaries();
+  }
+
+  /// リフレッシュ処理
+  Future<void> refresh() async {
+    await fetchAllSalaries();
   }
 }

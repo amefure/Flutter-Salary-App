@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/utils/logger.dart';
-import 'package:salary/feature/premium_root/data/dto/summary_dto.dart';
-import 'package:salary/feature/premium_root/data/summary_api.dart';
-import 'package:salary/feature/premium_root/domain/summary_repository.dart';
+import 'package:salary/feature/premium/data/dto/summary_dto.dart';
+import 'package:salary/feature/premium/data/summary_api.dart';
+import 'package:salary/feature/premium/domain/summary_repository.dart';
 
 final summaryRepositoryImplProvider = Provider<SummaryRepository>((ref) {
   final apiSource = ref.read(summaryApiProvider);

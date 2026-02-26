@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/utils/logger.dart';
-import 'package:salary/feature/premium_root/data/dto/public_salary_page_dto.dart';
-import 'package:salary/feature/premium_root/data/public_salary_api.dart';
-import 'package:salary/feature/premium_root/domain/public_salary_repository.dart';
+import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
+import 'package:salary/feature/premium/data/public_salary_api.dart';
+import 'package:salary/feature/premium/domain/public_salary_repository.dart';
 
 final publicSalaryRepositoryProvider = Provider<PublicSalaryRepository>((ref) {
   final apiSource = ref.read(publicSalaryApiProvider);
