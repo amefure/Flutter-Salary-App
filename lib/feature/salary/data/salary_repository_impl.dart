@@ -44,19 +44,9 @@ class SalaryRepositoryImpl implements SalaryRepository {
   @override
   Future<void> update({
     required String id,
-    required String name,
-    required int themeColor,
-    required String? memo,
-    required bool isMain,
+    required Salary salary
   }) async {
-    await _api.update(
-        id,
-        {
-          PaymentSourceJsonKeys.name: name,
-          PaymentSourceJsonKeys.themeColor: themeColor,
-          PaymentSourceJsonKeys.memo: memo,
-          PaymentSourceJsonKeys.isMain: isMain,
-        });
+    await _api.update(id, salary.toJson());
   }
 
   @override

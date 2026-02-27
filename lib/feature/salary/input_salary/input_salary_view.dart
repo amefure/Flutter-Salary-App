@@ -32,10 +32,12 @@ class InputSalaryView extends ConsumerWidget {
           salary == null ? const Text('給料登録画面') : const Text('給料更新画面'),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
-            onPressed: () {
+            onPressed: () async {
               try {
-                vm.addOrUpdate();
-                Navigator.of(context).pop();
+                final result = await vm.addOrUpdate();
+                if (result) {
+                  Navigator.of(context).pop();
+                }
               } on InputSalaryException catch (e) {
                 _showErrorDialog(context, e.message);
               }

@@ -17,10 +17,7 @@ abstract class SalaryRepository {
   /// 更新
   Future<void> update({
     required String id,
-    required String name,
-    required int themeColor,
-    required String? memo,
-    required bool isMain,
+    required Salary salary
   });
 
   /// 削除

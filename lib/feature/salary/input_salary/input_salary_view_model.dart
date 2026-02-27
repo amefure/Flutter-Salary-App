@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_view_model.dart';
+import 'package:salary/feature/salary/domain/salary_repository.dart';
 import 'package:salary/feature/salary/input_salary/input_salary_state.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
@@ -12,20 +15,20 @@ final inputSalaryProvider =
 StateNotifierProvider.autoDispose.family<InputSalaryViewModel, InputSalaryState, Salary?>(
       (ref, salary) {
     final repository = RealmRepository();
-    return InputSalaryViewModel(ref, repository, salary);
+    final salaryRepository = ref.read(salaryRepositoryProvider);
+    return InputSalaryViewModel(ref, repository, salaryRepository, salary);
   },
 );
 
 class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
-  final Ref ref;
+  final Ref _ref;
 
-  /// 引数でRepositoryをセット
   final RealmRepository _repository;
-
+  final SalaryRepository _salaryRepository;
   final Salary? salary;
 
   /// 初期インスタンス化
-  InputSalaryViewModel(this.ref, this._repository, this.salary)
+  InputSalaryViewModel(this._ref, this._repository, this._salaryRepository, this.salary)
       : super(InputSalaryState.initial()) {
     // 履歴を読み込み
     _loadHistorySalary(salary);
@@ -261,7 +264,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
   }
 
   /// 給料情報新規追加
-  void addOrUpdate() {
+  Future<bool> addOrUpdate() async {
     // 桁数バリデーション
     if (_validationLength()) {
       throw const ValidationException('19桁以上は入力できません。');
@@ -292,25 +295,54 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     );
 
     if (salary case Salary salary) {
-      _update(salary, newSalary);
-      ref.read(detailSalaryProvider(salary.id).notifier).loadSalary(salary.id);
+      final result = await _update(salary, newSalary);
+      if (!result) { return false; }
+      _ref.read(detailSalaryProvider(salary.id).notifier).loadSalary(salary.id);
     } else {
-      _add(newSalary);
+      final result = await _add(newSalary);
+      if (!result) { return false; }
     }
 
     // MyData画面のリフレッシュ
-    ref.read(chartSalaryProvider.notifier).refresh();
+    _ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ
-    ref.read(listSalaryProvider.notifier).refresh();
+    _ref.read(listSalaryProvider.notifier).refresh();
+    return true;
   }
 
   /// 追加
-  void _add(Salary salary) {
-    _repository.add<Salary>(salary);
+  Future<bool> _add(Salary salary) async {
+    if (salary.source?.isPublic == true) {
+      return await _ref.runWithGlobalHandling(() async {
+        // クラウド登録
+        await _salaryRepository.create(salaries: [salary]);
+        // ローカル登録
+        _repository.add<Salary>(salary);
+      });
+    } else {
+      // ローカル登録のみ
+      _repository.add<Salary>(salary);
+      return true;
+    }
   }
 
   /// 更新
-  void _update(Salary oldSalary, Salary updateSalary) {
+  Future<bool> _update(Salary oldSalary, Salary updateSalary) async {
+    if (oldSalary.source?.isPublic == true) {
+      return await _ref.runWithGlobalHandling(() async {
+        // クラウド登録
+        await _salaryRepository.update(id: oldSalary.id, salary: updateSalary);
+        // ローカル登録
+        _localUpdateSalary(oldSalary, updateSalary);
+      });
+    } else {
+      _localUpdateSalary(oldSalary, updateSalary);
+      return true;
+    }
+  }
+
+  /// ローカル更新処理
+  void _localUpdateSalary(Salary oldSalary, Salary updateSalary) {
     // 後続でコピーオブジェクトで更新するため
     // 旧SalaryのpaymentAmountItems/deductionAmountItemsの中身を一度完全に削除する
     // forEachで実行すると管理下リストオブジェクト内での操作違反でエラーになるため
