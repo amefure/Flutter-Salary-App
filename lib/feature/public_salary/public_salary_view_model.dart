@@ -107,7 +107,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
         /// 一括登録
         await _salaryRepository.create(salaries: targetSalaries);
       } else {
-        await  _paymentRepository.delete(current.id);
+        await _paymentRepository.delete(current.id);
         /// 一括登録
         await _salaryRepository.delete(salaries: targetSalaries);
       }

@@ -5,16 +5,19 @@ class PublicPaymentSourceDto {
 
   final String id;
   final String publicName;
+  final int themaColor;
 
   PublicPaymentSourceDto({
     required this.id,
     required this.publicName,
+    required this.themaColor,
   });
 
   factory PublicPaymentSourceDto.fromJson(Map<String, dynamic> json) {
     return PublicPaymentSourceDto(
       id: json[PaymentSourceJsonKeys.id],
       publicName: json[PaymentSourceJsonKeys.publicName] ?? '',
+      themaColor: json[PaymentSourceJsonKeys.themeColor] ?? '',
     );
   }
 }
@@ -24,6 +27,7 @@ extension PublicPaymentSourceDtoMapper on PublicPaymentSourceDto {
     return PublicPaymentSource(
       id: id,
       publicName: publicName,
+      themaColor: themaColor
     );
   }
 }

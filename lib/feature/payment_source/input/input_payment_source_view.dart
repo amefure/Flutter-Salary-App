@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_state.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_view_model.dart';
 import 'package:salary/core/models/salary.dart';
@@ -248,37 +249,23 @@ class _SubmitButton extends ConsumerWidget {
     return  // 追加 / 更新ボタン
       CustomElevatedButton(
         text: paymentSource == null ? '追加' : '更新',
-        onPressed: () {
-          vm.createOrUpdate(
-              onComplete: (){
-                Navigator.of(context).pop(true);
-              },
-              onError: (){
-                _showErrorDialog(context);
-              }
-          );
+        onPressed: () async {
+          final result = await vm.createOrUpdate();
+          if (result) {
+            Navigator.of(context).pop(true);
+          } else {
+            _showErrorDialog(context);
+          }
         },
       );
   }
 
   /// エラーダイアログを表示
-  void _showErrorDialog(BuildContext context) {
-    showCupertinoDialog(
+  void _showErrorDialog(BuildContext context) async {
+    final _ = await AppDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: const Text('名称を入力してください。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      message: '名称を入力してください。',
+      type: DialogType.error,
     );
   }
 }

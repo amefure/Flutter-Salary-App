@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/premium/domain/model/public_salary.dart';
@@ -372,7 +373,7 @@ class PublicSalaryListView extends StatelessWidget {
       itemBuilder: (_, salary) => SalaryCard(
         date: salary.paidAt,
         isBonus: salary.isBonus,
-        color: CustomColors.thema,
+        color: salary.paymentSource?.themaColorEnum.color ?? ThemaColor.blue.color,
         sourceName: salary.user.profile.job,
         paymentAmount: salary.paymentAmount,
         netSalary: salary.netSalary,

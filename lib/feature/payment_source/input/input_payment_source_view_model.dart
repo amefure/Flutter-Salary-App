@@ -1,8 +1,10 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
+import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_state.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
@@ -12,22 +14,23 @@ import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
       final repository = RealmRepository();
-      return InputPaymentSourceViewModel(ref, repository, paymentSource);
+      final paymentRepository = ref.read(paymentRepositoryProvider);
+      return InputPaymentSourceViewModel(ref, repository, paymentRepository, paymentSource);
     }
 );
 
 class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState> {
 
-  final Ref ref;
+  final Ref _ref;
 
-  /// 引数でRepositoryをセット
   final RealmRepository _repository;
-
+  final PaymentRepository _paymentRepository;
   final PaymentSource? paymentSource;
 
   InputPaymentSourceViewModel(
-      this.ref,
+      this._ref,
       this._repository,
+      this._paymentRepository,
       this.paymentSource
       ) : super(InputPaymentSourceState.initial()) {
     _setUpInitialPayment(paymentSource);
@@ -55,19 +58,22 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
     }
   }
 
-  void createOrUpdate({
-    required VoidCallback onComplete,
-    required VoidCallback onError,
-}) {
+  Future<bool> createOrUpdate() async {
     if (state.name.isEmpty) {
-      // バリデーションエラー
-      onError();
-      return;
+      return false; // バリデーションエラー
     }
 
     if (paymentSource case PaymentSource paymentSource) {
       // 更新
-      _updatePaymentSource(paymentSource.id, state.name, state.selectedColor, state.memo, state.isMain);
+      final result = await _updatePaymentSource(
+          paymentSource.id,
+          state.name,
+          state.selectedColor,
+          state.memo,
+          state.isMain,
+          paymentSource.isPublic
+      );
+      if (!result) { return false; }
     } else {
       // 新規登録
       final payment = PaymentSource(
@@ -82,10 +88,10 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
       _addPaymentSource(payment);
     }
     // MyData画面のリフレッシュ
-    ref.read(chartSalaryProvider.notifier).refresh();
+    _ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ
-    ref.read(listSalaryProvider.notifier).refresh();
-    onComplete();
+    _ref.read(listSalaryProvider.notifier).refresh();
+    return true;
   }
 
   /// 追加
@@ -94,13 +100,40 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
   }
 
   /// 更新
-  void _updatePaymentSource(String id, String name, ThemaColor color, String? memo, bool isMain) {
-    _repository.updateById(id, (PaymentSource paymentSource) {
-      paymentSource.name = name;
-      paymentSource.isMain = isMain;
-      paymentSource.themaColor = color.value;
-      paymentSource.memo = memo;
-    });
+  Future<bool> _updatePaymentSource(
+      String id,
+      String name,
+      ThemaColor color,
+      String? memo,
+      bool isMain,
+      bool isPublic
+      ) async {
+    if (isPublic) {
+      await _ref.runWithGlobalHandling(() async {
+        await _paymentRepository.update(
+            id: id,
+            name: name,
+            themeColor:
+            color.value,
+            memo: memo,
+            isMain: isMain
+        );
+        _repository.updateById(id, (PaymentSource paymentSource) {
+          paymentSource.name = name;
+          paymentSource.isMain = isMain;
+          paymentSource.themaColor = color.value;
+          paymentSource.memo = memo;
+        });
+      });
+    } else {
+      _repository.updateById(id, (PaymentSource paymentSource) {
+        paymentSource.name = name;
+        paymentSource.isMain = isMain;
+        paymentSource.themaColor = color.value;
+        paymentSource.memo = memo;
+      });
+    }
+    return true;
   }
 
   void updateName(String name) {

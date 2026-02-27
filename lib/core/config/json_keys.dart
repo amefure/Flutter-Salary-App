@@ -39,6 +39,7 @@ abstract class AmountItemJsonKeys {
 abstract class PaymentSourceJsonKeys {
   static const id = 'id';
   static const name = 'name';
+  // スペルミス
   static const themeColor = 'theme_color';
   static const memo = 'memo';
   static const isMain = 'is_main';

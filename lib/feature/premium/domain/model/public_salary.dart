@@ -22,9 +22,4 @@ class PublicSalary {
     required this.paymentSource,
     required this.user,
   });
-
-  bool get isHighIncome => netSalary >= 10000000;
-
-  String get formattedIncome =>
-      '${(netSalary / 10000).toStringAsFixed(0)}万円';
 }

@@ -219,6 +219,7 @@ class _DeleteButtonState extends State<_DeleteButton> {
       WidgetRef ref,
       PaymentSource paymentSource,
       ) {
+    // クラウドの支払い元は非公開にされたタイミングで削除されるためここでは常にローカルのみ削除する
     // 削除
     ref.read(listPaymentSourceProvider.notifier).delete(paymentSource);
     // MyData画面のリフレッシュ
@@ -234,10 +235,20 @@ class _DeleteButtonState extends State<_DeleteButton> {
       onTapUp: (_) => setState(() => isPressed = false),
       onTapCancel: () => setState(() => isPressed = false),
       onTap: () async {
+
+        if (widget.paymentSource.isPublic) {
+          final _ = await AppDialog.show(
+            context: context,
+            message: '「${widget.paymentSource.name}」は公開中のため削除できません。\n削除したい場合は非公開に戻してから実行してください。',
+            type: DialogType.notify,
+          );
+          return;
+        }
+
         final result = await AppDialog.show(
           context: context,
           message:
-          '「${widget.paymentSource.name}」を本当に削除しますか？',
+          '「${widget.paymentSource.name}」を本当に削除しますか？\n削除すると紐づいている給料情報が「未設定」になり、再設定が必要になります。',
           type: DialogType.confirm,
           positiveTitle: '削除',
           isPositiveNegativeType: true,
