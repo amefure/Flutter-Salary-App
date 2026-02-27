@@ -94,11 +94,13 @@ class DetailSalaryView extends ConsumerWidget {
       BuildContext context,
       WidgetRef ref,
       Salary salary,
-      ) {
+      ) async {
     // 削除処理を実行
-    ref.read(detailSalaryProvider(id).notifier).delete(salary);
-    // リスト画面に戻る
-    Navigator.of(context).pop();
+    final result = await ref.read(detailSalaryProvider(id).notifier).delete(salary);
+    if (result) {
+      // リスト画面に戻る
+      Navigator.of(context).pop();
+    }
   }
 
   /// 編集画面表示
