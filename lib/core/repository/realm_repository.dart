@@ -77,6 +77,18 @@ class RealmRepository {
     });
   }
 
+  /// ジェネリクスで指定したデータをIDリストに基づいて一括削除
+  void deleteByIds<T extends RealmObject>(Iterable<String> ids) {
+    _realm.write(() {
+      for (final id in ids) {
+        final target = _realm.find<T>(id);
+        if (target != null) {
+          _realm.delete(target);
+        }
+      }
+    });
+  }
+
   /// Realmを終了
   void dispose() {
     _realm.close();

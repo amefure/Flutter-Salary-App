@@ -2,24 +2,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/auth/auth_state.dart';
 import 'package:salary/core/config/public_policy_config.dart';
+import 'package:salary/core/models/salary.dart';
+import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
+import 'package:salary/feature/charts/chart_salary_view_model.dart';
+import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
+  final repository = RealmRepository();
   final authRepository = ref.read(authRepositoryProvider);
-  return AuthStateNotifier(authRepository);
+  return AuthStateNotifier(ref, authRepository, repository);
   },
 );
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
 
-  AuthStateNotifier(this._authRepository) : super(const AuthState()) {
+  AuthStateNotifier(this._ref, this._authRepository, this._repository) : super(const AuthState()) {
     // 初回インスタンス化時にユーザー情報を取得する
     _fetchAndSetUpUser();
   }
 
+  final Ref _ref;
   final AuthRepository _authRepository;
+  final RealmRepository _repository;
 
   /// 新規登録
   Future<void> registerAccount({
@@ -32,7 +40,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     required String job,
     required String jobCategory,
 }) async {
-    final user =  await _authRepository.register(
+    final user = await _authRepository.register(
       name: name,
       email: email,
       password: password,
@@ -42,6 +50,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       job: job,
       jobCategory: jobCategory
     );
+    // ローカルデータを他ユーザーのデータを削除
+    _deleteOtherData(user.id);
     state = state.copyWith(user);
   }
 
@@ -50,11 +60,39 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
   }) async {
-    final user =  await _authRepository.login(
+    final user = await _authRepository.login(
       email: email,
       password: password,
     );
+    // ローカルデータを他ユーザーのデータを削除
+    _deleteOtherData(user.id);
     state = state.copyWith(user);
+  }
+
+  /// ローカルデータを他ユーザーのデータを削除
+  void _deleteOtherData(int userId) {
+    final allSalaries = _repository.fetchAll<Salary>();
+    final allPaymentSources = _repository.fetchAll<PaymentSource>();
+
+    /// ログインユーザーIDと異なる支払い元を抽出(nullは対象外)
+    final targetSourceIds = allPaymentSources
+        .where((source) => source.publicUserId != null && source.publicUserId != userId)
+        .map((source) => source.id)
+        .toList();
+
+    /// 対象の支払い元の給料データを算出
+    final targetSalaries = allSalaries
+        .where((salary) => targetSourceIds.contains(salary.source?.id))
+        .toList();
+    if (targetSourceIds.isNotEmpty || targetSalaries.isNotEmpty) {
+      /// 支払い元と給料情報を削除する
+      _repository.deleteByIds<PaymentSource>(targetSourceIds);
+      _repository.deleteByIds<Salary>(targetSalaries.map((s) => s.id));
+      // MyData画面のリフレッシュ
+      _ref.read(chartSalaryProvider.notifier).refresh();
+      // Homeリスト画面のリフレッシュ
+      _ref.read(listSalaryProvider.notifier).refresh();
+    }
   }
 
   /// ユーザー情報取得 & State更新
