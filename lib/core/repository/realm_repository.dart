@@ -53,6 +53,14 @@ class RealmRepository {
     });
   }
 
+  /// リストを受け取り、一括で追加または更新（UPSERT）を行う
+  void addAll<T extends RealmObject>(Iterable<T> items) {
+    _realm.write(() {
+      // update: true：プライマリキーが一致するものは更新
+      _realm.addAll(items, update: true);
+    });
+  }
+
   /// ID を指定してデータを更新
   void updateById<T extends RealmObject>(
     String id,

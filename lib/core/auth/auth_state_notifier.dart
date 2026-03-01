@@ -9,25 +9,39 @@ import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
+import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
+import 'package:salary/feature/salary/domain/salary_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
-  final repository = RealmRepository();
   final authRepository = ref.read(authRepositoryProvider);
-  return AuthStateNotifier(ref, authRepository, repository);
+  final repository = RealmRepository();
+  final salaryRepository = ref.read(salaryRepositoryProvider);
+  final paymentRepository = ref.read(paymentRepositoryProvider);
+  return AuthStateNotifier(ref, authRepository, repository, salaryRepository, paymentRepository);
   },
 );
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
 
-  AuthStateNotifier(this._ref, this._authRepository, this._repository) : super(const AuthState()) {
+  AuthStateNotifier(
+      this._ref,
+      this._authRepository,
+      this._realmRepository,
+      this._salaryRepository,
+      this._paymentRepository
+      ) : super(const AuthState()) {
     // 初回インスタンス化時にユーザー情報を取得する
     _fetchAndSetUpUser();
   }
 
   final Ref _ref;
   final AuthRepository _authRepository;
-  final RealmRepository _repository;
+  final RealmRepository _realmRepository;
+  final SalaryRepository _salaryRepository;
+  final PaymentRepository _paymentRepository;
 
   /// 新規登録
   Future<void> registerAccount({
@@ -52,6 +66,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
     // ローカルデータを他ユーザーのデータを削除
     _deleteOtherData(user.id);
+    // クラウドデータの同期
+    await _syncCloudToLocalData();
     state = state.copyWith(user);
   }
 
@@ -66,13 +82,15 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
     // ローカルデータを他ユーザーのデータを削除
     _deleteOtherData(user.id);
+    // クラウドデータの同期
+    await _syncCloudToLocalData();
     state = state.copyWith(user);
   }
 
   /// ローカルデータを他ユーザーのデータを削除
   void _deleteOtherData(int userId) {
-    final allSalaries = _repository.fetchAll<Salary>();
-    final allPaymentSources = _repository.fetchAll<PaymentSource>();
+    final allSalaries = _realmRepository.fetchAll<Salary>();
+    final allPaymentSources = _realmRepository.fetchAll<PaymentSource>();
 
     /// ログインユーザーIDと異なる支払い元を抽出(nullは対象外)
     final targetSourceIds = allPaymentSources
@@ -86,12 +104,32 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         .toList();
     if (targetSourceIds.isNotEmpty || targetSalaries.isNotEmpty) {
       /// 支払い元と給料情報を削除する
-      _repository.deleteByIds<PaymentSource>(targetSourceIds);
-      _repository.deleteByIds<Salary>(targetSalaries.map((s) => s.id));
+      _realmRepository.deleteByIds<PaymentSource>(targetSourceIds);
+      _realmRepository.deleteByIds<Salary>(targetSalaries.map((s) => s.id));
       // MyData画面のリフレッシュ
       _ref.read(chartSalaryProvider.notifier).refresh();
       // Homeリスト画面のリフレッシュ
       _ref.read(listSalaryProvider.notifier).refresh();
+    }
+  }
+
+  Future<void> _syncCloudToLocalData() async {
+    try {
+      final cloudSources = await _paymentRepository.fetchAllUserList();
+      final cloudSalaries = await _salaryRepository.fetchAllUserList();
+      if (cloudSources.isEmpty && cloudSalaries.isEmpty) return;
+
+      _realmRepository.addAll<PaymentSource>(cloudSources);
+      _realmRepository.addAll<Salary>(cloudSalaries);
+
+      logger('同期完了: PaymentSource：${cloudSources.length}件');
+      logger('同期完了: Salary：${cloudSalaries.length}件');
+      // MyData画面のリフレッシュ
+      _ref.read(chartSalaryProvider.notifier).refresh();
+      // Homeリスト画面のリフレッシュ
+      _ref.read(listSalaryProvider.notifier).refresh();
+    } catch (e) {
+      logger('同期エラー: $e');
     }
   }
 

@@ -14,8 +14,8 @@ class SalaryApi {
   static const String _END_POINT = '/salaries';
 
   /// ユーザーに紐づいたデータのみ
-  Future<Map<String, dynamic>> fetchAllUserList({ required int page }) async {
-    return await _client.get('$_END_POINT?page=$page');
+  Future<Map<String, dynamic>> fetchAllUserList() async {
+    return await _client.get(_END_POINT);
   }
 
   /// 全ユーザーのデータ

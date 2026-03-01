@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/salary/data/dto/salary_dto.dart';
 import 'package:salary/feature/salary/data/salary_api.dart';
 import 'package:salary/feature/salary/data/dto/salary_page_dto.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
@@ -17,10 +18,15 @@ class SalaryRepositoryImpl implements SalaryRepository {
   final SalaryApi _api;
 
   @override
-  Future<SalaryPageDto> fetchAllUserList({int page = 1}) async {
-    final result = await _api.fetchAllUserList(page: page);
+  Future<List<Salary>> fetchAllUserList() async {
+    final result = await _api.fetchAllUserList();
     logger(result);
-    return SalaryPageDto.fromJson(result);
+
+    final List<dynamic> salariesJson = result[CommonJsonKeys.data][CommonJsonKeys.salaries];
+
+    return salariesJson
+        .map((json) => SalaryDto.fromJson(json as Map<String, dynamic>).toDomain())
+        .toList();
   }
 
   @override
