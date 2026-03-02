@@ -33,7 +33,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       this._salaryRepository
       ): super(PublicSalaryState.initial()) {
     _fetchAllLocalPaymentSource();
-    _fetchAllSalaries();
+    _fetchAllLocalSalaries();
   }
 
   /// 公開条件(件数 & 総支給額合計)
@@ -48,7 +48,11 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
         final bValue = b.isMain ? 1 : 0;
         return bValue - aValue;
       });
-    state = state.copyWith(paymentSources: results);
+    final isMainPublic = results.any((source) => source.isMain && source.isPublic);
+    state = state.copyWith(
+        paymentSources: results,
+        isMainPublic: isMainPublic
+    );
   }
 
   /// ローカル情報の更新
@@ -141,6 +145,15 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       );
     }
 
+    /// 本業を公開していないなら本業以外は公開不可能にする
+    if (!state.isMainPublic && !target.isMain) {
+      return PublicCheckResult(
+        count: count,
+        totalAmount: totalPaymentAmount,
+        canPublic: false,
+      );
+    }
+
     return PublicCheckResult(
       count: count,
       totalAmount: totalPaymentAmount,
@@ -148,7 +161,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     );
   }
 
-  void _fetchAllSalaries() {
+  void _fetchAllLocalSalaries() {
     final allSalaries = _repository.fetchAll<Salary>();
     // モック(確認用)
     // final allSalaries = SalaryMockFactory.allGenerateYears();

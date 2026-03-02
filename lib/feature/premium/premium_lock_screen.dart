@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/domain/step_item.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
@@ -163,7 +164,7 @@ class _RequirementCard extends ConsumerWidget {
 
           const SizedBox(height: 12),
 
-          _StepItem(
+          StepItem(
             number: 1,
             title: 'アカウント作成(ログイン)',
             isCompleted: authState.isLogin,
@@ -176,7 +177,7 @@ class _RequirementCard extends ConsumerWidget {
             },
           ),
 
-          _StepItem(
+          StepItem(
             number: 2,
             title: '給料データを公開',
             isCompleted: premiumState.isPublicData,
@@ -189,7 +190,7 @@ class _RequirementCard extends ConsumerWidget {
             },
           ),
 
-          _StepItem(
+          StepItem(
             number: 3,
             title: 'プレミアム登録',
             isCompleted: premiumState.isSubscribed,
@@ -267,107 +268,6 @@ class _PremiumPoint extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StepItem extends StatelessWidget {
-  const _StepItem({
-    required this.number,
-    required this.title,
-    required this.isCompleted,
-    this.onTap,
-  });
-
-  final int number;
-  final String title;
-  final bool isCompleted;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isClickable = !isCompleted && onTap != null;
-
-    return GestureDetector(
-      onTap: isClickable ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 16,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: isCompleted
-              ? CustomColors.themaBlue.withAlpha(20)
-              : isClickable
-              ? CustomColors.themaOrange.withAlpha(20)
-              : CupertinoColors.systemGrey6,
-          border: isClickable
-              ? Border.all(
-            color: CustomColors.themaBlue.withAlpha(3),
-          )
-              : null,
-        ),
-        child: Row(
-          children: [
-
-            /// 丸アイコン
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted
-                    ? CustomColors.themaBlue
-                    : CustomColors.themaBlack,
-              ),
-              child: Center(
-                child: isCompleted
-                    ? const Icon(
-                  CupertinoIcons.check_mark,
-                  size: 16,
-                  color: CupertinoColors.white,
-                )
-                    : CustomText(
-                  text: number.toString(),
-                  textSize: TextSize.S,
-                  color: CupertinoColors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
-            /// タイトル
-            Expanded(
-              child: CustomText(
-                text: title,
-                textSize: TextSize.S,
-                fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
-                color: CustomColors.text(context),
-              ),
-            ),
-
-            /// 右側UI
-            if (isCompleted)
-              const CustomText(
-                text: '完了',
-                textSize: TextSize.S,
-                fontWeight: FontWeight.w600,
-                color: CustomColors.themaBlue,
-              )
-            else if (isClickable)
-              const Icon(
-                CupertinoIcons.chevron_forward,
-                size: 18,
-                color: CupertinoColors.systemGrey,
-              ),
-          ],
-        ),
       ),
     );
   }

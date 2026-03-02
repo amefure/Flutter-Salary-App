@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
+import 'package:salary/core/common/components/domain/step_item.dart';
 import 'package:salary/core/config/public_policy_config.dart';
+import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -18,6 +20,7 @@ class PublicSalaryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final paymentSources = ref.watch(publicSalaryProvider.select((s) => s.paymentSources));
+    final isMainPublic = ref.watch(publicSalaryProvider.select((s) => s.isMainPublic));
     final viewModel = ref.read(publicSalaryProvider.notifier);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
@@ -56,6 +59,7 @@ class PublicSalaryScreen extends ConsumerWidget {
               canPublic: publicCheckResult.canPublic,
               currentCount: publicCheckResult.count,
               currentTotal: publicCheckResult.totalAmount,
+              isMainPublic: source.isMain ? true : isMainPublic,
               onChanged: (isPublic) async {
                 if (!publicCheckResult.canPublic) return;
 
@@ -116,6 +120,7 @@ class _PublicSalaryItem extends StatelessWidget {
     required this.onChanged,
     required this.currentCount,
     required this.currentTotal,
+    required this.isMainPublic,
   });
 
   final PaymentSource paymentSource;
@@ -123,6 +128,7 @@ class _PublicSalaryItem extends StatelessWidget {
   final bool canPublic;
   final int currentCount;
   final int currentTotal;
+  final bool isMainPublic;
   final ValueChanged<bool> onChanged;
 
   @override
@@ -171,7 +177,7 @@ class _PublicSalaryItem extends StatelessWidget {
           /// ステータスボタン
           canPublic
               ? _publicStateButton()
-              : _canNotPublicStatus(context, currentCount, currentTotal),
+              : _canNotPublicStatus(context, currentCount, currentTotal, isMainPublic),
         ],
       ),
     );
@@ -216,6 +222,7 @@ class _PublicSalaryItem extends StatelessWidget {
       BuildContext context,
       int currentCount,
       int currentTotal,
+      bool isMainPublic,
       ) {
     return GestureDetector(
       onTap: () => {
@@ -225,6 +232,7 @@ class _PublicSalaryItem extends StatelessWidget {
           currentTotal: currentTotal,
           requiredCount: PublicSalaryViewModel.minSalaryCountForPublic,
           requiredTotal: PublicSalaryViewModel.minTotalPaymentAmountForPublic,
+          isMainPublic: isMainPublic
         )
       },
       child: Container(
@@ -263,15 +271,17 @@ class _PublicSalaryItem extends StatelessWidget {
         required int currentTotal,
         required int requiredCount,
         required int requiredTotal,
+        required bool isMainPublic
       }) {
     showCupertinoModalPopup(
       context: context,
       builder: (_) {
         return _PublicConditionModal(
-          currentCount: currentCount,
-          currentTotal: currentTotal,
-          requiredCount: requiredCount,
-          requiredTotal: requiredTotal,
+            currentCount: currentCount,
+            currentTotal: currentTotal,
+            requiredCount: requiredCount,
+            requiredTotal: requiredTotal,
+            isMainPublic: isMainPublic
         );
       },
     );
@@ -286,12 +296,14 @@ class _PublicConditionModal extends StatelessWidget {
     required this.currentTotal,
     required this.requiredCount,
     required this.requiredTotal,
+    required this.isMainPublic,
   });
 
   final int currentCount;
   final int currentTotal;
   final int requiredCount;
   final int requiredTotal;
+  final bool isMainPublic;
 
   @override
   Widget build(BuildContext context) {
@@ -316,8 +328,25 @@ class _PublicConditionModal extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            StepItem(
+                number: 1,
+                title: '本業の支払い元を公開',
+                isCompleted: isMainPublic
+            ),
+
+            const CustomText(
+              text: '本業以外の情報を公開するには本業を公開している必要があります。',
+              textSize: TextSize.SS,
+            ),
+
+            const SizedBox(height: 16),
+
+            StepItem(
+                number: 2,
+                title: '給料登録件数',
+                isCompleted: currentCount >= requiredCount
+            ),
             _ConditionProgress(
-              title: '給料登録件数',
               current: currentCount,
               required: requiredCount,
               progress: countProgress,
@@ -325,8 +354,12 @@ class _PublicConditionModal extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            StepItem(
+                number: 3,
+                title: '合計金額',
+                isCompleted: currentTotal >= requiredTotal
+            ),
             _ConditionProgress(
-              title: '合計金額',
               current: currentTotal,
               required: requiredTotal,
               progress: amountProgress,
@@ -336,7 +369,11 @@ class _PublicConditionModal extends StatelessWidget {
             const SizedBox(height: 20),
 
             CupertinoButton(
-              child: const Text('閉じる'),
+              child: const CustomText(
+                text: '閉じる',
+                color: CustomColors.themaBlue,
+                fontWeight: FontWeight.bold,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
           ],
@@ -348,14 +385,12 @@ class _PublicConditionModal extends StatelessWidget {
 
 class _ConditionProgress extends StatelessWidget {
   const _ConditionProgress({
-    required this.title,
     required this.current,
     required this.required,
     required this.progress,
     this.isMoney = false,
   });
 
-  final String title;
   final int current;
   final int required;
   final double progress;
@@ -367,11 +402,6 @@ class _ConditionProgress extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        CustomText(
-          text: title,
-          fontWeight: FontWeight.bold,
-        ),
-
         const SizedBox(height: 6),
 
         ClipRRect(
@@ -380,7 +410,7 @@ class _ConditionProgress extends StatelessWidget {
             value: progress,
             minHeight: 8,
             backgroundColor:
-            CupertinoColors.systemGrey.withOpacity(0.2),
+            CupertinoColors.systemGrey.withAlpha(60),
             valueColor: const AlwaysStoppedAnimation(
                 CustomColors.thema),
           ),
@@ -390,7 +420,7 @@ class _ConditionProgress extends StatelessWidget {
 
         CustomText(
           text: isMoney
-              ? '¥$current / ¥$required'
+              ? '¥${NumberUtils.formatWithComma(current)} / ¥${NumberUtils.formatWithComma(required)}'
               : '$current / $required 件',
           textSize: TextSize.S,
         ),
