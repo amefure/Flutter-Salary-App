@@ -61,17 +61,30 @@ class PublicSalaryScreen extends ConsumerWidget {
               currentTotal: publicCheckResult.totalAmount,
               isMainPublic: source.isMain ? true : isMainPublic,
               onChanged: (isPublic) async {
-                if (!publicCheckResult.canPublic) return;
+                final status = viewModel.checkPublicStatus(source, publicCheckResult, isPublic);
 
-                final state = ref.read(authStateProvider);
-                if (state.isPolicyAgreed) {
-                  _confirmAlertPublic(context, ref, source, isPublic);
-                } else {
-                  // ポリシー未同意済みユーザーなら同意を求める
-                  final agreed = await showPublicPolicyModal(context, showAgreeButton: true);
-                  if (agreed == true) {
+                switch (status) {
+                  case PublicCheckStatus.blockedByLimit:
+                    return;
+
+                  case PublicCheckStatus.cannotUnPublicMain:
+                    await AppDialog.show(
+                      context: context,
+                      message: '本業以外を公開している場合は\n本業を非公開にできません。',
+                      type: DialogType.error,
+                    );
+                    break;
+
+                  case PublicCheckStatus.policyRequired:
+                    final agreed = await showPublicPolicyModal(context, showAgreeButton: true);
+                    if (agreed == true) {
+                      _confirmAlertPublic(context, ref, source, isPublic);
+                    }
+                    break;
+
+                  case PublicCheckStatus.agreed:
                     _confirmAlertPublic(context, ref, source, isPublic);
-                  }
+                    break;
                 }
               },
             );

@@ -118,6 +118,42 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     });
   }
 
+  /// 公開/非公開実行時のステータスチェック
+  PublicCheckStatus checkPublicStatus(
+      PaymentSource source,
+      PublicCheckResult publicCheckResult,
+      bool nextValue
+  ) {
+    if (!publicCheckResult.canPublic) return PublicCheckStatus.blockedByLimit;
+
+    // 非公開にしようとしている時のバリデーション
+    if (source.isPublic && !nextValue) {
+      if (!_canUnPublic(source)) {
+        return PublicCheckStatus.cannotUnPublicMain;
+      }
+    }
+
+    // ポリシー同意チェック
+    if (!_ref.read(authStateProvider).isPolicyAgreed) {
+      return PublicCheckStatus.policyRequired;
+    }
+
+    return PublicCheckStatus.agreed;
+  }
+
+
+  /// 対象支払い元が非公開可能かどうか
+  bool _canUnPublic(PaymentSource target) {
+    // 本業以外 かつ 公開中のものが存在するか
+    final hasSubPublic = state.paymentSources.any((source) => !source.isMain && source.isPublic,);
+    // 対象が本業 かつ 本業が公開中 かつ 本業以外が公開中なら非公開禁止
+    if (target.isMain && target.isPublic && hasSubPublic) {
+      return false;
+    }
+    return true;
+  }
+
+  /// 対象支払い元が公開可能かどうかの結果
   PublicCheckResult canPublic(PaymentSource target) {
     /// 対象PaymentSourceの給与のみ抽出
     final targetSalaries = state.salaries
@@ -181,4 +217,15 @@ class PublicCheckResult {
     required this.totalAmount,
     required this.canPublic,
   });
+}
+
+enum PublicCheckStatus {
+  /// 承認
+  agreed,
+  /// 本業以外が公開中なので本業を非公開にできない
+  cannotUnPublicMain,
+  /// ポリシー同意が必要
+  policyRequired,
+  /// その他の制限
+  blockedByLimit,
 }
