@@ -13,7 +13,7 @@ abstract class CustomColors {
   /// テキストカラー
   static Color text(BuildContext context) {
     final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
-    return isDark ? Colors.white : const Color(0xFF333333);
+    return isDark ? Colors.white : const Color(0xFF555555);
   }
 
   /// テーマ(ベース)カラー

@@ -5,12 +5,12 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/explanation_overlay.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/premium_lock_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_state.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
 import 'package:salary/feature/premium/premium_summary/presentation/premium_summary_screen.dart';
 import 'package:salary/feature/premium/premium_time_line/premium_time_line_screen.dart';
+import 'package:salary/feature/premium/public_user_count_lock_screen.dart';
 
 class PremiumRootScreen extends StatelessWidget {
   const PremiumRootScreen({super.key});
@@ -52,6 +52,11 @@ class PremiumRootScreen extends StatelessWidget {
             /// 🔒 Lockは絶対ここで判定
             if (!isRelease) {
               return const PremiumLockScreen();
+            }
+
+            /// 公開人数が一定数に達していないなら準備中とする
+            if (!premiumState.isUnLimitedFunction) {
+              return const PublicUserCountLockScreen();
             }
 
             final state = ref.watch(premiumRootProvider);
@@ -125,7 +130,7 @@ class PremiumRootScreen extends StatelessWidget {
                   ),
                 ),
 
-                /// 🔥 タブ切替
+                /// タブ切替
                 Expanded(
                   child: AnimatedSwitcher(
                     duration:

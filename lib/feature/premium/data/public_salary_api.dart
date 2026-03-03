@@ -17,4 +17,9 @@ class PublicSalaryApi {
   Future<Map<String, dynamic>> fetchAllList({ required int page }) async {
     return await _client.get('$_END_POINT/salaries?page=$page');
   }
+
+  /// 公開されている給料ユーザー数
+  Future<Map<String, dynamic>> fetchUserCount() async {
+    return await _client.get('$_END_POINT/user_count');
+  }
 }

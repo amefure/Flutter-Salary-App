@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/step_item.dart';
+import 'package:salary/core/common/components/header_visual_view.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
@@ -14,34 +15,23 @@ class PremiumLockScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(20),
       child: Column(
         children: [
 
-          /// 🔒 上部アイコン
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: CustomColors.themaOrange.withAlpha(20),
-            ),
-            child: const Icon(
-              CupertinoIcons.lock_fill,
-              size: 32,
-              color: CustomColors.themaOrange,
-            ),
-          ),
+          /// 🔒アイコン
+          HeaderVisualView(icon: CupertinoIcons.lock_fill),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           /// プレミアム機能説明カード
-          const _PremiumCard(),
+          _PremiumCard(),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           /// 必須条件カード
-          const _RequirementCard()
+          _RequirementCard()
         ],
       ),
     );

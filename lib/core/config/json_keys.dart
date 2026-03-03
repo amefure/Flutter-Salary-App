@@ -7,6 +7,7 @@ abstract class CommonJsonKeys {
   static const salaries = 'salaries';
   static const paymentSources = 'payment_sources';
   static const accessToken = 'access_token';
+  static const usersCount = 'users_count';
 }
 
 abstract class PageKeys {

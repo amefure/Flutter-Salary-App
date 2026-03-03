@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
 import 'package:salary/feature/premium/data/public_salary_api.dart';
@@ -19,5 +20,13 @@ class PublicSalaryRepositoryImpl implements PublicSalaryRepository {
     final result = await _api.fetchAllList(page: page);
     logger(result);
     return PublicSalaryPageDto.fromJson(result);
+  }
+
+  /// 公開されている給料ユーザー数
+  @override
+  Future<int> fetchUserCount() async {
+    final result = await _api.fetchUserCount();
+    logger(result);
+    return result[CommonJsonKeys.data][CommonJsonKeys.usersCount];
   }
 }

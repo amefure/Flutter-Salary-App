@@ -8,6 +8,7 @@ class EmptyStateView extends StatelessWidget {
   final IconData icon;
 
   const EmptyStateView({
+    super.key,
     required this.message,
     required this.icon,
   });
