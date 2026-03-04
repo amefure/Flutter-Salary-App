@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
+import 'package:salary/feature/auth/presentation/account_benefits_screen.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
@@ -247,17 +248,33 @@ class SettingView extends StatelessWidget {
                 ],
               );
             } else {
-              return _settingListTile(
-                  context,
-                  'ログイン・アカウント作成',
-                  CupertinoIcons.person_add_solid,
-                      () {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  }
+              return Column(
+                  children: [
+                    _settingListTile(
+                        context,
+                        'ログイン・アカウント作成',
+                        CupertinoIcons.person_add_solid,
+                            () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        }),
+
+                    _settingListTile(
+                        context,
+                        'アカウント作成のメリット',
+                        CupertinoIcons.gift_alt_fill,
+                            () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => const AccountBenefitsScreen(),
+                            ),
+                          );
+                        }
+                    ),
+                  ]
               );
             }
           },

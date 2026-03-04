@@ -183,7 +183,7 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
           CustomText(
             text: content,
             textSize: TextSize.S,
-            maxLines: 10,
+            maxLines: 30,
           ),
         ],
       ),

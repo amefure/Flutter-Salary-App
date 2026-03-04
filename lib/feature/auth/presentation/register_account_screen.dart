@@ -15,6 +15,7 @@ import 'package:salary/feature/auth/application/register_account/register_accoun
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
 import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
+import 'package:salary/feature/auth/presentation/login_screen.dart';
 
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({super.key});
@@ -137,15 +138,46 @@ class _Body extends ConsumerState<_BodyWidget> {
 
     return SingleChildScrollView(
       child: Column(
-        spacing: 24,
+        spacing: 20,
         children: [
 
-          /// アカウント名
-          CustomTextField(
-            controller: _nameController,
-            labelText: 'アカウント名',
-            prefixIcon: CupertinoIcons.person_crop_square_fill,
-            keyboardType: TextInputType.name,
+          Column(
+            spacing: 0,
+            children: [
+              Row(
+                children: [
+
+                  const Spacer(),
+
+                  TextButton(onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      CupertinoPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  }, child: const CustomText(
+                    text: 'ログインはこちら',
+                    color: CustomColors.themaBlue,
+                    fontWeight: FontWeight.bold,
+                    textSize: TextSize.S,
+                  )),
+
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: CustomColors.themaBlue,
+                    size: 18,
+                  )
+                ],
+              ),
+
+              /// アカウント名
+              CustomTextField(
+                controller: _nameController,
+                labelText: 'アカウント名',
+                prefixIcon: CupertinoIcons.person_crop_square_fill,
+                keyboardType: TextInputType.name,
+              ),
+            ],
           ),
 
           /// メールアドレス入力ボックス

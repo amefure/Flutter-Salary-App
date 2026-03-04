@@ -120,7 +120,7 @@ class _Body extends ConsumerState<_BodyWidget> {
 
     return SingleChildScrollView(
       child: Column(
-        spacing: 24,
+        spacing: 20,
         children: [
           Column(
             spacing: 0,
@@ -131,7 +131,7 @@ class _Body extends ConsumerState<_BodyWidget> {
                   const Spacer(),
 
                   TextButton(onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.of(context).pushReplacement(
                       CupertinoPageRoute(
                         builder: (context) => const RegisterAccountScreen(),
                       ),
@@ -140,9 +140,14 @@ class _Body extends ConsumerState<_BodyWidget> {
                     text: '新規登録はこちら',
                     color: CustomColors.themaBlue,
                     fontWeight: FontWeight.bold,
+                    textSize: TextSize.S,
                   )),
 
-                  const Icon(Icons.arrow_forward_ios, color: CustomColors.themaBlue)
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: CustomColors.themaBlue,
+                    size: 18,
+                  )
                 ],
               ),
 

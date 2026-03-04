@@ -37,8 +37,9 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   }
 
   /// 公開条件(件数 & 総支給額合計)
-  static const int minSalaryCountForPublic = 3;//12;
-  static const int minTotalPaymentAmountForPublic = 10000;
+  static const int minSalaryCountForPublic = 1;
+  /// 100万円以上
+  static const int minTotalPaymentAmountForPublic = 10;
 
   /// 全取得
   void _fetchAllLocalPaymentSource() {
