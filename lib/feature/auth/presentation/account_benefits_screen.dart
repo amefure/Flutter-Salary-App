@@ -68,7 +68,7 @@ class AccountBenefitsScreen extends StatelessWidget {
                   }
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
 
               TextButton(onPressed: () {
                 Navigator.of(context).pushReplacement(
@@ -80,6 +80,7 @@ class AccountBenefitsScreen extends StatelessWidget {
                 text: 'ログインはこちら',
                 color: CustomColors.themaBlue,
                 fontWeight: FontWeight.bold,
+                textSize: TextSize.S,
               )),
             ],
           ),

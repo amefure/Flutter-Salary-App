@@ -7,17 +7,21 @@ abstract class CustomColors {
   /// バックグラウンドカラー(ダークなら黒 / ライトなら白)
   static Color background(BuildContext context) {
     final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
-    return isDark ? const Color(0xFF333333) : Colors.white;
+    return isDark ? const Color(0xFF333333) : textWhite;
   }
 
   /// テキストカラー
   static Color text(BuildContext context) {
     final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
-    return isDark ? Colors.white : const Color(0xFF555555);
+    return isDark ? textWhite : textBlack;
   }
 
   /// テーマ(ベース)カラー
   static const Color thema = Color(0xFF276bb1);
+  /// テキストブラック
+  static const Color textBlack = Color(0xFF555555);
+  /// テキストホワイト
+  static const Color textWhite = Colors.white;
 
   /// ファンデーションカラー
   static Color foundation(BuildContext context) {

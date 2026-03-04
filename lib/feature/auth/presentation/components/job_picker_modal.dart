@@ -49,7 +49,6 @@ class _JobPickerModalState extends State<JobPickerModal> {
               text: '職種を選択',
               textSize: TextSize.ML,
               fontWeight: FontWeight.bold,
-              maxLines: null,
             ),
           ),
 
@@ -62,7 +61,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
                 /// 左：カテゴリリスト
                 Container(
                   width: 140,
-                  color: Colors.grey[100],
+                  color: CustomColors.textBlack,
                   child: ListView.builder(
                     itemCount: ProfileConfig.jobCategories.length,
                     itemBuilder: (_, index) {
@@ -76,12 +75,12 @@ class _JobPickerModalState extends State<JobPickerModal> {
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                          color: selected ? Colors.white : Colors.grey[100],
+                          color: selected ? CustomColors.thema.withAlpha(90) : CustomColors.textBlack,
                           child: CustomText(
                             text: cat.name,
                             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                             textSize: TextSize.S,
-                            color: selected ? Colors.black : Colors.grey[700],
+                            color: CustomColors.textWhite,
                             maxLines: 2,
                           ),
                         ),
@@ -108,7 +107,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
                           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                           decoration: BoxDecoration(
-                            color: selected ? CustomColors.thema.withAlpha(50) : Colors.white,
+                            color: selected ? CustomColors.thema.withAlpha(50) : CustomColors.background(context),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: selected ? CustomColors.thema : Colors.grey[300]!,

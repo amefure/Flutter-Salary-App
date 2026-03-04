@@ -290,8 +290,8 @@ class SettingView extends StatelessWidget {
       footer: const Padding(
         padding: EdgeInsets.all(8.0),
         child: CustomText(
-          text: '・アプリに不具合がございましたら「アプリの不具合はこちら」よりお問い合わせください。',
-          textSize: TextSize.S,
+          text: '・アプリに不具合がございましたら「アプリの不具合 & ご要望はこちら」よりお問い合わせください。',
+          textSize: TextSize.SS,
           fontWeight: FontWeight.bold,
           maxLines: 2,
         ),
@@ -310,7 +310,7 @@ class SettingView extends StatelessWidget {
 
         _settingListTile(
             context,
-            'アプリの不具合はこちら',
+            'アプリの不具合 & ご要望はこちら',
             CupertinoIcons.paperplane,
                 () {
               _openWebView(context, _StaticUrl.contact);

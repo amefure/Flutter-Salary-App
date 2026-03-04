@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 
 class ExplanationOverlay extends StatelessWidget {
   final String title;
@@ -73,8 +74,7 @@ class ExplanationOverlay extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.85,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: CupertinoColors.systemBackground
-                          .resolveFrom(context),
+                      color: CustomColors.background(context),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(

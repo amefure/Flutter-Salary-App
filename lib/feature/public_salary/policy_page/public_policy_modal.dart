@@ -14,7 +14,7 @@ Future<bool?> showPublicPolicyModal(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    backgroundColor: Colors.white,
+    backgroundColor: CustomColors.background(context),
     builder: (_) => PublicPolicyModal(
       showAgreeButton: showAgreeButton,
     ),
