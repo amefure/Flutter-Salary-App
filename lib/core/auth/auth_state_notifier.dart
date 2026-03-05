@@ -180,14 +180,32 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   /// ログアウト
   Future<void> logout() async {
-    _authRepository.logout();
+    await _authRepository.logout();
     _clearUser();
   }
 
   /// 退会(アカウント削除)
   Future<void> withdrawal() async {
-    _authRepository.withdrawal();
+    // 退会APIの実行でクラウド側のデータは自動的に削除される
+    await _authRepository.withdrawal();
+    // ローカルのデータを全て非公開に戻してUserIdもnullに変更する
+    _resetPublicPaymentSources();
     _clearUser();
+  }
+
+  /// 公開フラグをリセット
+  void _resetPublicPaymentSources() {
+    final allPaymentSources = _realmRepository.fetchAll<PaymentSource>();
+    final targetSourceIds = allPaymentSources
+        .where((source) => source.publicUserId != null)
+        .map((source) => source.id)
+        .toList();
+    for (var id in targetSourceIds) {
+      _realmRepository.updateById(id, (PaymentSource paymentSource) {
+        paymentSource.publicUserId = null;
+        paymentSource.isPublicName = false;
+      });
+    }
   }
 
   Future<void> _clearUser() async {

@@ -4,6 +4,7 @@ import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/step_item.dart';
 import 'package:salary/core/common/components/header_visual_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
@@ -156,7 +157,7 @@ class _RequirementCard extends ConsumerWidget {
 
           StepItem(
             number: 1,
-            title: 'アカウント作成(ログイン)',
+            title: 'アカウント新規作成 or ログイン',
             isCompleted: authState.isLogin,
             onTap: () {
               Navigator.of(context).push(
@@ -171,7 +172,15 @@ class _RequirementCard extends ConsumerWidget {
             number: 2,
             title: '給料データを公開',
             isCompleted: premiumState.isPublicData,
-            onTap: () {
+            onTap: () async {
+              if (!authState.isLogin) {
+                final _ = await AppDialog.show(
+                    context: context,
+                    message: '給料データを公開するには\n新規登録またはログインしてください。',
+                    type: DialogType.error,
+                );
+                return;
+              }
               Navigator.of(context).push(
                 CupertinoPageRoute(
                   builder: (context) => const PublicSalaryScreen(),
