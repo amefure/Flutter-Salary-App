@@ -60,6 +60,7 @@ class UserInfoRowTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             constraints: const BoxConstraints(
               minWidth: 140,
+              minHeight: 40
             ),
             decoration: BoxDecoration(
               color: value == ProfileConfig.undefined ? ThemaColor.gray.color : ThemaColor.blue.color,
@@ -70,7 +71,7 @@ class UserInfoRowTile extends StatelessWidget {
                 text: value,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                textSize: TextSize.S,
+                textSize: value.length >= 15 ? TextSize.SS : TextSize.S,
                 maxLines: 2,
               ),
             ),

@@ -118,6 +118,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
                             text: job,
                             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                             textSize: TextSize.S,
+                            maxLines: 2,
                           ),
                         ),
                       );
