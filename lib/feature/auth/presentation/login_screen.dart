@@ -10,6 +10,7 @@ import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/feature/auth/application/login/login_state.dart';
 import 'package:salary/feature/auth/application/login/login_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/auth/presentation/password_reset_screen.dart';
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -167,6 +168,32 @@ class _Body extends ConsumerState<_BodyWidget> {
             labelText: 'パスワード',
             prefixIcon: CupertinoIcons.lock_fill,
             keyboardType: TextInputType.visiblePassword,
+          ),
+
+          Row(
+            children: [
+
+              const Spacer(),
+
+              TextButton(onPressed: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => const PasswordResetScreen(),
+                  ),
+                );
+              }, child: const CustomText(
+                text: 'パスワードをお忘れですか？',
+                color: CustomColors.themaBlue,
+                fontWeight: FontWeight.bold,
+                textSize: TextSize.S,
+              )),
+
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: CustomColors.themaBlue,
+                size: 18,
+              )
+            ],
           ),
 
           CustomElevatedButton(

@@ -1,4 +1,3 @@
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 
 class LoginState {
 

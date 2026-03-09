@@ -131,4 +131,13 @@ class AuthRepositoryImpl implements AuthRepository {
       AuthProfileJsonKeys.publishPolicyVersion: publishPolicyVersion,
     });
   }
+
+  @override
+  Future<void> sendResetPassWordEmail({
+    required String email
+  }) async {
+    await _api.sendResetPassWordEmail({
+      AuthJsonKeys.email: email,
+    });
+  }
 }

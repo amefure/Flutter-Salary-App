@@ -52,4 +52,8 @@ abstract class AuthRepository {
     required String publishPolicyVersion
   });
 
+  /// パスワードリセット
+  Future<void> sendResetPassWordEmail({
+    required String email
+  });
 }

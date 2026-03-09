@@ -35,4 +35,8 @@ class AuthApi {
   Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> body) async {
     return await _client.patch('/profile', body: body);
   }
+
+  Future<Map<String, dynamic>> sendResetPassWordEmail(Map<String, dynamic> body) async {
+    return await _client.post('/password/email', body: body);
+  }
 }

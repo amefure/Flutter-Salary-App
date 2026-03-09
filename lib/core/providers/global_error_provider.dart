@@ -41,7 +41,7 @@ extension AsyncHandlingExtension on Ref {
     } catch (e, stackTrace) {
       logger('======= ❌ Error Other Response =======');
       logger(e);
-      logger('StackTrace: $stackTrace'); // これで発生行を特定
+      logger('StackTrace: $stackTrace');
       logger('======= ❌ Error Other Response =======');
       error.show('予期せぬエラーが発生しました');
       return false;
@@ -61,13 +61,15 @@ extension AsyncHandlingExtension on Ref {
         return '認証に失敗しました。再度ログインしてください。';
 
       case ApiErrorType.forbidden:
-        return '権限がありません。';
+        return '更新権限のないユーザーです。何度も発生するようであれば一度ログアウトして再度ログインしてください。';
 
       case ApiErrorType.notFound:
         return '対象のデータが見つかりません。';
 
       case ApiErrorType.server:
-        return 'サーバーエラーが発生しました。時間をおいて再度お試しください。';
+        // メッセージはサーバーが返すものに準ずる
+        return e.message;
+        // return 'サーバーエラーが発生しました。時間をおいて再度お試しください。';
 
       case ApiErrorType.unknown:
         return e.message;

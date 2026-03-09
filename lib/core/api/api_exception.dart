@@ -1,8 +1,13 @@
 enum ApiErrorType {
+  /// バリデーション
   validation,        // EA001
+  /// 認証失敗
   unauthorized,      // EA002
+  /// 更新権限のないユーザー
   forbidden,         // EA003
+  /// データが見つからない
   notFound,          // EA004
+  /// サーバー内部エラー
   server,            // EA005
   unknown,
 }

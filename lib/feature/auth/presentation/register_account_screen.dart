@@ -173,7 +173,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               /// アカウント名
               CustomTextField(
                 controller: _nameController,
-                labelText: 'アカウント名',
+                labelText: 'アカウント名(公開用)',
                 prefixIcon: CupertinoIcons.person_crop_square_fill,
                 keyboardType: TextInputType.name,
               ),
