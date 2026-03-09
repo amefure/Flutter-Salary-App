@@ -11,6 +11,4 @@ class PublicProfile {
     required this.region,
     required this.ageRange,
   });
-
-  bool get isInTokyo => region == '東京';
 }

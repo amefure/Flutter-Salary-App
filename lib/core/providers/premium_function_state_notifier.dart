@@ -21,7 +21,7 @@ class PremiumFunctionState {
   final bool isSubscribed;
   final int publicUserCount;
 
-  bool get isUnLimitedFunction => publicUserCount >= 10;
+  bool get isUnLimitedFunction => publicUserCount >= 1;
 
   PremiumFunctionState({
     this.isPublicData = false,

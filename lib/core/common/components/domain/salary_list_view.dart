@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -131,6 +132,9 @@ class SalaryCard extends StatelessWidget {
   final bool isMain;
   final int paymentAmount;
   final int netSalary;
+  final String? jobName;
+  final String? region;
+  final String? ageRange;
 
   const SalaryCard({
     super.key,
@@ -141,6 +145,9 @@ class SalaryCard extends StatelessWidget {
     required this.paymentAmount,
     required this.netSalary,
     this.isMain = false,
+    this.jobName,
+    this.region,
+    this.ageRange,
   });
 
   @override
@@ -163,23 +170,17 @@ class SalaryCard extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    if (isMain)
-                      const Icon(
-                        Icons.star,
-                        size: 14,
-                        color: Colors.amber,
-                      ),
-                    CustomText(
-                      text: sourceName,
-                      textSize: TextSize.S,
-                      color: CustomColors.text(context)
-                          .withValues(alpha: 0.7),
-                    ),
+                    /// 公開用ではないなら支払い元の名前のみ
+                    if (jobName == null || region == null || ageRange == null)
+                      _buildLocalSourceName(context),
+
+                    /// 公開用なら属性タグをそれぞれ表示する
+                    if (jobName != null || region != null || ageRange != null)
+                      _buildPublicAttributeTags()
                   ],
                 ),
                 _SalaryRow(
@@ -195,6 +196,45 @@ class SalaryCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLocalSourceName(BuildContext context) {
+    return Row(
+      children: [
+        if (isMain)
+          const Icon(
+            Icons.star,
+            size: 14,
+            color: Colors.amber,
+          ),
+
+          CustomText(
+            text: sourceName,
+            textSize: TextSize.S,
+            color: CustomColors.text(context)
+                .withValues(alpha: 0.7),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPublicAttributeTags() {
+    return Row(
+      children: [
+        if (jobName != null)
+          AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
+
+        const SizedBox(width: 4),
+
+        if (region != null)
+          AttributeTag(text: region!, baseColor: CustomColors.themaBlue),
+
+        const SizedBox(width: 4),
+
+        if (ageRange != null)
+          AttributeTag(text: ageRange!, baseColor: CustomColors.themaGreen),
+      ],
     );
   }
 }
@@ -374,9 +414,12 @@ class PublicSalaryListView extends StatelessWidget {
         date: salary.paidAt,
         isBonus: salary.isBonus,
         color: salary.paymentSource?.themaColorEnum.color ?? ThemaColor.blue.color,
-        sourceName: salary.user.profile.job,
+        sourceName: '', // ここは公開用では指定しない
         paymentAmount: salary.paymentAmount,
         netSalary: salary.netSalary,
+        jobName: salary.user.profile.job,
+        region: salary.user.profile.region,
+        ageRange: salary.user.profile.ageRange,
       ),
     );
   }

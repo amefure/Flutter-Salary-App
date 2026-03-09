@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -270,9 +271,9 @@ class _RankingItem extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      _buildAttributeTag(context, profile.region, CustomColors.themaBlue),
+                      AttributeTag(text: profile.region, baseColor: CustomColors.themaBlue),
                       const SizedBox(width: 6),
-                      _buildAttributeTag(context, profile.ageRange, CustomColors.themaGreen),
+                      AttributeTag(text: profile.ageRange, baseColor: CustomColors.themaGreen),
                     ],
                   ),
                 ],
@@ -303,21 +304,6 @@ class _RankingItem extends StatelessWidget {
     );
   }
 
-  // 属性タグ用ヘルパー
-  Widget _buildAttributeTag(BuildContext context, String text, Color baseColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: baseColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: CustomText(
-        text: text,
-        textSize: TextSize.SSS,
-        color: baseColor,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
+
 }
 
