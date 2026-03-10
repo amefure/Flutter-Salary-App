@@ -1,21 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
-import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
 import 'package:salary/feature/premium/premium_time_line/premium_time_line_state.dart';
-import 'package:salary/feature/salary/data/salary_repository_impl.dart';
-import 'package:salary/feature/salary/domain/salary_repository.dart';
+import 'package:salary/core/config/json_keys.dart';
 
 final premiumTimeLineProvider =
 StateNotifierProvider.autoDispose<PremiumTimeLineViewModel, PremiumTimeLineState>((ref) {
-  final paymentRepository = ref.read(paymentRepositoryProvider);
-  final salaryRepository = ref.read(salaryRepositoryProvider);
   final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
-  final vm = PremiumTimeLineViewModel(ref, paymentRepository, salaryRepository, publicSalaryRepository);
+  final vm = PremiumTimeLineViewModel(ref, publicSalaryRepository);
   /// build完了後に実行
   Future.microtask(() => vm.fetchAllSalaries());
   return vm;
@@ -24,14 +20,10 @@ StateNotifierProvider.autoDispose<PremiumTimeLineViewModel, PremiumTimeLineState
 class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
 
   final Ref _ref;
-  final PaymentRepository _paymentRepository;
-  final SalaryRepository _salaryRepository;
   final PublicSalaryRepository _publicSalaryRepository;
 
   PremiumTimeLineViewModel(
       this._ref,
-      this._paymentRepository,
-      this._salaryRepository,
       this._publicSalaryRepository
       ): super(PremiumTimeLineState.initial()) {
     _ref.listen<bool>(
@@ -47,13 +39,24 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
 
   Future<void> fetchAllSalaries() async {
     await _ref.runWithGlobalHandling(() async {
-      final page = await _publicSalaryRepository.fetchAllList();
+      final queries = _createQueries();
+      final page = await _publicSalaryRepository.fetchAllList(queries: queries);
       state = state.copyWith(
         salaries: page.toDomain(),
         currentPage: page.currentPage,
         lastPage: page.lastPage,
       );
     });
+  }
+
+  Map<String, dynamic>? _createQueries() {
+    if (state.selectedJob == ProfileConfig.undefinedJob) {
+      return null;
+    } else {
+      return {
+        PremiumQueryKeys.job: state.selectedJob.name
+      };
+    }
   }
 
   /// ページング読み込み
@@ -66,7 +69,8 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
 
     final nextPage = state.currentPage + 1;
 
-    final page = await _publicSalaryRepository.fetchAllList(page: nextPage);
+    final queries = _createQueries();
+    final page = await _publicSalaryRepository.fetchAllList(page: nextPage, queries: queries);
 
     state = state.copyWith(
       salaries: [
@@ -79,12 +83,21 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
     );
   }
 
+  /// フィルタを更新して再取得
+  void updateFilter({Job? job}) async {
+    state = state.copyWith(
+      selectedJob: job
+    );
+    await fetchAllSalaries();
+  }
+
   /// リフレッシュ処理
   Future<void> refresh() async {
     state = state.copyWith(
       salaries: [],
       currentPage: 1,
       lastPage: null,
+      selectedJob: ProfileConfig.undefinedJob
     );
     await fetchAllSalaries();
   }

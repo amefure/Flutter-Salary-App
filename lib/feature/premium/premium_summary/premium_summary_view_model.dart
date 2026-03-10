@@ -6,6 +6,7 @@ import 'package:salary/feature/premium/data/summary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/summary_repository.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
 import 'package:salary/feature/premium/premium_summary/premium_summary_state.dart';
+import 'package:salary/core/config/json_keys.dart';
 
 final premiumSummaryProvider = StateNotifierProvider.autoDispose<PremiumSummaryViewModel, PremiumSummaryState>((ref) {
   final publicSalaryRepository = ref.read(summaryRepositoryImplProvider);
@@ -37,36 +38,21 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
     );
   }
 
-  // 下限の年を設定
+  static const undefined = '指定なし';
+
+  /// 下限の年を設定
   static const int _startYear = 2010;
 
   // 現在の年から下限までを格納したリスト
-  // static final にすることで、アプリ起動時に動的に生成されます
   static final List<int> years = List.generate(
     DateTime.now().year - _startYear + 1,
         (index) => DateTime.now().year - index,
   );
 
-  static const ages = ['指定なし', '20代', '30代', '40代', '50代', '60代'];
+  static const ages = [undefined, '20歳以下', '20代', '30代', '40代', '50代', '60代'];
 
   Future<void> fetchDashboard() async {
-    // フィルタ文字列をAPI用のパラメータに変換
-    final Map<String, dynamic> queries = {
-      'year': state.selectedYear,
-    };
-
-    if (state.selectedRegion != null) {
-      queries['region'] = state.selectedRegion;
-    }
-
-    // 年代のパース (例: "30代" -> age_from: 30, age_to: 39)
-    if (state.selectedAgeRange != null) {
-      final age = int.tryParse(state.selectedAgeRange!.replaceAll('代', ''));
-      if (age != null) {
-        queries['age_from'] = age;
-        queries['age_to'] = age + 9;
-      }
-    }
+    final queries = _createQueries();
     await _ref.runWithGlobalHandling(() async {
       final summaryDto = await _summaryRepository.dashboard(queries: queries);
       // final summaryDto = SummaryMockFactory.create();
@@ -74,17 +60,45 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
     });
   }
 
+  Map<String, dynamic> _createQueries() {
+    /// 年
+    final Map<String, dynamic> queries = {
+      PremiumQueryKeys.year: state.selectedYear,
+    };
+
+    /// 地域
+    if (state.selectedRegion != null) {
+      queries[PremiumQueryKeys.region] = state.selectedRegion;
+    }
+    /// 年代のパース (例: "30代" -> age_from: 30, age_to: 39)
+    if (state.selectedAgeRange != null) {
+      final ageRange = state.selectedAgeRange!;
+      if (ageRange == '20歳以下') {
+        final age = 0;
+        queries[PremiumQueryKeys.ageFrom] = age;
+        queries[PremiumQueryKeys.ageTo] = age + 19;
+      } else {
+        final age = int.tryParse(ageRange.replaceAll('代', ''));
+        if (age != null) {
+          queries[PremiumQueryKeys.ageFrom] = age;
+          queries[PremiumQueryKeys.ageTo] = age + 9;
+        }
+      }
+    }
+    return queries;
+  }
+
   /// フィルタを更新して再取得
   void updateFilter({int? year, String? region, String? ageRange}) async {
     state = state.copyWith(
       selectedYear: year,
-      // '指定なし' が選ばれたら null をセットする
-      selectedRegion: region == null ? null : () => (region == '指定なし' ? null : region),
-      selectedAgeRange: ageRange == null ? null : () => (ageRange == '指定なし' ? null : ageRange),
+      selectedRegion: region == null ? null : () => (region == undefined ? null : region),
+      selectedAgeRange: ageRange == null ? null : () => (ageRange == undefined ? null : ageRange),
     );
 
     await fetchDashboard();
   }
+
 
   /// リフレッシュ処理
   Future<void> refresh() async {

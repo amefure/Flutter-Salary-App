@@ -66,3 +66,11 @@ abstract class AuthProfileJsonKeys {
   static const publishAgreedAt = 'publish_agreed_at';
   static const publishPolicyVersion = 'publish_policy_version';
 }
+
+abstract class PremiumQueryKeys {
+  static const year = 'year';
+  static const ageTo = 'age_to';
+  static const ageFrom = 'age_from';
+  static const region = 'region';
+  static const job = 'job';
+}

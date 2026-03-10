@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/custom_filter_chip.dart';
 import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/config/profile_config.dart';
@@ -33,25 +34,24 @@ class PremiumSummaryScreen extends ConsumerWidget {
         /// ====== フィルターエリア ======
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
-              _FilterChip(
+              CustomFilterChip(
                 label: '${state.selectedYear}年',
                 onTap: () => _showYearPicker(context, viewModel, state),
               ),
-              _FilterChip(
+              CustomFilterChip(
                 label: state.selectedRegion ?? 'すべての地域',
                 onTap: () => _showRegionPicker(context, viewModel, state),
               ),
-              _FilterChip(
+              CustomFilterChip(
                 label: state.selectedAgeRange ?? 'すべての年代',
                 onTap: () => _showAgePicker(context, viewModel, state),
               ),
             ],
           ),
         ),
-
-        const SizedBox(height: 8),
 
         Expanded(child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -136,8 +136,8 @@ class PremiumSummaryScreen extends ConsumerWidget {
     CustomActionPicker.show<String>(
       context: context,
       title: '地域を選択',
-      items: ['指定なし', ...ProfileConfig.prefectures],
-      currentValue: state.selectedRegion ?? '指定なし',
+      items: [PremiumSummaryViewModel.undefined, ...ProfileConfig.prefectures],
+      currentValue: state.selectedRegion ?? PremiumSummaryViewModel.undefined,
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(region: selected);
@@ -151,41 +151,11 @@ class PremiumSummaryScreen extends ConsumerWidget {
       context: context,
       title: '年代を選択',
       items: PremiumSummaryViewModel.ages,
-      currentValue: state.selectedAgeRange ?? '指定なし',
+      currentValue: state.selectedAgeRange ?? PremiumSummaryViewModel.undefined,
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(ageRange: selected);
       },
-    );
-  }
-}
-
-/// フィルター用チップ
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _FilterChip({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: CustomColors.foundation(context),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: CustomColors.themaBlue.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            CustomText(text: label, textSize: TextSize.SS, color: CustomColors.themaBlue, fontWeight: FontWeight.bold),
-            const Icon(Icons.arrow_drop_down, color: CustomColors.themaBlue, size: 18),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -303,7 +273,5 @@ class _RankingItem extends StatelessWidget {
       ),
     );
   }
-
-
 }
 

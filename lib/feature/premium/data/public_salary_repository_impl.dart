@@ -16,8 +16,11 @@ class PublicSalaryRepositoryImpl implements PublicSalaryRepository {
   final PublicSalaryApi _api;
 
   @override
-  Future<PublicSalaryPageDto> fetchAllList({int page = 1}) async {
-    final result = await _api.fetchAllList(page: page);
+  Future<PublicSalaryPageDto> fetchAllList({
+    int page = 1,
+    Map<String, dynamic>? queries
+  }) async {
+    final result = await _api.fetchAllList(page: page, queries: queries);
     logger(result);
     return PublicSalaryPageDto.fromJson(result);
   }

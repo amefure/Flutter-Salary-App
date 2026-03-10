@@ -42,7 +42,7 @@ extension DistributionExtension on List<IncomeDistributionDto> {
     return _incomeRanges.map((range) {
       return IncomeDistributionDto(
         incomeRange: range,
-        userCount: map[range] ?? 2,
+        userCount: map[range] ?? 0,
       );
     }).toList();
   }
