@@ -62,7 +62,10 @@ class PremiumTimeLineScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => JobPickerModal(currentJob: state.selectedJob),
+      builder: (_) => JobPickerModal(
+        currentJob: state.selectedJob,
+        showNoneOption: true,
+      ),
     );
 
     if (selected != null) {
