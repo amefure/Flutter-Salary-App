@@ -9,6 +9,8 @@ class PremiumTimeLineState {
   final int lastPage;
 
   final Job selectedJob;
+  final String? selectedRegion;
+  final String? selectedAgeRange;
 
   final bool isLoadingMore;
 
@@ -20,6 +22,8 @@ class PremiumTimeLineState {
     required this.currentPage,
     required this.lastPage,
     required this.selectedJob,
+    required this.selectedRegion,
+    required this.selectedAgeRange,
     required this.isLoadingMore,
   });
 
@@ -30,6 +34,8 @@ class PremiumTimeLineState {
         currentPage: 1,
         lastPage: 1,
         selectedJob: ProfileConfig.undefinedJob,
+        selectedRegion: null,
+        selectedAgeRange: null,
         isLoadingMore: false
     );
   }
@@ -40,6 +46,8 @@ class PremiumTimeLineState {
     int? currentPage,
     int? lastPage,
     Job? selectedJob,
+    String? Function()? selectedRegion,
+    String? Function()? selectedAgeRange,
     bool? isLoadingMore
   }) {
     return PremiumTimeLineState(
@@ -48,6 +56,8 @@ class PremiumTimeLineState {
       currentPage: currentPage ?? this.currentPage,
       lastPage: lastPage ?? this.lastPage,
       selectedJob: selectedJob ?? this.selectedJob,
+      selectedRegion: selectedRegion != null ? selectedRegion() : this.selectedRegion,
+      selectedAgeRange: selectedAgeRange != null ? selectedAgeRange() : this.selectedAgeRange,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }

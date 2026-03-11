@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/mock/summary_mock_factory.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/core/utils/age_parser_utils.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/summary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/summary_repository.dart';
@@ -38,8 +40,6 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
     );
   }
 
-  static const undefined = '指定なし';
-
   /// 下限の年を設定
   static const int _startYear = 2010;
 
@@ -48,8 +48,6 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
     DateTime.now().year - _startYear + 1,
         (index) => DateTime.now().year - index,
   );
-
-  static const ages = [undefined, '20歳以下', '20代', '30代', '40代', '50代', '60代'];
 
   Future<void> fetchDashboard() async {
     final queries = _createQueries();
@@ -66,34 +64,35 @@ class PremiumSummaryViewModel extends StateNotifier<PremiumSummaryState> {
       PremiumQueryKeys.year: state.selectedYear,
     };
 
+    /// 職種
+    if (state.selectedJob != ProfileConfig.undefinedJob) {
+      queries[PremiumQueryKeys.job] = state.selectedJob.name;
+    }
+
     /// 地域
     if (state.selectedRegion != null) {
       queries[PremiumQueryKeys.region] = state.selectedRegion;
     }
-    /// 年代のパース (例: "30代" -> age_from: 30, age_to: 39)
-    if (state.selectedAgeRange != null) {
-      final ageRange = state.selectedAgeRange!;
-      if (ageRange == '20歳以下') {
-        final age = 0;
-        queries[PremiumQueryKeys.ageFrom] = age;
-        queries[PremiumQueryKeys.ageTo] = age + 19;
-      } else {
-        final age = int.tryParse(ageRange.replaceAll('代', ''));
-        if (age != null) {
-          queries[PremiumQueryKeys.ageFrom] = age;
-          queries[PremiumQueryKeys.ageTo] = age + 9;
-        }
-      }
+    /// 年代
+    final ageParams = AgeParserUtils.parse(state.selectedAgeRange);
+    if (ageParams.isNotEmpty) {
+      queries.addAll(ageParams);
     }
     return queries;
   }
 
   /// フィルタを更新して再取得
-  void updateFilter({int? year, String? region, String? ageRange}) async {
+  void updateFilter({
+    int? year,
+    Job? job,
+    String? region,
+    String? ageRange
+  }) async {
     state = state.copyWith(
       selectedYear: year,
-      selectedRegion: region == null ? null : () => (region == undefined ? null : region),
-      selectedAgeRange: ageRange == null ? null : () => (ageRange == undefined ? null : ageRange),
+      selectedJob: job,
+      selectedRegion: region == null ? null : () => (region == ProfileConfig.selectNone ? null : region),
+      selectedAgeRange: ageRange == null ? null : () => (ageRange == ProfileConfig.selectNone ? null : ageRange),
     );
 
     await fetchDashboard();

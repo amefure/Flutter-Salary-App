@@ -2,8 +2,10 @@ abstract class ProfileConfig {
 
   static const empty = '';
   static const undefined = '未設定';
+  static const selectNone = '指定なし';
   static const undefinedJob = Job(category: '未設定', name: '未設定');
   static final defaultDateTime = DateTime(2026, 1, 1);
+  static const ages = [ProfileConfig.selectNone, '20歳以下', '20代', '30代', '40代', '50代', '60代'];
 
   static const List<String> prefectures = [
     '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',

@@ -9,6 +9,7 @@ import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
 import 'package:salary/feature/premium/data/dto/income_distribution_dto.dart';
 import 'package:salary/feature/premium/data/dto/ranking_dto.dart';
 import 'package:salary/feature/premium/premium_summary/premium_summary_state.dart';
@@ -37,9 +38,14 @@ class PremiumSummaryScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
+              const SizedBox(width: 12),
               CustomFilterChip(
                 label: '${state.selectedYear}年',
                 onTap: () => _showYearPicker(context, viewModel, state),
+              ),
+              CustomFilterChip(
+                label: !state.isUndefinedJob ? state.selectedJob.name : 'すべての職種',
+                onTap: () => _showJobPicker(context, viewModel, state),
               ),
               CustomFilterChip(
                 label: state.selectedRegion ?? 'すべての地域',
@@ -49,6 +55,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 label: state.selectedAgeRange ?? 'すべての年代',
                 onTap: () => _showAgePicker(context, viewModel, state),
               ),
+              const SizedBox(width: 12),
             ],
           ),
         ),
@@ -114,6 +121,22 @@ class PremiumSummaryScreen extends ConsumerWidget {
     );
   }
 
+  /// 職種選択ピッカーを表示
+  void _showJobPicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) async {
+    final selected = await showModalBottomSheet<Job>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => JobPickerModal(
+        currentJob: state.selectedJob,
+        showNoneOption: true,
+      ),
+    );
+    if (selected != null) {
+      notifier.updateFilter(job: selected);
+    }
+  }
+
   /// 年選択ピッカー
   void _showYearPicker(BuildContext context, PremiumSummaryViewModel notifier, PremiumSummaryState state) {
 
@@ -136,8 +159,8 @@ class PremiumSummaryScreen extends ConsumerWidget {
     CustomActionPicker.show<String>(
       context: context,
       title: '地域を選択',
-      items: [PremiumSummaryViewModel.undefined, ...ProfileConfig.prefectures],
-      currentValue: state.selectedRegion ?? PremiumSummaryViewModel.undefined,
+      items: [ProfileConfig.selectNone, ...ProfileConfig.prefectures],
+      currentValue: state.selectedRegion ?? ProfileConfig.selectNone,
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(region: selected);
@@ -150,8 +173,8 @@ class PremiumSummaryScreen extends ConsumerWidget {
     CustomActionPicker.show<String>(
       context: context,
       title: '年代を選択',
-      items: PremiumSummaryViewModel.ages,
-      currentValue: state.selectedAgeRange ?? PremiumSummaryViewModel.undefined,
+      items: ProfileConfig.ages,
+      currentValue: state.selectedAgeRange ?? ProfileConfig.selectNone,
       labelBuilder: (item) => item,
       onSelected: (selected) {
         notifier.updateFilter(ageRange: selected);

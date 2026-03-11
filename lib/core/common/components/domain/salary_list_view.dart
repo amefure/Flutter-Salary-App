@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/attribute_tag.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -76,9 +78,9 @@ class _BaseSalaryListViewState<T>
       return RefreshIndicator(
         onRefresh: widget.onRefresh ?? () async {},
         child: const Center(
-          child: CustomText(
-            text: 'データがありません',
-            fontWeight: FontWeight.bold,
+          child: EmptyStateView(
+            message: 'データがありません',
+            icon: CupertinoIcons.money_yen_circle,
           ),
         ),
       );

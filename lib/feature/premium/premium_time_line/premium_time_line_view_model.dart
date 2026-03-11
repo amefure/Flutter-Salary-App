@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/core/utils/age_parser_utils.dart';
 import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
@@ -49,14 +50,24 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
     });
   }
 
-  Map<String, dynamic>? _createQueries() {
-    if (state.selectedJob == ProfileConfig.undefinedJob) {
-      return null;
-    } else {
-      return {
-        PremiumQueryKeys.job: state.selectedJob.name
-      };
+  Map<String, dynamic> _createQueries() {
+    final Map<String, dynamic> queries = {};
+
+    /// 職種
+    if (state.selectedJob != ProfileConfig.undefinedJob) {
+      queries[PremiumQueryKeys.job] = state.selectedJob.name;
     }
+
+    /// 地域
+    if (state.selectedRegion != null) {
+      queries[PremiumQueryKeys.region] = state.selectedRegion;
+    }
+    /// 年代
+    final ageParams = AgeParserUtils.parse(state.selectedAgeRange);
+    if (ageParams.isNotEmpty) {
+      queries.addAll(ageParams);
+    }
+    return queries;
   }
 
   /// ページング読み込み
@@ -84,12 +95,20 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
   }
 
   /// フィルタを更新して再取得
-  void updateFilter({Job? job}) async {
+  void updateFilter({
+    Job? job,
+    String? region,
+    String? ageRange
+  }) async {
     state = state.copyWith(
-      selectedJob: job
+      selectedJob: job,
+      selectedRegion: region == null ? null : () => (region == ProfileConfig.selectNone ? null : region),
+      selectedAgeRange: ageRange == null ? null : () => (ageRange == ProfileConfig.selectNone ? null : ageRange),
     );
+
     await fetchAllSalaries();
   }
+
 
   /// リフレッシュ処理
   Future<void> refresh() async {
@@ -103,3 +122,4 @@ class PremiumTimeLineViewModel extends StateNotifier<PremiumTimeLineState> {
   }
 
 }
+

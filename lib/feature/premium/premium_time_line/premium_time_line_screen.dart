@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom_filter_chip.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/domain/salary_list_view.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
+import 'package:salary/feature/premium/premium_time_line/premium_time_line_state.dart';
 import 'package:salary/feature/premium/premium_time_line/premium_time_line_view_model.dart';
 
 class PremiumTimeLineScreen extends ConsumerWidget {
@@ -12,7 +14,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(premiumTimeLineProvider);
-    final notifier = ref.read(premiumTimeLineProvider.notifier);
+    final viewModel = ref.read(premiumTimeLineProvider.notifier);
 
     return Column(
       children: [
@@ -24,18 +26,16 @@ class PremiumTimeLineScreen extends ConsumerWidget {
             children: [
               CustomFilterChip(
                 label: !state.isUndefinedJob ? state.selectedJob.name : 'すべての職種',
-                onTap: () => _showJobPicker(context, ref),
+                onTap: () => _showJobPicker(context, viewModel, state),
               ),
-              // const SizedBox(width: 8),
-              // FilterChip(
-              //   label: '${state.selectedYear}年',
-              //   onTap: () => _showYearPicker(context, ref),
-              // ),
-              // const SizedBox(width: 8),
-              // FilterChip(
-              //   label: state.selectedRegion ?? 'すべての地域',
-              //   onTap: () => _showRegionPicker(context, ref),
-              // ),
+              CustomFilterChip(
+                label: state.selectedRegion ?? 'すべての地域',
+                onTap: () => _showRegionPicker(context, viewModel, state),
+              ),
+              CustomFilterChip(
+                label: state.selectedAgeRange ?? 'すべての年代',
+                onTap: () => _showAgePicker(context, viewModel, state),
+              ),
             ],
           ),
         ),
@@ -46,8 +46,8 @@ class PremiumTimeLineScreen extends ConsumerWidget {
             salaries: state.salaries,
             hasMore: (state.currentPage) < (state.lastPage),
             isLoadingMore: state.isLoadingMore,
-            onLoadMore: () => notifier.loadNextPage(),
-            onRefresh: () => notifier.refresh(),
+            onLoadMore: () => viewModel.loadNextPage(),
+            onRefresh: () => viewModel.refresh(),
           ),
         ),
       ],
@@ -55,9 +55,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
   }
 
   /// 職種選択ピッカーを表示
-  void _showJobPicker(BuildContext context, WidgetRef ref) async {
-    final state = ref.read(premiumTimeLineProvider);
-    final notifier = ref.read(premiumTimeLineProvider.notifier);
+  void _showJobPicker(BuildContext context, PremiumTimeLineViewModel notifier, PremiumTimeLineState state) async {
     final selected = await showModalBottomSheet<Job>(
       context: context,
       isScrollControlled: true,
@@ -67,9 +65,36 @@ class PremiumTimeLineScreen extends ConsumerWidget {
         showNoneOption: true,
       ),
     );
-
     if (selected != null) {
       notifier.updateFilter(job: selected);
     }
+  }
+
+  /// 地域選択ピッカー
+  void _showRegionPicker(BuildContext context, PremiumTimeLineViewModel notifier, PremiumTimeLineState state) {
+    CustomActionPicker.show<String>(
+      context: context,
+      title: '地域を選択',
+      items: [ProfileConfig.selectNone, ...ProfileConfig.prefectures],
+      currentValue: state.selectedRegion ?? ProfileConfig.selectNone,
+      labelBuilder: (item) => item,
+      onSelected: (selected) {
+        notifier.updateFilter(region: selected);
+      },
+    );
+  }
+  /// 年代選択ピッカー
+  void _showAgePicker(BuildContext context, PremiumTimeLineViewModel notifier, PremiumTimeLineState state) {
+
+    CustomActionPicker.show<String>(
+      context: context,
+      title: '年代を選択',
+      items: ProfileConfig.ages,
+      currentValue: state.selectedAgeRange ?? ProfileConfig.selectNone,
+      labelBuilder: (item) => item,
+      onSelected: (selected) {
+        notifier.updateFilter(ageRange: selected);
+      },
+    );
   }
 }
