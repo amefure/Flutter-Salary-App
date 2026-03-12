@@ -15,25 +15,25 @@ class SalaryApi {
 
   /// ユーザーに紐づいたデータのみ
   Future<Map<String, dynamic>> fetchAllUserList() async {
-    return await _client.get(_END_POINT);
+    return await _client.get(_END_POINT, requiresAuth: true);
   }
 
   /// 全ユーザーのデータ
   @Deprecated('公開・非公開に紐づかないデータ取得なので使用しない')
   Future<Map<String, dynamic>> fetchAllList({ required int page }) async {
-    return await _client.get('$_END_POINT/all?page=$page');
+    return await _client.get('$_END_POINT/all?page=$page', requiresAuth: true);
   }
 
   Future<Map<String, dynamic>> create(Map<String, dynamic> body) async {
-    return await _client.post(_END_POINT, body: body);
+    return await _client.post(_END_POINT, body: body, requiresAuth: true);
   }
 
   Future<void> update(String id, Map<String, dynamic> body) async {
-    await _client.put('$_END_POINT/$id', body: body);
+    await _client.put('$_END_POINT/$id', body: body, requiresAuth: true);
   }
 
   Future<void> delete(Map<String, dynamic> body) async {
-    await _client.delete(_END_POINT, body: body);
+    await _client.delete(_END_POINT, body: body, requiresAuth: true);
   }
 
 }

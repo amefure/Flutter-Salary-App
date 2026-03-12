@@ -67,6 +67,14 @@ abstract class AuthProfileJsonKeys {
   static const publishPolicyVersion = 'publish_policy_version';
 }
 
+abstract class ApiErrorJsonKeys {
+  static const error = 'error';
+  static const code = 'code';
+  static const title = 'title';
+  static const details = 'details';
+  static const message = 'message';
+}
+
 abstract class PremiumQueryKeys {
   static const year = 'year';
   static const ageTo = 'age_to';

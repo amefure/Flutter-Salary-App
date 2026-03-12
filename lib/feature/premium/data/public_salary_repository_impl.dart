@@ -21,7 +21,6 @@ class PublicSalaryRepositoryImpl implements PublicSalaryRepository {
     Map<String, dynamic>? queries
   }) async {
     final result = await _api.fetchAllList(page: page, queries: queries);
-    logger(result);
     return PublicSalaryPageDto.fromJson(result);
   }
 
@@ -29,7 +28,6 @@ class PublicSalaryRepositoryImpl implements PublicSalaryRepository {
   @override
   Future<int> fetchUserCount() async {
     final result = await _api.fetchUserCount();
-    logger(result);
     return result[CommonJsonKeys.data][CommonJsonKeys.usersCount];
   }
 }

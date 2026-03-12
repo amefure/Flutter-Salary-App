@@ -15,6 +15,6 @@ class SummaryApi {
 
   /// 公開されているサマリー情報
   Future<Map<String, dynamic>> dashboard({Map<String, dynamic>? queries}) async {
-    return await _client.get('$_END_POINT/dashboard', queryParameters: queries);
+    return await _client.get('$_END_POINT/dashboard', queryParameters: queries, requiresAuth: true);
   }
 }

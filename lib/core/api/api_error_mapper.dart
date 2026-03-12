@@ -1,32 +1,51 @@
 import 'dart:convert';
 
 import 'package:salary/core/api/api_exception.dart';
+import 'package:salary/core/config/json_keys.dart';
 
 class ApiErrorMapper {
+
+  static ApiException fromOffline() {
+    return const ApiException(
+      statusCode: 0,
+      message: 'インターネットに接続されていません。電波の良い場所で再度お試しください。',
+      type: ApiErrorType.offline,
+      code: 'OFFLINE',
+    );
+  }
+
+  static ApiException fromPreCheckUnauthorized() {
+    return const ApiException(
+      statusCode: 401,
+      message: 'ログインセッションがありません。再度ログインしてください。',
+      type: ApiErrorType.unauthorized,
+      code: 'AUTH_TOKEN_NOT_FOUND',
+    );
+  }
 
   static ApiException fromResponse(
       int statusCode,
       Map<String, dynamic> result,
       ) {
-    final error = result['error'] ?? {};
-    final code = error['code'] as String?;
+    final error = result[ApiErrorJsonKeys.error] ?? {};
+    final code = error[ApiErrorJsonKeys.code] as String?;
     final message = _parseErrorMessage(result);
 
     return ApiException(
       statusCode: statusCode,
-      title: error['title'],
+      title: error[ApiErrorJsonKeys.title],
       code: code,
       message: message,
-      details: error['details'],
+      details: error[ApiErrorJsonKeys.details],
       type: _mapCodeToErrorType(code),
     );
   }
 
   static String _parseErrorMessage(Map<String, dynamic> result) {
-    final rawMessage = result['error']?['message'];
+    final rawMessage = result[ApiErrorJsonKeys.error]?[ApiErrorJsonKeys.message];
 
     if (rawMessage == null) {
-      return 'Unknown error';
+      return '不明なエラー';
     }
 
     if (rawMessage is! String) {

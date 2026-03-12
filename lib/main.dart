@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/global_error_overlay.dart';
 import 'package:salary/core/common/overlay/global_loading_overlay.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
@@ -70,6 +72,10 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ユーザー変更を検知したら全体をリフレッシュする
     final mode = ref.watch(themeModeProvider);
+    // アプリ起動時にインスタンス化しておく(初回ユーザー取得処理)
+    final _ = ref.read(authStateProvider);
+    // アプリ起動時にプレミアム解放チェックAPIを実行しておく
+    final _ = ref.read(premiumFunctionStateProvider);
     final brightness = switch (mode) {
       AppThemeMode.light => Brightness.light,
       AppThemeMode.dark => Brightness.dark,

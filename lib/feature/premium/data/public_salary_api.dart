@@ -18,11 +18,15 @@ class PublicSalaryApi {
     required int page,
     Map<String, dynamic>? queries
   }) async {
-    return await _client.get('$_END_POINT/salaries?page=$page', queryParameters: queries);
+    return await _client.get(
+        '$_END_POINT/salaries?page=$page',
+        queryParameters: queries,
+        requiresAuth: true
+    );
   }
 
   /// 公開されている給料ユーザー数
   Future<Map<String, dynamic>> fetchUserCount() async {
-    return await _client.get('$_END_POINT/user_count');
+    return await _client.get('$_END_POINT/user_count', requiresAuth: true);
   }
 }

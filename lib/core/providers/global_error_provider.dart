@@ -54,6 +54,9 @@ extension AsyncHandlingExtension on Ref {
 
   String _mapApiExceptionToMessage(ApiException e) {
     switch (e.type) {
+      case ApiErrorType.offline:
+        return 'ネットワークに接続していません。';
+
       case ApiErrorType.validation:
         return e.message;
 

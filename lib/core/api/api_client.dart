@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:salary/core/api/api_error_mapper.dart';
@@ -32,15 +33,38 @@ class ApiClient {
   };
 
   Future<Map<String, String>> _authorizedHeaders(
-      Map<String, String>? headers) async {
-    final token = await tokenStorage.read();
-
+      Map<String, String>? headers,
+      String? token
+  ) async {
     return {
       ..._defaultHeaders,
       if (token != null) 'Authorization': 'Bearer $token',
       ...?headers,
     };
   }
+
+  /// リクエスト前の事前チェック（オフライン・トークン）
+  /// [requiresAuth] が true の場合のみトークンチェックを行う
+  Future<String?> _preRequestCheck({bool requiresAuth = true}) async {
+    // オフラインチェック
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      throw ApiErrorMapper.fromOffline();
+    }
+
+    if (requiresAuth) {
+      final token = await tokenStorage.read();
+      if (requiresAuth && token == null) {
+        // トークンがない場合のエラーを投げる
+        throw ApiErrorMapper.fromPreCheckUnauthorized();
+      }
+      return token;
+    } else {
+      return null;
+    }
+
+  }
+
   /// Uriを組み立てるメソッド
   Uri _buildUri(String path, [Map<String, String>? queryParameters]) {
     final uri = Uri.parse('$baseUrl$path');
@@ -58,7 +82,10 @@ class ApiClient {
       String path, {
         Map<String, String>? headers,
         Map<String, dynamic>? queryParameters,
+        required bool requiresAuth
       }) async {
+    // トークン & オフラインチェック
+    final token = await _preRequestCheck(requiresAuth: requiresAuth);
     // queryParameters を String に変換 (Uri.https 等で使うため)
     final stringQuery = queryParameters?.map((key, value) => MapEntry(key, value.toString()));
 
@@ -68,7 +95,7 @@ class ApiClient {
     logger('======= GET Request =======');
     final response = await _client.get(
       _buildUri(path, stringQuery),
-      headers: await _authorizedHeaders(headers),
+      headers: await _authorizedHeaders(headers, token),
     );
     return _handleResponse(response);
   }
@@ -78,14 +105,17 @@ class ApiClient {
       String path, {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
+        required bool requiresAuth
       }) async {
+    // トークン & オフラインチェック
+    final token = await _preRequestCheck(requiresAuth: requiresAuth);
     logger('======= POST Request body =======');
     logger('path：$path');
     logger('body：$body');
     logger('======= POST Request body =======');
     final response = await _client.post(
       _buildUri(path),
-      headers: await _authorizedHeaders(headers),
+      headers: await _authorizedHeaders(headers, token),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -96,14 +126,17 @@ class ApiClient {
       String path, {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
+        required bool requiresAuth
       }) async {
+    // トークン & オフラインチェック
+    final token = await _preRequestCheck(requiresAuth: requiresAuth);
     logger('======= PUT Request body =======');
     logger('path：$path');
     logger('body：$body');
     logger('======= PUT Request body =======');
     final response = await _client.put(
       _buildUri(path),
-      headers: await _authorizedHeaders(headers),
+      headers: await _authorizedHeaders(headers, token),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -114,14 +147,17 @@ class ApiClient {
       String path, {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
+        required bool requiresAuth
       }) async {
+    // トークン & オフラインチェック
+    final token = await _preRequestCheck(requiresAuth: requiresAuth);
     logger('======= PATCH Request body =======');
     logger('path：$path');
     logger('body：$body');
     logger('======= PATCH Request body =======');
     final response = await _client.patch(
       _buildUri(path),
-      headers: await _authorizedHeaders(headers),
+      headers: await _authorizedHeaders(headers, token),
       body: jsonEncode(body),
     );
     return _handleResponse(response);
@@ -132,14 +168,17 @@ class ApiClient {
       String path, {
         Map<String, dynamic>? body,
         Map<String, String>? headers,
+        required bool requiresAuth
       }) async {
+    // トークン & オフラインチェック
+    final token = await _preRequestCheck(requiresAuth: requiresAuth);
     logger('======= DELETE Request body =======');
     logger('path：$path');
     logger('body：$body');
     logger('======= DELETE Request body =======');
     final response = await _client.delete(
       _buildUri(path),
-      headers: await _authorizedHeaders(headers),
+      headers: await _authorizedHeaders(headers, token),
       body: body != null ? jsonEncode(body) : null,
     );
     return _handleResponse(response);

@@ -14,19 +14,19 @@ class PaymentApi {
   static const String _END_POINT = '/payment-sources';
 
   Future<Map<String, dynamic>> fetchAllUserList() async {
-    return await _client.get(_END_POINT);
+    return await _client.get(_END_POINT, requiresAuth: true);
   }
 
   Future<Map<String, dynamic>> create(Map<String, dynamic> body) async {
-    return await _client.post(_END_POINT, body: body);
+    return await _client.post(_END_POINT, body: body, requiresAuth: true);
   }
 
   Future<void> update(String id, Map<String, dynamic> body) async {
-    await _client.put('$_END_POINT/$id', body: body);
+    await _client.put('$_END_POINT/$id', body: body, requiresAuth: true);
   }
 
   Future<void> delete(String id) async {
-    await _client.delete('$_END_POINT/$id');
+    await _client.delete('$_END_POINT/$id', requiresAuth: true);
   }
 
 }

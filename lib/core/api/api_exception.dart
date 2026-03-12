@@ -1,7 +1,9 @@
 enum ApiErrorType {
+  /// オフライン
+  offline,           // EA000
   /// バリデーション
   validation,        // EA001
-  /// 認証失敗
+  /// 認証失敗 or トークンなし
   unauthorized,      // EA002
   /// 更新権限のないユーザー
   forbidden,         // EA003
@@ -9,6 +11,7 @@ enum ApiErrorType {
   notFound,          // EA004
   /// サーバー内部エラー
   server,            // EA005
+  /// 不明なエラー
   unknown,
 }
 
