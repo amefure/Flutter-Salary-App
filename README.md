@@ -76,6 +76,7 @@ $ fvm install
 ## Utility
 - **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
 - **[intl](https://pub.dev/packages/intl) (0.19.0)** - 日付・数値・通貨のフォーマット処理 
+- **[connectivity_plus](https://pub.dev/packages/connectivity_plus) (6.0.0)** - ネットワーク環境
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ）
