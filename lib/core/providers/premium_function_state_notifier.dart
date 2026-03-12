@@ -6,6 +6,7 @@ import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/core/repository/shared_prefs_repository.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
+import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
 
 final premiumFunctionStateProvider = StateNotifierProvider<PremiumFunctionStateNotifier, PremiumFunctionState>((ref) {
   final localRepository = RealmRepository();
@@ -44,16 +45,26 @@ class PremiumFunctionState {
 
 class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
 
-  final Ref ref;
+  final Ref _ref;
   final RealmRepository _localRepository;
   final PublicSalaryRepository _publicSalaryRepository;
 
   PremiumFunctionStateNotifier(
-      this.ref,
+      this._ref,
       this._localRepository,
       this._publicSalaryRepository
       ) : super(PremiumFunctionState()) {
     checkAllPaymentSource();
+    _ref.listen<bool>(
+      premiumRootProvider.select((s) => s.isRefresh),
+          (previous, next) {
+        // リフレッシュ対象は機能が開放されていない場合のみ
+        if (next == true && previous != true && !state.isUnLimitedFunction) {
+          fetchUserCount();
+          _ref.read(premiumRootProvider.notifier).clearIsRefresh();
+        }
+      },
+    );
   }
 
   void checkAllPaymentSource() {
