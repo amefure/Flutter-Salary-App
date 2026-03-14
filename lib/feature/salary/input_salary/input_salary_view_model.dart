@@ -297,7 +297,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     if (salary case Salary salary) {
       final result = await _update(salary, newSalary);
       if (!result) { return false; }
-      _ref.read(detailSalaryProvider(salary.id).notifier).loadSalary(salary.id);
+      _ref.read(detailSalaryProvider(DetailSalaryArgsData(id: salary.id, isPublic: false)).notifier).loadLocalSalary(salary.id);
     } else {
       final result = await _add(newSalary);
       if (!result) { return false; }

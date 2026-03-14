@@ -1,3 +1,4 @@
+import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/premium/domain/model/public_payment_source.dart';
 import 'package:salary/feature/premium/domain/model/public_user.dart';
 
@@ -22,4 +23,21 @@ class PublicSalary {
     required this.paymentSource,
     required this.user,
   });
+}
+
+extension PublicSalaryMapper on PublicSalary {
+  Salary toDomainLocal() {
+    return Salary(
+      id,
+      paymentAmount,
+      deductionAmount,
+      netSalary,
+      paidAt,
+      isBonus,
+      '', // メモは空
+      paymentAmountItems: [],
+      deductionAmountItems: [],
+      source: paymentSource?.toDomainLocal(),
+    );
+  }
 }

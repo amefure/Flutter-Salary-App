@@ -17,13 +17,14 @@ import 'package:salary/feature/salary/detail_salary/detail_salary_view_model.dar
 import 'package:salary/feature/salary/input_salary/input_salary_view.dart';
 
 class DetailSalaryView extends ConsumerWidget {
-  const DetailSalaryView({super.key, required this.id});
+  const DetailSalaryView({super.key, required this.id, required this.isPublic});
 
   final String id;
+  final bool isPublic;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(detailSalaryProvider(id));
+    final state = ref.watch(detailSalaryProvider(DetailSalaryArgsData(id: id, isPublic: isPublic)));
     String title = DateTimeUtils.format(
       dateTime: state.salary?.createdAt ?? DateTime.now(),
     );
@@ -96,7 +97,7 @@ class DetailSalaryView extends ConsumerWidget {
       Salary salary,
       ) async {
     // 削除処理を実行
-    final result = await ref.read(detailSalaryProvider(id).notifier).delete(salary);
+    final result = await ref.read(detailSalaryProvider(DetailSalaryArgsData(id: id, isPublic: isPublic)).notifier).delete(salary);
     if (result) {
       // リスト画面に戻る
       Navigator.of(context).pop();

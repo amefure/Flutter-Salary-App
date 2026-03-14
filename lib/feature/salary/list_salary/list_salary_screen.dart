@@ -49,7 +49,7 @@ class SalaryListScreen extends ConsumerWidget {
             Navigator.of(context).push(
               CupertinoPageRoute(
                 builder: (_) =>
-                    DetailSalaryView(id: salary.id),
+                    DetailSalaryView(id: salary.id, isPublic: false),
               ),
             );
           },

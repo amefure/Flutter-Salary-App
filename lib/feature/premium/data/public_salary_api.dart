@@ -25,6 +25,16 @@ class PublicSalaryApi {
     );
   }
 
+  /// 公開されている給料情報の詳細
+  Future<Map<String, dynamic>> fetchById({
+    required String id
+  }) async {
+    return await _client.get(
+        '$_END_POINT/salaries/$id',
+        requiresAuth: true
+    );
+  }
+
   /// 公開されている給料ユーザー数
   Future<Map<String, dynamic>> fetchUserCount() async {
     return await _client.get('$_END_POINT/user_count', requiresAuth: true);

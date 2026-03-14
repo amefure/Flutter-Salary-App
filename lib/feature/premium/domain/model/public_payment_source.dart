@@ -1,3 +1,4 @@
+import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
 
 class PublicPaymentSource {
@@ -15,4 +16,17 @@ class PublicPaymentSource {
   String get displayName => publicName.isEmpty ? '非公開' : publicName;
   /// ThemaColor に変換
   ThemaColor get themaColorEnum => ThemaColor.fromValue(themaColor);
+}
+
+extension PublicPaymentSourceMapper on PublicPaymentSource {
+  PaymentSource toDomainLocal() {
+    return PaymentSource(
+      id,
+      displayName,
+      themaColor,
+      false,
+      publicName.isEmpty,
+      memo: ''
+    );
+  }
 }

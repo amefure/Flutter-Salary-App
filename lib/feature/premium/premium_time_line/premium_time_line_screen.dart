@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom_filter_chip.dart';
@@ -7,6 +8,7 @@ import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
 import 'package:salary/feature/premium/premium_time_line/premium_time_line_state.dart';
 import 'package:salary/feature/premium/premium_time_line/premium_time_line_view_model.dart';
+import 'package:salary/feature/salary/detail_salary/detail_salary_view.dart';
 
 class PremiumTimeLineScreen extends ConsumerWidget {
   const PremiumTimeLineScreen({super.key});
@@ -43,6 +45,14 @@ class PremiumTimeLineScreen extends ConsumerWidget {
         /// リストエリア（Expanded で残りの画面を埋める）
         Expanded(
           child: PublicSalaryListView(
+            onTap: (salary) {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (_) =>
+                      DetailSalaryView(id: salary.id, isPublic: true),
+                ),
+              );
+            },
             salaries: state.salaries,
             hasMore: (state.currentPage) < (state.lastPage),
             isLoadingMore: state.isLoadingMore,
