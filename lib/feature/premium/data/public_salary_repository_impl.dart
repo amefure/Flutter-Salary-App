@@ -30,7 +30,7 @@ class PublicSalaryRepositoryImpl implements PublicSalaryRepository {
   @override
   Future<PublicSalary> fetchById({ required String id }) async {
     final result = await _api.fetchById(id: id);
-    return PublicSalaryDto.fromJson(result).toDomain();
+    return PublicSalaryDto.fromJson(result[CommonJsonKeys.data][CommonJsonKeys.salary]).toDomain();
   }
 
   /// 公開されている給料ユーザー数

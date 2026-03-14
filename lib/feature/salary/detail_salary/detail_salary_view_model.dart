@@ -11,8 +11,10 @@ import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_state.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
+import 'package:equatable/equatable.dart';
 
-class DetailSalaryArgsData {
+/// StateNotifierProviderの引数にしているためEquatableに準拠させておく
+class DetailSalaryArgsData extends Equatable {
   final String id;
   /// 公開されたものかどうか(trueならクラウドからデータをフェッチする)
   final bool isPublic;
@@ -21,6 +23,9 @@ class DetailSalaryArgsData {
     required this.id,
     required this.isPublic
   });
+
+  @override
+  List<Object?> get props => [id, isPublic];
 }
 
 final detailSalaryProvider =

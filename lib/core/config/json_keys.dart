@@ -2,6 +2,7 @@
 abstract class CommonJsonKeys {
   static const ids = 'ids';
   static const data = 'data';
+  static const salary = 'salary';
   static const user = 'user';
   static const profile = 'profile';
   static const salaries = 'salaries';
