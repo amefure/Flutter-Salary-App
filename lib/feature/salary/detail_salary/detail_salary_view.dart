@@ -40,36 +40,45 @@ class DetailSalaryView extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
           backgroundColor: CustomColors.foundation(context),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  // nullでないなら
-                  if (state.salary case Salary salary) {
-                    _showDeleteConfirmDialog(context, ref, salary);
-                  }
-                },
-                child: const Icon(
-                  CupertinoIcons.trash_circle_fill,
-                  size: 28,
-                  color: CustomColors.negative,
-                ),
-              ),
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  if (state.salary case Salary salary) {
-                    _editSalary(context, salary);
-                  }
-                },
-                child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
-              ),
-            ],
+          trailing: !isPublic ? _controlButtonContainer(context, ref, state) : const Spacer(),
+        ),
+        child: _Body(state: state, isPublic: isPublic)
+    );
+  }
+
+  /// 削除 & 編集ボタン
+  Widget _controlButtonContainer(
+      BuildContext context,
+      WidgetRef ref,
+      DetailSalaryState state
+      ) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            // nullでないなら
+            if (state.salary case Salary salary) {
+              _showDeleteConfirmDialog(context, ref, salary);
+            }
+          },
+          child: const Icon(
+            CupertinoIcons.trash_circle_fill,
+            size: 28,
+            color: CustomColors.negative,
           ),
         ),
-        child: _Body(state: state)
+        CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            if (state.salary case Salary salary) {
+              _editSalary(context, salary);
+            }
+          },
+          child: const Icon(CupertinoIcons.pencil_circle_fill, size: 28),
+        ),
+      ],
     );
   }
 
@@ -114,8 +123,9 @@ class DetailSalaryView extends ConsumerWidget {
 
 class _Body extends ConsumerWidget {
   final DetailSalaryState state;
+  final bool isPublic;
 
-  const _Body({required this.state});
+  const _Body({required this.state, required this.isPublic});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -169,33 +179,36 @@ class _Body extends ConsumerWidget {
                         const SizedBox(height: 24),
 
                         // MEMO
-                        const CustomLabelView(labelText: 'MEMO'),
+                        if (!isPublic)...[
+                          const CustomLabelView(labelText: 'MEMO'),
 
-                        const SizedBox(height: 10),
-                        // MEMO Body
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: CustomColors.background(context), // 背景色
-                            borderRadius: BorderRadius.circular(8), // 角丸
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.comment),
-                              const SizedBox(width: 10), // アイコンとテキストの間隔
+                          const SizedBox(height: 10),
 
-                              CustomText(
-                                text: state.salary?.memo ?? '',
-                                maxLines: null,
-                              ),
-                            ],
-                          ),
-                        ),
+                          // MEMO Body
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: CustomColors.background(context), // 背景色
+                              borderRadius: BorderRadius.circular(8), // 角丸
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.comment),
+                                const SizedBox(width: 10), // アイコンとテキストの間隔
 
-                        const SizedBox(height: 40),
+                                CustomText(
+                                  text: state.salary?.memo ?? '',
+                                  maxLines: null,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 40),
+                        ],
 
                         const AdMobBannerWidget(),
                       ],

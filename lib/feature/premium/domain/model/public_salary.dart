@@ -10,6 +10,8 @@ class PublicSalary {
   final int netSalary;
   final DateTime paidAt;
   final bool isBonus;
+  final List<AmountItem> paymentItems;
+  final List<AmountItem> deductionItems;
   final PublicPaymentSource? paymentSource;
   final PublicUser user;
 
@@ -20,12 +22,14 @@ class PublicSalary {
     required this.netSalary,
     required this.paidAt,
     required this.isBonus,
+    required this.paymentItems,
+    required this.deductionItems,
     required this.paymentSource,
     required this.user,
   });
 }
 
-extension PublicSalaryMapper on PublicSalary {
+extension PublicDetailSalaryMapper on PublicSalary {
   Salary toDomainLocal() {
     return Salary(
       id,
@@ -35,8 +39,8 @@ extension PublicSalaryMapper on PublicSalary {
       paidAt,
       isBonus,
       '', // メモは空
-      paymentAmountItems: [],
-      deductionAmountItems: [],
+      paymentAmountItems: paymentItems,
+      deductionAmountItems: deductionItems,
       source: paymentSource?.toDomainLocal(),
     );
   }

@@ -3,6 +3,7 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/premium/data/dto/public_payment_source_dto.dart';
 import 'package:salary/feature/premium/data/dto/public_user_dto.dart';
 import 'package:salary/feature/premium/domain/model/public_salary.dart';
+import 'package:salary/feature/salary/data/dto/amount_item_dto.dart';
 
 class PublicSalaryDto {
 
@@ -12,6 +13,8 @@ class PublicSalaryDto {
   final int netSalary;
   final DateTime paidAt;
   final bool isBonus;
+  final List<AmountItemDto> paymentItems;
+  final List<AmountItemDto> deductionItems;
   final PublicPaymentSourceDto? paymentSource;
   final PublicUserDto user;
 
@@ -22,6 +25,8 @@ class PublicSalaryDto {
     required this.netSalary,
     required this.paidAt,
     required this.isBonus,
+    required this.paymentItems,
+    required this.deductionItems,
     required this.paymentSource,
     required this.user,
   });
@@ -34,6 +39,12 @@ class PublicSalaryDto {
       netSalary: json[SalaryJsonKeys.netSalary],
       paidAt: DateTime.parse(json[SalaryJsonKeys.paidAt]),
       isBonus: json[SalaryJsonKeys.isBonus],
+      paymentItems: (json[SalaryJsonKeys.paymentItems] as List?)
+          ?.map((e) => AmountItemDto.fromJson(e as Map<String, dynamic>))
+          .toList() ?? const [],
+      deductionItems: (json[SalaryJsonKeys.deductionItems] as List?)
+          ?.map((e) => AmountItemDto.fromJson(e as Map<String, dynamic>))
+          .toList() ?? const [],
       paymentSource: json[SalaryJsonKeys.paymentSource] != null
           ? PublicPaymentSourceDto.fromJson(json[SalaryJsonKeys.paymentSource])
           : null,
@@ -51,6 +62,8 @@ extension PublicSalaryDtoMapper on PublicSalaryDto {
       netSalary: netSalary,
       paidAt: paidAt,
       isBonus: isBonus,
+      paymentItems: paymentItems.map((item) => item.toDomain()).toList(),
+      deductionItems: deductionItems.map((item) => item.toDomain()).toList(),
       paymentSource: paymentSource?.toDomain(),
       user: user.toDomain(),
     );
