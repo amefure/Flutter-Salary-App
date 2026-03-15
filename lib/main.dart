@@ -12,7 +12,7 @@ import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_service.dart';
 import 'package:salary/core/repository/shared_prefs_repository.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/core/common/root_tab_view.dart';
+import 'package:salary/feature/root/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_view.dart';

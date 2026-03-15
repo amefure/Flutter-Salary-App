@@ -27,7 +27,7 @@ class PremiumLockScreen extends StatelessWidget {
           SizedBox(height: 8),
 
           /// プレミアム機能説明カード
-          _PremiumCard(),
+          PremiumCard(),
 
           SizedBox(height: 24),
 
@@ -41,8 +41,8 @@ class PremiumLockScreen extends StatelessWidget {
 
 
 /// プレミアム機能説明カード
-class _PremiumCard extends StatelessWidget {
-  const _PremiumCard();
+class PremiumCard extends StatelessWidget {
+  const PremiumCard({super.key});
   
   @override
   Widget build(BuildContext context) {

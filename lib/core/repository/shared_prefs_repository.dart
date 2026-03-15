@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum SharedPreferencesKeys {
   removeAds('removeAds'),
-  themeMode('themeMode');
+  themeMode('themeMode'),
+  hasShownPremiumIntro('hasShownPremiumIntro');
 
   final String key;
   const SharedPreferencesKeys(this.key);
 }
 
-///
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError();
 });
@@ -40,6 +40,16 @@ class SharedPreferencesService {
 
   bool? fetchThemeModeNullable() {
     return _repository.getBoolNullable(SharedPreferencesKeys.themeMode);
+  }
+
+  /// プレミアムプラン紹介ポップアップを表示済みか保存
+  Future<void> saveHasShownPremiumIntro(bool value) async {
+    await _repository.saveBool(SharedPreferencesKeys.hasShownPremiumIntro, value);
+  }
+
+  /// プレミアムプラン紹介ポップアップを表示済みか取得
+  bool fetchHasShownPremiumIntro() {
+    return _repository.getBool(SharedPreferencesKeys.hasShownPremiumIntro);
   }
 }
 
