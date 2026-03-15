@@ -6,10 +6,10 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_state.dart';
-import 'package:salary/feature/in_app_purchase/in_app_purchase_viewmodel.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_view_model.dart';
 
-class InAppPurchaseView extends ConsumerWidget {
-  const InAppPurchaseView({super.key});
+class InAppPurchaseScreen extends ConsumerWidget {
+  const InAppPurchaseScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +19,10 @@ class InAppPurchaseView extends ConsumerWidget {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
-        middle: Text('広告削除'),
+        middle: CustomText(
+          text: '広告削除 & プレミアム機能解放',
+          fontWeight: FontWeight.bold,
+        ),
       ),
       child: SafeArea(
         child: state.loading

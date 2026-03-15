@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -8,7 +9,7 @@ import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
-import 'package:salary/feature/in_app_purchase/in_app_purchase_view.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_screen.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 
 class PremiumLockScreen extends StatelessWidget {
@@ -136,72 +137,94 @@ class _RequirementCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           const CustomText(
             text: '利用条件',
             textSize: TextSize.M,
             fontWeight: FontWeight.bold,
           ),
-
           const SizedBox(height: 8),
-
           const CustomText(
-            text: '以下の条件を満たすことで機能が解放されます。',
+            text: 'アカウントを作成し、いずれかの条件を満たすと解放されます。',
             textSize: TextSize.S,
             fontWeight: FontWeight.w600,
             color: CupertinoColors.systemGrey,
             maxLines: 2,
           ),
+          const SizedBox(height: 16),
 
-          const SizedBox(height: 12),
-
+          // --- ステップ1: 必須項目 ---
           StepItem(
             number: 1,
-            title: 'アカウント新規作成 or ログイン',
+            title: '【必須】アカウント作成 / ログイン',
             isCompleted: authState.isLogin,
             onTap: () {
               Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
+                CupertinoPageRoute(builder: (context) => const LoginScreen()),
               );
             },
           ),
-
-          StepItem(
-            number: 2,
-            title: '給料データを公開',
-            isCompleted: premiumState.isPublicData,
-            onTap: () async {
-              if (!authState.isLogin) {
-                final _ = await AppDialog.show(
-                    context: context,
-                    message: '給料データを公開するには\n新規登録またはログインしてください。',
-                    type: DialogType.error,
-                );
-                return;
-              }
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const PublicSalaryScreen(),
+          // --- ステップ2 & 3: 選択項目 (ORグループ) ---
+          Container(
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+            decoration: BoxDecoration(
+              color: CupertinoColors.systemGrey6.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: CupertinoColors.systemGrey4, width: 0.5),
+            ),
+            child: Column(
+              children: [
+                StepItem(
+                  number: 2,
+                  title: '給料データを公開',
+                  isCompleted: premiumState.isPublicData,
+                  onTap: () async {
+                    if (!authState.isLogin) {
+                      await AppDialog.show(
+                        context: context,
+                        message: '給料データを公開するには\n新規登録またはログインしてください。',
+                        type: DialogType.error,
+                      );
+                      return;
+                    }
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (context) => const PublicSalaryScreen()),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
 
-          StepItem(
-            number: 3,
-            title: 'プレミアム登録',
-            isCompleted: premiumState.isSubscribed,
-            onTap: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const InAppPurchaseView(),
+                // OR の区切り
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: CustomText(
+                          text: 'または',
+                          textSize: TextSize.SSS,
+                          color: CupertinoColors.systemGrey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
                 ),
-              );
-            },
-          ),
 
+                StepItem(
+                  number: 3,
+                  title: 'プレミアム登録',
+                  isCompleted: premiumState.isPremiumUnlocked,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

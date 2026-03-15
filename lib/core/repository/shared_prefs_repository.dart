@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum SharedPreferencesKeys {
   removeAds('removeAds'),
+  premiumUnlocked('premiumUnlocked'),
   themeMode('themeMode'),
   hasShownPremiumIntro('hasShownPremiumIntro');
 
@@ -33,6 +34,12 @@ class SharedPreferencesService {
   }
 
   bool fetchRemoveAds() => _repository.getBool(SharedPreferencesKeys.removeAds);
+
+  Future<void> savePremiumUnlocked(bool value) async {
+    _repository.saveBool(SharedPreferencesKeys.premiumUnlocked, value);
+  }
+
+  bool fetchPremiumUnlocked() => _repository.getBool(SharedPreferencesKeys.premiumUnlocked);
 
   Future<void> saveThemeMode(bool isDark) async {
     _repository.saveBool(SharedPreferencesKeys.themeMode, isDark);

@@ -6,7 +6,7 @@ import 'package:salary/feature/charts/view/chart_salary_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_screen.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
-import 'package:salary/feature/settings/setting_view.dart';
+import 'package:salary/feature/settings/setting_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RootTabViewView extends ConsumerStatefulWidget {
@@ -129,7 +129,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
       case 2:
         return const PremiumRootScreen();
       case 3:
-        return const SettingView();
+        return const SettingScreen();
       default:
         return const SalaryListScreen();
     }

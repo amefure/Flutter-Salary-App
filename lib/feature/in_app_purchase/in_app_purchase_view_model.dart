@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/core/models/secrets.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/core/providers/remove_ads_notifier.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_state.dart';
@@ -15,7 +16,10 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
   final _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
-  Set<String> productIds = {StaticKey.inAppPurchaseRemoveAdsId};
+  Set<String> productIds = {
+    StaticKey.inAppPurchaseRemoveAdsId,
+    StaticKey.inAppPurchasePremiumUnlockedId
+  };
 
   @override
   InAppPurchaseState build() {
@@ -99,6 +103,8 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
 
     if (id == StaticKey.inAppPurchaseRemoveAdsId) {
       ref.read(removeAdsProvider.notifier).update(true);
+    } else if (id == StaticKey.inAppPurchasePremiumUnlockedId) {
+      ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumUnlocked(true);
     }
   }
 }

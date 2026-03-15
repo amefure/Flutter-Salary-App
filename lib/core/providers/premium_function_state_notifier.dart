@@ -13,31 +13,31 @@ final premiumFunctionStateProvider = StateNotifierProvider<PremiumFunctionStateN
   final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
   final vm = PremiumFunctionStateNotifier(ref, localRepository, publicSalaryRepository);
   /// build完了後に実行
-  Future.microtask(() => vm.fetchUserCount());
+  Future.microtask(() => vm.checkRelease());
   return vm;
 });
 
 class PremiumFunctionState {
   final bool isPublicData;
-  final bool isSubscribed;
+  final bool isPremiumUnlocked;
   final int publicUserCount;
 
   bool get isUnLimitedFunction => publicUserCount >= 1;
 
   PremiumFunctionState({
     this.isPublicData = false,
-    this.isSubscribed = true,
+    this.isPremiumUnlocked = false,
     this.publicUserCount = 0,
   });
 
   PremiumFunctionState copyWith({
     bool? isPublicData,
-    bool? isSubscribed,
+    bool? isPremiumUnlocked,
     int? publicUserCount,
   }) {
     return PremiumFunctionState(
       isPublicData: isPublicData ?? this.isPublicData,
-      isSubscribed: isSubscribed ?? this.isSubscribed,
+      isPremiumUnlocked: isPremiumUnlocked ?? this.isPremiumUnlocked,
       publicUserCount: publicUserCount ?? this.publicUserCount,
     );
   }
@@ -60,7 +60,7 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
           (previous, next) {
         // リフレッシュ対象は機能が開放されていない場合のみ
         if (next == true && previous != true && !state.isUnLimitedFunction) {
-          fetchUserCount();
+          _fetchUserCount();
           _ref.read(premiumRootProvider.notifier).clearIsRefresh();
         }
       },
@@ -77,10 +77,29 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
     );
   }
 
-  Future<void> fetchUserCount() async {
+  void updateIsPremiumUnlocked(bool isPremiumUnlocked) {
+    SharedPreferencesService().savePremiumUnlocked(isPremiumUnlocked);
+    state = state.copyWith(
+      isPremiumUnlocked: isPremiumUnlocked,
+    );
+  }
+
+  Future<void> _fetchUserCount() async {
     final userCount = await _publicSalaryRepository.fetchUserCount();
     state = state.copyWith(
       publicUserCount: userCount
     );
+  }
+
+  Future<void> _fetchIsPremiumUnlocked() async {
+    final isPremiumUnlocked = SharedPreferencesService().fetchPremiumUnlocked();
+    state = state.copyWith(
+        isPremiumUnlocked: isPremiumUnlocked
+    );
+  }
+
+  Future<void> checkRelease() async {
+    await _fetchUserCount();
+    _fetchIsPremiumUnlocked();
   }
 }

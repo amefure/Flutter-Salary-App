@@ -13,7 +13,7 @@ import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_view.dart';
-import 'package:salary/feature/in_app_purchase/in_app_purchase_view.dart';
+import 'package:salary/feature/in_app_purchase/in_app_purchase_screen.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 import 'package:salary/feature/webview/web_view_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,9 +25,9 @@ abstract class _StaticUrl {
   static const String contact = 'https://appdev-room.com/contact';
 }
 
-class SettingView extends StatelessWidget {
+class SettingScreen extends StatelessWidget {
 
-  const SettingView({super.key});
+  const SettingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +94,11 @@ class SettingView extends StatelessWidget {
 
         _settingListTile(
             context,
-            '広告削除', CupertinoIcons.gift,
+            '広告削除 & プレミアム機能解放', CupertinoIcons.gift,
                 () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => const InAppPurchaseView(),
+                  builder: (context) => const InAppPurchaseScreen(),
                 ),
               );
             }),
