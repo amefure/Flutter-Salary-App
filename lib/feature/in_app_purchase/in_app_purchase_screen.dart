@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -28,13 +29,17 @@ class InAppPurchaseScreen extends ConsumerWidget {
         child: state.loading
             ? const Center(child: CupertinoActivityIndicator())
             : state.products.isEmpty
-            ? const Center(
-          child: CustomText(
-            text: '商品が見つかりません。\n時間を開けて再度お試しください。',
-            maxLines: 2,
-          ),
-        )
-            : _productListView(state, vm),
+            ? _noDataView() : _productListView(state, vm),
+      ),
+    );
+  }
+
+  /// NoData EmptyView
+  Widget _noDataView() {
+    return const Center(
+      child: EmptyStateView(
+        message: '商品が見つかりません。\n時間をあけて再度お試しください。',
+        icon: CupertinoIcons.gift,
       ),
     );
   }

@@ -79,7 +79,7 @@ class _BaseSalaryListViewState<T>
         onRefresh: widget.onRefresh ?? () async {},
         child: const Center(
           child: EmptyStateView(
-            message: 'データがありません',
+            message: '給料データがありません',
             icon: CupertinoIcons.money_yen_circle,
           ),
         ),

@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_state.dart';
-import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
 import 'package:salary/core/repository/shared_prefs_repository.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
@@ -58,10 +57,15 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
     _ref.listen<bool>(
       premiumRootProvider.select((s) => s.isRefresh),
           (previous, next) {
-        // リフレッシュ対象は機能が開放されていない場合のみ
-        if (next == true && previous != true && !state.isUnLimitedFunction) {
-          _fetchUserCount();
-          _ref.read(premiumRootProvider.notifier).clearIsRefresh();
+        if (next == true && previous != true) {
+          if (!state.isUnLimitedFunction) {
+            // 機能解放済みならかつロック画面ならユーザー数取得ではリフレッシュ
+            _fetchUserCount();
+            _ref.read(premiumRootProvider.notifier).clearIsRefresh();
+          } else {
+            // 機能未開放かつロック画面なら公開情報の取得をリフレッシュ
+            checkAllPaymentSource();
+          }
         }
       },
     );

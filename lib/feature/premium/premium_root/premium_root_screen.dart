@@ -46,8 +46,7 @@ class PremiumRootScreen extends StatelessWidget {
             final premiumState = ref.watch(premiumFunctionStateProvider);
 
             final isRelease = authState.isLogin &&
-                premiumState.isPublicData ||
-                premiumState.isPremiumUnlocked;
+                (premiumState.isPublicData || premiumState.isPremiumUnlocked);
 
             /// 🔒 Lockは絶対ここで判定
             if (!isRelease) {

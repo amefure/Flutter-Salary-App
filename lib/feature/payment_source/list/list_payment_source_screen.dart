@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/models/salary.dart';
@@ -96,7 +97,12 @@ class _Body extends ConsumerWidget {
 
   /// NoData EmptyView
   Widget _noDataView() {
-    return const Center(child: CustomText(text: '登録された支払い元データがありません'));
+    return const Center(
+      child: EmptyStateView(
+        message: '登録された支払い元がありません',
+        icon: CupertinoIcons.building_2_fill,
+      ),
+    );
   }
 
   /// 支払い元リスト

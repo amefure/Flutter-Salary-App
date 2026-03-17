@@ -36,6 +36,7 @@ class EmptyStateView extends StatelessWidget {
             textSize: TextSize.S,
             color: CustomColors.themaGray,
             fontWeight: FontWeight.w600,
+            maxLines: 5,
           ),
         ],
       ),

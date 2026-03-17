@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/domain/step_item.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
@@ -19,9 +19,7 @@ class PublicSalaryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentSources = ref.watch(publicSalaryProvider.select((s) => s.paymentSources));
-    final isMainPublic = ref.watch(publicSalaryProvider.select((s) => s.isMainPublic));
-    final viewModel = ref.read(publicSalaryProvider.notifier);
+    final paymentSources = ref.read(publicSalaryProvider.select((s) => s.paymentSources));
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: CupertinoNavigationBar(
@@ -45,51 +43,68 @@ class PublicSalaryScreen extends ConsumerWidget {
         ),
       ),
       child: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          itemCount: paymentSources.length,
-          itemBuilder: (context, index) {
-            final source = paymentSources[index];
+        child: paymentSources.isEmpty ? _noDataView() : _paymentSourceList(ref),
+      ),
+    );
+  }
 
-            final publicCheckResult = viewModel.canPublic(source);
+  Widget _paymentSourceList(WidgetRef ref) {
+    final paymentSources = ref.watch(publicSalaryProvider.select((s) => s.paymentSources));
+    final isMainPublic = ref.watch(publicSalaryProvider.select((s) => s.isMainPublic));
+    final viewModel = ref.read(publicSalaryProvider.notifier);
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      itemCount: paymentSources.length,
+      itemBuilder: (context, index) {
+        final source = paymentSources[index];
 
-            return _PublicSalaryItem(
-              paymentSource: source,
-              isPublic: source.isPublic,
-              canPublic: publicCheckResult.canPublic,
-              currentCount: publicCheckResult.count,
-              currentTotal: publicCheckResult.totalAmount,
-              isMainPublic: source.isMain ? true : isMainPublic,
-              onChanged: (isPublic) async {
-                final status = viewModel.checkPublicStatus(source, publicCheckResult, isPublic);
+        final publicCheckResult = viewModel.canPublic(source);
 
-                switch (status) {
-                  case PublicCheckStatus.blockedByLimit:
-                    return;
+        return _PublicSalaryItem(
+          paymentSource: source,
+          isPublic: source.isPublic,
+          canPublic: publicCheckResult.canPublic,
+          currentCount: publicCheckResult.count,
+          currentTotal: publicCheckResult.totalAmount,
+          isMainPublic: source.isMain ? true : isMainPublic,
+          onChanged: (isPublic) async {
+            final status = viewModel.checkPublicStatus(source, publicCheckResult, isPublic);
 
-                  case PublicCheckStatus.cannotUnPublicMain:
-                    await AppDialog.show(
-                      context: context,
-                      message: '本業以外を公開している場合は\n本業を非公開にできません。',
-                      type: DialogType.error,
-                    );
-                    break;
+            switch (status) {
+              case PublicCheckStatus.blockedByLimit:
+                return;
 
-                  case PublicCheckStatus.policyRequired:
-                    final agreed = await showPublicPolicyModal(context, showAgreeButton: true);
-                    if (agreed == true) {
-                      _confirmAlertPublic(context, ref, source, isPublic);
-                    }
-                    break;
+              case PublicCheckStatus.cannotUnPublicMain:
+                await AppDialog.show(
+                  context: context,
+                  message: '本業以外を公開している場合は\n本業を非公開にできません。',
+                  type: DialogType.error,
+                );
+                break;
 
-                  case PublicCheckStatus.agreed:
-                    _confirmAlertPublic(context, ref, source, isPublic);
-                    break;
+              case PublicCheckStatus.policyRequired:
+                final agreed = await showPublicPolicyModal(context, showAgreeButton: true);
+                if (agreed == true) {
+                  _confirmAlertPublic(context, ref, source, isPublic);
                 }
-              },
-            );
+                break;
+
+              case PublicCheckStatus.agreed:
+                _confirmAlertPublic(context, ref, source, isPublic);
+                break;
+            }
           },
-        ),
+        );
+      },
+    );
+  }
+
+  /// NoData EmptyView
+  Widget _noDataView() {
+    return const Center(
+      child: EmptyStateView(
+        message: '登録された支払い元がありません',
+        icon: CupertinoIcons.building_2_fill,
       ),
     );
   }
