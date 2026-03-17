@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
@@ -55,22 +56,10 @@ class InputSalaryView extends ConsumerWidget {
 
   /// エラーダイアログを表示
   void _showErrorDialog(BuildContext context, String title) {
-    showCupertinoDialog(
+    final _ = AppDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: Text(title),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      message: title,
+      type: DialogType.error,
     );
   }
 }

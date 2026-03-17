@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/domain/payment_source_label_view.dart';
 import 'package:salary/core/models/salary.dart';
@@ -17,10 +18,16 @@ import 'package:salary/feature/salary/detail_salary/detail_salary_view_model.dar
 import 'package:salary/feature/salary/input_salary/input_salary_view.dart';
 
 class DetailSalaryView extends ConsumerWidget {
-  const DetailSalaryView({super.key, required this.id, required this.isPublic});
+  const DetailSalaryView({
+    super.key,
+    required this.id,
+    required this.isPublic,
+    this.jobName
+  });
 
   final String id;
   final bool isPublic;
+  final String? jobName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +49,7 @@ class DetailSalaryView extends ConsumerWidget {
           backgroundColor: CustomColors.foundation(context),
           trailing: !isPublic ? _controlButtonContainer(context, ref, state) : const Spacer(),
         ),
-        child: _Body(state: state, isPublic: isPublic)
+        child: _Body(state: state, isPublic: isPublic, jobName: jobName)
     );
   }
 
@@ -124,8 +131,13 @@ class DetailSalaryView extends ConsumerWidget {
 class _Body extends ConsumerWidget {
   final DetailSalaryState state;
   final bool isPublic;
+  final String? jobName;
 
-  const _Body({required this.state, required this.isPublic});
+  const _Body({
+    required this.state,
+    required this.isPublic,
+    required this.jobName
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -142,8 +154,15 @@ class _Body extends ConsumerWidget {
                       children: [
                         Row(
                           children: [
-                            // 支払い元ラベル
-                            PaymentSourceLabelView(paymentSource: state.salary?.source),
+                            /// ローカルであれば支払い元を表示
+                            if (!isPublic)
+                              PaymentSourceLabelView(paymentSource: state.salary?.source),
+
+                            /// 公開であれば属性タグを表示
+                            if (isPublic && jobName != null)...[
+                              Column()
+                            ],
+
 
                             const Spacer(),
 
@@ -218,7 +237,6 @@ class _Body extends ConsumerWidget {
         )
     );
   }
-
 
   /// 給料テーブル
   Widget _buildSalaryTable(

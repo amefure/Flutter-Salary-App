@@ -7,7 +7,9 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/custom_filter_chip.dart';
 import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/config/profile_config.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
 import 'package:salary/feature/premium/data/dto/income_distribution_dto.dart';
@@ -41,19 +43,47 @@ class PremiumSummaryScreen extends ConsumerWidget {
               const SizedBox(width: 12),
               CustomFilterChip(
                 label: '${state.selectedYear}年',
-                onTap: () => _showYearPicker(context, viewModel, state),
+                onTap: () {
+                  final premiumState = ref.read(premiumFunctionStateProvider);
+                  if (premiumState.isPremiumUnlocked) {
+                    _showYearPicker(context, viewModel, state);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
               ),
               CustomFilterChip(
                 label: !state.isUndefinedJob ? state.selectedJob.name : 'すべての職種',
-                onTap: () => _showJobPicker(context, viewModel, state),
+                onTap: () {
+                  final premiumState = ref.read(premiumFunctionStateProvider);
+                  if (premiumState.isPremiumUnlocked) {
+                    _showJobPicker(context, viewModel, state);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
               ),
               CustomFilterChip(
                 label: state.selectedRegion ?? 'すべての地域',
-                onTap: () => _showRegionPicker(context, viewModel, state),
+                onTap: () {
+                  final premiumState = ref.read(premiumFunctionStateProvider);
+                  if (premiumState.isPremiumUnlocked) {
+                    _showRegionPicker(context, viewModel, state);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
               ),
               CustomFilterChip(
                 label: state.selectedAgeRange ?? 'すべての年代',
-                onTap: () => _showAgePicker(context, viewModel, state),
+                onTap: () {
+                  final premiumState = ref.read(premiumFunctionStateProvider);
+                  if (premiumState.isPremiumUnlocked) {
+                    _showAgePicker(context, viewModel, state);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
               ),
               const SizedBox(width: 12),
             ],
@@ -118,6 +148,14 @@ class PremiumSummaryScreen extends ConsumerWidget {
           ),
         ))
       ],
+    );
+  }
+
+  void _showIsNotPremiumErrorAlert(BuildContext context) {
+    final _ = AppDialog.show(
+      context: context,
+      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      type: DialogType.notify,
     );
   }
 
