@@ -39,4 +39,8 @@ class AuthApi {
   Future<Map<String, dynamic>> sendResetPassWordEmail(Map<String, dynamic> body) async {
     return await _client.post('/password/email', body: body, requiresAuth: false);
   }
+
+  Future<Map<String, dynamic>> changeEmail(Map<String, dynamic> body) async {
+    return await _client.post('/change-email', body: body, requiresAuth: true);
+  }
 }

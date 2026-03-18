@@ -132,12 +132,25 @@ class AuthRepositoryImpl implements AuthRepository {
     });
   }
 
+  /// パスワードリセット
   @override
   Future<void> sendResetPassWordEmail({
     required String email
   }) async {
     await _api.sendResetPassWordEmail({
       AuthJsonKeys.email: email,
+    });
+  }
+
+  /// メールアドレス変更
+  @override
+  Future<void> changeEmail({
+    required String newEmail,
+    required String password
+  }) async {
+    await _api.changeEmail({
+      AuthJsonKeys.newEmail: newEmail,
+      AuthJsonKeys.password: password,
     });
   }
 }

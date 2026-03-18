@@ -5,6 +5,7 @@ import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/account_benefits_screen.dart';
+import 'package:salary/feature/auth/presentation/change_email_screen.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
@@ -181,6 +182,19 @@ class SettingScreen extends StatelessWidget {
                                 builder: (context) => const UserInfoScreen(),
                               ),
                             );
+                      }
+                  ),
+
+                  _settingListTile(
+                      context,
+                      'メールアドレス変更',
+                      CupertinoIcons.mail_solid,
+                          () {
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => const ChangeEmailScreen(),
+                          ),
+                        );
                       }
                   ),
 

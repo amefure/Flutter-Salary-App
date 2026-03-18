@@ -248,4 +248,16 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     await fetchUser();
   }
 
+  /// プロフィール情報更新
+  Future<void> changeEmail({
+    required String newEmail,
+    required String password
+}) async {
+    await _authRepository.changeEmail(
+      newEmail: newEmail,
+      password: password
+    );
+    // メールアドレスが変更されているので再度取得する
+    await fetchUser();
+  }
 }

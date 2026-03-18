@@ -134,10 +134,10 @@ class _Body extends ConsumerState<_BodyWidget> {
             keyboardType: TextInputType.name,
           ),
 
-          /// メールアドレスはreadOnlyのみ(編集不可)
+          /// メールアドレスはこの画面ではreadOnlyのみ(編集不可)
           CustomTextField(
             controller: TextEditingController(text: state.email),
-            labelText: 'メールアドレス(変更不可)',
+            labelText: 'メールアドレス(別画面から変更できます)',
             readOnly: true,
             prefixIcon: CupertinoIcons.mail_solid,
             keyboardType: TextInputType.emailAddress,
