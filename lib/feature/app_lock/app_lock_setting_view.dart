@@ -38,7 +38,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     if (storedPassword == password) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const RootTabViewView()),
+        MaterialPageRoute(builder: (context) => const RootTabView()),
       );
     } else {
       final _ = await AppDialog.show(
@@ -89,7 +89,7 @@ class AppLockSettingViewState extends State<AppLockSettingView> {
     if (isAuthenticated) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const RootTabViewView()),
+        MaterialPageRoute(builder: (context) => const RootTabView()),
       );
     }
   }

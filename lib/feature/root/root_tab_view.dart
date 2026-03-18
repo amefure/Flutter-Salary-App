@@ -9,20 +9,22 @@ import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
 import 'package:salary/feature/settings/setting_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RootTabViewView extends ConsumerStatefulWidget {
-  const RootTabViewView({super.key});
+class RootTabView extends ConsumerStatefulWidget {
+  const RootTabView({super.key});
 
   @override
-  ConsumerState<RootTabViewView> createState() => _RootTabViewViewState();
+  ConsumerState<RootTabView> createState() => _RootTabViewViewState();
 }
 
-class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
+class _RootTabViewViewState extends ConsumerState<RootTabView> {
   late CupertinoTabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = CupertinoTabController();
+
+    _tabController.addListener(_onTabChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showUpdateInfoIfNeeded();
@@ -35,19 +37,25 @@ class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
     super.dispose();
   }
 
+  void _onTabChanged() {
+    final currentIndex = _tabController.index;
+    if (currentIndex == 2) {
+      ref.read(rootTabProvider.notifier).markAsShownPremiumTab();
+    }
+  }
+
   void _showUpdateInfoIfNeeded() {
     final viewModel = ref.read(rootTabProvider.notifier);
-    final shouldShow = ref.read(rootTabProvider);
-
-    if (shouldShow) {
+    final state = ref.read(rootTabProvider);
+    if (state.shouldShowPremiumIntro == true) {
       NewPremiumFeatureDialog.show(
           context,
           onDetailButtonPressed: () {
-            viewModel.markAsShown();
+            viewModel.markAsShownPremiumIntro();
             _tabController.index = 2;
           },
           onCloseButtonPressed: () {
-            viewModel.markAsShown();
+            viewModel.markAsShownPremiumIntro();
           }
       );
     }
@@ -55,24 +63,25 @@ class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(rootTabProvider);
     return CupertinoTabScaffold(
       controller: _tabController,
       tabBar: CupertinoTabBar(
         height: 60,
         items: [
-          /// 1
+          /// 0
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
-            label: 'History',
+            label: 'MyHistory',
           ),
-          /// 2
+          /// 1
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.chart_bar_alt_fill),
             label: 'MyData',
           ),
+          /// 2
+          state.shouldShowPremiumTabBadge == true ? _timeLineTabItemAddBadge() : _timeLineTabItem(),
           /// 3
-          _timeLineTabItem(),
-          /// 4
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear_alt_fill),
             label: 'Settings',
@@ -90,6 +99,13 @@ class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
   }
 
   BottomNavigationBarItem _timeLineTabItem() {
+    return const BottomNavigationBarItem(
+      icon: Icon(CupertinoIcons.globe),
+      label: 'PublicHistory',
+    );
+  }
+
+  BottomNavigationBarItem _timeLineTabItemAddBadge() {
     return BottomNavigationBarItem(
       icon: Stack(
         clipBehavior: Clip.none,
@@ -116,7 +132,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabViewView> {
           ),
         ],
       ),
-      label: 'Timeline',
+      label: 'PublicHistory',
     );
   }
 

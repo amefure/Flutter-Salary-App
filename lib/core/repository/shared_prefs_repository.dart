@@ -5,7 +5,8 @@ enum SharedPreferencesKeys {
   removeAds('removeAds'),
   premiumUnlocked('premiumUnlocked'),
   themeMode('themeMode'),
-  hasShownPremiumIntro('hasShownPremiumIntro');
+  hasShownPremiumIntro('hasShownPremiumIntro'),
+  hasShownPremiumTab('hasShownPremiumTab');
 
   final String key;
   const SharedPreferencesKeys(this.key);
@@ -57,6 +58,16 @@ class SharedPreferencesService {
   /// プレミアムプラン紹介ポップアップを表示済みか取得
   bool fetchHasShownPremiumIntro() {
     return _repository.getBool(SharedPreferencesKeys.hasShownPremiumIntro);
+  }
+
+  /// プレミアムタブを表示済みか保存
+  Future<void> saveHasShownPremiumTab(bool value) async {
+    await _repository.saveBool(SharedPreferencesKeys.hasShownPremiumTab, value);
+  }
+
+  /// プレミアムタブを表示済みか取得
+  bool fetchHasShownPremiumTab() {
+    return _repository.getBool(SharedPreferencesKeys.hasShownPremiumTab);
   }
 }
 

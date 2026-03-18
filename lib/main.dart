@@ -52,7 +52,7 @@ void main() async {
         startScreen:
             isLockEnabled
                 ? const AppLockSettingView(isEntry: false)
-                : const RootTabViewView(),
+                : const RootTabView(),
       ),
     ),
   );
