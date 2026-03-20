@@ -216,7 +216,8 @@ class _RequirementCard extends ConsumerWidget {
                   number: 3,
                   title: 'プレミアム登録',
                   isCompleted: premiumState.isPremiumUnlocked,
-                  onTap: () {
+                  isEnabled: premiumState.isUnLimitedInAppPurchase,
+                  onTap: () async {
                     Navigator.of(context).push(
                       CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
                     );

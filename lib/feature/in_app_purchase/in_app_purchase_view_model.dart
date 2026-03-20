@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/core/models/secrets.dart';
@@ -6,6 +7,7 @@ import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/core/providers/remove_ads_notifier.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_state.dart';
+import 'package:salary/core/utils/custom_colors.dart';
 
 final inAppPurchaseProvider =
 NotifierProvider<InAppPurchaseViewModel, InAppPurchaseState>(
@@ -71,6 +73,17 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     await _iap.restorePurchases();
   }
 
+  PurchaseState fetchPurchaseState(String productId, bool isUnLimitedInAppPurchase) {
+    bool isPurchased = state.purchasedIds.contains(productId);
+    /// プレミアム課金 && アプリ内課金がアンロック中なら購入不可(未解放)にする
+    if (productId == StaticKey.inAppPurchasePremiumUnlockedId && !isUnLimitedInAppPurchase) {
+      isPurchased = false;
+      return PurchaseState.locked;
+    } else {
+      return isPurchased ? PurchaseState.purchased : PurchaseState.available;
+    }
+  }
+
   /// 購入ストリーム
   void _onPurchaseUpdate(List<PurchaseDetails> list) {
     for (final purchase in list) {
@@ -107,4 +120,21 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
       ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumUnlocked(true);
     }
   }
+}
+
+enum PurchaseState {
+  /// ロック中(未開放）
+  locked('未解放', CustomColors.themaBlack),
+  /// 購入可能
+  available('購入する', CustomColors.thema),
+  /// 購入済み
+  purchased('購入済み', CustomColors.themaBlack),
+  /// 復元する
+  restore('復元する', CustomColors.thema);
+
+  final String buttonTitle;
+  final Color buttonColor;
+  const PurchaseState(this.buttonTitle, this.buttonColor);
+
+  bool get isAvailable => this == PurchaseState.available;
 }

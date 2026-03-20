@@ -37,6 +37,6 @@ class PublicSalaryApi {
 
   /// 公開されている給料ユーザー数
   Future<Map<String, dynamic>> fetchUserCount() async {
-    return await _client.get('$_END_POINT/user_count', requiresAuth: true);
+    return await _client.get('$_END_POINT/user_count', requiresAuth: false);
   }
 }

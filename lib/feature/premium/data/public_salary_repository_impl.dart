@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/json_keys.dart';
-import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/dto/public_salary_dto.dart';
 import 'package:salary/feature/premium/data/dto/public_salary_page_dto.dart';
 import 'package:salary/feature/premium/data/public_salary_api.dart';

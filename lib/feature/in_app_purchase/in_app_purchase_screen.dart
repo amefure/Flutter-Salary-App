@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -15,8 +15,6 @@ class InAppPurchaseScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(inAppPurchaseProvider);
-    final vm = ref.read(inAppPurchaseProvider.notifier);
-
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
@@ -29,7 +27,7 @@ class InAppPurchaseScreen extends ConsumerWidget {
         child: state.loading
             ? const Center(child: CupertinoActivityIndicator())
             : state.products.isEmpty
-            ? _noDataView() : _productListView(state, vm),
+            ? _noDataView() : _productListView(ref, state),
       ),
     );
   }
@@ -44,7 +42,12 @@ class InAppPurchaseScreen extends ConsumerWidget {
     );
   }
 
-  Widget _productListView(InAppPurchaseState state, InAppPurchaseViewModel vm) {
+  Widget _productListView(
+      WidgetRef ref,
+      InAppPurchaseState state
+      ) {
+    final vm = ref.read(inAppPurchaseProvider.notifier);
+    final premiumState = ref.watch(premiumFunctionStateProvider);
     return Column(
       spacing: 20,
       children: [
@@ -64,13 +67,13 @@ class InAppPurchaseScreen extends ConsumerWidget {
                   '購入アイテムを復元する',
                   '一度ご購入いただけますと、\n再インストール時に復元が可能です。',
                   '',
-                  '復元する',
+                  PurchaseState.restore,
                   vm.restore,
                 );
               }
 
               final p = state.products[index];
-              final isPurchased = state.purchasedIds.contains(p.id);
+              final status = vm.fetchPurchaseState(p.id, premiumState.isUnLimitedInAppPurchase);
 
               // FIXME なせか空になる時があるのでisEmptyなら明示的に値を返す暫定対応
               return _itemRowView(
@@ -78,8 +81,8 @@ class InAppPurchaseScreen extends ConsumerWidget {
                 p.title.isEmpty ? '広告削除' : p.title,
                 p.description.isEmpty ? 'アプリ内に表示されているバナー広告が非表示になります。' : p.description,
                 p.price,
-                isPurchased ? '購入済み' : '購入する',
-                isPurchased ? () {} : () => vm.buy(p),
+                status,
+                status.isAvailable ? () => vm.buy(p) : () {},
               );
             },
           ),
@@ -93,7 +96,7 @@ class InAppPurchaseScreen extends ConsumerWidget {
       String title,
       String description,
       String price,
-      String buttonTitle,
+      PurchaseState state,
       VoidCallback onPressed,
       ) {
     return Card(
@@ -122,8 +125,8 @@ class InAppPurchaseScreen extends ConsumerWidget {
               ),
 
             CustomElevatedButton(
-                text: buttonTitle,
-                backgroundColor: buttonTitle == '購入済み' ? CustomColors.themaBlack : CustomColors.thema,
+                text: state.buttonTitle,
+                backgroundColor: state.buttonColor,
                 onPressed: onPressed
             )
           ],

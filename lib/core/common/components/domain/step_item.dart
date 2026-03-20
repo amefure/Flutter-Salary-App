@@ -4,20 +4,24 @@ import 'package:salary/core/utils/custom_colors.dart';
 
 class StepItem extends StatelessWidget {
   const StepItem({
+    super.key,
     required this.number,
     required this.title,
     required this.isCompleted,
+    this.isEnabled = true,
     this.onTap,
   });
 
   final int number;
   final String title;
   final bool isCompleted;
+  final bool isEnabled; // 活性・非活性の制御
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final isClickable = !isCompleted;
+    // 活性かつ未完了の場合のみクリック可能
+    final isClickable = isEnabled && !isCompleted;
 
     return GestureDetector(
       onTap: isClickable ? onTap : null,
@@ -31,19 +35,13 @@ class StepItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: isCompleted
-              ? CustomColors.themaBlue.withAlpha(20)
+              ? CustomColors.themaBlue.withAlpha(40)
               : isClickable
-              ? CustomColors.themaOrange.withAlpha(20)
-              : CupertinoColors.systemGrey6,
-          border: isClickable
-              ? Border.all(
-            color: CustomColors.themaBlue.withAlpha(3),
-          )
-              : null,
+              ? CustomColors.themaOrange.withAlpha(40)
+              : CustomColors.text(context).withAlpha(50)
         ),
         child: Row(
           children: [
-
             /// 丸アイコン
             Container(
               width: 28,
@@ -52,7 +50,9 @@ class StepItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isCompleted
                     ? CustomColors.themaBlue
-                    : CustomColors.themaBlack,
+                    : isEnabled
+                    ? CustomColors.themaBlack
+                    : CustomColors.text(context).withAlpha(100)
               ),
               child: Center(
                 child: isCompleted
@@ -77,8 +77,8 @@ class StepItem extends StatelessWidget {
               child: CustomText(
                 text: title,
                 textSize: TextSize.S,
-                fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
-                color: CustomColors.text(context),
+                fontWeight: isCompleted || isEnabled ? FontWeight.w600 : FontWeight.normal,
+                color: CustomColors.text(context)
               ),
             ),
 
@@ -95,7 +95,13 @@ class StepItem extends StatelessWidget {
                 CupertinoIcons.chevron_forward,
                 size: 18,
                 color: CupertinoColors.systemGrey,
-              ),
+              )
+            else if (!isEnabled && !isCompleted)
+              Icon(
+                  CupertinoIcons.lock_fill,
+                  size: 16,
+                  color: CustomColors.text(context).withAlpha(100)
+                ),
           ],
         ),
       ),
