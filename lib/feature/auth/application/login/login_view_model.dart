@@ -22,6 +22,8 @@ class LoginViewModel extends StateNotifier<LoginState> {
   final AuthStateNotifier _authProvider;
 
   Future<void> login() async {
+    // 未入力なら終了
+    if (!state.isCompleted) { return; }
     await _ref.runWithGlobalHandling(() async {
       await _authProvider.login(
         email: state.email,

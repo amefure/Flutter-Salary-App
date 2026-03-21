@@ -26,10 +26,10 @@ class RegisterAccountState {
 
   factory RegisterAccountState.initial() {
     return const RegisterAccountState(
-      name: 'テスト太郎', //ProfileConfig.empty,
-      email: 'test@example.com', //ProfileConfig.empty,
-      password: 'password123', // ProfileConfig.empty,
-      passwordConfirm: 'password123', // ProfileConfig.empty,
+      name: ProfileConfig.empty,
+      email: ProfileConfig.empty,
+      password: ProfileConfig.empty,
+      passwordConfirm: ProfileConfig.empty,
       region: ProfileConfig.undefined,
       birthday: null,
       job: ProfileConfig.undefinedJob,

@@ -1,3 +1,4 @@
+import 'package:salary/core/config/profile_config.dart';
 
 class LoginState {
 
@@ -15,8 +16,8 @@ class LoginState {
 
   factory LoginState.initial() {
     return const LoginState(
-      email: 'test@example.com', //ProfileConfig.empty,
-      password: 'password123', // ProfileConfig.empty,
+      email: ProfileConfig.empty,
+      password: ProfileConfig.empty,
     );
   }
 

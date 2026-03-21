@@ -1,3 +1,4 @@
+import 'package:salary/core/config/profile_config.dart';
 
 class ChangeEmailState {
 
@@ -17,9 +18,9 @@ class ChangeEmailState {
 
   factory ChangeEmailState.initial() {
     return const ChangeEmailState(
-      oldEmail: 'test@example.com', //ProfileConfig.empty,
-      newEmail: 'test@example.com', //ProfileConfig.empty,
-      password: 'password123', // ProfileConfig.empty,
+      oldEmail: ProfileConfig.empty,
+      newEmail: ProfileConfig.empty,
+      password: ProfileConfig.empty,
     );
   }
 

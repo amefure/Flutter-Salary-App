@@ -24,8 +24,8 @@ class UserInfoState {
 
   factory UserInfoState.initial() {
     return const UserInfoState(
-      name: '',
-      email: '',
+      name: ProfileConfig.empty,
+      email: ProfileConfig.empty,
       region: ProfileConfig.undefined,
       birthday: null,
       job: ProfileConfig.undefinedJob,

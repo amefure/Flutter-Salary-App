@@ -36,10 +36,17 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     _fetchAllLocalSalaries();
   }
 
-  /// 公開条件(件数 & 総支給額合計)
-  static const int minSalaryCountForPublic = 1;
-  /// 100万円以上
-  static const int minTotalPaymentAmountForPublic = 10;
+  /// 本業：公開条件
+  /// 件数 ：12件以上
+  static const int mainMinSalaryCountForPublic = 12;
+  /// 総支給額合計：100万円以上
+  static const int mainMinTotalPaymentAmountForPublic = 1_000_000;
+
+  /// 副業：公開条件
+  /// 件数 ：6件以上
+  static const int subMinSalaryCountForPublic = 6;
+  /// 総支給額合計：10万円以上
+  static const int subMinTotalPaymentAmountForPublic = 100_000;
 
   /// 全取得
   void _fetchAllLocalPaymentSource() {
@@ -165,6 +172,12 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     final count = targetSalaries.length;
     /// 支給額合計
     final totalPaymentAmount = targetSalaries.fold<int>(0, (sum, salary) => sum + salary.paymentAmount,);
+
+    /// 最小条件公開件数
+    final minSalaryCountForPublic = target.isMain ? mainMinSalaryCountForPublic : subMinSalaryCountForPublic;
+    /// 最小条件公開総支給合計額
+    final minTotalPaymentAmountForPublic = target.isMain ? mainMinTotalPaymentAmountForPublic : subMinTotalPaymentAmountForPublic;
+
     /// 件数チェック
     if (count < minSalaryCountForPublic) {
       return PublicCheckResult(

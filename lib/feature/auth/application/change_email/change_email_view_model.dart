@@ -27,6 +27,8 @@ class ChangeEmailViewModel extends StateNotifier<ChangeEmailState> {
   final AuthStateNotifier _authProvider;
 
   Future<bool> requestChangeEmail() async {
+    // 未入力なら終了
+    if (!state.isCompleted) { return false; }
     return await _ref.runWithGlobalHandling(() async {
       await _authProvider.changeEmail(
         newEmail: state.newEmail,

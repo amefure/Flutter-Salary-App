@@ -1,3 +1,4 @@
+import 'package:salary/core/config/profile_config.dart';
 
 class PasswordResetState {
 
@@ -17,7 +18,7 @@ class PasswordResetState {
 
   factory PasswordResetState.initial() {
     return const PasswordResetState(
-      email: 'test@example.com', //ProfileConfig.empty,
+      email: ProfileConfig.empty,
     );
   }
 

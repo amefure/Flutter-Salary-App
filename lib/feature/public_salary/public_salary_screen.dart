@@ -205,7 +205,7 @@ class _PublicSalaryItem extends StatelessWidget {
           /// ステータスボタン
           canPublic
               ? _publicStateButton()
-              : _canNotPublicStatus(context, currentCount, currentTotal, isMainPublic),
+              : _canNotPublicStatus(context, currentCount, currentTotal, paymentSource.isMain ,isMainPublic),
         ],
       ),
     );
@@ -250,6 +250,7 @@ class _PublicSalaryItem extends StatelessWidget {
       BuildContext context,
       int currentCount,
       int currentTotal,
+      bool targetIsMain,
       bool isMainPublic,
       ) {
     return GestureDetector(
@@ -258,8 +259,9 @@ class _PublicSalaryItem extends StatelessWidget {
           context,
           currentCount: currentCount,
           currentTotal: currentTotal,
-          requiredCount: PublicSalaryViewModel.minSalaryCountForPublic,
-          requiredTotal: PublicSalaryViewModel.minTotalPaymentAmountForPublic,
+          requiredCount: targetIsMain ? PublicSalaryViewModel.mainMinSalaryCountForPublic : PublicSalaryViewModel.subMinSalaryCountForPublic,
+          requiredTotal: targetIsMain ? PublicSalaryViewModel.mainMinTotalPaymentAmountForPublic : PublicSalaryViewModel.subMinTotalPaymentAmountForPublic,
+          targetIsMain: targetIsMain,
           isMainPublic: isMainPublic
         )
       },
@@ -299,6 +301,7 @@ class _PublicSalaryItem extends StatelessWidget {
         required int currentTotal,
         required int requiredCount,
         required int requiredTotal,
+        required bool targetIsMain,
         required bool isMainPublic
       }) {
     showCupertinoModalPopup(
@@ -309,6 +312,7 @@ class _PublicSalaryItem extends StatelessWidget {
             currentTotal: currentTotal,
             requiredCount: requiredCount,
             requiredTotal: requiredTotal,
+            targetIsMain: targetIsMain,
             isMainPublic: isMainPublic
         );
       },
@@ -324,6 +328,7 @@ class _PublicConditionModal extends StatelessWidget {
     required this.currentTotal,
     required this.requiredCount,
     required this.requiredTotal,
+    required this.targetIsMain,
     required this.isMainPublic,
   });
 
@@ -331,6 +336,7 @@ class _PublicConditionModal extends StatelessWidget {
   final int currentTotal;
   final int requiredCount;
   final int requiredTotal;
+  final bool targetIsMain;
   final bool isMainPublic;
 
   @override
@@ -356,21 +362,23 @@ class _PublicConditionModal extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            if (!targetIsMain)...[
+              StepItem(
+                  number: 1,
+                  title: '本業の支払い元を公開',
+                  isCompleted: isMainPublic
+              ),
+
+              const CustomText(
+                text: '本業以外の情報を公開するには本業を公開している必要があります。',
+                textSize: TextSize.SS,
+              ),
+
+              const SizedBox(height: 16),
+            ],
+
             StepItem(
-                number: 1,
-                title: '本業の支払い元を公開',
-                isCompleted: isMainPublic
-            ),
-
-            const CustomText(
-              text: '本業以外の情報を公開するには本業を公開している必要があります。',
-              textSize: TextSize.SS,
-            ),
-
-            const SizedBox(height: 16),
-
-            StepItem(
-                number: 2,
+                number: !targetIsMain ? 2 : 1,
                 title: '給料登録件数',
                 isCompleted: currentCount >= requiredCount
             ),
@@ -383,7 +391,7 @@ class _PublicConditionModal extends StatelessWidget {
             const SizedBox(height: 16),
 
             StepItem(
-                number: 3,
+                number: !targetIsMain ? 3 : 2,
                 title: '合計金額',
                 isCompleted: currentTotal >= requiredTotal
             ),
