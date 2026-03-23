@@ -20,7 +20,8 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
 
   Set<String> productIds = {
     StaticKey.inAppPurchaseRemoveAdsId,
-    StaticKey.inAppPurchasePremiumUnlockedId
+    StaticKey.inAppPurchasePremiumFullUnlockedId,
+    StaticKey.inAppPurchasePremiumFeaturesEnabledId,
   };
 
   @override
@@ -73,12 +74,24 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     await _iap.restorePurchases();
   }
 
-  PurchaseState fetchPurchaseState(String productId, bool isUnLimitedInAppPurchase) {
-    bool isPurchased = state.purchasedIds.contains(productId);
-    /// プレミアム課金 && アプリ内課金がアンロック中なら購入不可(未解放)にする
-    if (productId == StaticKey.inAppPurchasePremiumUnlockedId && !isUnLimitedInAppPurchase) {
-      isPurchased = false;
-      return PurchaseState.locked;
+  PurchaseState fetchPurchaseState(
+      String productId,
+      bool isUnLimitedInAppPurchase,
+      bool isPublicData
+      ) {
+    /// 購入済みかどうか
+    final isPurchased = state.purchasedIds.contains(productId);
+
+    if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId && !isUnLimitedInAppPurchase && !isPurchased) {
+      /// プレミアム全解放 && アプリ内課金がアンロック中 && 未購入 なら未解放にする
+      /// 給料公開ユーザーなら購入不可にする
+      return isPublicData ? PurchaseState.disabled : PurchaseState.locked;
+    } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId && !isPublicData && !isPurchased) {
+      /// プレミアム一部解放 && 給料公開していない && 未購入なら
+      return PurchaseState.disabled;
+    } else if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId && isPublicData && !isPurchased) {
+      /// プレミアム全解放 && 給料公開ユーザー &&  未購入 なら未解放にする
+      return PurchaseState.disabled;
     } else {
       return isPurchased ? PurchaseState.purchased : PurchaseState.available;
     }
@@ -116,14 +129,18 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
 
     if (id == StaticKey.inAppPurchaseRemoveAdsId) {
       ref.read(removeAdsProvider.notifier).update(true);
-    } else if (id == StaticKey.inAppPurchasePremiumUnlockedId) {
-      ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumUnlocked(true);
+    } else if (id == StaticKey.inAppPurchasePremiumFullUnlockedId) {
+      ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumFullUnlocked(true);
+    } else if (id == StaticKey.inAppPurchasePremiumFeaturesEnabledId) {
+      ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumFeatureUnlocked(true);
     }
   }
 }
 
 enum PurchaseState {
-  /// ロック中(未開放）
+  /// 購入不可
+  disabled('購入不可', CustomColors.themaGray),
+  /// ロック中(未解放）
   locked('未解放', CustomColors.themaBlack),
   /// 購入可能
   available('購入する', CustomColors.thema),

@@ -144,7 +144,7 @@ class _RequirementCard extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           const CustomText(
-            text: 'アカウントを作成し、いずれかの条件を満たすと解放されます。',
+            text: 'アカウントを作成し、いずれかの条件を満たすと満たした条件により機能が解放されます。',
             textSize: TextSize.S,
             fontWeight: FontWeight.w600,
             color: CupertinoColors.systemGrey,
@@ -172,10 +172,11 @@ class _RequirementCard extends ConsumerWidget {
               border: Border.all(color: CupertinoColors.systemGrey4, width: 0.5),
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 StepItem(
                   number: 2,
-                  title: '給料データを公開',
+                  title: '給料データを公開 ※1',
                   isCompleted: premiumState.isPublicData,
                   onTap: () async {
                     if (!authState.isLogin) {
@@ -190,6 +191,12 @@ class _RequirementCard extends ConsumerWidget {
                       CupertinoPageRoute(builder: (context) => const PublicSalaryScreen()),
                     );
                   },
+                ),
+
+                const CustomText(
+                  text: '  ※1 一部機能はプレミアム登録しないと利用できません。',
+                  textSize: TextSize.SS,
+                  maxLines: 4,
                 ),
 
                 // OR の区切り
@@ -214,8 +221,8 @@ class _RequirementCard extends ConsumerWidget {
 
                 StepItem(
                   number: 3,
-                  title: 'プレミアム登録',
-                  isCompleted: premiumState.isPremiumUnlocked,
+                  title: 'プレミアム登録(有料)',
+                  isCompleted: premiumState.isPremiumFullUnlocked,
                   isEnabled: premiumState.isUnLimitedInAppPurchase,
                   onTap: () async {
                     Navigator.of(context).push(
@@ -223,6 +230,13 @@ class _RequirementCard extends ConsumerWidget {
                     );
                   },
                 ),
+
+                if (!premiumState.isUnLimitedInAppPurchase)
+                  const CustomText(
+                    text: '※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください。',
+                    textSize: TextSize.SS,
+                    maxLines: 3,
+                  ),
               ],
             ),
           ),

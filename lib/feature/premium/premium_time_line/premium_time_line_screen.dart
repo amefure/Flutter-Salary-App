@@ -32,7 +32,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
                 label: !state.isUndefinedJob ? state.selectedJob.name : 'すべての職種',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showJobPicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -43,7 +43,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
                 label: state.selectedRegion ?? 'すべての地域',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showRegionPicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -54,7 +54,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
                 label: state.selectedAgeRange ?? 'すべての年代',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showAgePicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -70,7 +70,7 @@ class PremiumTimeLineScreen extends ConsumerWidget {
           child: PublicSalaryListView(
             onTap: (salary) {
               final state = ref.read(premiumFunctionStateProvider);
-              if (state.isPremiumUnlocked) {
+              if (state.isPremiumFeatureUnlocked) {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
                     builder: (_) =>

@@ -45,7 +45,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 label: '${state.selectedYear}年',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showYearPicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -56,7 +56,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 label: !state.isUndefinedJob ? state.selectedJob.name : 'すべての職種',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showJobPicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -67,7 +67,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 label: state.selectedRegion ?? 'すべての地域',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showRegionPicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);
@@ -78,7 +78,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
                 label: state.selectedAgeRange ?? 'すべての年代',
                 onTap: () {
                   final premiumState = ref.read(premiumFunctionStateProvider);
-                  if (premiumState.isPremiumUnlocked) {
+                  if (premiumState.isPremiumFeatureUnlocked) {
                     _showAgePicker(context, viewModel, state);
                   } else {
                     _showIsNotPremiumErrorAlert(context);

@@ -15,7 +15,7 @@ class StepItem extends StatelessWidget {
   final int number;
   final String title;
   final bool isCompleted;
-  final bool isEnabled; // 活性・非活性の制御
+  final bool isEnabled;
   final VoidCallback? onTap;
 
   @override

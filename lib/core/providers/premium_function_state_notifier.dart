@@ -17,8 +17,12 @@ final premiumFunctionStateProvider = StateNotifierProvider<PremiumFunctionStateN
 });
 
 class PremiumFunctionState {
+  /// 給料公開しているユーザーかどうか
   final bool isPublicData;
-  final bool isPremiumUnlocked;
+  /// プレミアム機能が解放されているかどうか
+  final bool isPremiumFeatureUnlocked;
+  /// プレムアム機能が全解放(公開しなくてもアクセス可能)されているかどうか
+  final bool isPremiumFullUnlocked;
   final int publicUserCount;
 
   /// 機能自体の解放条件：ユーザー10人
@@ -28,18 +32,21 @@ class PremiumFunctionState {
 
   PremiumFunctionState({
     this.isPublicData = false,
-    this.isPremiumUnlocked = false,
+    this.isPremiumFeatureUnlocked = false,
+    this.isPremiumFullUnlocked = false,
     this.publicUserCount = 0,
   });
 
   PremiumFunctionState copyWith({
     bool? isPublicData,
-    bool? isPremiumUnlocked,
+    bool? isPremiumFeatureUnlocked,
+    bool? isPremiumFullUnlocked,
     int? publicUserCount,
   }) {
     return PremiumFunctionState(
       isPublicData: isPublicData ?? this.isPublicData,
-      isPremiumUnlocked: isPremiumUnlocked ?? this.isPremiumUnlocked,
+      isPremiumFeatureUnlocked: isPremiumFeatureUnlocked ?? this.isPremiumFeatureUnlocked,
+      isPremiumFullUnlocked: isPremiumFullUnlocked ?? this.isPremiumFullUnlocked,
       publicUserCount: publicUserCount ?? this.publicUserCount,
     );
   }
@@ -84,10 +91,17 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
     );
   }
 
-  void updateIsPremiumUnlocked(bool isPremiumUnlocked) {
-    SharedPreferencesService().savePremiumUnlocked(isPremiumUnlocked);
+  void updateIsPremiumFullUnlocked(bool isPremiumFullUnlocked) {
+    SharedPreferencesService().savePremiumFullUnlocked(isPremiumFullUnlocked);
     state = state.copyWith(
-      isPremiumUnlocked: isPremiumUnlocked,
+      isPremiumFullUnlocked: isPremiumFullUnlocked,
+    );
+  }
+
+  void updateIsPremiumFeatureUnlocked(bool isPremiumFeatureUnlocked) {
+    SharedPreferencesService().savePremiumFeatureUnlocked(isPremiumFeatureUnlocked);
+    state = state.copyWith(
+      isPremiumFeatureUnlocked: isPremiumFeatureUnlocked,
     );
   }
 
@@ -99,9 +113,12 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   }
 
   Future<void> _fetchIsPremiumUnlocked() async {
-    final isPremiumUnlocked = SharedPreferencesService().fetchPremiumUnlocked();
+    final isPremiumFullUnlocked = SharedPreferencesService().fetchPremiumFullUnlocked();
+    final isPremiumFeatureUnlocked = SharedPreferencesService().fetchPremiumFeatureUnlocked();
     state = state.copyWith(
-        isPremiumUnlocked: isPremiumUnlocked
+        /// 全機能解放がtrueなら機能もtrueにする
+        isPremiumFeatureUnlocked: isPremiumFullUnlocked ? true : isPremiumFeatureUnlocked,
+        isPremiumFullUnlocked: isPremiumFullUnlocked
     );
   }
 

@@ -160,7 +160,7 @@ class _Body extends ConsumerWidget {
 
                             /// 公開であれば属性タグを表示
                             if (isPublic && jobName != null)...[
-                              Column()
+                              AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
                             ],
 
 

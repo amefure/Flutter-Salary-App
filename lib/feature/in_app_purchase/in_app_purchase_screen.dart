@@ -73,7 +73,11 @@ class InAppPurchaseScreen extends ConsumerWidget {
               }
 
               final p = state.products[index];
-              final status = vm.fetchPurchaseState(p.id, premiumState.isUnLimitedInAppPurchase);
+              final status = vm.fetchPurchaseState(
+                  p.id,
+                  premiumState.isUnLimitedInAppPurchase,
+                  premiumState.isPublicData
+              );
 
               // FIXME なせか空になる時があるのでisEmptyなら明示的に値を返す暫定対応
               return _itemRowView(
@@ -124,10 +128,14 @@ class InAppPurchaseScreen extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
 
-            CustomElevatedButton(
-                text: state.buttonTitle,
-                backgroundColor: state.buttonColor,
-                onPressed: onPressed
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: CustomElevatedButton(
+                  text: state.buttonTitle,
+                  backgroundColor: state.buttonColor,
+                  onPressed: onPressed
+              ),
             )
           ],
         ),
