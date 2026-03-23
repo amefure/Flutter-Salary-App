@@ -2,18 +2,40 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_state.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_view_model.dart';
 
 class InAppPurchaseScreen extends ConsumerWidget {
   const InAppPurchaseScreen({super.key});
 
+  void _listenRestoreDialog(BuildContext context, WidgetRef ref) {
+    // メッセージの状態を監視
+    ref.listen<String?>(
+      inAppPurchaseProvider.select((s) => s.dialogMessage), (previous, next) {
+        if (next != null) {
+
+          AppDialog.show(
+            context: context,
+            message: next,
+            type: DialogType.notify,
+          ).then((_) {
+            // ダイアログが閉じられたらViewModel側のメッセージをクリア
+            ref.read(inAppPurchaseProvider.notifier).clearDialogMessage();
+          });
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _listenRestoreDialog(context, ref);
     final state = ref.watch(inAppPurchaseProvider);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),

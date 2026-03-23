@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:salary/core/models/secrets.dart';
+import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/core/providers/remove_ads_notifier.dart';
@@ -71,7 +72,13 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
 
   /// 復元
   Future<void> restore() async {
-    await _iap.restorePurchases();
+    state = state.copyWith(isRestoring: true);
+    await ref.runWithGlobalHandling(() async {
+      await _iap.restorePurchases();
+      if (state.isRestoring) {
+        state = state.copyWith(isRestoring: false);
+      }
+    });
   }
 
   PurchaseState fetchPurchaseState(
@@ -99,14 +106,24 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
 
   /// 購入ストリーム
   void _onPurchaseUpdate(List<PurchaseDetails> list) {
+    // 「復元」や「購入」が一件でも成功したか
+    bool hasRestoredSuccess = false;
+    bool hasErrorOccurred = false;
     for (final purchase in list) {
       switch (purchase.status) {
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
+          logger('復元: ${purchase.productID}');
           _deliver(purchase);
+          if (state.isRestoring) {
+            hasRestoredSuccess = true;
+          }
           break;
         case PurchaseStatus.error:
           logger('購入エラー: ${purchase.error}');
+          if (state.isRestoring) {
+            hasErrorOccurred = true;
+          }
           break;
         case PurchaseStatus.pending:
         default:
@@ -117,6 +134,21 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
         _iap.completePurchase(purchase);
       }
     }
+
+    if (state.isRestoring) {
+      if (hasRestoredSuccess) {
+        _showResultDialog('購入情報の復元が完了しました。');
+      } else if (hasErrorOccurred) {
+        _showResultDialog('復元に失敗しました。時間を空けて再度お試しください。');
+      }
+    }
+  }
+
+  void _showResultDialog(String msg) {
+    state = state.copyWith(
+      isRestoring: false,
+      dialogMessage: msg
+    );
   }
 
   /// 購入反映
@@ -134,6 +166,12 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     } else if (id == StaticKey.inAppPurchasePremiumFeaturesEnabledId) {
       ref.read(premiumFunctionStateProvider.notifier).updateIsPremiumFeatureUnlocked(true);
     }
+  }
+
+  void clearDialogMessage() {
+    state = state.copyWith(
+      dialogMessage: ''
+    );
   }
 }
 
