@@ -31,7 +31,8 @@ class DetailSalaryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(detailSalaryProvider(DetailSalaryArgsData(id: id, isPublic: isPublic)));
+    final provider = detailSalaryProvider(DetailSalaryArgsData(id: id, isPublic: isPublic));
+    final state = ref.watch(provider);
     String title = DateTimeUtils.format(
       dateTime: state.salary?.createdAt ?? DateTime.now(),
     );

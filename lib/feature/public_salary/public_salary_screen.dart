@@ -271,8 +271,8 @@ class _PublicSalaryItem extends StatelessWidget {
           context,
           currentCount: currentCount,
           currentTotal: currentTotal,
-          requiredCount: targetIsMain ? PublicSalaryViewModel.mainMinSalaryCountForPublic : PublicSalaryViewModel.subMinSalaryCountForPublic,
-          requiredTotal: targetIsMain ? PublicSalaryViewModel.mainMinTotalPaymentAmountForPublic : PublicSalaryViewModel.subMinTotalPaymentAmountForPublic,
+          requiredCount: targetIsMain ? PublicPolicyConfig.mainMinSalaryCountForPublic : PublicPolicyConfig.subMinSalaryCountForPublic,
+          requiredTotal: targetIsMain ? PublicPolicyConfig.mainMinTotalPaymentAmountForPublic : PublicPolicyConfig.subMinTotalPaymentAmountForPublic,
           targetIsMain: targetIsMain,
           isMainPublic: isMainPublic
         )

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/config/public_policy_config.dart';
+import 'package:salary/core/models/exception/CommonException.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
-import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
@@ -19,7 +20,7 @@ class DetailSalaryArgsData extends Equatable {
   /// 公開されたものかどうか(trueならクラウドからデータをフェッチする)
   final bool isPublic;
 
-  DetailSalaryArgsData({
+  const DetailSalaryArgsData({
     required this.id,
     required this.isPublic
   });
@@ -88,6 +89,12 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   Future<bool> delete(Salary salary) async {
     if (salary.source?.isPublic == true) {
       return await _ref.runWithGlobalHandling(() async {
+        /// 公開済みのデータは削除前に条件件数を下回らないかチェックする
+        final isOver = _checkIsOverSalariesCount(salary.source);
+        if (!isOver) {
+          /// 下回るならダイアログを出して終了
+          throw const CommonException(message: '公開中の支払い元のためこれ以上削除できません。');
+        }
         // クラウド登録
         await _salaryRepository.delete(salaries: [salary]);
         // 削除前にnullにして画面を更新
@@ -110,5 +117,27 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
       _ref.read(listSalaryProvider.notifier).refresh();
     }
     return true;
+  }
+
+  /// 削除した際に公開条件件数を下回らないかをチェックする
+  /// 上回っていればtrue
+  bool _checkIsOverSalariesCount(PaymentSource? target) {
+    final targetSalaries = _fetchAllLocalSalaries(target);
+    final deletedCount = targetSalaries.length - 1;
+    if (target?.isMain == true) {
+      return deletedCount >= PublicPolicyConfig.mainMinSalaryCountForPublic;
+    } else {
+      return deletedCount >= PublicPolicyConfig.subMinSalaryCountForPublic;
+    }
+  }
+
+  /// 全取得
+  List<Salary> _fetchAllLocalSalaries(PaymentSource? target) {
+    final allSalaries = _localRepository.fetchAll<Salary>();
+    /// 対象PaymentSourceの給与のみ抽出
+    final targetSalaries = allSalaries
+        .where((salary) => salary.source?.id == target?.id)
+        .toList();
+    return targetSalaries;
   }
 }

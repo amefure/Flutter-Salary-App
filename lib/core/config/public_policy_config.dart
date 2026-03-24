@@ -1,5 +1,17 @@
 abstract class PublicPolicyConfig {
 
+  /// 本業：公開条件
+  /// 件数 ：12件以上
+  static const int mainMinSalaryCountForPublic = 12;
+  /// 総支給額合計：100万円以上
+  static const int mainMinTotalPaymentAmountForPublic = 1_000_000;
+
+  /// 副業：公開条件
+  /// 件数 ：6件以上
+  static const int subMinSalaryCountForPublic = 6;
+  /// 総支給額合計：10万円以上
+  static const int subMinTotalPaymentAmountForPublic = 100_000;
+
   // ==============================
   // 基本情報
   // ==============================

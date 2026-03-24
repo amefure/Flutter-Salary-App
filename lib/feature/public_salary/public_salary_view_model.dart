@@ -1,6 +1,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
+import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
@@ -35,18 +36,6 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     _fetchAllLocalPaymentSource();
     _fetchAllLocalSalaries();
   }
-
-  /// 本業：公開条件
-  /// 件数 ：12件以上
-  static const int mainMinSalaryCountForPublic = 12;
-  /// 総支給額合計：100万円以上
-  static const int mainMinTotalPaymentAmountForPublic = 1_000_000;
-
-  /// 副業：公開条件
-  /// 件数 ：6件以上
-  static const int subMinSalaryCountForPublic = 6;
-  /// 総支給額合計：10万円以上
-  static const int subMinTotalPaymentAmountForPublic = 100_000;
 
   /// 全取得
   void _fetchAllLocalPaymentSource() {
@@ -174,9 +163,9 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
     final totalPaymentAmount = targetSalaries.fold<int>(0, (sum, salary) => sum + salary.paymentAmount,);
 
     /// 最小条件公開件数
-    final minSalaryCountForPublic = target.isMain ? mainMinSalaryCountForPublic : subMinSalaryCountForPublic;
+    final minSalaryCountForPublic = target.isMain ? PublicPolicyConfig.mainMinSalaryCountForPublic : PublicPolicyConfig.subMinSalaryCountForPublic;
     /// 最小条件公開総支給合計額
-    final minTotalPaymentAmountForPublic = target.isMain ? mainMinTotalPaymentAmountForPublic : subMinTotalPaymentAmountForPublic;
+    final minTotalPaymentAmountForPublic = target.isMain ? PublicPolicyConfig.mainMinTotalPaymentAmountForPublic : PublicPolicyConfig.subMinTotalPaymentAmountForPublic;
 
     /// 件数チェック
     if (count < minSalaryCountForPublic) {

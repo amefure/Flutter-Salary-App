@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/api/api_exception.dart';
+import 'package:salary/core/models/exception/CommonException.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/utils/logger.dart';
 
@@ -35,9 +36,13 @@ extension AsyncHandlingExtension on Ref {
       return true;
 
     } on ApiException catch (e) {
+      /// APIエラー
       error.show(_mapApiExceptionToMessage(e));
       return false;
-
+    } on CommonException catch (e) {
+      /// クライアント内で活用できる汎用エラー
+      error.show(e.message);
+      return false;
     } catch (e, stackTrace) {
       logger('======= ❌ Error Other Response =======');
       logger(e);
