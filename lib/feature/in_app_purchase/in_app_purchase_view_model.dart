@@ -46,6 +46,8 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     );
 
     loadProducts();
+    // 初回ロード時に復元を行う
+    restore(isRestoring: false);
   }
 
   /// 商品取得
@@ -70,8 +72,10 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
   }
 
   /// 復元
-  Future<void> restore() async {
-    state = state.copyWith(isRestoring: true);
+  Future<void> restore({
+    bool isRestoring = true
+  }) async {
+    state = state.copyWith(isRestoring: isRestoring);
     await ref.runWithGlobalHandling(() async {
       await _iap.restorePurchases();
       if (state.isRestoring) {
