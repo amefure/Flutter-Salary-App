@@ -142,7 +142,6 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Scaffold を使うことでスタイルが適用される
     return Scaffold(
         backgroundColor: CustomColors.foundation(context),
         body: SafeArea(
@@ -161,7 +160,7 @@ class _Body extends ConsumerWidget {
 
                             /// 公開であれば属性タグを表示
                             if (isPublic && jobName != null)...[
-                              AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
+                             AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
                             ],
 
 
@@ -211,13 +210,13 @@ class _Body extends ConsumerWidget {
                               horizontal: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: CustomColors.background(context), // 背景色
-                              borderRadius: BorderRadius.circular(8), // 角丸
+                              color: CustomColors.background(context),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
                                 const Icon(Icons.comment),
-                                const SizedBox(width: 10), // アイコンとテキストの間隔
+                                const SizedBox(width: 10),
 
                                 CustomText(
                                   text: state.salary?.memo ?? '',
@@ -367,23 +366,21 @@ class _Body extends ConsumerWidget {
   /// 展開時に表示されるAmountItem行
   Widget _buildAmountItemRow(AmountItem item) {
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ⚪︎ アイコン
-          const Icon(CupertinoIcons.circle, size: 15),
-          const SizedBox(width: 5),
-          // 項目名
-          Expanded(child: CustomText(text: item.key, textSize: TextSize.MS)),
-          // 金額
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight, // 右寄せ
-              child: CustomText(
-                text: '${NumberUtils.formatWithComma(item.value)}円',
-                textSize: TextSize.MS,
-              ),
-            ),
+          Row(
+            children: [
+              const Icon(CupertinoIcons.circle, size: 12),
+              const SizedBox(width: 8),
+              CustomText(text: item.key, textSize: TextSize.MS),
+            ],
+          ),
+
+          CustomText(
+            text: '${NumberUtils.formatWithComma(item.value)}円',
+            textSize: TextSize.MS,
           ),
         ],
       ),
