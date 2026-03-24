@@ -43,7 +43,19 @@ class PublicSalaryScreen extends ConsumerWidget {
         ),
       ),
       child: SafeArea(
-        child: paymentSources.isEmpty ? _noDataView() : _paymentSourceList(ref),
+        child: Column(
+            spacing: 20,
+            children: [
+              const CustomText(
+                text: '公開したデータはバックアップされます。\n意図的に削除しない限り復元することが可能になります。',
+                textSize: TextSize.S,
+                maxLines: 2,
+              ),
+              Expanded(
+                  child:paymentSources.isEmpty ? _noDataView() : _paymentSourceList(ref)
+              )
+            ]
+        ),
       ),
     );
   }
@@ -116,7 +128,7 @@ class PublicSalaryScreen extends ConsumerWidget {
       bool isPublic
       ) async {
     /// isPublicは変化対象の値なのでtrueなら元は非公開ステータスのものになる
-    final confirmMsg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？';
+    final confirmMsg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？\n公開した場合今後この支払い元で追加した情報をアップロードされます。';
     final positiveTitle = !isPublic ? '非公開にする' : '公開する';
     final result = await AppDialog.show(
         context: context,

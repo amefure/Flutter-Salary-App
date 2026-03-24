@@ -96,9 +96,10 @@ class InAppPurchaseScreen extends ConsumerWidget {
 
               final p = state.products[index];
               final status = vm.fetchPurchaseState(
-                  p.id,
-                  premiumState.isUnLimitedInAppPurchase,
-                  premiumState.isPublicData
+                  productId: p.id,
+                  isUnLimitedInAppPurchase: premiumState.isUnLimitedInAppPurchase,
+                  isPublicData: premiumState.isPublicData,
+                  isPremiumFullUnlocked: premiumState.isPremiumFullUnlocked
               );
 
               // FIXME なせか空になる時があるのでisEmptyなら明示的に値を返す暫定対応

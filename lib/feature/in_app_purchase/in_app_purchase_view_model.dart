@@ -30,7 +30,6 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     // 初期化は build の中で直接行わず microtask で遅延実行
     Future.microtask(() => _initialize());
 
-    // dispose の登録
     ref.onDispose(() {
       _subscription?.cancel();
     });
@@ -81,11 +80,12 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     });
   }
 
-  PurchaseState fetchPurchaseState(
-      String productId,
-      bool isUnLimitedInAppPurchase,
-      bool isPublicData
-      ) {
+  PurchaseState fetchPurchaseState({
+    required String productId,
+    required bool isUnLimitedInAppPurchase,
+    required bool isPublicData,
+    required bool isPremiumFullUnlocked
+}) {
     /// 購入済みかどうか
     final isPurchased = state.purchasedIds.contains(productId);
 
@@ -98,6 +98,9 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
       return PurchaseState.disabled;
     } else if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId && isPublicData && !isPurchased) {
       /// プレミアム全解放 && 給料公開ユーザー &&  未購入 なら未解放にする
+      return PurchaseState.disabled;
+    } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId && isPremiumFullUnlocked && !isPurchased) {
+      /// プレミアム一部解放 && 全解放購入済み &&  未購入 なら未解放にする
       return PurchaseState.disabled;
     } else {
       return isPurchased ? PurchaseState.purchased : PurchaseState.available;
