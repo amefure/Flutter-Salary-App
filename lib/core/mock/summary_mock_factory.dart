@@ -8,10 +8,20 @@ abstract class SummaryMockFactory {
   static SummaryDto create() {
     // グラフ用のサンプルデータ
     final List<IncomeDistributionDto> rawDistribution = [
+      IncomeDistributionDto(incomeRange: '0〜100万', userCount: 3),
+      IncomeDistributionDto(incomeRange: '100〜200万', userCount: 4),
+      IncomeDistributionDto(incomeRange: '200〜300万', userCount: 10),
       IncomeDistributionDto(incomeRange: '300〜400万', userCount: 12),
-      IncomeDistributionDto(incomeRange: '500〜600万', userCount: 48),
+      IncomeDistributionDto(incomeRange: '400〜500万', userCount: 24),
+      IncomeDistributionDto(incomeRange: '500〜600万', userCount: 20),
+      IncomeDistributionDto(incomeRange: '600〜700万', userCount: 18),
       IncomeDistributionDto(incomeRange: '700〜800万', userCount: 18),
-      IncomeDistributionDto(incomeRange: '1000〜1100万', userCount: 5),
+      IncomeDistributionDto(incomeRange: '800〜900万', userCount: 14),
+      IncomeDistributionDto(incomeRange: '900〜1000万', userCount: 8),
+      IncomeDistributionDto(incomeRange: '1000〜1100万', userCount: 2),
+      IncomeDistributionDto(incomeRange: '1100〜1200万', userCount: 2),
+      IncomeDistributionDto(incomeRange: '1200〜1300万', userCount: 1),
+      IncomeDistributionDto(incomeRange: '1300〜1400万', userCount: 0),
       IncomeDistributionDto(incomeRange: '1400万〜', userCount: 3),
     ];
 
