@@ -32,7 +32,7 @@ class _JobPickerModalState extends State<JobPickerModal> {
   }
 
   void _initializeSelection() {
-    if (widget.currentJob.name == ProfileConfig.undefined) {
+    if (widget.currentJob.name == ProfileConfig.undefined && widget.showNoneOption) {
       _selectedCategoryIndex = -1;
       _selectedJob = ProfileConfig.undefined;
       _selectedJobCategory = ProfileConfig.undefined;
