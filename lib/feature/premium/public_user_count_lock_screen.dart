@@ -17,8 +17,8 @@ class PublicUserCountLockScreen extends StatelessWidget {
 
           const HeaderVisualView(
             icon: CupertinoIcons.rocket_fill,
-            title: 'みんなで機能を解放しよう！',
-            msg: '一定の公開ユーザー数に達すると、\n統計データがアンロックされます。',
+            title: '公開ありがとうございます！',
+            msg: '一定の公開ユーザー数に達すると、\n統計データがアンロックされます。\nこの画面が自動で切り替わるまでしばらくお待ちください。',
           ),
 
           const SizedBox(height: 24),
