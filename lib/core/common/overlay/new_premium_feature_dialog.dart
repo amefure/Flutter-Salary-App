@@ -47,7 +47,7 @@ class NewPremiumFeatureDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Stack(
           clipBehavior: Clip.none,
           children: [

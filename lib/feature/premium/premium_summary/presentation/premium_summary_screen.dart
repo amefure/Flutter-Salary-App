@@ -298,6 +298,7 @@ class _RankingItem extends StatelessWidget {
                     text: profile.job,
                     textSize: TextSize.MS,
                     fontWeight: FontWeight.bold,
+                    maxLines: 3,
                   ),
                   const SizedBox(height: 6),
                   Row(

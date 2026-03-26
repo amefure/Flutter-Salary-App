@@ -182,7 +182,9 @@ class SalaryCard extends StatelessWidget {
 
                     /// 公開用なら属性タグをそれぞれ表示する
                     if (jobName != null || region != null || ageRange != null)
-                      _buildPublicAttributeTags()
+                      Flexible(
+                        child: _buildPublicAttributeTags(),
+                      ),
                   ],
                 ),
                 _SalaryRow(
@@ -222,21 +224,29 @@ class SalaryCard extends StatelessWidget {
   }
 
   Widget _buildPublicAttributeTags() {
-    return Row(
-      children: [
-        if (jobName != null)
-          AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
+    return SingleChildScrollView(
+      // 横方向にスクロールを指定
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        // Rowが画面端で止まらず、中身のサイズに合わせて広がるように設定
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (jobName != null)
+            AttributeTag(text: jobName!, baseColor: CustomColors.themaOrange),
 
-        const SizedBox(width: 4),
+          if (jobName != null && (region != null || ageRange != null))
+            const SizedBox(width: 4),
 
-        if (region != null)
-          AttributeTag(text: region!, baseColor: CustomColors.themaBlue),
+          if (region != null)
+            AttributeTag(text: region!, baseColor: CustomColors.themaBlue),
 
-        const SizedBox(width: 4),
+          if (region != null && ageRange != null)
+            const SizedBox(width: 4),
 
-        if (ageRange != null)
-          AttributeTag(text: ageRange!, baseColor: CustomColors.themaGreen),
-      ],
+          if (ageRange != null)
+            AttributeTag(text: ageRange!, baseColor: CustomColors.themaGreen),
+        ],
+      ),
     );
   }
 }

@@ -17,7 +17,7 @@ abstract class PublicPolicyConfig {
   // ==============================
 
   static const String version = 'v1.0.0';
-  static const String effectiveDate = '2026-02-21';
+  static const String effectiveDate = '2026-03-28';
   static const String title = '給料情報公開機能 利用ポリシー';
 
   // ==============================

@@ -78,7 +78,8 @@ class StepItem extends StatelessWidget {
                 text: title,
                 textSize: TextSize.S,
                 fontWeight: isCompleted || isEnabled ? FontWeight.w600 : FontWeight.normal,
-                color: CustomColors.text(context)
+                color: CustomColors.text(context),
+                maxLines: 2,
               ),
             ),
 

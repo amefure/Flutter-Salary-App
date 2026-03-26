@@ -128,7 +128,7 @@ class PublicSalaryScreen extends ConsumerWidget {
       bool isPublic
       ) async {
     /// isPublicは変化対象の値なのでtrueなら元は非公開ステータスのものになる
-    final confirmMsg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？\n公開した場合今後この支払い元で追加した情報をアップロードされます。';
+    final confirmMsg = !isPublic ? '非公開に戻しますか？' : 'この支払い元で登録している給料情報を公開しますか？\n公開した場合今後この支払い元で追加した情報もアップロードされます。';
     final positiveTitle = !isPublic ? '非公開にする' : '公開する';
     final result = await AppDialog.show(
         context: context,

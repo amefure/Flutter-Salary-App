@@ -20,8 +20,9 @@ class CustomElevatedButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
+        minimumSize: const Size(250, 48),
         elevation: 5, // 影の濃さ
-        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: CustomText(

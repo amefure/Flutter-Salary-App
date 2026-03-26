@@ -70,6 +70,7 @@ class PremiumCard extends StatelessWidget {
             text: 'あなたの市場価値を、データで見える化。',
             textSize: TextSize.M,
             fontWeight: FontWeight.w600,
+            maxLines: 2,
           ),
 
           SizedBox(height: 8),
@@ -235,7 +236,7 @@ class _RequirementCard extends ConsumerWidget {
                   const CustomText(
                     text: '※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください。',
                     textSize: TextSize.SS,
-                    maxLines: 3,
+                    maxLines: 5,
                   ),
               ],
             ),
