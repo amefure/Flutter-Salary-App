@@ -57,7 +57,7 @@ class HeaderVisualView extends StatelessWidget {
               text: msg!,
               textSize: TextSize.S,
               color: CupertinoColors.systemGrey,
-              maxLines: 3,
+              maxLines: 5,
             ),
           ],
         ]);
