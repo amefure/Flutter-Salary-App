@@ -13,39 +13,55 @@
 3. グラフで増減が見える化
 4. 副業やバイトなどの収益も別で管理可能
 5. アプリにロックもかけられる(生体認証(指紋/顔)でログイン)
+6. 同年代や同業種の年収や給料を閲覧可能(年収TOP10や年収層なども確認)
+※ 給料データが勝手に公開されることはないのでご安心ください
 
 追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
 
 ## 開発環境
-- Android Studio：Otter 2 Feature Drop
+- Android Studio Panda 1 | 2025.3.1 Patch
 - Xcode：26.0.1 
 - Flutter：3.38.3(stable)
 - Dart：3.10.1
 - FVM：4.0.5
-- Mac M1：Sequoia 15.6.1
+- Mac M1：Tahoe 26.2
 
 ## ディレクトリ構成
-※ Feature-Firstに変更ずみ
+
+- 「Feature-First」構成
+- Featureは別のFeatureに依存しないようにしています
 
 ```
 (root)
  ∟ android ・・・Android用のネイティブコードや設定
  ∟ ios     ・・・iOS用のネイティブコードや設定
- ∟ assets  ・・・リソース(画像etc...)
+ ∟ assets  ・・・リソース(画像/アイコン/Lottieファイル)
  ∟ lib
-     ∟ models        ・・・Relam Database Model & 自動生成ファイル
-     ∟ repository   ・・・Realm / Shread Preferences / 生体認証リポジトリ
-     ∟ utilities     ・・・日付 / カラー / 数値 etc...
-     ∟ viewmodels   ・・・Realm Saraly ViewModel
-     ∟ common ・・・全体共通
-           ∟ components ・・・UIコンポーネント
-           ∟ root_tab_view.dart ・・・アプリタブ管理ビュー
-     ∟ charts     ・・・グラフ機能
-     ∟ domain     ・・・ドメイン機能
-     ∟ setting    ・・・設定画面
-     ∟ weview     ・・・WebView
-     ∟ firebase_options.dart  ・・・Firebaesの設定ファイル(自動生成)
-     ∟ main.dart    ・・・アプリのエントリーポイント
+     ∟ core ・・・アプリ全体で利用する共通基盤
+           ∟ api         ・・・APIクライアント、APIException、認証トークンストレージ
+           ∟ auth        ・・・認証周りの状態管理
+           ∟ common      ・・・全体共通のコンポーネント、オーバーレイ(ダイアログ等)
+           ∟ config      ・・・各種設定定義
+           ∟ models      ・・・Realmのデータモデル定義
+           ∟ mock        ・・・デバッグ環境用モック
+           ∟ services    ・・・外部接続サービス(AdMob, IAP, AppTracking等)
+           ∟ provider    ・・・汎用的な状態管理
+           ∟ repository  ・・・データ操作の実態(Realm / Firebase / SharedPreferences)
+           ∟ utils       ・・・日付 / カラー / 数値 / ロガー等の汎用ツール
+     ∟ feature ・・・各画面ごとの機能実装
+           ∟ app_locl         ・・・アプリロック機能
+           ∟ auth             ・・・認証系
+           ∟ charts           ・・・グラフ機能(MyData)
+           ∟ in_app_purchase  ・・・アプリ内課金
+           ∟ paymento_source  ・・・支払い元管理
+           ∟ premium          ・・・プレミアム機能(ロック画面 / タイムライン / サマリー)
+           ∟ public_salary    ・・・給料公開機能           
+           ∟ root             ・・・ルートタブ機能
+           ∟ salary           ・・・給料一覧(list / MyHistory) / 給料詳細(detail) / 入力(input)
+           ∟ settings         ・・・設定画面 / プレミアム機能解放
+           ∟ webview          ・・・WebView
+     ∟ firebase_options.dart ・・・Firebaseの設定ファイル(自動生成)
+     ∟ main.dart    ・・・アプリのエントリーポイント(ProviderScopeの設定)
  ∟ pubspec.yaml     ・・・プロジェクト/パッケージ設定管理ファイル
  ∟ README.md
  ∟ (etc)
@@ -76,6 +92,7 @@ $ fvm install
 ## Utility
 - **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
 - **[intl](https://pub.dev/packages/intl) (0.19.0)** - 日付・数値・通貨のフォーマット処理 
+- **[connectivity_plus](https://pub.dev/packages/connectivity_plus) (6.0.0)** - ネットワーク環境
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ）
@@ -84,6 +101,7 @@ $ fvm install
 
 ## UI
 - **[fl_chart](https://pub.dev/packages/fl_chart) (0.70.2)** - グラフ描画
+- **[syncfusion_flutter_charts](https://pub.dev/packages/syncfusion_flutter_charts) (32.2.7)** - グラフ描画(横向き)
 - **[webview_flutter](https://pub.dev/packages/webview_flutter) (4.10.0)** - WebView
 
 ## Service

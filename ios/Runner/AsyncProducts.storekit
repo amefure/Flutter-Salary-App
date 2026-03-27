@@ -33,6 +33,46 @@
       "productID" : "com.test.remove_ads",
       "referenceName" : "Remove Ads",
       "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1000",
+      "familyShareable" : false,
+      "internalID" : "09793323",
+      "localizations" : [
+        {
+          "description" : "",
+          "displayName" : "",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "給料を公開せずに公開されている給料と詳細情報の閲覧、職種等のフィルタリング機能を使用できるようになります。",
+          "displayName" : "TEST_プレミアム機能全解放",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.test.premium_full_unlocked",
+      "referenceName" : "プレミアム機能全解放",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "500",
+      "familyShareable" : false,
+      "internalID" : "E2EFBA65",
+      "localizations" : [
+        {
+          "description" : "",
+          "displayName" : "",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "【給料公開ユーザー限定】給料の詳細情報の閲覧、職種等のフィルタリング機能を使用できるようになります。購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。",
+          "displayName" : "TEST_プレミアム機能解放(公開済みユーザー限定)",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.test.premium_features_enabled",
+      "referenceName" : "プレミアム機能解放(公開済みユーザー限定)",
+      "type" : "NonConsumable"
     }
   ],
   "settings" : {
