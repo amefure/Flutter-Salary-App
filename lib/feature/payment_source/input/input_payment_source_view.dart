@@ -191,7 +191,15 @@ class _ToggleIsMainSwitch extends ConsumerWidget {
                 CupertinoSwitch(
                   activeTrackColor: CustomColors.thema,
                   value: isMain,
-                  onChanged: isMainEnabled ? (bool value) {
+                  onChanged: isMainEnabled ? (bool value) async {
+                    if (paymentSource?.isPublic == true) {
+                      final _ = await AppDialog.show(
+                        context: context,
+                        message: '「${paymentSource?.name}」は公開中のため本業フラグを変更できません。\n変更したい場合は非公開に戻してから実行してください。',
+                        type: DialogType.notify,
+                      );
+                      return;
+                    }
                     vm.updateIsMain(value);
                   } : null,
                 ),

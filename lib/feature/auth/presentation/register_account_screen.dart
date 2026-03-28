@@ -231,22 +231,32 @@ class _Body extends ConsumerState<_BodyWidget> {
                 )
           ),
 
-          /// 生年月日
-          UserInfoRowTile(
-              title: '生年月日',
-              value: viewModel.displayDate(state.birthday),
-              onTap: () {
-                final date = state.birthday ?? ProfileConfig.defaultDateTime;
+          Column(
+              children: [
+                /// 生年月日
+                UserInfoRowTile(
+                    title: '生年月日',
+                    value: viewModel.displayDate(state.birthday),
+                    onTap: () {
+                      final date = state.birthday ?? ProfileConfig.defaultDateTime;
 
-                viewModel.updateBirthday(date);
+                      viewModel.updateBirthday(date);
 
-                CupertinoDatePickerModal.show(
-                  context: context,
-                  initialDate: date,
-                  onSelected: viewModel.updateBirthday,
-                );
-              }
+                      CupertinoDatePickerModal.show(
+                        context: context,
+                        initialDate: date,
+                        onSelected: viewModel.updateBirthday,
+                      );
+                    }
+                ),
+
+          const CustomText(
+            text: '※ 公開されるのは年代のみで生年月日は公開されません。',
+            textSize: TextSize.SS,
+            maxLines: 2,
           ),
+        ]),
+
 
           /// 職業
           UserInfoRowTile(
