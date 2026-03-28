@@ -170,9 +170,18 @@ class _Body extends ConsumerState<_BodyWidget> {
             _paymentSourcePicker(
                 prefixIconColor: state.selectPaymentSource?.themaColorEnum
                     .color ?? CupertinoColors.systemGrey,
-                onTapped: () {
+                onTapped: () async {
                   // 支払い元表示前に再取得 & Stateリフレッシュ
                   final paymentSources = vm.fetchAndRefreshPaymentSources();
+
+                  if (state.selectPaymentSource?.isPublic == true) {
+                    final _ = await AppDialog.show(
+                      context: context,
+                      message: '公開中の給料情報のため支払い元を変更できません。\n変更したい場合は非公開に戻してから実行してください。',
+                      type: DialogType.notify,
+                    );
+                    return;
+                  }
 
                   if (paymentSources.isEmpty) {
                     // 未登録なら新規登録を促す
