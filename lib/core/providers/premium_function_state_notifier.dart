@@ -27,8 +27,10 @@ class PremiumFunctionState {
 
   /// 機能自体の解放条件：ユーザー10人
   bool get isUnLimitedFunction => publicUserCount >= 10;
-  /// アプリ内課金でのプレミアム機能解放購入可能条件：ユーザー20人
-  bool get isUnLimitedInAppPurchase => publicUserCount >= 20;
+  /// アプリ内課金があること自体の表示条件：ユーザー30人
+  bool get isShowInAppPurchase => publicUserCount >= 30;
+  /// アプリ内課金でのプレミアム機能解放購入可能条件：ユーザー50人
+  bool get isUnLimitedInAppPurchase => publicUserCount >= 50;
 
   PremiumFunctionState({
     this.isPublicData = false,

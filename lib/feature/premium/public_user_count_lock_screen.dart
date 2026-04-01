@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/header_visual_view.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/premium/premium_lock_screen.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 
 class PublicUserCountLockScreen extends StatelessWidget {
@@ -21,7 +24,18 @@ class PublicUserCountLockScreen extends StatelessWidget {
             msg: '一定の公開ユーザー数に達すると、\n統計データがアンロックされます。\nこの画面が自動で切り替わるまでしばらくお待ちください。',
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
+
+          Consumer(
+            builder: (context, ref, child) {
+              final premiumState = ref.watch(premiumFunctionStateProvider);
+              return ReleaseProgressCard(
+                currentCount: premiumState.publicUserCount,
+              );
+            },
+          ),
+
+          const SizedBox(height: 12),
 
           /// 解放される機能のプレビュー
           const _FeaturePreviewList(),

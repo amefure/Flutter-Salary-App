@@ -144,8 +144,8 @@ class _RequirementCard extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
           const SizedBox(height: 8),
-          const CustomText(
-            text: 'アカウントを作成し、いずれかの条件を満たすと満たした条件により機能が解放されます。',
+          CustomText(
+            text: premiumState.isShowInAppPurchase ? 'アカウントを作成し、いずれかの条件を満たすと満たした条件により機能が解放されます。' : 'アカウントの作成と給料情報を公開することで機能が解放されます。',
             textSize: TextSize.S,
             fontWeight: FontWeight.w600,
             color: CupertinoColors.systemGrey,
@@ -200,44 +200,56 @@ class _RequirementCard extends ConsumerWidget {
                   maxLines: 4,
                 ),
 
-                // OR の区切り
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: CustomText(
-                          text: 'または',
-                          textSize: TextSize.SSS,
-                          color: CupertinoColors.systemGrey,
-                          fontWeight: FontWeight.bold,
+                /// アプリ内課金が条件に含まれることをユーザーに知らせるのは一定数を超えてから
+                if (premiumState.isShowInAppPurchase)...[
+                  // OR の区切り
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: CustomText(
+                            text: 'または',
+                            textSize: TextSize.SSS,
+                            color: CupertinoColors.systemGrey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Expanded(child: Divider()),
-                    ],
+                        Expanded(child: Divider()),
+                      ],
+                    ),
                   ),
-                ),
 
-                StepItem(
-                  number: 3,
-                  title: 'プレミアム登録(有料)',
-                  isCompleted: premiumState.isPremiumFullUnlocked,
-                  isEnabled: premiumState.isUnLimitedInAppPurchase,
-                  onTap: () async {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
-                    );
-                  },
-                ),
-
-                if (!premiumState.isUnLimitedInAppPurchase)
-                  const CustomText(
-                    text: '※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください。',
-                    textSize: TextSize.SS,
-                    maxLines: 5,
+                  StepItem(
+                    number: 3,
+                    title: 'プレミアム登録(有料)',
+                    isCompleted: premiumState.isPremiumFullUnlocked,
+                    isEnabled: premiumState.isUnLimitedInAppPurchase,
+                    onTap: () async {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
+                      );
+                    },
                   ),
+
+                  if (!premiumState.isUnLimitedInAppPurchase)
+                    const CustomText(
+                      // ※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
+                      text: '※ 有料プレミアム機能はまだご利用いただけません。\n給料データを公開して閲覧してください。',
+                      textSize: TextSize.SS,
+                      maxLines: 5,
+                    ),
+                ],
+
+                /// 閲覧機能解放までのカウントダウンUI
+                if (!premiumState.isShowInAppPurchase) ...[
+                  const SizedBox(height: 16),
+                  ReleaseProgressCard(
+                    currentCount: premiumState.publicUserCount,
+                  ),
+                ],
               ],
             ),
           ),
@@ -304,6 +316,86 @@ class _PremiumPoint extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class ReleaseProgressCard extends StatelessWidget {
+  final int currentCount;
+  final int targetCount;
+  final String title;
+  final String messageTemplate;
+
+  const ReleaseProgressCard({
+    super.key,
+    required this.currentCount,
+    this.targetCount = 10,
+    this.title = '機能の解放まで',
+    this.messageTemplate = '人の給料公開で、\nみんなの給料データが閲覧可能になります！',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final remaining = (targetCount - currentCount).clamp(0, targetCount);
+    final progress = (currentCount / targetCount).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemOrange.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: CustomColors.themaOrange.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(
+                CupertinoIcons.lock_open_fill,
+                size: 18,
+                color: CustomColors.themaOrange,
+              ),
+              const SizedBox(width: 8),
+              CustomText(
+                text: title,
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+              ),
+              const Spacer(),
+              CustomText(
+                text: '$currentCount / $targetCount人',
+                textSize: TextSize.S,
+                color: CustomColors.themaOrange,
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // プログレスバー
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: CupertinoColors.systemGrey5,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                CustomColors.themaOrange,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // 残り人数の強調メッセージ
+          CustomText(
+            text: 'あと $remaining $messageTemplate',
+            textSize: TextSize.SS,
+            color: CupertinoColors.label,
+            maxLines: 2,
           ),
         ],
       ),
