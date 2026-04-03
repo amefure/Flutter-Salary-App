@@ -25,7 +25,7 @@ class SalaryListScreen extends ConsumerWidget {
             text: 'シンプル給料記録',
             fontWeight: FontWeight.bold,
           ),
-          leading: const _BuildSourceSelector(),
+          leading: const _SalaryDisplayOptionsButton(),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             child: const Icon(
@@ -59,67 +59,114 @@ class SalaryListScreen extends ConsumerWidget {
   }
 }
 
-/// **給与の支払い元を選択するUI (MenuAnchor)**
-class _BuildSourceSelector extends ConsumerWidget {
-
-  const _BuildSourceSelector({super.key});
+/// 給与一覧の表示オプション（並べ替え・絞り込み）を制御するメニューボタン
+class _SalaryDisplayOptionsButton extends ConsumerWidget {
+  const _SalaryDisplayOptionsButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    final sourceList = ref.watch(listSalaryProvider.select((s) => s.sourceList ));
-    final selectedSource = ref.watch(listSalaryProvider.select((s) => s.selectedSource ));
+    final sourceList = ref.watch(listSalaryProvider.select((s) => s.sourceList));
+    final selectedSource = ref.watch(listSalaryProvider.select((s) => s.selectedSource));
+    // 現在の並び順を取得
+    final currentSort = ref.watch(listSalaryProvider.select((s) => s.sortOrder));
     final vm = ref.read(listSalaryProvider.notifier);
 
     return MenuAnchor(
       builder: (context, controller, child) {
         return GestureDetector(
-          onTap: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
-          },
-          child: const Icon(Icons.filter_list, size: 28),
+          onTap: () => controller.isOpen ? controller.close() : controller.open(),
+          child: const Icon(CupertinoIcons.slider_horizontal_3, size: 26),
         );
       },
-      style: MenuStyle(
-        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
-          return CustomColors.background(context);
+      menuChildren: [
+        /// セクション1: 並べ替え
+        const _MenuHeader(title: '並べ替え'),
+        ...SalarySortOrder.values.map((order) {
+          return MenuItemButton(
+            onPressed: () => vm.updateSortOrder(order),
+            child: _MenuLabelWithCheck(
+              label: order.label,
+              isSelected: order == currentSort,
+            ),
+          );
         }),
-      ),
-      menuChildren: sourceList.map((source) {
-        return MenuItemButton(
-          onPressed: () {
-            vm.filterPaymentSource(source);
-          },
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
-              return CustomColors.background(context);
-            }),
-          ),
-          child: SizedBox(
-            width: 200,
+
+        const Divider(height: 1),
+
+        /// セクション1: 支払い元で絞り込み
+        const _MenuHeader(title: '支払い元で絞り込み'),
+        ...sourceList.map((source) {
+          return MenuItemButton(
+            onPressed: () => vm.filterPaymentSource(source),
             child: Row(
               children: [
-                // アイコン
                 PaymentIconView(paymentSource: source),
-
                 const SizedBox(width: 8),
-
-                Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
-
-                if (source == selectedSource)
-                  Icon(
-                    CupertinoIcons.checkmark_alt,
-                    color: CustomColors.text(context),
-                  ),
+                _MenuLabelWithCheck(
+                  label: source.name,
+                  isSelected: source == selectedSource,
+                ),
               ],
             ),
+          );
+        }),
+      ],
+    );
+  }
+}
+
+class _MenuHeader extends StatelessWidget {
+  final String title;
+  const _MenuHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: CustomText(
+        text: title.toUpperCase(),
+        textSize: TextSize.S,
+        color: CustomColors.text(context).withAlpha(122),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+}
+
+class _MenuLabelWithCheck extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+
+  const _MenuLabelWithCheck({
+    required this.label,
+    required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      constraints: const BoxConstraints(minWidth: 220), // 少し幅を広げる
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomText(
+              text: label,
+              textSize: TextSize.M,
+              fontWeight: FontWeight.bold,
+              color: isSelected ? CustomColors.themaBlue : null,
+            ),
           ),
-        );
-      }).toList(),
+
+          if (isSelected)
+            const Icon(
+              CupertinoIcons.checkmark,
+              size: 18,
+              color: CustomColors.themaBlue,
+            ),
+        ],
+      ),
     );
   }
 }

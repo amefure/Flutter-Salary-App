@@ -11,6 +11,16 @@ StateNotifierProvider<ListSalaryViewModel, ListSalaryState>((ref) {
   return ListSalaryViewModel(ref, repository);
 });
 
+// 並べ替えの種類の定義
+enum SalarySortOrder {
+  dateDesc('日付の新しい順'),
+  dateAsc('日付の古い順'),
+  amountDesc('総支給の高い順'),
+  amountAsc('総支給の低い順');
+
+  final String label;
+  const SalarySortOrder(this.label);
+}
 
 class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   final Ref ref;
@@ -40,8 +50,9 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
     // }
     // 日付の降順
     allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final sortedSalaries = _fetchSortedSalaries(allSalariesTmp);
     state = state.copyWith(
-      salaries: allSalariesTmp,
+      salaries: sortedSalaries,
     );
   }
 
@@ -99,9 +110,40 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
 
     // キャッシュしてあるALLデータからフィルタリング
     final filteredSalaries = state.salaries.where((s) => s.source?.id == paymentSource.id ).toList();
+    final sortedSalaries = _fetchSortedSalaries(filteredSalaries);
     state = state.copyWith(
-        salaries: filteredSalaries,
+        salaries: sortedSalaries,
         selectedSource: paymentSource
     );
+  }
+
+  void updateSortOrder(SalarySortOrder order) {
+    state = state.copyWith(sortOrder: order);
+    final sortedSalaries = _fetchSortedSalaries(state.salaries);
+    state = state.copyWith(salaries: sortedSalaries);
+  }
+
+  List<Salary> _fetchSortedSalaries(List<Salary> list) {
+    // スプレッド演算子 [...] で新しいリストのインスタンスを作成しないと変化したと検知されない
+    final newList = [...list];
+    switch (state.sortOrder) {
+      case SalarySortOrder.dateDesc:
+      // 日付の新しい順（降順）
+        newList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case SalarySortOrder.dateAsc:
+      // 日付の古い順（昇順）
+        newList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case SalarySortOrder.amountDesc:
+      // 金額の高い順（降順）
+        newList.sort((a, b) => b.paymentAmount.compareTo(a.paymentAmount));
+        break;
+      case SalarySortOrder.amountAsc:
+        // 金額の高い順（降順）
+        newList.sort((a, b) => a.paymentAmount.compareTo(b.paymentAmount));
+        break;
+    }
+    return newList;
   }
 }
