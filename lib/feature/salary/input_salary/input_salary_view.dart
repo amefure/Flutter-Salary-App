@@ -6,6 +6,7 @@ import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
@@ -164,17 +165,17 @@ class _Body extends ConsumerState<_BodyWidget> {
           children: [
             // 給料履歴一覧
             if (state.historyList.isNotEmpty)
-              _historyCitingSalaryButton(context, state.historyList, vm.copySalaryFromPast),
+              _historyCitingSalaryButton(context, state.historyList, state.selectPaymentSource, vm.copySalaryFromPast),
 
             // 支払い元ピッカー
             _paymentSourcePicker(
                 prefixIconColor: state.selectPaymentSource?.themaColorEnum
                     .color ?? CupertinoColors.systemGrey,
                 onTapped: () async {
-                  // 支払い元表示前に再取得 & Stateリフレッシュ
-                  final paymentSources = vm.fetchAndRefreshPaymentSources();
-
-                  if (state.selectPaymentSource?.isPublic == true) {
+                  logger('ddd${state.selectPaymentSource?.isPublic}');
+                  logger('ddd${widget.salary}');
+                  /// 更新処理かつ公開済みの場合は変更不可
+                  if (state.selectPaymentSource?.isPublic == true && widget.salary != null) {
                     final _ = await AppDialog.show(
                       context: context,
                       message: '公開中の給料情報のため支払い元を変更できません。\n変更したい場合は非公開に戻してから実行してください。',
@@ -182,6 +183,9 @@ class _Body extends ConsumerState<_BodyWidget> {
                     );
                     return;
                   }
+
+                  // 支払い元表示前に再取得 & Stateリフレッシュ
+                  final paymentSources = vm.fetchAndRefreshPaymentSources();
 
                   if (paymentSources.isEmpty) {
                     // 未登録なら新規登録を促す
@@ -525,6 +529,7 @@ class _Body extends ConsumerState<_BodyWidget> {
   Widget _historyCitingSalaryButton(
       BuildContext context,
       List<Salary> pastSalaries,
+      PaymentSource? paymentSource,
       void Function(Salary salary) onSelected
       ) {
     return Row(
@@ -542,7 +547,17 @@ class _Body extends ConsumerState<_BodyWidget> {
               Icon(Icons.chevron_right),
             ],
           ),
-          onPressed: () {
+          onPressed: () async {
+            /// 更新処理かつ公開済みの場合は変更不可
+            if (paymentSource?.isPublic == true && widget.salary != null) {
+              final _ = await AppDialog.show(
+                context: context,
+                message: '公開中の給料情報のため支払い元を変更できません。\n変更したい場合は非公開に戻してから実行してください。',
+                type: DialogType.notify,
+              );
+              return;
+            }
+
             _showSelectPastSalarySheet(context, pastSalaries, onSelected);
           },
         ),
