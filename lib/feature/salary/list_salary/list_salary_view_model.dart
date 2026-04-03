@@ -3,15 +3,17 @@ import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/mock/salary_mock_factory.dart';
 import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/repository/shared_prefs_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_state.dart';
 
 final listSalaryProvider =
 StateNotifierProvider<ListSalaryViewModel, ListSalaryState>((ref) {
   final repository = RealmRepository();
-  return ListSalaryViewModel(ref, repository);
+  final service = SharedPreferencesService();
+  return ListSalaryViewModel(ref, repository, service);
 });
 
-// 並べ替えの種類の定義
+/// 並べ替えの種類の定義
 enum SalarySortOrder {
   dateDesc('日付の新しい順'),
   dateAsc('日付の古い順'),
@@ -20,27 +22,45 @@ enum SalarySortOrder {
 
   final String label;
   const SalarySortOrder(this.label);
+  /// labelからSalarySortOrderを取得（見つからない場合はデフォルト値を返す）
+  static SalarySortOrder fromLabelWithDefault(String label, {SalarySortOrder defaultValue = SalarySortOrder.dateDesc}) {
+    return SalarySortOrder.values.firstWhere(
+          (element) => element.label == label,
+      orElse: () => defaultValue,
+    );
+  }
 }
 
 class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   final Ref ref;
   final RealmRepository _repository;
+  final SharedPreferencesService _prefs;
 
-  ListSalaryViewModel(this.ref, this._repository)
+  ListSalaryViewModel(this.ref, this._repository, this._prefs)
       : super(ListSalaryState.initial()) {
+    _loadSortOrder();
     _loadSalaries();
     _loadPaymentSource();
   }
 
   /// リフレッシュ
   void refresh() {
+    _loadSortOrder();
     _loadSalaries();
     _loadPaymentSource();
     filterPaymentSource(state.selectedSource);
   }
 
+  void _loadSortOrder() {
+    final order = _prefs.fetchSortOrder();
+    state = state.copyWith(
+      sortOrder: order,
+    );
+  }
+
   /// Realm から Salary を取得
   void _loadSalaries() {
+
     final allSalariesTmp = _repository.fetchAll<Salary>();
     // DEBUG：モック(確認用)
     // final allSalariesTmp2 = SalaryMockFactory.allGenerateYears();
@@ -119,6 +139,7 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
 
   void updateSortOrder(SalarySortOrder order) {
     state = state.copyWith(sortOrder: order);
+    _prefs.saveSortOrder(order);
     final sortedSalaries = _fetchSortedSalaries(state.salaries);
     state = state.copyWith(salaries: sortedSalaries);
   }
@@ -128,19 +149,19 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
     final newList = [...list];
     switch (state.sortOrder) {
       case SalarySortOrder.dateDesc:
-      // 日付の新しい順（降順）
+        /// 日付の新しい順（降順）
         newList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         break;
       case SalarySortOrder.dateAsc:
-      // 日付の古い順（昇順）
+        /// 日付の古い順（昇順）
         newList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
         break;
       case SalarySortOrder.amountDesc:
-      // 金額の高い順（降順）
+        /// 金額の高い順（降順）
         newList.sort((a, b) => b.paymentAmount.compareTo(a.paymentAmount));
         break;
       case SalarySortOrder.amountAsc:
-        // 金額の高い順（降順）
+        /// 金額の高い順（降順）
         newList.sort((a, b) => a.paymentAmount.compareTo(b.paymentAmount));
         break;
     }

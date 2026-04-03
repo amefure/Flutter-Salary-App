@@ -1,3 +1,4 @@
+import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,7 +8,8 @@ enum SharedPreferencesKeys {
   premiumFullUnlocked('premiumFullUnlocked'),
   themeMode('themeMode'),
   hasShownPremiumIntro('hasShownPremiumIntro'),
-  hasShownPremiumTab('hasShownPremiumTab');
+  hasShownPremiumTab('hasShownPremiumTab'),
+  sortOrder('sortOrder');
 
   final String key;
   const SharedPreferencesKeys(this.key);
@@ -75,6 +77,17 @@ class SharedPreferencesService {
   /// プレミアムタブを表示済みか取得
   bool fetchHasShownPremiumTab() {
     return _repository.getBool(SharedPreferencesKeys.hasShownPremiumTab);
+  }
+
+  /// 並び順保存
+  Future<void> saveSortOrder(SalarySortOrder order) async {
+    await _repository.saveString(SharedPreferencesKeys.sortOrder, order.label);
+  }
+
+  /// 並び順取得
+  SalarySortOrder fetchSortOrder() {
+    final label = _repository.getString(SharedPreferencesKeys.sortOrder) ?? '';
+    return SalarySortOrder.fromLabelWithDefault(label);
   }
 }
 
