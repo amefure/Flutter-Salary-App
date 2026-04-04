@@ -36,6 +36,7 @@ dependencies:
   firebase_analytics: ^11.5.0
   in_app_purchase: ^3.2.3
   connectivity_plus: ^6.0.0
+  mocktail: ^1.0.4
 
 dev_dependencies:
   change_app_package_name: ^1.1.0
