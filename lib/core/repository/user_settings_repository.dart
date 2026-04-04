@@ -22,7 +22,7 @@ final userSettingsProvider = Provider((ref) {
 });
 
 class UserSettingsRepository {
-  final SharedPreferencesDataSource _dataSource;
+  final ISharedPreferencesDataSource _dataSource;
 
   const UserSettingsRepository(this._dataSource);
 
