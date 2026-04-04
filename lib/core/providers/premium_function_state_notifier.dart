@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/realm_repository.dart';
-import 'package:salary/core/repository/shared_prefs_repository.dart';
+import 'package:salary/core/repository/user_settings_repository.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
@@ -10,7 +10,8 @@ import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart
 final premiumFunctionStateProvider = StateNotifierProvider<PremiumFunctionStateNotifier, PremiumFunctionState>((ref) {
   final localRepository = RealmRepository();
   final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
-  final vm = PremiumFunctionStateNotifier(ref, localRepository, publicSalaryRepository);
+  final userSettings = ref.read(userSettingsProvider);
+  final vm = PremiumFunctionStateNotifier(ref, localRepository, publicSalaryRepository, userSettings);
   /// build完了後に実行
   Future.microtask(() => vm.checkRelease());
   return vm;
@@ -59,11 +60,13 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   final Ref _ref;
   final RealmRepository _localRepository;
   final PublicSalaryRepository _publicSalaryRepository;
+  final UserSettingsRepository _userSettingsRepository;
 
   PremiumFunctionStateNotifier(
       this._ref,
       this._localRepository,
-      this._publicSalaryRepository
+      this._publicSalaryRepository,
+      this._userSettingsRepository,
       ) : super(PremiumFunctionState()) {
     checkAllPaymentSource();
     _ref.listen<bool>(
@@ -94,14 +97,14 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   }
 
   void updateIsPremiumFullUnlocked(bool isPremiumFullUnlocked) {
-    SharedPreferencesService().savePremiumFullUnlocked(isPremiumFullUnlocked);
+    _userSettingsRepository.savePremiumFullUnlocked(isPremiumFullUnlocked);
     state = state.copyWith(
       isPremiumFullUnlocked: isPremiumFullUnlocked,
     );
   }
 
   void updateIsPremiumFeatureUnlocked(bool isPremiumFeatureUnlocked) {
-    SharedPreferencesService().savePremiumFeatureUnlocked(isPremiumFeatureUnlocked);
+    _userSettingsRepository..savePremiumFeatureUnlocked(isPremiumFeatureUnlocked);
     state = state.copyWith(
       isPremiumFeatureUnlocked: isPremiumFeatureUnlocked,
     );
@@ -115,8 +118,8 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   }
 
   Future<void> _fetchIsPremiumUnlocked() async {
-    final isPremiumFullUnlocked = SharedPreferencesService().fetchPremiumFullUnlocked();
-    final isPremiumFeatureUnlocked = SharedPreferencesService().fetchPremiumFeatureUnlocked();
+    final isPremiumFullUnlocked = _userSettingsRepository.fetchPremiumFullUnlocked();
+    final isPremiumFeatureUnlocked = _userSettingsRepository.fetchPremiumFeatureUnlocked();
     state = state.copyWith(
         /// 全機能解放がtrueなら機能もtrueにする
         isPremiumFeatureUnlocked: isPremiumFullUnlocked ? true : isPremiumFeatureUnlocked,

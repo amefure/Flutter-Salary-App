@@ -3,14 +3,14 @@ import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/mock/salary_mock_factory.dart';
 import 'package:salary/core/repository/realm_repository.dart';
-import 'package:salary/core/repository/shared_prefs_repository.dart';
+import 'package:salary/core/repository/user_settings_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_state.dart';
 
 final listSalaryProvider =
 StateNotifierProvider<ListSalaryViewModel, ListSalaryState>((ref) {
   final repository = RealmRepository();
-  final service = SharedPreferencesService();
-  return ListSalaryViewModel(ref, repository, service);
+  final userSettings = ref.read(userSettingsProvider);
+  return ListSalaryViewModel(ref, repository, userSettings);
 });
 
 /// 並べ替えの種類の定義
@@ -34,9 +34,9 @@ enum SalarySortOrder {
 class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   final Ref ref;
   final RealmRepository _repository;
-  final SharedPreferencesService _prefs;
+  final UserSettingsRepository _userSettingsRepository;
 
-  ListSalaryViewModel(this.ref, this._repository, this._prefs)
+  ListSalaryViewModel(this.ref, this._repository, this._userSettingsRepository)
       : super(ListSalaryState.initial()) {
     _loadSortOrder();
     _loadSalaries();
@@ -52,7 +52,7 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   }
 
   void _loadSortOrder() {
-    final order = _prefs.fetchSortOrder();
+    final order = _userSettingsRepository.fetchSortOrder();
     state = state.copyWith(
       sortOrder: order,
     );
@@ -139,7 +139,7 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
 
   void updateSortOrder(SalarySortOrder order) {
     state = state.copyWith(sortOrder: order);
-    _prefs.saveSortOrder(order);
+    _userSettingsRepository.saveSortOrder(order);
     final sortedSalaries = _fetchSortedSalaries(state.salaries);
     state = state.copyWith(salaries: sortedSalaries);
   }

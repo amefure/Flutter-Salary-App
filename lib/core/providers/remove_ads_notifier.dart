@@ -1,27 +1,25 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/repository/shared_prefs_repository.dart';
+import 'package:salary/core/repository/user_settings_repository.dart';
 
-final removeAdsProvider =
-StateNotifierProvider<RemoveAdsNotifier, bool>((ref) {
-  return RemoveAdsNotifier();
+final removeAdsProvider = StateNotifierProvider<RemoveAdsNotifier, bool>((ref) {
+  final userSettings = ref.read(userSettingsProvider);
+  return RemoveAdsNotifier(userSettings);
 });
 
-
 class RemoveAdsNotifier extends StateNotifier<bool> {
-  RemoveAdsNotifier() : super(false) {
+  final UserSettingsRepository _userSettingsRepository;
+
+  RemoveAdsNotifier(this._userSettingsRepository) : super(false) {
     _load();
   }
 
-  /// SharedPreferences から読み込み
   Future<void> _load() async {
-    final removeAds = SharedPreferencesService().fetchRemoveAds();
-    state = removeAds;
+    state = _userSettingsRepository.fetchRemoveAds();
   }
 
-  /// removeAds を更新し永続化
   Future<void> update(bool value) async {
     state = value;
-    SharedPreferencesService().saveRemoveAds(value);
+    await _userSettingsRepository.saveRemoveAds(value);
   }
 }
