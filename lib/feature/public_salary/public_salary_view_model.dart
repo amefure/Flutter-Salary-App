@@ -6,6 +6,8 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
+import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
+import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/public_salary/public_salary_state.dart';
@@ -14,24 +16,31 @@ import 'package:salary/feature/salary/domain/salary_repository.dart';
 
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {
-  final repository = RealmDataSource();
-  final paymentRepository = ref.read(paymentRepositoryProvider);
-  final salaryRepository = ref.read(salaryRepositoryProvider);
-  return PublicSalaryViewModel(ref, repository, paymentRepository, salaryRepository);
+  /// ローカル
+  final localSalaryRepository = ref.read(localSalaryRepositoryProvider);
+  final localPaymentSourceRepository = ref.read(localPaymentSourceRepositoryProvider);
+  /// クラウド
+  final cloudSalaryRepository = ref.read(salaryRepositoryProvider);
+  final cloudPaymentRepository = ref.read(paymentRepositoryProvider);
+  return PublicSalaryViewModel(ref, localSalaryRepository, localPaymentSourceRepository, cloudPaymentRepository, cloudSalaryRepository);
 });
 
 class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
 
   final Ref _ref;
-  final RealmDataSource _repository;
-  final PaymentRepository _paymentRepository;
-  final SalaryRepository _salaryRepository;
+  /// ローカル
+  final LocalSalaryRepository _localSalaryRepositoryProvider;
+  final LocalPaymentSourceRepository _localPaymentRepository;
+  /// クラウド
+  final SalaryRepository _cloudSalaryRepository;
+  final PaymentRepository _cloudPaymentRepository;
 
   PublicSalaryViewModel(
       this._ref,
-      this._repository,
-      this._paymentRepository,
-      this._salaryRepository
+      this._localSalaryRepositoryProvider,
+      this._localPaymentRepository,
+      this._cloudPaymentRepository,
+      this._cloudSalaryRepository
       ): super(PublicSalaryState.initial()) {
     _fetchAllLocalPaymentSource();
     _fetchAllLocalSalaries();
@@ -39,12 +48,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
 
   /// 全取得
   void _fetchAllLocalPaymentSource() {
-    final results = _repository.fetchAll<PaymentSource>()
-      ..sort((a, b) {
-        final aValue = a.isMain ? 1 : 0;
-        final bValue = b.isMain ? 1 : 0;
-        return bValue - aValue;
-      });
+    final results = _localPaymentRepository.fetchSortedAllPaymentSources();
     final isMainPublic = results.any((source) => source.isMain && source.isPublic);
     state = state.copyWith(
         paymentSources: results,
@@ -78,13 +82,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       ) async {
     final user = _ref.read(authStateProvider).user;
     final publicUserId = isPublic ? user?.id : null;
-    _repository.updateById(current.id, (PaymentSource paymentSource) {
-      paymentSource.name = current.name;
-      paymentSource.isMain = current.isMain;
-      paymentSource.themaColor = current.themaColor;
-      paymentSource.memo = current.memo;
-      paymentSource.publicUserId = publicUserId;
-    });
+    _localPaymentRepository.updatePaymentSource(current: current, publicUserId: publicUserId);
   }
 
   /// クラウドのPaymentSourceを更新 + 給料情報のアップロード
@@ -98,7 +96,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
           .where((salary) => salary.source?.id == current.id)
           .toList();
       if (isPublic) {
-        await _paymentRepository.create(
+        await _cloudPaymentRepository.create(
             id: current.id,
             name: current.name,
             themeColor: current.themaColor,
@@ -106,11 +104,11 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
             isMain: current.isMain
         );
         /// 一括登録
-        await _salaryRepository.create(salaries: targetSalaries);
+        await _cloudSalaryRepository.create(salaries: targetSalaries);
       } else {
-        await _paymentRepository.delete(current.id);
+        await _cloudPaymentRepository.delete(current.id);
         /// 一括登録
-        await _salaryRepository.delete(salaries: targetSalaries);
+        await _cloudSalaryRepository.delete(salaries: targetSalaries);
       }
     });
   }
@@ -201,9 +199,9 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   }
 
   void _fetchAllLocalSalaries() {
-    final allSalaries = _repository.fetchAll<Salary>();
     // モック(確認用)
-    // final allSalaries = SalaryMockFactory.allGenerateYears();
+    // final allSalaries = _localSalaryRepositoryProvider.fetchAll(isMock: true);
+    final allSalaries = _localSalaryRepositoryProvider.fetchAll();
     state = state.copyWith(
       salaries: allSalaries,
     );

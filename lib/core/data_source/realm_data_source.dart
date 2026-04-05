@@ -2,13 +2,42 @@ import 'package:realm/realm.dart';
 import 'package:salary/core/config/realm_schema_config.dart';
 import 'package:salary/core/models/salary.dart';
 
+abstract class IRealmDataSource {
+  /// 全データを取得
+  List<T> fetchAll<T extends RealmObject>();
+
+  /// 指定したIDのデータを取得
+  T? fetchById<T extends RealmObject>(String id);
+
+  /// 新しいデータを追加
+  void add<T extends RealmObject>(T item);
+
+  /// 一括で追加または更新（UPSERT）
+  void addAll<T extends RealmObject>(Iterable<T> items);
+
+  /// IDを指定してデータを更新
+  void updateById<T extends RealmObject>(
+      String id,
+      void Function(T) updateCallback,
+      );
+
+  /// IDを指定してデータを削除
+  void deleteById<T extends RealmObject>(String id);
+
+  /// IDリストに基づいて一括削除
+  void deleteByIds<T extends RealmObject>(Iterable<String> ids);
+
+  /// リソースの解放
+  void dispose();
+}
+
 /// Realm DB Repository クラス
 /// シングルトン設計
 /// ```
 /// // 普通にインスタンス化するだけでシングルトンになる
 /// final repository = RealmDataSource();
 /// ```
-class RealmDataSource {
+class RealmDataSource implements IRealmDataSource{
   /// シングルトンインスタンスを保持
   static final RealmDataSource _instance = RealmDataSource._internal();
 
@@ -33,11 +62,13 @@ class RealmDataSource {
   late Realm _realm;
 
   /// ジェネリクスで指定した全データを取得
+  @override
   List<T> fetchAll<T extends RealmObject>() {
     return _realm.all<T>().freeze().toList();
   }
 
   /// ジェネリクスで指定した対象IDのデータデータを取得
+  @override
   T? fetchById<T extends RealmObject>(
       String id
       ) {
@@ -47,6 +78,7 @@ class RealmDataSource {
   }
 
   /// ジェネリクスで指定した新しいデータを追加
+  @override
   void add<T extends RealmObject>(T item) {
     _realm.write(() {
       _realm.add(item);
@@ -54,6 +86,7 @@ class RealmDataSource {
   }
 
   /// リストを受け取り、一括で追加または更新（UPSERT）を行う
+  @override
   void addAll<T extends RealmObject>(Iterable<T> items) {
     _realm.write(() {
       // update: true：プライマリキーが一致するものは更新
@@ -62,6 +95,7 @@ class RealmDataSource {
   }
 
   /// ID を指定してデータを更新
+  @override
   void updateById<T extends RealmObject>(
     String id,
     void Function(T) updateCallback,
@@ -76,6 +110,7 @@ class RealmDataSource {
   }
 
   /// ジェネリクスで指定したデータを削除
+  @override
   void deleteById<T extends RealmObject>(String id) {
     _realm.write(() {
       final target = _realm.find<T>(id); // ID で検索
@@ -86,6 +121,7 @@ class RealmDataSource {
   }
 
   /// ジェネリクスで指定したデータをIDリストに基づいて一括削除
+  @override
   void deleteByIds<T extends RealmObject>(Iterable<String> ids) {
     _realm.write(() {
       for (final id in ids) {
@@ -98,6 +134,7 @@ class RealmDataSource {
   }
 
   /// Realmを終了
+  @override
   void dispose() {
     _realm.close();
   }
