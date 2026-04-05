@@ -39,7 +39,7 @@ class LocalPaymentSourceRepository {
       },
     );
   }
-  
+
   void deleteById(String paymentSourceId) {
     _dataSource.deleteById<PaymentSource>(paymentSourceId);
   }

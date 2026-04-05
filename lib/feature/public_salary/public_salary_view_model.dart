@@ -8,8 +8,8 @@ import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
 import 'package:salary/core/repository/domain/local_salary_repository.dart';
-import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/payment_source/data/cloud_payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 import 'package:salary/feature/public_salary/public_salary_state.dart';
 import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
@@ -33,7 +33,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
   final LocalPaymentSourceRepository _localPaymentRepository;
   /// クラウド
   final SalaryRepository _cloudSalaryRepository;
-  final PaymentRepository _cloudPaymentRepository;
+  final CloudPaymentRepository _cloudPaymentRepository;
 
   PublicSalaryViewModel(
       this._ref,

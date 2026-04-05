@@ -3,15 +3,15 @@ import 'package:salary/core/config/json_keys.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/payment_source/data/payment_api.dart';
 import 'package:salary/feature/payment_source/data/payment_source_dto.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 
-final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
+final paymentRepositoryProvider = Provider<CloudPaymentRepository>((ref) {
   final apiSource = ref.read(paymentApiProvider);
-  return PaymentRepositoryImpl(apiSource);
+  return CloudPaymentRepositoryImpl(apiSource);
 });
 
-class PaymentRepositoryImpl implements PaymentRepository {
-  PaymentRepositoryImpl(this._api);
+class CloudPaymentRepositoryImpl implements CloudPaymentRepository {
+  CloudPaymentRepositoryImpl(this._api);
 
   final PaymentApi _api;
 

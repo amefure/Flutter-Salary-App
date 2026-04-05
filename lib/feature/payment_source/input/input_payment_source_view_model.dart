@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
-import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/payment_source/data/cloud_payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_state.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
@@ -24,7 +24,7 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
   final Ref _ref;
 
   final RealmDataSource _repository;
-  final PaymentRepository _paymentRepository;
+  final CloudPaymentRepository _paymentRepository;
   final PaymentSource? paymentSource;
 
   InputPaymentSourceViewModel(

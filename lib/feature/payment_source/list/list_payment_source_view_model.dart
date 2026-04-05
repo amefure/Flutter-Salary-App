@@ -1,9 +1,6 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
-import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_state.dart';
 
 final listPaymentSourceProvider =

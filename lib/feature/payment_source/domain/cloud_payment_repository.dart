@@ -1,7 +1,7 @@
 import 'package:salary/core/models/salary.dart';
 
 /// 実態：[PaymentRepositoryImpl]
-abstract class PaymentRepository {
+abstract class CloudPaymentRepository {
   /// 取得
   Future<List<PaymentSource>> fetchAllUserList();
 

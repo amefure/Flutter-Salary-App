@@ -9,8 +9,8 @@ import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
-import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
-import 'package:salary/feature/payment_source/domain/payment_repository.dart';
+import 'package:salary/feature/payment_source/data/cloud_payment_repository_impl.dart';
+import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
@@ -41,7 +41,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   final AuthRepository _authRepository;
   final RealmDataSource _realmRepository;
   final SalaryRepository _salaryRepository;
-  final PaymentRepository _paymentRepository;
+  final CloudPaymentRepository _paymentRepository;
 
   /// 新規登録
   Future<void> registerAccount({
