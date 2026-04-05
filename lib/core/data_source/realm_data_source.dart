@@ -6,17 +6,17 @@ import 'package:salary/core/models/salary.dart';
 /// シングルトン設計
 /// ```
 /// // 普通にインスタンス化するだけでシングルトンになる
-/// final repository = RealmRepository();
+/// final repository = RealmDataSource();
 /// ```
-class RealmRepository {
+class RealmDataSource {
   /// シングルトンインスタンスを保持
-  static final RealmRepository _instance = RealmRepository._internal();
+  static final RealmDataSource _instance = RealmDataSource._internal();
 
   /// factory constructor
-  factory RealmRepository() => _instance;
+  factory RealmDataSource() => _instance;
 
   /// Private Named constructor
-  RealmRepository._internal() {
+  RealmDataSource._internal() {
     // 対象のモデルを設定
     final config = Configuration.local(
       [

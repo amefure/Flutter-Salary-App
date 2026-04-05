@@ -8,12 +8,12 @@ import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_state.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
-      final repository = RealmRepository();
+      final repository = RealmDataSource();
       final paymentRepository = ref.read(paymentRepositoryProvider);
       return InputPaymentSourceViewModel(ref, repository, paymentRepository, paymentSource);
     }
@@ -23,7 +23,7 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
 
   final Ref _ref;
 
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
   final PaymentRepository _paymentRepository;
   final PaymentSource? paymentSource;
 

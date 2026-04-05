@@ -3,7 +3,7 @@ import 'package:salary/core/api/api_exception.dart';
 import 'package:salary/core/auth/auth_state.dart';
 import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
@@ -17,7 +17,7 @@ import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
   final authRepository = ref.read(authRepositoryProvider);
-  final repository = RealmRepository();
+  final repository = RealmDataSource();
   final salaryRepository = ref.read(salaryRepositoryProvider);
   final paymentRepository = ref.read(paymentRepositoryProvider);
   return AuthStateNotifier(ref, authRepository, repository, salaryRepository, paymentRepository);
@@ -39,7 +39,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   final Ref _ref;
   final AuthRepository _authRepository;
-  final RealmRepository _realmRepository;
+  final RealmDataSource _realmRepository;
   final SalaryRepository _salaryRepository;
   final PaymentRepository _paymentRepository;
 

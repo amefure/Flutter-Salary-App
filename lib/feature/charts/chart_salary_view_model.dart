@@ -4,14 +4,11 @@ import 'package:salary/feature/charts/chart_salary_state.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/mock/salary_mock_factory.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/charts/chart_display_mode.dart';
 
-final chartSalaryProvider =
-StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((
-    ref
-    ) {
-    final repository = RealmRepository();
+final chartSalaryProvider = StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((ref) {
+    final repository = RealmDataSource();
     return ChartSalaryViewModel(ref, repository);
   },
 );
@@ -20,7 +17,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   final Ref ref;
 
   /// 引数でRepositoryをセット
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
   /// 棒グラフの最大表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 10;
 

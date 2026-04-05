@@ -4,7 +4,7 @@ import 'package:salary/core/models/exception/CommonException.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
 import 'package:salary/feature/premium/domain/model/public_salary.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
@@ -32,7 +32,7 @@ class DetailSalaryArgsData extends Equatable {
 final detailSalaryProvider =
 StateNotifierProvider.autoDispose.family<DetailSalaryViewModel, DetailSalaryState, DetailSalaryArgsData>(
       (ref, args) {
-    final repository = RealmRepository();
+    final repository = RealmDataSource();
     final salaryRepository = ref.read(salaryRepositoryProvider);
     final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
     final vm = DetailSalaryViewModel(
@@ -54,7 +54,7 @@ StateNotifierProvider.autoDispose.family<DetailSalaryViewModel, DetailSalaryStat
 class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   final Ref _ref;
 
-  final RealmRepository _localRepository;
+  final RealmDataSource _localRepository;
   final SalaryRepository _salaryRepository;
   final PublicSalaryRepository _publicSalaryRepository;
 

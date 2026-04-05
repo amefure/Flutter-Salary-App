@@ -5,7 +5,7 @@ import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/payment_source/data/payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/payment_repository.dart';
 import 'package:salary/feature/public_salary/public_salary_state.dart';
@@ -14,7 +14,7 @@ import 'package:salary/feature/salary/domain/salary_repository.dart';
 
 final publicSalaryProvider =
 StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref) {
-  final repository = RealmRepository();
+  final repository = RealmDataSource();
   final paymentRepository = ref.read(paymentRepositoryProvider);
   final salaryRepository = ref.read(salaryRepositoryProvider);
   return PublicSalaryViewModel(ref, repository, paymentRepository, salaryRepository);
@@ -23,7 +23,7 @@ StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref
 class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
 
   final Ref _ref;
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
   final PaymentRepository _paymentRepository;
   final SalaryRepository _salaryRepository;
 

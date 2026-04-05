@@ -3,7 +3,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_view_model.dart';
@@ -14,7 +14,7 @@ import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 final inputSalaryProvider =
 StateNotifierProvider.autoDispose.family<InputSalaryViewModel, InputSalaryState, Salary?>(
       (ref, salary) {
-    final repository = RealmRepository();
+    final repository = RealmDataSource();
     final salaryRepository = ref.read(salaryRepositoryProvider);
     return InputSalaryViewModel(ref, repository, salaryRepository, salary);
   },
@@ -23,7 +23,7 @@ StateNotifierProvider.autoDispose.family<InputSalaryViewModel, InputSalaryState,
 class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
   final Ref _ref;
 
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
   final SalaryRepository _salaryRepository;
   final Salary? salary;
 

@@ -1,19 +1,19 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_state.dart';
 
 final listPaymentSourceProvider =
 StateNotifierProvider.autoDispose<ListPaymentSourceViewModel, ListPaymentSourceState>((ref) {
-  final repository = RealmRepository();
+  final repository = RealmDataSource();
   return ListPaymentSourceViewModel(repository);
 });
 
 class ListPaymentSourceViewModel extends StateNotifier<ListPaymentSourceState> {
 
   /// 引数でRepositoryをセット
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
 
   ListPaymentSourceViewModel(this._repository): super(ListPaymentSourceState.initial()) {
     fetchAll();

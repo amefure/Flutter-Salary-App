@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/repository/user_settings_repository.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/premium/data/public_salary_repository_impl.dart';
@@ -8,7 +8,7 @@ import 'package:salary/feature/premium/domain/public_salary_repository.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_view_model.dart';
 
 final premiumFunctionStateProvider = StateNotifierProvider<PremiumFunctionStateNotifier, PremiumFunctionState>((ref) {
-  final localRepository = RealmRepository();
+  final localRepository = RealmDataSource();
   final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
   final userSettings = ref.read(userSettingsProvider);
   final vm = PremiumFunctionStateNotifier(ref, localRepository, publicSalaryRepository, userSettings);
@@ -58,7 +58,7 @@ class PremiumFunctionState {
 class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
 
   final Ref _ref;
-  final RealmRepository _localRepository;
+  final RealmDataSource _localRepository;
   final PublicSalaryRepository _publicSalaryRepository;
   final UserSettingsRepository _userSettingsRepository;
 

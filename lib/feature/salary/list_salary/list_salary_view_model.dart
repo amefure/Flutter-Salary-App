@@ -2,13 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/mock/salary_mock_factory.dart';
-import 'package:salary/core/repository/realm_repository.dart';
+import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/repository/user_settings_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_state.dart';
 
 final listSalaryProvider =
 StateNotifierProvider<ListSalaryViewModel, ListSalaryState>((ref) {
-  final repository = RealmRepository();
+  final repository = RealmDataSource();
   final userSettings = ref.read(userSettingsProvider);
   return ListSalaryViewModel(ref, repository, userSettings);
 });
@@ -33,7 +33,7 @@ enum SalarySortOrder {
 
 class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   final Ref ref;
-  final RealmRepository _repository;
+  final RealmDataSource _repository;
   final UserSettingsRepository _userSettingsRepository;
 
   ListSalaryViewModel(this.ref, this._repository, this._userSettingsRepository)
