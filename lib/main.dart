@@ -10,11 +10,11 @@ import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
-import 'package:salary/core/repository/password_service.dart';
+import 'package:salary/core/repository/password_repository.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/root/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:salary/feature/app_lock/app_lock_setting_view.dart';
+import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
@@ -23,6 +23,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 /// ⌘ + option + L => フォーマット
 /// アプリのエントリーポイント
 void main() async {
+  /// ===== イニシャライズ =====
   WidgetsFlutterBinding.ensureInitialized();
   // AdMob初期化
   MobileAds.instance.initialize();
@@ -32,24 +33,30 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseAnalyticsのインスタンスを作成
   FirebaseAnalytics _ = FirebaseAnalytics.instance;
+  /// ===== イニシャライズ =====
 
+  /// ===== プロバイダーイニシャライズ =====
   // SharedPreferencesの初期化
   final prefs = await SharedPreferences.getInstance();
 
-  final passwordService = PasswordService();
-
-  bool isLockEnabled = await passwordService.isLockEnabled();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+    ],
+  );
+  // エントリーポイントでreadを使いたいため先にProviderContainerを構築しておく
+  final passwordRepo = container.read(passwordRepositoryProvider);
+  final isLockEnabled = await passwordRepo.isLockEnabled();
+  /// ===== プロバイダーイニシャライズ =====
 
   runApp(
-    // Riverpod用のスコープをProviderScopeで構築
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
+    // すでに作成済みのcontainerを渡すためのScope
+    UncontrolledProviderScope(
+      container: container,
       child: MyApp(
         startScreen:
             isLockEnabled
-                ? const AppLockSettingView(isEntry: false)
+                ? const AppLockSettingScreen(isEntry: false)
                 : const RootTabView(),
       ),
     ),

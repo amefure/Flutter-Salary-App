@@ -13,7 +13,7 @@ import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dar
 import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
-import 'package:salary/feature/app_lock/app_lock_setting_view.dart';
+import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
 import 'package:salary/feature/in_app_purchase/in_app_purchase_screen.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 import 'package:salary/feature/webview/web_view_screen.dart';
@@ -139,7 +139,7 @@ class SettingScreen extends StatelessWidget {
                         // 結果を受け取りハンドリング
                         final result = await showCupertinoModalPopup<bool>(
                           context: context,
-                          builder: (_) => const AppLockSettingView(),
+                          builder: (_) => const AppLockSettingScreen(),
                         );
 
                         if (result == true) {
