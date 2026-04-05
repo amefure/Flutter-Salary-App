@@ -51,7 +51,7 @@ class AppLockSettingViewModel extends StateNotifier<AppLockSettingState> {
     }
   }
 
-  void savePassword() async {
+  Future<void> savePassword() async {
     /// 全て未入力なら処理終了
     if (!state.isInputComplete) return;
     String password = state.inputPassword.join('');
