@@ -20,7 +20,7 @@
 
 ## 開発環境
 - Android Studio Panda 1 | 2025.3.1 Patch
-- Xcode：26.0.1 
+- Xcode：26.3 
 - Flutter：3.38.3(stable)
 - Dart：3.10.1
 - FVM：4.0.5
@@ -42,6 +42,7 @@
            ∟ auth        ・・・認証周りの状態管理
            ∟ common      ・・・全体共通のコンポーネント、オーバーレイ(ダイアログ等)
            ∟ config      ・・・各種設定定義
+           ∟ data_source ・・・データソース
            ∟ models      ・・・Realmのデータモデル定義
            ∟ mock        ・・・デバッグ環境用モック
            ∟ services    ・・・外部接続サービス(AdMob, IAP, AppTracking等)
@@ -63,6 +64,9 @@
      ∟ firebase_options.dart ・・・Firebaseの設定ファイル(自動生成)
      ∟ main.dart    ・・・アプリのエントリーポイント(ProviderScopeの設定)
  ∟ pubspec.yaml     ・・・プロジェクト/パッケージ設定管理ファイル
+ ∟ test
+     ∟ core ・・・各ファイルのテストコード
+     ∟ feature ・・・各ファイルのテストコード
  ∟ README.md
  ∟ (etc)
 ```
@@ -79,6 +83,13 @@ $ brew install fvm
 # 2.プロジェクトルートでfvm installコマンドの実行
 $ fvm install
 ```
+
+## テストコード
+テストコードは以下を対象として実装中
+
+- Repository
+- ViewModel
+- Utility
 
 # ライブラリ
 
