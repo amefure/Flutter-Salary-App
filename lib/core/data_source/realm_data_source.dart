@@ -9,6 +9,12 @@ abstract class IRealmDataSource {
   /// 指定したIDのデータを取得
   T? fetchById<T extends RealmObject>(String id);
 
+  /// クエリ条件にマッチする最初の1件を取得
+  T? findFirst<T extends RealmObject>(String query, [List<Object?> args]);
+
+  /// クエリ条件にマッチする全件を取得
+  List<T> findByQuery<T extends RealmObject>(String query, [List<Object?> args]);
+
   /// 新しいデータを追加
   void add<T extends RealmObject>(T item);
 
@@ -75,6 +81,20 @@ class RealmDataSource implements IRealmDataSource{
     // ID で検索
     final item = _realm.find<T>(id);
     return item?.freeze() as T;
+  }
+
+  /// クエリ条件にマッチする最初の1件を取得
+  /// query例: "name == $0", args例: ["支払元A"]
+  @override
+  T? findFirst<T extends RealmObject>(String query, [List<Object?> args = const []]) {
+    final results = _realm.query<T>(query, args);
+    return results.isEmpty ? null : results.first.freeze() as T;
+  }
+
+  /// クエリ条件にマッチする全件を取得
+  @override
+  List<T> findByQuery<T extends RealmObject>(String query, [List<Object?> args = const []]) {
+    return _realm.query<T>(query, args).freeze().toList();
   }
 
   /// ジェネリクスで指定した新しいデータを追加

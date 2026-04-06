@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/payment_source/data/cloud_payment_repository_impl.dart';
 import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
@@ -13,34 +14,30 @@ import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
-      final repository = RealmDataSource();
+      final localPaymentSourceRepository = ref.read(localPaymentSourceRepositoryProvider);
       final paymentRepository = ref.read(paymentRepositoryProvider);
-      return InputPaymentSourceViewModel(ref, repository, paymentRepository, paymentSource);
+      return InputPaymentSourceViewModel(ref, localPaymentSourceRepository, paymentRepository, paymentSource);
     }
 );
 
 class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState> {
 
   final Ref _ref;
-
-  final RealmDataSource _repository;
+  final LocalPaymentSourceRepository _localPaymentRepository;
   final CloudPaymentRepository _paymentRepository;
   final PaymentSource? paymentSource;
 
   InputPaymentSourceViewModel(
       this._ref,
-      this._repository,
+      this._localPaymentRepository,
       this._paymentRepository,
       this.paymentSource
       ) : super(InputPaymentSourceState.initial()) {
     _setUpInitialPayment(paymentSource);
   }
 
-
   void _setUpInitialPayment(PaymentSource? current) {
-    final allPayments = _repository.fetchAll<PaymentSource>();
-    final hasMainPaymentSource = allPayments.any((p) => p.isMain == true);
-
+    final hasMainPaymentSource = _localPaymentRepository.fetchMainPaymentSource() != null;
     if (current case PaymentSource paymentSource) {
       state = state.copyWith(
           name: paymentSource.name,
@@ -96,7 +93,7 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
 
   /// 追加
   void _addPaymentSource(PaymentSource paymentSource) {
-    _repository.add<PaymentSource>(paymentSource);
+    _localPaymentRepository.add(paymentSource);
   }
 
   /// 更新
@@ -113,25 +110,26 @@ class InputPaymentSourceViewModel extends StateNotifier<InputPaymentSourceState>
         await _paymentRepository.update(
             id: id,
             name: name,
-            themeColor:
-            color.value,
+            themeColor: color.value,
             memo: memo,
             isMain: isMain
         );
-        _repository.updateById(id, (PaymentSource paymentSource) {
-          paymentSource.name = name;
-          paymentSource.isMain = isMain;
-          paymentSource.themaColor = color.value;
-          paymentSource.memo = memo;
-        });
+        _localPaymentRepository.updatePaymentSource(
+            id: id,
+            name: name,
+            isMain: isMain,
+            themaColorValue: color.value,
+            memo: memo
+        );
       });
     } else {
-      _repository.updateById(id, (PaymentSource paymentSource) {
-        paymentSource.name = name;
-        paymentSource.isMain = isMain;
-        paymentSource.themaColor = color.value;
-        paymentSource.memo = memo;
-      });
+      _localPaymentRepository.updatePaymentSource(
+          id: id,
+          name: name,
+          isMain: isMain,
+          themaColorValue: color.value,
+          memo: memo
+      );
     }
     return true;
   }

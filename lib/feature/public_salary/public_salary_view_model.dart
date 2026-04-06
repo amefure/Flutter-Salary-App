@@ -82,7 +82,7 @@ class PublicSalaryViewModel extends StateNotifier<PublicSalaryState> {
       ) async {
     final user = _ref.read(authStateProvider).user;
     final publicUserId = isPublic ? user?.id : null;
-    _localPaymentRepository.updatePaymentSource(current: current, publicUserId: publicUserId);
+    _localPaymentRepository.updatePublicUserId(id: current.id, publicUserId: publicUserId);
   }
 
   /// クラウドのPaymentSourceを更新 + 給料情報のアップロード

@@ -13,8 +13,9 @@ PaymentSource fakePaymentSource({
   int color = 0xFFFFFFFF,
   bool isMain = false,
   bool isPublicName = false,
+  int? publicUserId,
 }) {
-  return PaymentSource(id, name, color, isMain, isPublicName);
+  return PaymentSource(id, name, color, isMain, isPublicName, publicUserId: publicUserId);
 }
 
 void main() {
