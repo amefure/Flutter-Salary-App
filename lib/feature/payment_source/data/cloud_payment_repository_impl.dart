@@ -5,7 +5,7 @@ import 'package:salary/feature/payment_source/data/payment_api.dart';
 import 'package:salary/feature/payment_source/data/payment_source_dto.dart';
 import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 
-final paymentRepositoryProvider = Provider<CloudPaymentRepository>((ref) {
+final cloudPaymentRepositoryProvider = Provider<CloudPaymentRepository>((ref) {
   final apiSource = ref.read(paymentApiProvider);
   return CloudPaymentRepositoryImpl(apiSource);
 });

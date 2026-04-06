@@ -15,7 +15,7 @@ import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 final inputPaymentSourceProvider = StateNotifierProvider.autoDispose.family<InputPaymentSourceViewModel, InputPaymentSourceState, PaymentSource?>(
     (ref, paymentSource) {
       final localPaymentSourceRepository = ref.read(localPaymentSourceRepositoryProvider);
-      final paymentRepository = ref.read(paymentRepositoryProvider);
+      final paymentRepository = ref.read(cloudPaymentRepositoryProvider);
       return InputPaymentSourceViewModel(ref, localPaymentSourceRepository, paymentRepository, paymentSource);
     }
 );

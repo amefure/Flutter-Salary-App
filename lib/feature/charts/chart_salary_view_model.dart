@@ -1,28 +1,27 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/feature/charts/chart_salary_state.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/core/mock/salary_mock_factory.dart';
-import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/feature/charts/chart_display_mode.dart';
 
 final chartSalaryProvider = StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((ref) {
-    final repository = RealmDataSource();
-    return ChartSalaryViewModel(ref, repository);
+    final localSalaryRepository = ref.read(localSalaryRepositoryProvider);
+    return ChartSalaryViewModel(ref, localSalaryRepository);
   },
 );
 
 class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   final Ref ref;
 
-  /// 引数でRepositoryをセット
-  final RealmDataSource _repository;
+  /// ローカル
+  final LocalSalaryRepository _localSalaryRepositoryProvider;
   /// 棒グラフの最大表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 10;
 
   /// 初期インスタンス化
-  ChartSalaryViewModel(this.ref, this._repository)
+  ChartSalaryViewModel(this.ref, this._localSalaryRepositoryProvider)
       : super(ChartSalaryState.initial()) {
     // ALLを選択状態に変更
     changeSource(DummySource.allDummySource);
@@ -38,10 +37,9 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
 
   /// Realm から Salary を取得
   void _loadSalaries() {
-
-    final salaries = _repository.fetchAll<Salary>();
     // モック(確認用)
-    // final salaries = SalaryMockFactory.allGenerateYears();
+    // final salaries = _localSalaryRepositoryProvider.fetchAll(isMock: true);
+    final salaries = _localSalaryRepositoryProvider.fetchAll();
     setSalaries(salaries);
   }
 

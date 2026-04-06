@@ -21,7 +21,7 @@ StateNotifierProvider.autoDispose<PublicSalaryViewModel, PublicSalaryState>((ref
   final localPaymentSourceRepository = ref.read(localPaymentSourceRepositoryProvider);
   /// クラウド
   final cloudSalaryRepository = ref.read(salaryRepositoryProvider);
-  final cloudPaymentRepository = ref.read(paymentRepositoryProvider);
+  final cloudPaymentRepository = ref.read(cloudPaymentRepositoryProvider);
   return PublicSalaryViewModel(ref, localSalaryRepository, localPaymentSourceRepository, cloudPaymentRepository, cloudSalaryRepository);
 });
 

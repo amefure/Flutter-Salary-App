@@ -19,7 +19,7 @@ final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((r
   final authRepository = ref.read(authRepositoryProvider);
   final repository = RealmDataSource();
   final salaryRepository = ref.read(salaryRepositoryProvider);
-  final paymentRepository = ref.read(paymentRepositoryProvider);
+  final paymentRepository = ref.read(cloudPaymentRepositoryProvider);
   return AuthStateNotifier(ref, authRepository, repository, salaryRepository, paymentRepository);
   },
 );
