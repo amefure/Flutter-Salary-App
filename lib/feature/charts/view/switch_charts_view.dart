@@ -45,7 +45,7 @@ class SwitchChartsView extends ConsumerWidget {
     }
     final values = lines.expand((bar) => bar.spots).map((spot) => spot.y);
     // Y軸の最大値を取得
-    final maxY = vm.calculateMaxYFromValues(values);
+    final maxY = vm.calculateMaxY(values);
 
     return Container(
       width: double.infinity,
