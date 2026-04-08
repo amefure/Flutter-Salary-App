@@ -1,26 +1,11 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
+import 'package:salary/feature/charts/domain/model/pie_chart_sector_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart'; // 型定義参照用
-
-/// 円グラフの1セクションを表すデータ
-class PieChartSectorData {
-  final String name;
-  final int amount;
-  final double percentage;
-  final Color color;
-
-  PieChartSectorData({
-    required this.name,
-    required this.amount,
-    required this.percentage,
-    required this.color,
-  });
-}
 
 class SalaryAggregator {
 
@@ -92,7 +77,7 @@ class SalaryAggregator {
     }
     return result;
   }
-
+  /// 円グラフ用のデータを生成
   static List<PieChartSectorData> buildPieChartData({
     required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
     required int selectedYear,
@@ -148,7 +133,7 @@ class SalaryAggregator {
     return [DummySource.allDummySource, ...sources];
   }
 
-  /// 3. 年別サマリー（前年比較含む）の計算
+  /// 「② 年収 & 賞与サマリーデータ」の計算
   static YearlySalarySummary calculateYearlySummary({
     required PaymentSource selectedSource,
     required int selectedYear,
@@ -216,8 +201,7 @@ class SalaryAggregator {
     );
   }
 
-  /// 10年分棒グラフ表示用データの生成
-  /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
+  /// 「③ 年別合計金額(10年間)棒グラフ用データ」の計算
   static YearlyPaymentChartData buildYearlyPaymentBarChartData({
     required PaymentSource selectedSource,
     required Map<String, List<MonthlySalarySummaryItem>> groupedBySource

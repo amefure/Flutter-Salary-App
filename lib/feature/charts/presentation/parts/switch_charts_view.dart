@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/feature/charts/domain/model/pie_chart_sector_data.dart';
 import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
 import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
 import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';

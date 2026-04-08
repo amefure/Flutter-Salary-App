@@ -3,6 +3,7 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
+import 'package:salary/feature/charts/domain/model/pie_chart_sector_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart';
 import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
@@ -25,6 +26,7 @@ class ChartSalaryState {
   final Map<String, List<MonthlySalarySummaryItem>> groupedBySource;
 
   /// 「① 月別合計金額折れ線グラフ」
+  /// 支払い元の数の中に月ごとのプロットを指すデータを保持
   final List<List<MonthlySalarySummaryItem>> lineChartData;
   /// 「① 月別合計金額円グラフ」
   final List<PieChartSectorData> pieChartData;
