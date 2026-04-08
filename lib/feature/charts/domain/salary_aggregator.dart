@@ -8,11 +8,11 @@ class SalaryAggregator {
   /// 棒グラフの最大表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 10;
 
-  /// 1. 支払い元 ＋ 年月でグルーピング
-  static Map<String, List<MonthlySalarySummary>> groupBySourceAndMonth(
+  /// 「」
+  static Map<String, List<MonthlySalarySummaryChartItem>> groupBySourceAndMonth(
       List<Salary> salaries,
       ) {
-    final Map<String, List<MonthlySalarySummary>> result = {};
+    final Map<String, List<MonthlySalarySummaryChartItem>> result = {};
 
     for (final salary in salaries) {
       final sourceId = salary.source?.id ?? DummySource.unSetDummySource.id;
@@ -26,7 +26,7 @@ class SalaryAggregator {
 
       if (index == -1) {
         result[sourceId]!.add(
-          MonthlySalarySummary(
+          MonthlySalarySummaryChartItem(
             createdAt: createdAt,
             paymentAmount: salary.paymentAmount,
             netSalary: salary.netSalary,
@@ -35,7 +35,7 @@ class SalaryAggregator {
         );
       } else {
         final old = result[sourceId]![index];
-        result[sourceId]![index] = MonthlySalarySummary(
+        result[sourceId]![index] = MonthlySalarySummaryChartItem(
           createdAt: createdAt,
           paymentAmount: old.paymentAmount + salary.paymentAmount,
           netSalary: old.netSalary + salary.netSalary,
@@ -47,9 +47,9 @@ class SalaryAggregator {
     return result;
   }
 
-  /// 2. グループ化されたデータから表示用の支払い元リストを抽出・ソート
-  static List<PaymentSource> extractSortedSources(
-      Map<String, List<MonthlySalarySummary>> grouped,
+  /// グループ化されたデータから表示用の支払い元リストを抽出・ソート
+  static List<PaymentSource> fetchExtractSortedSources(
+      Map<String, List<MonthlySalarySummaryChartItem>> grouped,
       ) {
     final List<PaymentSource> sources = [
       ...grouped.values.map(
@@ -137,7 +137,7 @@ class SalaryAggregator {
   /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
   static YearlyPaymentChartData buildYearlyPaymentBarChartData({
     required PaymentSource selectedSource,
-    required Map<String, List<MonthlySalarySummary>> groupedBySource
+    required Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource
   }) {
     // 年ごとの総支給額
     final Map<int, int> yearlySums = {};

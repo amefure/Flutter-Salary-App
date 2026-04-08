@@ -1,7 +1,4 @@
-
-
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
@@ -10,23 +7,15 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 
-/// 年ごとの給料グラフ(過去10年分)
+/// ③ 年別合計金額(10年間)棒グラフ用データ
 class BarChartYearlyView extends ConsumerWidget {
 
   const BarChartYearlyView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vm = ref.read(chartSalaryProvider.notifier);
 
-    final selectedSource = ref.watch(chartSalaryProvider.select((s) => s.selectedSource));
-    final groupedBySource = ref.watch(chartSalaryProvider.select((s) => s.groupedBySource));
-
-    final chartData = vm
-        .buildYearlyPaymentBarChartData(
-        selectedSource: selectedSource,
-        groupedBySource: groupedBySource,
-    );
+    final chartData = ref.watch(chartSalaryProvider.select((s) => s.yearlyPaymentChartData));
 
     if (chartData.isEmpty) {
       return const EmptyChartView();

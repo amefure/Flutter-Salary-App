@@ -10,13 +10,13 @@ class ChartModeSwitcher extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayMode = ref.watch(chartSalaryProvider.select((s) => s.displayMode));
+    final displayMode = ref.watch(chartSalaryProvider.select((s) => s.chartDisplayMode));
     final notifier = ref.read(chartSalaryProvider.notifier);
 
     return CupertinoSegmentedControl<ChartDisplayMode>(
       groupValue: displayMode,
       onValueChanged: (_) {
-        notifier.toggleDisplayMode();
+        notifier.toggleChartDisplayMode();
       },
       children: const {
         ChartDisplayMode.line: Padding(

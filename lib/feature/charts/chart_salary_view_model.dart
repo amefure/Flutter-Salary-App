@@ -21,15 +21,15 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   /// 初期インスタンス化
   ChartSalaryViewModel(this.ref, this._localSalaryRepositoryProvider)
       : super(ChartSalaryState.initial()) {
-    // ALLを選択状態に変更
+    /// ALLを選択状態に変更
     changeSource(DummySource.allDummySource);
-    // データロード
+    /// データロード
     _loadSalaries();
   }
 
-  /// リフレッシュ
+  /// MyData画面以外からのリフレッシュ
   void refresh() {
-    // データロード
+    /// データを最初から読み込む
     _loadSalaries();
   }
 
@@ -38,51 +38,54 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     // モック(確認用)
     // final salaries = _localSalaryRepositoryProvider.fetchAll(isMock: true);
     final salaries = _localSalaryRepositoryProvider.fetchAll();
-    setSalaries(salaries);
+    _setSalaries(salaries);
   }
 
   /// Salary一覧を受け取り、集計
-  void setSalaries(List<Salary> allSalaries) {
+  void _setSalaries(List<Salary> allSalaries) {
     final grouped = SalaryAggregator.groupBySourceAndMonth(allSalaries);
-    final sources = SalaryAggregator.extractSortedSources(grouped);
+    /// 支払い元選択ピッカーに表示するリストを取得
+    final sourceList = SalaryAggregator.fetchExtractSortedSources(grouped);
     state = state.copyWith(
       allSalaries: allSalaries,
+      sourceList: sourceList,
       groupedBySource: grouped,
-      sourceList: sources,
     );
     _applyYearlySummary();
+    _applyYearlyPaymentBarChartData();
   }
 
+  /// 支払い元切り替え
   void changeSource(PaymentSource source) {
     state = state.copyWith(selectedSource: source);
     _applyYearlySummary();
+    _applyYearlyPaymentBarChartData();
   }
 
+  /// 年数切り替え
   void changeYear(int offset) {
     state = state.copyWith(
       selectedYear: state.selectedYear + offset,
     );
+    /// 年数の変更の場合はサマリーのみ更新
     _applyYearlySummary();
   }
 
-  /// グラフ切り替え
-  void toggleDisplayMode() {
+  /// グラフ表示切り替え
+  void toggleChartDisplayMode() {
     state = state.copyWith(
-      displayMode: state.displayMode == ChartDisplayMode.line
-          ? ChartDisplayMode.pie
-          : ChartDisplayMode.line,
+      chartDisplayMode: state.chartDisplayMode.opposite,
     );
   }
 
-  /// 10年分棒グラフ表示用データの生成
-  /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
-  YearlyPaymentChartData buildYearlyPaymentBarChartData({
-    required PaymentSource selectedSource,
-    required Map<String, List<MonthlySalarySummary>> groupedBySource
-  }) {
-    return SalaryAggregator.buildYearlyPaymentBarChartData(
-        selectedSource: selectedSource,
-        groupedBySource: groupedBySource
+  /// 「③ 年別合計金額(10年間)棒グラフ用データ」を計算し反映
+  void _applyYearlyPaymentBarChartData() {
+    final chartData = SalaryAggregator.buildYearlyPaymentBarChartData(
+        selectedSource: state.selectedSource,
+        groupedBySource: state.groupedBySource
+    );
+    state = state.copyWith(
+        yearlyPaymentChartData: chartData
     );
   }
 
@@ -91,33 +94,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     return SalaryAggregator.calculateMaxY(values);
   }
 
-
-  /// 年別 × 支払い元ごとの総支給額を集計
-  Map<String, int> buildYearlyPaymentBySource(
-      List<Salary> salaries,
-      int year,
-      PaymentSource selectedSource,
-      ) {
-    final Map<String, int> result = {};
-
-    for (final salary in salaries) {
-      if (salary.createdAt.year != year) continue;
-
-      final source = salary.source ?? DummySource.unSetDummySource;
-
-      if (selectedSource.name != DummySource.ALL_TITLE &&
-          source.name != selectedSource.name) {
-        continue;
-      }
-
-      result[source.id] =
-          (result[source.id] ?? 0) + salary.paymentAmount;
-    }
-
-    return result;
-  }
-
-  /// 給料合計テーブル用データクラス
+  /// 「② 年収 & 賞与サマリーデータ」を計算し反映
   void _applyYearlySummary() {
     final summary = SalaryAggregator.calculateYearlySummary(
         selectedSource: state.selectedSource,
@@ -130,19 +107,20 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
   }
 }
 
-/// 月別合計データクラス
-/// 生成日時
-class MonthlySalarySummary {
+/// ① 月別合計金額グラフアイテムデータクラス
+/// 支払い元ごとの月単位の総支給額・手取り額の合計を表示
+/// これをリストで保持して1年分表示する
+class MonthlySalarySummaryChartItem {
   /// 生成日時(対象年月の1日が格納される)
   final DateTime createdAt;
   /// 対象年月の合計総支給額
   final int paymentAmount;
   /// 対象年月の合計手取り額
   final int netSalary;
-  /// 対象年月の支払い元
+  /// 対象年月の支払い元(未設定もあり)
   final PaymentSource? source;
 
-  MonthlySalarySummary({
+  MonthlySalarySummaryChartItem({
     required this.createdAt,
     required this.paymentAmount,
     required this.netSalary,
@@ -150,7 +128,7 @@ class MonthlySalarySummary {
   });
 }
 
-/// 給料合計テーブル用データクラス
+/// ② 年収 & 賞与サマリーデータクラス
 class YearlySalarySummary {
   /// 当年(総支給)
   final int paymentAmount;
@@ -194,7 +172,9 @@ class YearlySalarySummary {
   });
 }
 
-/// 10年分棒グラフ用データクラス
+/// ③ 年別合計金額(10年間)棒グラフ用データクラス
+/// 年ごとの総支給額を支払い元は識別にせずに統合して計算
+/// グラフで表示すべきデータ全体を保持する
 class YearlyPaymentChartData {
   final List<int> years;
   final List<int> amounts;
@@ -205,6 +185,14 @@ class YearlyPaymentChartData {
     required this.amounts,
     required this.maxY,
   });
+
+  static YearlyPaymentChartData initial() {
+    return const YearlyPaymentChartData(
+        years: [],
+        amounts: [],
+        maxY: 0
+    );
+  }
 
   bool get isEmpty => years.isEmpty;
 }

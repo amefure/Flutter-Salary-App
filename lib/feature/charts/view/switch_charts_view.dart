@@ -18,7 +18,7 @@ class SwitchChartsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayMode = ref.watch(chartSalaryProvider.select((s) => s.displayMode));
+    final displayMode = ref.watch(chartSalaryProvider.select((s) => s.chartDisplayMode));
 
     switch (displayMode) {
       case ChartDisplayMode.line:
@@ -127,14 +127,14 @@ class SwitchChartsView extends ConsumerWidget {
     List<LineChartBarData> lines = [];
 
     // 選択中のカテゴリでフィルタリング
-    Map<String, List<MonthlySalarySummary>> filteredData =
+    Map<String, List<MonthlySalarySummaryChartItem>> filteredData =
     selectedSource.id == DummySource.allDummySource.id
         ? groupedBySource
         : { selectedSource.id : groupedBySource[selectedSource.id] ?? [] };
 
     filteredData.forEach((source, salaries) {
       // 選択中の年月でフィルタリング
-      List<MonthlySalarySummary> filteredSalaries =
+      List<MonthlySalarySummaryChartItem> filteredSalaries =
       salaries.where((s) => s.createdAt.year == selectedYear).toList();
 
       // 日付順にソート
