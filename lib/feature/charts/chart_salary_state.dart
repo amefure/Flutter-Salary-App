@@ -18,14 +18,17 @@ class ChartSalaryState {
   /// グラフ表示モード
   final ChartDisplayMode chartDisplayMode;
 
-  /// 「① 月別合計金額グラフ」
+
   /// 折れ線グラフ & 円グラフ
   /// Keyは支払い元のID
   final Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource;
+
+  /// 「① 月別合計金額グラフ」
+  final List<List<MonthlySalarySummaryChartItem>> lineChartData;
   /// 「② 年収 & 賞与サマリーデータ」
-  final YearlySalarySummary yearlySalarySummary;
+  final YearlySalarySummary yearlySummaryData;
   /// 「③ 年別合計金額(10年間)棒グラフ用データ」
-  final YearlyPaymentChartData yearlyPaymentChartData;
+  final YearlyPaymentChartData yearlyBarChartData;
 
   ChartSalaryState({
     required this.allSalaries,
@@ -35,8 +38,9 @@ class ChartSalaryState {
     required this.chartDisplayMode,
 
     required this.groupedBySource,
-    required this.yearlySalarySummary,
-    required this.yearlyPaymentChartData,
+    required this.lineChartData,
+    required this.yearlySummaryData,
+    required this.yearlyBarChartData,
   });
 
   static ChartSalaryState initial() {
@@ -48,8 +52,9 @@ class ChartSalaryState {
         chartDisplayMode: ChartDisplayMode.line,
 
         groupedBySource: {},
-        yearlySalarySummary: YearlySalarySummary.initial(),
-        yearlyPaymentChartData: YearlyPaymentChartData.initial()
+        lineChartData: [],
+        yearlySummaryData: YearlySalarySummary.initial(),
+        yearlyBarChartData: YearlyPaymentChartData.initial()
     );
   }
 
@@ -61,8 +66,9 @@ class ChartSalaryState {
     ChartDisplayMode? chartDisplayMode,
 
     Map<String, List<MonthlySalarySummaryChartItem>>? groupedBySource,
-    YearlySalarySummary? yearlySalarySummary,
-    YearlyPaymentChartData? yearlyPaymentChartData,
+    List<List<MonthlySalarySummaryChartItem>>? lineChartData,
+    YearlySalarySummary? yearlySummaryData,
+    YearlyPaymentChartData? yearlyBarChartData,
   }) {
     return ChartSalaryState(
       allSalaries: allSalaries ?? this.allSalaries,
@@ -72,8 +78,9 @@ class ChartSalaryState {
       chartDisplayMode: chartDisplayMode ?? this.chartDisplayMode,
 
       groupedBySource: groupedBySource ?? this.groupedBySource,
-      yearlySalarySummary: yearlySalarySummary ?? this.yearlySalarySummary,
-      yearlyPaymentChartData: yearlyPaymentChartData ?? this.yearlyPaymentChartData,
+      lineChartData: lineChartData ?? this.lineChartData,
+      yearlySummaryData: yearlySummaryData ?? this.yearlySummaryData,
+      yearlyBarChartData: yearlyBarChartData ?? this.yearlyBarChartData,
     );
   }
 }

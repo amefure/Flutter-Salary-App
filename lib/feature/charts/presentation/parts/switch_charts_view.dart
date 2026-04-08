@@ -1,9 +1,6 @@
-
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
 import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
 import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -13,6 +10,8 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 
+/// 「① 月別合計金額グラフ」
+/// 折れ線 or 円グラフに切り替え可能
 class SwitchChartsView extends ConsumerWidget {
 
   const SwitchChartsView({super.key});
@@ -35,10 +34,8 @@ class SwitchChartsView extends ConsumerWidget {
       BuildContext context,
       WidgetRef ref
       ) {
-    final state = ref.watch(chartSalaryProvider);
+    final selectedSource = ref.watch(chartSalaryProvider.select((s) => s.selectedSource));
     final vm = ref.read(chartSalaryProvider.notifier);
-
-    final selectedSource = state.selectedSource;
 
     List<LineChartBarData> lines = _buildLines(ref);
     if (lines.isEmpty) {
@@ -58,7 +55,7 @@ class SwitchChartsView extends ConsumerWidget {
       ),
       child: LineChart(
         LineChartData(
-          // ツールチップ設定
+          /// ツールチップ設定
           lineTouchData: LineTouchData(
             enabled: selectedSource != DummySource.allDummySource ? true : false,
             touchTooltipData: LineTouchTooltipData(
@@ -118,75 +115,33 @@ class SwitchChartsView extends ConsumerWidget {
     );
   }
 
-
-  /// 選択された支払い元のデータを取得し、折れ線データを生成
   List<LineChartBarData> _buildLines(WidgetRef ref) {
-    final state = ref.watch(chartSalaryProvider);
-    final selectedSource = state.selectedSource;
-    final selectedYear = state.selectedYear;
-    final groupedBySource = state.groupedBySource;
-    List<LineChartBarData> lines = [];
+    final lineChartData = ref.watch(chartSalaryProvider.select((s) => s.lineChartData));
 
-    // 選択中のカテゴリでフィルタリング
-    Map<String, List<MonthlySalarySummaryChartItem>> filteredData =
-    selectedSource.id == DummySource.allDummySource.id
-        ? groupedBySource
-        : { selectedSource.id : groupedBySource[selectedSource.id] ?? [] };
+    return lineChartData.expand((monthlyDataList) {
+      final source = monthlyDataList.first.source;
+      final baseColor = source?.themaColorEnum.color ?? Colors.blue;
 
-    filteredData.forEach((source, salaries) {
-      // 選択中の年月でフィルタリング
-      List<MonthlySalarySummaryChartItem> filteredSalaries =
-      salaries.where((s) => s.createdAt.year == selectedYear).toList();
+      /// 総支給の線
+      final paymentLine = LineChartBarData(
+        spots: monthlyDataList.map((d) => FlSpot(d.createdAt.month.toDouble(), d.paymentAmount.toDouble())).toList(),
+        isCurved: true,
+        color: baseColor,
+        barWidth: 3,
+        belowBarData: BarAreaData(show: false),
+      );
 
-      // 日付順にソート
-      filteredSalaries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      /// 手取りの線
+      final netLine = LineChartBarData(
+        spots: monthlyDataList.map((d) => FlSpot(d.createdAt.month.toDouble(), d.netSalary.toDouble())).toList(),
+        isCurved: true,
+        color: baseColor.withValues(alpha: 0.4),
+        barWidth: 3,
+        belowBarData: BarAreaData(show: false),
+      );
 
-      List<FlSpot> paymentSpots =
-      filteredSalaries
-          .map(
-            (s) => FlSpot(
-          s.createdAt.month.toDouble(),
-          s.paymentAmount.toDouble(),
-        ),
-      )
-          .toList();
-
-      List<FlSpot> netSalarySpots =
-      filteredSalaries
-          .map(
-            (s) => FlSpot(
-          s.createdAt.month.toDouble(),
-          s.netSalary.toDouble(),
-        ),
-      )
-          .toList();
-      // ALLを選択中のみ複数Line格納される
-      if (paymentSpots.isNotEmpty) {
-        lines.add(
-          LineChartBarData(
-            spots: paymentSpots,
-            isCurved: true,
-            color: filteredSalaries.firstOrNull?.source?.themaColorEnum.color,
-            barWidth: 3,
-            belowBarData: BarAreaData(show: false),
-          ),
-        );
-      }
-
-      // ALLを選択中のみ複数Line格納される
-      if (netSalarySpots.isNotEmpty) {
-        lines.add(
-          LineChartBarData(
-            spots: netSalarySpots,
-            isCurved: true,
-            color: filteredSalaries.firstOrNull?.source?.themaColorEnum.color.withValues(alpha: 0.4),
-            barWidth: 3,
-            belowBarData: BarAreaData(show: false),
-          ),
-        );
-      }
-    });
-    return lines;
+      return [paymentLine, netLine];
+    }).toList();
   }
 
 

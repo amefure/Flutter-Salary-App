@@ -15,7 +15,7 @@ class TableSalaryInfoView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summary = ref.watch(chartSalaryProvider.select((s) => s.yearlySalarySummary));
+    final summary = ref.watch(chartSalaryProvider.select((s) => s.yearlySummaryData));
 
     return Column(
       spacing: 20,

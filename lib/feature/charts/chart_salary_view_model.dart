@@ -3,7 +3,6 @@ import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/feature/charts/chart_salary_state.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
 
 final chartSalaryProvider = StateNotifierProvider<ChartSalaryViewModel, ChartSalaryState>((ref) {
@@ -51,15 +50,17 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
       sourceList: sourceList,
       groupedBySource: grouped,
     );
+    _applyMonthlyLineChart();
     _applyYearlySummary();
-    _applyYearlyPaymentBarChartData();
+    _applyYearlyBarChart();
   }
 
   /// 支払い元切り替え
   void changeSource(PaymentSource source) {
     state = state.copyWith(selectedSource: source);
+    _applyMonthlyLineChart();
     _applyYearlySummary();
-    _applyYearlyPaymentBarChartData();
+    _applyYearlyBarChart();
   }
 
   /// 年数切り替え
@@ -67,6 +68,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     state = state.copyWith(
       selectedYear: state.selectedYear + offset,
     );
+    _applyMonthlyLineChart();
     /// 年数の変更の場合はサマリーのみ更新
     _applyYearlySummary();
   }
@@ -78,14 +80,25 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     );
   }
 
+  /// 選択状態が変わるたびに呼ばれる
+  void _applyMonthlyLineChart() {
+    final lineData = SalaryAggregator.buildLineChartData(
+      groupedBySource: state.groupedBySource,
+      selectedSource: state.selectedSource,
+      selectedYear: state.selectedYear,
+    );
+
+    state = state.copyWith(lineChartData: lineData);
+  }
+
   /// 「③ 年別合計金額(10年間)棒グラフ用データ」を計算し反映
-  void _applyYearlyPaymentBarChartData() {
+  void _applyYearlyBarChart() {
     final chartData = SalaryAggregator.buildYearlyPaymentBarChartData(
         selectedSource: state.selectedSource,
         groupedBySource: state.groupedBySource
     );
     state = state.copyWith(
-        yearlyPaymentChartData: chartData
+        yearlyBarChartData: chartData
     );
   }
 
@@ -102,7 +115,7 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
         allSalaries: state.allSalaries
     );
     state = state.copyWith(
-        yearlySalarySummary: summary
+        yearlySummaryData: summary
     );
   }
 }

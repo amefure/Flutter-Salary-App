@@ -15,7 +15,7 @@ class BarChartYearlyView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final chartData = ref.watch(chartSalaryProvider.select((s) => s.yearlyPaymentChartData));
+    final chartData = ref.watch(chartSalaryProvider.select((s) => s.yearlyBarChartData));
 
     if (chartData.isEmpty) {
       return const EmptyChartView();

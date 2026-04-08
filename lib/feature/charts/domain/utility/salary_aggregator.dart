@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/dummy_source.dart';
-import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart'; // 型定義参照用
@@ -47,6 +46,33 @@ class SalaryAggregator {
       }
     }
 
+    return result;
+  }
+
+  /// 折れ線グラフ用のデータを生成
+  static List<List<MonthlySalarySummaryChartItem>> buildLineChartData({
+    required Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource,
+    required PaymentSource selectedSource,
+    required int selectedYear,
+  }) {
+    final List<List<MonthlySalarySummaryChartItem>> result = [];
+
+    /// 選択中の支払い元でフィルタリング
+    final filteredMap = selectedSource.id == DummySource.allDummySource.id
+        ? groupedBySource
+        : {selectedSource.id: groupedBySource[selectedSource.id] ?? []};
+
+    for (final salaries in filteredMap.values) {
+      /// 選択年でフィルタリング & ソート
+      final filtered = salaries
+          .where((s) => s.createdAt.year == selectedYear)
+          .toList()
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+      if (filtered.isNotEmpty) {
+        result.add(filtered);
+      }
+    }
     return result;
   }
 
