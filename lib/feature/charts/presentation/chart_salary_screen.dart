@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/feature/charts/view/bar_chart_yearly_view.dart';
-import 'package:salary/feature/charts/view/chart_mode_switcher.dart';
-import 'package:salary/feature/charts/view/switch_charts_view.dart';
-import 'package:salary/feature/charts/view/table_salary_info_view.dart';
+import 'package:salary/feature/charts/presentation/parts/bar_chart_yearly_view.dart';
+import 'package:salary/feature/charts/presentation/parts/chart_mode_switcher.dart';
+import 'package:salary/feature/charts/presentation/parts/switch_charts_view.dart';
+import 'package:salary/feature/charts/presentation/parts/table_salary_info_view.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';

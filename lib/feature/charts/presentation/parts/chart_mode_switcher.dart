@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
-import 'package:salary/feature/charts/chart_display_mode.dart';
+import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 
 /// グラフ表示モード切り替えスイッチ
 class ChartModeSwitcher extends ConsumerWidget {

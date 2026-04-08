@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/charts/view/chart_salary_screen.dart';
+import 'package:salary/feature/charts/presentation/chart_salary_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_screen.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
