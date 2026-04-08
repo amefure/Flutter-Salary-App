@@ -50,16 +50,19 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
       groupedBySource: grouped,
       sourceList: sources,
     );
+    _applyYearlySummary();
   }
 
   void changeSource(PaymentSource source) {
     state = state.copyWith(selectedSource: source);
+    _applyYearlySummary();
   }
 
   void changeYear(int offset) {
     state = state.copyWith(
       selectedYear: state.selectedYear + offset,
     );
+    _applyYearlySummary();
   }
 
   /// グラフ切り替え
@@ -114,15 +117,15 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     return result;
   }
 
-  YearlySalarySummary buildYearlySummary({
-    required PaymentSource selectedSource,
-    required int selectedYear,
-    required List<Salary> allSalaries
-  }) {
-    return SalaryAggregator.calculateYearlySummary(
-      selectedSource: selectedSource,
-      selectedYear: selectedYear,
-      allSalaries: allSalaries
+  /// 給料合計テーブル用データクラス
+  void _applyYearlySummary() {
+    final summary = SalaryAggregator.calculateYearlySummary(
+        selectedSource: state.selectedSource,
+        selectedYear: state.selectedYear,
+        allSalaries: state.allSalaries
+    );
+    state = state.copyWith(
+        yearlySalarySummary: summary
     );
   }
 }
@@ -165,6 +168,19 @@ class YearlySalarySummary {
   final int diffSummerBonus;
   /// 前年差分冬季賞与(総支給)
   final int diffWinterBonus;
+
+  static YearlySalarySummary initial() {
+    return const YearlySalarySummary(
+      paymentAmount: 0,
+      netSalary: 0,
+      diffPaymentAmount: 0,
+      diffNetSalary: 0,
+      summerBonus: 0,
+      winterBonus: 0,
+      diffSummerBonus: 0,
+      diffWinterBonus: 0,
+    );
+  }
 
   const YearlySalarySummary({
     required this.paymentAmount,

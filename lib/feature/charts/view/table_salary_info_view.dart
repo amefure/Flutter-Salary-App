@@ -15,18 +15,7 @@ class TableSalaryInfoView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vm = ref.read(chartSalaryProvider.notifier);
-
-    final selectedSource = ref.watch(chartSalaryProvider.select((s) => s.selectedSource));
-    final selectedYear = ref.watch(chartSalaryProvider.select((s) => s.selectedYear));
-    final allSalaries = ref.watch(chartSalaryProvider.select((s) => s.allSalaries));
-
-    final summary = vm.buildYearlySummary(
-      selectedSource: selectedSource,
-      selectedYear: selectedYear,
-      allSalaries: allSalaries,
-    );
-
+    final summary = ref.watch(chartSalaryProvider.select((s) => s.yearlySalarySummary));
 
     return Column(
       spacing: 20,

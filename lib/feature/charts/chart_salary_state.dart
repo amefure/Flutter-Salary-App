@@ -19,6 +19,8 @@ class ChartSalaryState {
   final ChartDisplayMode displayMode;
   /// 円グラフ表示用データ
   final Map<PaymentSource, int> yearlyPaymentBySource;
+  /// 給料合計テーブル表示用データ
+  final YearlySalarySummary yearlySalarySummary;
 
   ChartSalaryState({
     required this.allSalaries,
@@ -28,17 +30,19 @@ class ChartSalaryState {
     required this.selectedYear,
     required this.displayMode,
     required this.yearlyPaymentBySource,
+    required this.yearlySalarySummary,
   });
 
   static ChartSalaryState initial() {
     return ChartSalaryState(
-      allSalaries: [],
-      groupedBySource: {},
-      sourceList: [],
-      selectedSource: DummySource.allDummySource,
-      selectedYear: DateTime.now().year,
-      displayMode: ChartDisplayMode.line,
-      yearlyPaymentBySource: {},
+        allSalaries: [],
+        groupedBySource: {},
+        sourceList: [],
+        selectedSource: DummySource.allDummySource,
+        selectedYear: DateTime.now().year,
+        displayMode: ChartDisplayMode.line,
+        yearlyPaymentBySource: {},
+        yearlySalarySummary: YearlySalarySummary.initial()
     );
   }
 
@@ -50,6 +54,7 @@ class ChartSalaryState {
     int? selectedYear,
     ChartDisplayMode? displayMode,
     Map<PaymentSource, int>? yearlyPaymentBySource,
+    YearlySalarySummary? yearlySalarySummary,
   }) {
     return ChartSalaryState(
       allSalaries: allSalaries ?? this.allSalaries,
@@ -59,6 +64,7 @@ class ChartSalaryState {
       selectedYear: selectedYear ?? this.selectedYear,
       displayMode: displayMode ?? this.displayMode,
       yearlyPaymentBySource: yearlyPaymentBySource ?? this.yearlyPaymentBySource,
+      yearlySalarySummary: yearlySalarySummary ?? this.yearlySalarySummary,
     );
   }
 }
