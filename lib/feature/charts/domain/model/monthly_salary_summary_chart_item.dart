@@ -1,9 +1,9 @@
 import 'package:salary/core/models/salary.dart';
 
-/// ① 月別合計金額グラフアイテムデータクラス
+/// 各グラフの計算元となる支払い元ベースの給料データ
 /// 支払い元ごとの月単位の総支給額・手取り額の合計を表示
 /// これをリストで保持して1年分表示する
-class MonthlySalarySummaryChartItem {
+class MonthlySalarySummaryItem {
   /// 生成日時(対象年月の1日が格納される)
   final DateTime createdAt;
   /// 対象年月の合計総支給額
@@ -13,7 +13,7 @@ class MonthlySalarySummaryChartItem {
   /// 対象年月の支払い元(未設定もあり)
   final PaymentSource? source;
 
-  MonthlySalarySummaryChartItem({
+  MonthlySalarySummaryItem({
     required this.createdAt,
     required this.paymentAmount,
     required this.netSalary,

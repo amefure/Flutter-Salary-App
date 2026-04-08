@@ -1,20 +1,37 @@
 import 'dart:math';
+import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart'; // 型定義参照用
 
+/// 円グラフの1セクションを表すデータ
+class PieChartSectorData {
+  final String name;
+  final int amount;
+  final double percentage;
+  final Color color;
+
+  PieChartSectorData({
+    required this.name,
+    required this.amount,
+    required this.percentage,
+    required this.color,
+  });
+}
+
 class SalaryAggregator {
 
   /// 棒グラフの最大表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 10;
 
-  /// 「」
-  static Map<String, List<MonthlySalarySummaryChartItem>> groupBySourceAndMonth(
+  /// 各グラフの計算元となる支払い元ベースの給料データを算出
+  static Map<String, List<MonthlySalarySummaryItem>> groupBySourceAndMonth(
       List<Salary> salaries,
       ) {
-    final Map<String, List<MonthlySalarySummaryChartItem>> result = {};
+    final Map<String, List<MonthlySalarySummaryItem>> result = {};
 
     for (final salary in salaries) {
       final sourceId = salary.source?.id ?? DummySource.unSetDummySource.id;
@@ -28,7 +45,7 @@ class SalaryAggregator {
 
       if (index == -1) {
         result[sourceId]!.add(
-          MonthlySalarySummaryChartItem(
+          MonthlySalarySummaryItem(
             createdAt: createdAt,
             paymentAmount: salary.paymentAmount,
             netSalary: salary.netSalary,
@@ -37,7 +54,7 @@ class SalaryAggregator {
         );
       } else {
         final old = result[sourceId]![index];
-        result[sourceId]![index] = MonthlySalarySummaryChartItem(
+        result[sourceId]![index] = MonthlySalarySummaryItem(
           createdAt: createdAt,
           paymentAmount: old.paymentAmount + salary.paymentAmount,
           netSalary: old.netSalary + salary.netSalary,
@@ -50,12 +67,12 @@ class SalaryAggregator {
   }
 
   /// 折れ線グラフ用のデータを生成
-  static List<List<MonthlySalarySummaryChartItem>> buildLineChartData({
-    required Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource,
+  static List<List<MonthlySalarySummaryItem>> buildLineChartData({
+    required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
     required PaymentSource selectedSource,
     required int selectedYear,
   }) {
-    final List<List<MonthlySalarySummaryChartItem>> result = [];
+    final List<List<MonthlySalarySummaryItem>> result = [];
 
     /// 選択中の支払い元でフィルタリング
     final filteredMap = selectedSource.id == DummySource.allDummySource.id
@@ -76,9 +93,46 @@ class SalaryAggregator {
     return result;
   }
 
+  static List<PieChartSectorData> buildPieChartData({
+    required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
+    required int selectedYear,
+  }) {
+    final List<PieChartSectorData> sectors = [];
+    int totalAmount = 0;
+
+    // 1. 各支払い元の合計額を算出
+    for (final entries in groupedBySource.values) {
+      final yearlyList = entries.where((s) => s.createdAt.year == selectedYear);
+      if (yearlyList.isEmpty) continue;
+
+      final sum = yearlyList.fold<int>(0, (prev, s) => prev + s.paymentAmount);
+      if (sum <= 0) continue;
+
+      totalAmount += sum;
+      final source = yearlyList.first.source;
+
+      sectors.add(PieChartSectorData(
+        name: source?.name ?? DummySource.UNSET_TITLE,
+        amount: sum,
+        percentage: 0, // 後で計算
+        color: source?.themaColorEnum.color ?? Colors.grey,
+      ));
+    }
+
+    if (totalAmount == 0) return [];
+
+    // 2. 割合（%）を計算して返却
+    return sectors.map((s) => PieChartSectorData(
+      name: s.name,
+      amount: s.amount,
+      percentage: (s.amount / totalAmount) * 100,
+      color: s.color,
+    )).toList();
+  }
+
   /// グループ化されたデータから表示用の支払い元リストを抽出・ソート
   static List<PaymentSource> fetchExtractSortedSources(
-      Map<String, List<MonthlySalarySummaryChartItem>> grouped,
+      Map<String, List<MonthlySalarySummaryItem>> grouped,
       ) {
     final List<PaymentSource> sources = [
       ...grouped.values.map(
@@ -166,7 +220,7 @@ class SalaryAggregator {
   /// 年ごとの総支給額を支払い元は識別にせずに統合して計算
   static YearlyPaymentChartData buildYearlyPaymentBarChartData({
     required PaymentSource selectedSource,
-    required Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource
+    required Map<String, List<MonthlySalarySummaryItem>> groupedBySource
   }) {
     // 年ごとの総支給額
     final Map<int, int> yearlySums = {};

@@ -1,11 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
 import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
 import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/models/dummy_source.dart';
-import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
@@ -144,59 +144,22 @@ class SwitchChartsView extends ConsumerWidget {
     }).toList();
   }
 
+  Widget _buildPieChart(BuildContext context, WidgetRef ref) {
+    final sectors = ref.watch(chartSalaryProvider.select((s) => s.pieChartData));
 
-  Widget _buildPieChart(
-      BuildContext context,
-      WidgetRef ref
-      ) {
-    final state = ref.watch(chartSalaryProvider);
-
-    final selectedYear = state.selectedYear;
-    final groupedBySource = state.groupedBySource;
-
-    if (groupedBySource.isEmpty) {
+    if (sectors.isEmpty) {
       return const EmptyChartView();
     }
+    /// 円グラフのサイズは端末横幅から計算する
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dynamicRadius = (screenWidth / 4.5).clamp(60.0, 120.0);
 
-    // 支払い元ごとの合計金額（年フィルタ済）
-    final Map<String, int> sumsBySource = {};
-    // 色取得用
-    final Map<String, PaymentSource?> sourceMap = {};
-
-    groupedBySource.forEach((sourceName, list) {
-      // 年フィルタ
-      final yearlyList = list.where((s) => s.createdAt.year == selectedYear).toList();
-
-      if (yearlyList.isEmpty) return;
-
-      final sum = yearlyList.fold<int>(0, (prev, s) => prev + s.paymentAmount,);
-
-      if (sum > 0) {
-        sumsBySource[sourceName] = sum;
-        sourceMap[sourceName] = yearlyList.first.source;
-      }
-    });
-
-    if (sumsBySource.isEmpty) {
-      return const EmptyChartView();
-    }
-
-    final total =
-    sumsBySource.values.fold<int>(0, (a, b) => a + b);
-
-    final sections = sumsBySource.entries.map((e) {
-      final sourceName = e.key;
-      final value = e.value;
-      final source = sourceMap[sourceName];
-
-      final titleName = source?.name ?? DummySource.UNSET_TITLE;
-      final titlePercent = '${(value / total * 100).toStringAsFixed(1)}%';
-
+    final sections = sectors.map((data) {
       return PieChartSectionData(
-        value: value.toDouble(),
-        title: '$titleName\n$titlePercent',
-        color: source?.themaColorEnum.color ?? Colors.grey,
-        radius: 100,
+        value: data.amount.toDouble(),
+        title: '${data.percentage.toStringAsFixed(0)}%',
+        color: data.color,
+        radius: dynamicRadius,
         titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
@@ -207,18 +170,69 @@ class SwitchChartsView extends ConsumerWidget {
 
     return Container(
       height: 300,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: CustomColors.background(context),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 0,
-        ),
+      child: Row(
+        children: [
+          // 左側：円グラフ
+          Expanded(
+            flex: 1,
+            child: PieChart(
+              PieChartData(
+                sections: sections,
+                centerSpaceRadius: 0,
+                sectionsSpace: 2,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // 右側：凡例リスト
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: sectors.map((data) => _buildLegendItem(data)).toList(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
+  /// 凡例の1行アイテム
+  Widget _buildLegendItem(PieChartSectorData data) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: data.color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: CustomText(
+              text: data.name,
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.SS,
+            ),
+          ),
+          CustomText(
+            text: '${NumberUtils.formatWithComma(data.amount)}円',
+            textSize: TextSize.SS,
+          ),
+        ],
+      ),
+    );
+  }
 }

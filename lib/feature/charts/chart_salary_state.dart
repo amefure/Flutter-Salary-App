@@ -5,6 +5,7 @@ import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart';
+import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
 
 class ChartSalaryState {
   /// 全てのSalary一覧(内部保持用)
@@ -19,12 +20,14 @@ class ChartSalaryState {
   final ChartDisplayMode chartDisplayMode;
 
 
-  /// 折れ線グラフ & 円グラフ
+  /// 各グラフの計算元となる支払い元ベースの給料データ
   /// Keyは支払い元のID
-  final Map<String, List<MonthlySalarySummaryChartItem>> groupedBySource;
+  final Map<String, List<MonthlySalarySummaryItem>> groupedBySource;
 
-  /// 「① 月別合計金額グラフ」
-  final List<List<MonthlySalarySummaryChartItem>> lineChartData;
+  /// 「① 月別合計金額折れ線グラフ」
+  final List<List<MonthlySalarySummaryItem>> lineChartData;
+  /// 「① 月別合計金額円グラフ」
+  final List<PieChartSectorData> pieChartData;
   /// 「② 年収 & 賞与サマリーデータ」
   final YearlySalarySummary yearlySummaryData;
   /// 「③ 年別合計金額(10年間)棒グラフ用データ」
@@ -39,6 +42,7 @@ class ChartSalaryState {
 
     required this.groupedBySource,
     required this.lineChartData,
+    required this.pieChartData,
     required this.yearlySummaryData,
     required this.yearlyBarChartData,
   });
@@ -53,6 +57,7 @@ class ChartSalaryState {
 
         groupedBySource: {},
         lineChartData: [],
+        pieChartData: [],
         yearlySummaryData: YearlySalarySummary.initial(),
         yearlyBarChartData: YearlyPaymentChartData.initial()
     );
@@ -65,8 +70,9 @@ class ChartSalaryState {
     int? selectedYear,
     ChartDisplayMode? chartDisplayMode,
 
-    Map<String, List<MonthlySalarySummaryChartItem>>? groupedBySource,
-    List<List<MonthlySalarySummaryChartItem>>? lineChartData,
+    Map<String, List<MonthlySalarySummaryItem>>? groupedBySource,
+    List<List<MonthlySalarySummaryItem>>? lineChartData,
+    List<PieChartSectorData>? pieChartData,
     YearlySalarySummary? yearlySummaryData,
     YearlyPaymentChartData? yearlyBarChartData,
   }) {
@@ -79,6 +85,7 @@ class ChartSalaryState {
 
       groupedBySource: groupedBySource ?? this.groupedBySource,
       lineChartData: lineChartData ?? this.lineChartData,
+      pieChartData: pieChartData ?? this.pieChartData,
       yearlySummaryData: yearlySummaryData ?? this.yearlySummaryData,
       yearlyBarChartData: yearlyBarChartData ?? this.yearlyBarChartData,
     );

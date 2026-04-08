@@ -87,8 +87,14 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
       selectedSource: state.selectedSource,
       selectedYear: state.selectedYear,
     );
-
-    state = state.copyWith(lineChartData: lineData);
+    final pieData = SalaryAggregator.buildPieChartData(
+      groupedBySource: state.groupedBySource,
+      selectedYear: state.selectedYear,
+    );
+    state = state.copyWith(
+        lineChartData: lineData,
+        pieChartData: pieData
+    );
   }
 
   /// 「③ 年別合計金額(10年間)棒グラフ用データ」を計算し反映
