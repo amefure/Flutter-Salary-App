@@ -4,19 +4,9 @@ import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_view_model.dart';
 
-class MockLocalPaymentSourceRepository extends Mock implements LocalPaymentSourceRepository {}
+import '../../helpers/dummy_data_helper.dart';
 
-/// テスト用のダミーデータ作成関数
-PaymentSource fakePaymentSource({
-  String id = 'default_id',
-  String name = 'テスト支払元',
-  int color = 0xFFFFFFFF,
-  bool isMain = false,
-  bool isPublicName = false,
-  int? publicUserId,
-}) {
-  return PaymentSource(id, name, color, isMain, isPublicName, publicUserId: publicUserId);
-}
+class MockLocalPaymentSourceRepository extends Mock implements LocalPaymentSourceRepository {}
 
 void main() {
   late MockLocalPaymentSourceRepository mockRepo;

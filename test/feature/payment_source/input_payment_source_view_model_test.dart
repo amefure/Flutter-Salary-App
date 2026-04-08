@@ -10,6 +10,7 @@ import 'package:salary/feature/payment_source/domain/cloud_payment_repository.da
 import 'package:salary/feature/payment_source/input/input_payment_source_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
+import '../../helpers/dummy_data_helper.dart';
 import 'list_payment_source_view_model_test.dart';
 
 class MockLocalPaymentSourceRepository extends Mock implements LocalPaymentSourceRepository {}
