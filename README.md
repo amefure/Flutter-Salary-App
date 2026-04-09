@@ -87,9 +87,22 @@ $ fvm install
 ## テストコード
 テストコードは以下を対象として実装中
 
+coverage：47.2 %(現在)
+
 - Repository
 - ViewModel
 - Utility
+
+```
+# 1.テストコードの実行 & カバレッジレポート作成
+$ fvm flutter test --coverage       
+# 2.htmlに出力
+$ genhtml coverage/lcov.info -o coverage/html
+# 3.テスト対象外のディレクトリを除外
+$ fvm flutter pub run remove_from_coverage:remove_from_coverage -f coverage/lcov.info -r 'core/mock/'
+# 4.カバレッジレポートを表示
+$ open coverage/html/index.html        
+```
 
 # ライブラリ
 
@@ -127,3 +140,4 @@ $ fvm install
 - **[change_app_package_name](https://github.com/atiqsamtia/change_app_package_name) (1.1.0)** - アプリID(BundleID)の管理
 - **[flutter_lints](https://pub.dev/packages/flutter_lints) (6.0.0)** - 静的解析ツール
 - **[mocktail](https://pub.dev/packages/mocktail) (1.0.4)** - テストモックツール
+- **[remove_from_coverage](https://pub.dev/packages/remove_from_coverage) (2.0.0)** - カバレッジレポート除外ツール

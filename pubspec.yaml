@@ -43,6 +43,7 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.4
   flutter_lints: ^6.0.0
+  remove_from_coverage: ^2.0.0
 
 # $ flutter pub run flutter_launcher_icons:main
 # 上記コマンドを実行してアイコンを自動生成
