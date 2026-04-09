@@ -3,14 +3,16 @@ import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/mock/salary_mock_factory.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
+import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/core/repository/user_settings_repository.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_state.dart';
 
 final listSalaryProvider =
 StateNotifierProvider<ListSalaryViewModel, ListSalaryState>((ref) {
-  final repository = RealmDataSource();
+  final localSalaryRepository = ref.read(localSalaryRepositoryProvider);
   final userSettings = ref.read(userSettingsProvider);
-  return ListSalaryViewModel(ref, repository, userSettings);
+  return ListSalaryViewModel(ref, localSalaryRepository, userSettings);
 });
 
 /// 並べ替えの種類の定義
@@ -33,10 +35,10 @@ enum SalarySortOrder {
 
 class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
   final Ref ref;
-  final RealmDataSource _repository;
+  final LocalSalaryRepository _localSalaryRepository;
   final UserSettingsRepository _userSettingsRepository;
 
-  ListSalaryViewModel(this.ref, this._repository, this._userSettingsRepository)
+  ListSalaryViewModel(this.ref, this._localSalaryRepository, this._userSettingsRepository)
       : super(ListSalaryState.initial()) {
     _loadSortOrder();
     _loadSalaries();
@@ -60,28 +62,21 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
 
   /// Realm から Salary を取得
   void _loadSalaries() {
-
-    final allSalariesTmp = _repository.fetchAll<Salary>();
+    final allSalaries = _localSalaryRepository.fetchAllSortCreatedAt();
     // DEBUG：モック(確認用)
-    // final allSalariesTmp2 = SalaryMockFactory.allGenerateYears();
     // DEBUG：モックローカル保存処理
-    // for (var item in allSalariesTmp2) {
+    // for (var item in allSalaries) {
     //   _repository.add(item);
     // }
-    // 日付の降順
-    allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    final sortedSalaries = _fetchSortedSalaries(allSalariesTmp);
     state = state.copyWith(
-      salaries: sortedSalaries,
+      salaries: allSalaries,
     );
   }
 
   /// Realm から PaymentSource を取得
   void _loadPaymentSource() {
     // 常に全て取得する
-    final allSalaries = _repository.fetchAll<Salary>();
-    // モック(確認用)
-    // final allSalaries = SalaryMockFactory.allGenerateYears();
+    final allSalaries = _localSalaryRepository.fetchAll();
     /// 支払い元を全て取得
     final allPayment = allSalaries
         .map((e) => e.source ?? DummySource.unSetDummySource )

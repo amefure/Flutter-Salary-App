@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_view_model.dart';
 

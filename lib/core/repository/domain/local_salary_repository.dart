@@ -23,4 +23,12 @@ class LocalSalaryRepository {
       return _dataSource.fetchAll<Salary>();
     }
   }
+  List<Salary> fetchAllSortCreatedAt({
+    bool isMock = false
+  }) {
+    final allSalariesTmp = fetchAll(isMock: isMock);
+    // 日付の降順
+    allSalariesTmp.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return allSalariesTmp;
+  }
 }

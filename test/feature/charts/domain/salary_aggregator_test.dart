@@ -9,25 +9,16 @@ void main() {
   group('SalaryAggregator テスト', () {
 
     test('groupBySourceAndMonth: 同じ支払い元・同じ月のデータが合算されること', () {
-      final sourceA = fakePaymentSource(id: 'A', name: '銀行A');
+      /// ① Arrange (準備)
+      /// なし
 
-      final salaries = [
-        // 2024年1月 (1回目)
-        fakeSalary(paymentAmount: 1000, date: DateTime(2024, 1, 1), source: sourceA),
-        // 2024年1月 (2回目) -> 合算されるべき
-        fakeSalary(paymentAmount: 2000, date: DateTime(2024, 1, 15), source: sourceA),
-        // 2024年2月 (別月) -> 合算されない
-        fakeSalary(paymentAmount: 3000, date: DateTime(2024, 2, 1), source: sourceA),
-      ];
+      /// ② Act (実行)
+      final result = SalaryAggregator.groupBySourceAndMonth(dummySalaries);
 
-      // 2. 実行
-      final result = SalaryAggregator.groupBySourceAndMonth(salaries);
+      /// ③ Assert (検証)
+      expect(result.containsKey('default_id'), isTrue);
 
-      // 3. 検証
-      // 支払い元 'A' のリストが取得できること
-      expect(result.containsKey('A'), isTrue);
-
-      final listA = result['A']!;
+      final listA = result['default_id']!;
       expect(listA.length, 2); // 1月分(合算)と2月分の2要素
 
       // 1月の合算結果 (1000 + 2000 = 3000)
@@ -42,9 +33,9 @@ void main() {
     });
 
     test('buildLineChartData: 選択した年のデータのみが抽出され、月順にソートされること', () {
-      final source = fakePaymentSource(id: 'a', name: '銀行A');
+      final source = fakePaymentSource();
       final dataMap = {
-        'A': [
+        'default_id': [
           MonthlySalarySummaryItem(
             createdAt: DateTime(2024, 12, 1),
             paymentAmount: 100,
@@ -79,8 +70,8 @@ void main() {
     });
 
     test('buildPieChartData: 各支払い元の合計金額とパーセンテージが正しく計算されること', () {
-      final sourceA = fakePaymentSource(id: 'A', name: '銀行A');
-      final sourceB = fakePaymentSource(id: 'B', name: '銀行B');
+      final sourceA = fakePaymentSource(id: 'A', name: '株式会社Ame');
+      final sourceB = fakePaymentSource(id: 'B', name: '株式会社Kasa');
       final dataMap = {
         'A': [MonthlySalarySummaryItem(
           createdAt: DateTime(2024, 1, 1),
@@ -103,7 +94,7 @@ void main() {
 
       expect(result.length, 2);
       // 合計4000に対してAは3000なので75%
-      final sectorA = result.firstWhere((s) => s.name == '銀行A');
+      final sectorA = result.firstWhere((s) => s.name == '株式会社Ame');
       expect(sectorA.percentage, 75.0);
     });
 

@@ -4,7 +4,7 @@ import 'package:salary/core/models/salary.dart';
 Salary fakeSalary({
   String? id,
   int paymentAmount = 300000,
-  int deductionAmount = 600000, // 必要に応じて調整
+  int deductionAmount = 600000,
   int netSalary = 240000,
   DateTime? date,
   bool isBonus = false,
@@ -23,14 +23,25 @@ Salary fakeSalary({
     memo,
     paymentAmountItems: paymentAmountItems,
     deductionAmountItems: deductionAmountItems,
-    source: source ?? fakePaymentSource(),
+    source: source,
   );
 }
+
+/// 変数として定義して当てはめないと別のオブジェクトとしてみなされる
+final _dummySource = fakePaymentSource();
+final dummySalaries = [
+  // 2024年1月
+  fakeSalary(paymentAmount: 1000, date: DateTime(2026, 1, 1), source: _dummySource),
+  // 2024年1月
+  fakeSalary(paymentAmount: 2000, date: DateTime(2026, 1, 15), source: _dummySource),
+  // 2024年2月
+  fakeSalary(paymentAmount: 3000, date: DateTime(2026, 2, 1), source: _dummySource),
+];
 
 /// テスト用のダミーデータ作成関数
 PaymentSource fakePaymentSource({
   String id = 'default_id',
-  String name = 'テスト支払元',
+  String name = '株式会社Ame',
   int color = 0xFFFFFFFF,
   bool isMain = false,
   bool isPublicName = false,
