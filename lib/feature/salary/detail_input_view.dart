@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/common/components/domain/amount_toggle_button_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
@@ -122,6 +123,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                   controller: _amountController,
                   labelText: '金額',
                   prefixIcon: CupertinoIcons.money_yen,
+                  suffix: AmountToggleButtonView(controller: _amountController),
                 ),
 
                 const SizedBox(height: 20),
