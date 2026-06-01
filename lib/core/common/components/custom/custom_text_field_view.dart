@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final Function()? onTap;
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onFocusLost;
+  final Widget? suffix;
 
   const CustomTextField({
     super.key,
@@ -20,12 +21,14 @@ class CustomTextField extends StatefulWidget {
     required this.labelText,
     required this.prefixIcon,
     this.prefixIconColor = CupertinoColors.systemGrey,
+    /// 入力可能は数値のみとする(マイナスはUI側で実装する)
     this.keyboardType = TextInputType.number,
     this.readOnly = false,
     this.maxLines = 1,
     this.onTap,
     this.onSubmitted,
     this.onFocusLost,
+    this.suffix
   });
 
   @override
@@ -75,6 +78,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             padding: const EdgeInsets.only(left: 8),
             child: Icon(widget.prefixIcon, color: widget.prefixIconColor),
           ),
+          suffix: widget.suffix,
           decoration: BoxDecoration(
             color: CustomColors.background(context),
             borderRadius: BorderRadius.circular(5),

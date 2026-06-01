@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
+import 'package:salary/core/common/components/domain/amount_toggle_button_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -90,6 +91,9 @@ class _Body extends ConsumerState<_BodyWidget> {
     _bindControllersToState();
     // ViewModel.State =>(変化) TextEditingControllerと同期
     _bindStateToControllers();
+
+    _paymentAmountController.addListener(_onAmountChanged);
+    _deductionAmountController.addListener(_onAmountChanged);
   }
 
   /// ViewModel.State =>(変化) TextEditingControllerと同期
@@ -150,7 +154,16 @@ class _Body extends ConsumerState<_BodyWidget> {
     _dateController.dispose();
     _paymentSourceController.dispose();
     _memoController.dispose();
+    _paymentAmountController.removeListener(_onAmountChanged);
+    _deductionAmountController.removeListener(_onAmountChanged);
     super.dispose();
+  }
+
+  void _onAmountChanged() {
+    if (mounted) {
+      final vm = ref.read(inputSalaryProvider(widget.salary).notifier);
+      vm.calcNetSalaryAmount();
+    }
   }
 
   @override
@@ -279,6 +292,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               prefixIcon: CupertinoIcons.money_yen,
               onSubmitted: (_) => vm.calcNetSalaryAmount(),
               onFocusLost: () => vm.calcNetSalaryAmount(),
+              suffix: AmountToggleButtonView(controller: _deductionAmountController),
             ),
 
             // 控除額：詳細入力
