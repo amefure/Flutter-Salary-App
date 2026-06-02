@@ -104,6 +104,14 @@ $ fvm flutter pub run remove_from_coverage:remove_from_coverage -f coverage/lcov
 $ open coverage/html/index.html        
 ```
 
+## ディープリンク(Scheme)
+
+▼ Scheme：salary
+```
+/// 新規会員登録
+$ salary://register
+```
+
 # ライブラリ
 
 ## Analytics
