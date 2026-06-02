@@ -132,11 +132,12 @@ class _Body extends ConsumerState<_BodyWidget> {
                   const Spacer(),
 
                   TextButton(onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(
-                        builder: (context) => const RegisterAccountScreen(),
-                      ),
-                    );
+                    // FIXME
+                    // Navigator.of(context).pushReplacement(
+                    //   CupertinoPageRoute(
+                    //     builder: (context) => const RegisterAccountScreen(),
+                    //   ),
+                    // );
                   }, child: const CustomText(
                     text: '新規登録はこちら',
                     color: CustomColors.themaBlue,

@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
+import 'package:salary/core/service/deep_link_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/feature/charts/presentation/chart_salary_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_screen.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
 import 'package:salary/feature/settings/setting_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/main.dart';
 
 class RootTabView extends ConsumerStatefulWidget {
   const RootTabView({super.key});
@@ -64,6 +68,8 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(rootTabProvider);
+    /// ディープリンク遷移ハンドリング観測
+    listenDeepLinkDestination();
     return CupertinoTabScaffold(
       controller: _tabController,
       tabBar: CupertinoTabBar(
@@ -149,5 +155,29 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
       default:
         return const SalaryListScreen();
     }
+  }
+
+  /// ディープリンク遷移ハンドリング観測
+  void listenDeepLinkDestination() {
+    ref.listen<DeepLinkDestination>(deepLinkProvider, (previous, next) {
+      if (next == DeepLinkDestination.registerAccount) {
+        /// 【MUST】バックグラウンドから起動する場合に備えてフレーム描画が終わった直後に実行するようにする
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoModalPopup<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (modalContext) {
+              return SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: RegisterAccountScreen(
+                  onClose: () => Navigator.of(modalContext).pop(),
+                ),
+              );
+            },
+          ).then((_) => ref.read(deepLinkProvider.notifier).clear());
+        });
+      }
+    });
   }
 }

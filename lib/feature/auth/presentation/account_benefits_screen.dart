@@ -60,11 +60,12 @@ class AccountBenefitsScreen extends StatelessWidget {
                   text: '今すぐアカウントを作成',
                   backgroundColor: ThemaColor.blue.color,
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(
-                        builder: (context) => const RegisterAccountScreen(),
-                      ),
-                    );
+                    // FIXME
+                    // Navigator.of(context).pushReplacement(
+                    //   CupertinoPageRoute(
+                    //     builder: (context) => const RegisterAccountScreen(),
+                    //   ),
+                    // );
                   }
               ),
 

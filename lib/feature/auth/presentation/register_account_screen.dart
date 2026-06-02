@@ -18,14 +18,27 @@ import 'package:salary/feature/auth/presentation/components/job_picker_modal.dar
 import 'package:salary/feature/auth/presentation/login_screen.dart';
 
 class RegisterAccountScreen extends StatelessWidget {
-  const RegisterAccountScreen({super.key});
+  const RegisterAccountScreen({
+    super.key,
+    required this.onClose,
+  });
+
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
         backgroundColor: CustomColors.foundation(context),
-        navigationBar: const CupertinoNavigationBar(
-            middle: CustomText(
+        navigationBar: CupertinoNavigationBar(
+            leading: CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: onClose,
+              child: const CustomText(
+                text: 'キャンセル',
+                color: CustomColors.themaBlue,
+              ),
+            ),
+            middle: const CustomText(
               text: '新規アカウント作成',
               fontWeight: FontWeight.bold,
             )

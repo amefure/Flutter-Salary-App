@@ -11,7 +11,9 @@ import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_repository.dart';
+import 'package:salary/core/service/deep_link_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/root/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
@@ -48,6 +50,19 @@ void main() async {
   final passwordRepo = container.read(passwordRepositoryProvider);
   final isLockEnabled = await passwordRepo.isLockEnabled();
   /// ===== プロバイダーイニシャライズ =====
+
+  /// ===== ディープリンクイニシャライズ =====
+  final deepLinkInitializer = DeepLinkInitializer();
+
+  deepLinkInitializer.init((Uri uri) {
+    logger('ディープリンクから遷移: $uri');
+    final destination = DeepLinkDestination.fromUri(uri);
+    if (destination != DeepLinkDestination.none) {
+      // 遷移ロジックはProviderで管理
+      container.read(deepLinkProvider.notifier).navigateTo(destination);
+    }
+  });
+  /// ===== ディープリンクイニシャライズ =====
 
   runApp(
     // すでに作成済みのcontainerを渡すためのScope
