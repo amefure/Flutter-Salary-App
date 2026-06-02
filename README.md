@@ -107,7 +107,6 @@ $ open coverage/html/index.html
 # ライブラリ
 
 ## Analytics
-
 - **[firebase_analytics](https://pub.dev/packages/firebase_analytics) (11.5.0)** - Firebase Analytics データ解析
 
 ## InAppPurchase
@@ -117,6 +116,7 @@ $ open coverage/html/index.html
 - **[url_launcher](https://pub.dev/packages/url_launcher) (6.3.1)** - URL の起動（外部ブラウザ、電話、メールなど）
 - **[intl](https://pub.dev/packages/intl) (0.19.0)** - 日付・数値・通貨のフォーマット処理 
 - **[connectivity_plus](https://pub.dev/packages/connectivity_plus) (6.0.0)** - ネットワーク環境
+- **[app_links](https://pub.dev/packages/app_links) (7.0.0)** - ディープリンク
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ）
