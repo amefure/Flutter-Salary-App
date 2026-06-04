@@ -12,8 +12,22 @@ class AuthApi {
   final ApiClient _client;
 
   /// ======== ユーザー認証まわり ========
+
+  /// 【OLD】アプリVer2.0以前 新規登録処理(メール認証なし)
   Future<Map<String, dynamic>> register(Map<String, dynamic> body) async {
     return await _client.post('/register', body: body, requiresAuth: false);
+  }
+
+  /// アプリVer3.0以降 新規登録処理(メール認証あり)
+  /// STEP1：メール送信
+  Future<Map<String, dynamic>> registerSendEmail(Map<String, dynamic> body) async {
+    return await _client.post('/register/send-email', body: body, requiresAuth: false);
+  }
+
+  /// アプリVer3.0以降 新規登録処理(メール認証あり)
+  /// STEP2：本登録
+  Future<Map<String, dynamic>> registerFinal(Map<String, dynamic> body) async {
+    return await _client.post('/register/final', body: body, requiresAuth: false);
   }
 
   Future<Map<String, dynamic>> login(Map<String, dynamic> body) async {

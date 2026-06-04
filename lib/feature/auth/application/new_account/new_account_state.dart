@@ -1,6 +1,6 @@
 import 'package:salary/core/config/profile_config.dart';
 
-class PasswordResetState {
+class NewAccountState {
 
   final String email;
 
@@ -10,24 +10,24 @@ class PasswordResetState {
   /// メール送信完了フラグ
   final bool isSend;
 
-  const PasswordResetState({
+  const NewAccountState({
     required this.email,
     this.isCompleted = false,
-    this.isSend = false
+    this.isSend = false,
   });
 
-  factory PasswordResetState.initial() {
-    return const PasswordResetState(
+  factory NewAccountState.initial() {
+    return const NewAccountState(
       email: ProfileConfig.empty,
     );
   }
 
-  PasswordResetState copyWith({
+  NewAccountState copyWith({
     String? email,
     bool? isCompleted,
-    bool? isSend,
+    bool? isSend
   }) {
-    return PasswordResetState(
+    return NewAccountState(
         email: email ?? this.email,
         isCompleted: isCompleted ?? this.isCompleted,
         isSend: isSend ?? this.isSend

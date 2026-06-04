@@ -43,7 +43,7 @@ class RegisterAccountScreen extends StatelessWidget {
               ),
             ),
             middle: const CustomText(
-              text: '新規アカウント作成',
+              text: '新規アカウント本登録',
               fontWeight: FontWeight.bold,
             )
         ),
@@ -295,7 +295,7 @@ class _Body extends ConsumerState<_BodyWidget> {
           ),
 
           CustomElevatedButton(
-              text: '登録する',
+              text: '本登録する',
               backgroundColor: state.isCompleted ? ThemaColor.blue.color : ThemaColor.gray.color,
               onPressed: () {
                 viewModel.registerAccount();
