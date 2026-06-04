@@ -5,13 +5,15 @@ import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/global_error_overlay.dart';
 import 'package:salary/core/common/overlay/global_loading_overlay.dart';
 import 'package:salary/core/data_source/shared_preferences_data_source.dart';
+import 'package:salary/core/deeplink/deep_link_destination.dart';
+import 'package:salary/core/deeplink/deep_link_initializer.dart';
+import 'package:salary/core/deeplink/deep_link_notifier.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_repository.dart';
-import 'package:salary/core/service/deep_link_service.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/root/root_tab_view.dart';
@@ -54,13 +56,9 @@ void main() async {
   /// ===== ディープリンクイニシャライズ =====
   final deepLinkInitializer = DeepLinkInitializer();
 
-  deepLinkInitializer.init((Uri uri) {
-    logger('ディープリンクから遷移: $uri');
-    final destination = DeepLinkDestination.fromUri(uri);
-    if (destination != DeepLinkDestination.none) {
-      // 遷移ロジックはProviderで管理
-      container.read(deepLinkProvider.notifier).navigateTo(destination);
-    }
+  deepLinkInitializer.init((DeepLinkDestination destination) {
+    logger('ディープリンクから遷移: $destination');
+    container.read(deepLinkProvider.notifier).navigateTo(destination);
   });
   /// ===== ディープリンクイニシャライズ =====
 

@@ -20,9 +20,13 @@ import 'package:salary/feature/auth/presentation/login_screen.dart';
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({
     super.key,
+    required this.email,
+    required this.signature,
     required this.onClose,
   });
 
+  final String email;
+  final String signature;
   final VoidCallback onClose;
 
   @override
@@ -199,6 +203,7 @@ class _Body extends ConsumerState<_BodyWidget> {
             labelText: 'メールアドレス',
             prefixIcon: CupertinoIcons.mail_solid,
             keyboardType: TextInputType.emailAddress,
+            readOnly: true,
           ),
 
           Column(
