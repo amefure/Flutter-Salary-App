@@ -5,6 +5,9 @@ import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/global_error_overlay.dart';
 import 'package:salary/core/common/overlay/global_loading_overlay.dart';
 import 'package:salary/core/data_source/shared_preferences_data_source.dart';
+import 'package:salary/core/deeplink/deep_link_destination.dart';
+import 'package:salary/core/deeplink/deep_link_initializer.dart';
+import 'package:salary/core/deeplink/deep_link_notifier.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
@@ -12,6 +15,7 @@ import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/core/repository/biometrics_service.dart';
 import 'package:salary/core/repository/password_repository.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/root/root_tab_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
@@ -48,6 +52,15 @@ void main() async {
   final passwordRepo = container.read(passwordRepositoryProvider);
   final isLockEnabled = await passwordRepo.isLockEnabled();
   /// ===== プロバイダーイニシャライズ =====
+
+  /// ===== ディープリンクイニシャライズ =====
+  final deepLinkInitializer = DeepLinkInitializer();
+
+  deepLinkInitializer.init((DeepLinkDestination destination) {
+    logger('ディープリンクから遷移: $destination');
+    container.read(deepLinkProvider.notifier).navigateTo(destination);
+  });
+  /// ===== ディープリンクイニシャライズ =====
 
   runApp(
     // すでに作成済みのcontainerを渡すためのScope
@@ -118,20 +131,25 @@ class MyApp extends ConsumerWidget {
         // => Barが不透明扱いでUIに高さが認識されなくなりスクロールに食われる
         barBackgroundColor: CupertinoColors.systemBackground,
       ),
-      home: Stack(
-        children: [
-          startScreen,
+      home: startScreen,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            if (child != null) child,
 
-          if (loadingState.isLoading)
-            const GlobalLoadingOverlay(),
+            if (loadingState.isLoading)
+              const GlobalLoadingOverlay(),
 
-          if (errorMessage != null)
-            GlobalErrorOverlay(
-              message: errorMessage,
-              onDismissed: () { ref.read(globalErrorProvider.notifier).clear(); },
-            ),
-        ],
-      ),
+            if (errorMessage != null)
+              GlobalErrorOverlay(
+                message: errorMessage,
+                onDismissed: () {
+                  ref.read(globalErrorProvider.notifier).clear();
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 }

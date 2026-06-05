@@ -54,6 +54,8 @@ abstract class AuthJsonKeys {
   static const id = 'id';
   static const name = 'name';
   static const email = 'email';
+  static const signature = 'signature';
+  static const expires = 'expires';
   static const newEmail = 'new_email';
   static const password = 'password';
   static const passwordConfirmation = 'password_confirmation';

@@ -1,6 +1,6 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
+import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/core/utils/validation_utils.dart';
@@ -8,9 +8,9 @@ import 'package:salary/feature/auth/application/register_account/register_accoun
 import 'package:salary/core/config/profile_config.dart';
 
 final registerAccountProvider =
-StateNotifierProvider.autoDispose<RegisterAccountViewModel, RegisterAccountState>((ref) {
+StateNotifierProvider.autoDispose.family<RegisterAccountViewModel, RegisterAccountState, DeepLinkRegisterAccount>((ref, deeplink) {
     final authProvider = ref.read(authStateProvider.notifier);
-    return RegisterAccountViewModel(ref, authProvider);
+    return RegisterAccountViewModel(ref, authProvider, deeplink);
 });
 
 class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
@@ -18,7 +18,12 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
   RegisterAccountViewModel(
       this._ref,
       this._authProvider,
-      ) : super(RegisterAccountState.initial());
+      DeepLinkRegisterAccount deeplink,
+      ) : super(RegisterAccountState.initial(
+      email: deeplink.email,
+      signature: deeplink.signature,
+      expires: deeplink.expires
+  ));
 
   final Ref _ref;
   final AuthStateNotifier _authProvider;
@@ -27,9 +32,11 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     if (state.birthday == null) return;
     await _ref.runWithGlobalHandling(() async {
       // 成功すれば_authProviderのステータスが変化し、ログイン状態にUIも変わる
-      await _authProvider.registerAccount(
+      await _authProvider.registerFinalAccount(
         name: state.name,
         email: state.email,
+        signature: state.signature,
+        expires: state.expires,
         password: state.password,
         passwordConfirm: state.passwordConfirm,
         region: state.region,
@@ -50,14 +57,6 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     final isCompleted = _isAllValidation(name: value);
     state = state.copyWith(
         name: value,
-        isCompleted: isCompleted
-    );
-  }
-
-  void updateEmail(String value) {
-    final isCompleted = _isAllValidation(email: value);
-    state = state.copyWith(
-        email: value,
         isCompleted: isCompleted
     );
   }
@@ -106,7 +105,6 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
   /// バリデーションの通らない値はそもそも送信できない設計になっている
   bool _isAllValidation({
     String? name,
-    String? email,
     String? password,
     String? passwordConfirm,
     String? region,
@@ -114,7 +112,6 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     Job? job,
   }) {
     final currentName = name ?? state.name;
-    final currentEmail = email ?? state.email;
     final currentPassword = password ?? state.password;
     final currentPasswordConfirm = passwordConfirm ?? state.passwordConfirm;
     final currentRegion = region ?? state.region;
@@ -123,11 +120,6 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
 
     /// アカウント名
     final hasName = currentName.isNotEmpty;
-
-    /// メールバリデーション
-    final hasEmail =
-        currentEmail.isNotEmpty &&
-            ValidationUtils.isValidEmail(currentEmail);
 
     /// パスワードバリデーション
     final hasPassword =
@@ -143,7 +135,7 @@ class RegisterAccountViewModel extends StateNotifier<RegisterAccountState> {
     final hasRegion = currentRegion != ProfileConfig.undefined;
     final hasBirthday = currentBirthday != null;
     final hasJob = currentJob != ProfileConfig.undefinedJob;
-    return hasName && hasEmail && hasPassword && hasPasswordConfirm && hasRegion && hasBirthday && hasJob;
+    return hasName  && hasPassword && hasPasswordConfirm && hasRegion && hasBirthday && hasJob;
   }
 
 }

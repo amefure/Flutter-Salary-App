@@ -2,20 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
-import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/feature/auth/application/new_account/new_account_state.dart';
+import 'package:salary/feature/auth/application/new_account/new_account_view_model.dart';
 import 'package:salary/core/models/thema_color.dart';
-import 'package:salary/feature/auth/application/login/login_state.dart';
-import 'package:salary/feature/auth/application/login/login_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/auth/presentation/new_account_screen.dart';
-import 'package:salary/feature/auth/presentation/password_reset_screen.dart';
-import 'package:salary/feature/auth/presentation/register_account_screen.dart';
+import 'package:salary/feature/auth/presentation/login_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class NewAccountScreen extends StatelessWidget {
+  const NewAccountScreen({super.key,});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +21,7 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
           middle: CustomText(
-            text: 'ログイン',
+            text: '新規アカウント作成(メール認証)',
             fontWeight: FontWeight.bold,
           )
       ),
@@ -48,8 +46,7 @@ class _BodyWidget extends ConsumerStatefulWidget {
 class _Body extends ConsumerState<_BodyWidget> {
 
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passWordController = TextEditingController();
-  late final ProviderSubscription<LoginState> _subscription;
+  late final ProviderSubscription<NewAccountState> _subscription;
 
   @override
   void initState() {
@@ -62,24 +59,21 @@ class _Body extends ConsumerState<_BodyWidget> {
 
   /// ViewModel.State =>(変化) TextEditingControllerと同期
   void _bindStateToControllers() {
-    _subscription = ref.listenManual<LoginState>(
-      loginProvider,
+    _subscription = ref.listenManual<NewAccountState>(
+      newAccountProvider,
       fireImmediately: true,
           (prev, next) {
         _syncController(_emailController, next.email);
-        _syncController(_passWordController, next.password);
       },
     );
   }
 
   /// TextEditingController =>(変化) ViewModel.Stateと同期
   void _bindControllersToState() {
-    final vm = ref.read(loginProvider.notifier);
+    final vm = ref.read(newAccountProvider.notifier);
+    // 入力されたらViewModelに反映
     _emailController.addListener(() {
       vm.updateEmail(_emailController.text);
-    });
-    _passWordController.addListener(() {
-      vm.updatePassWord(_passWordController.text);
     });
   }
 
@@ -87,7 +81,6 @@ class _Body extends ConsumerState<_BodyWidget> {
   void dispose() {
     _subscription.close();
     _emailController.dispose();
-    _passWordController.dispose();
     super.dispose();
   }
 
@@ -105,25 +98,20 @@ class _Body extends ConsumerState<_BodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(loginProvider);
-    final viewModel = ref.read(loginProvider.notifier);
-
-    ref.listen(authStateProvider, (previous, next) async {
-      if (previous?.isLogin == false && next.isLogin == true) {
-        final _ = await AppDialog.show(
-            context: context,
-            message: 'ログインしました。',
-            type: DialogType.success
-        );
-        // 画面戻る
-        Navigator.of(context).pop();
-      }
-    });
+    final state = ref.watch(newAccountProvider);
+    final viewModel = ref.read(newAccountProvider.notifier);
 
     return SingleChildScrollView(
       child: Column(
         spacing: 20,
         children: [
+
+          const CustomText(
+            text: 'アカウント作成にはメール認証が必要です。ボタン押下後に届いたメール内のリンクからアプリに戻り、本登録を進めてください。',
+            textSize: TextSize.S,
+            maxLines: 4,
+          ),
+
           Column(
             spacing: 0,
             children: [
@@ -132,14 +120,23 @@ class _Body extends ConsumerState<_BodyWidget> {
 
                   const Spacer(),
 
-                  TextButton(onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(
-                        builder: (context) => const NewAccountScreen(),
-                      ),
-                    );
+                  TextButton(onPressed: () async {
+                    final state = ref.watch(authStateProvider);
+                    if (!state.isLogin) {
+                      Navigator.of(context).pushReplacement(
+                        CupertinoPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    } else {
+                      final _ = await AppDialog.show(
+                          context: context,
+                          message: 'すでにログイン済みです。',
+                          type: DialogType.error
+                      );
+                    }
                   }, child: const CustomText(
-                    text: '新規登録はこちら',
+                    text: 'ログインはこちら',
                     color: CustomColors.themaBlue,
                     fontWeight: FontWeight.bold,
                     textSize: TextSize.S,
@@ -163,50 +160,31 @@ class _Body extends ConsumerState<_BodyWidget> {
             ],
           ),
 
-          /// パスワード入力ボックス
-          CustomTextField(
-            controller: _passWordController,
-            labelText: 'パスワード',
-            prefixIcon: CupertinoIcons.lock_fill,
-            keyboardType: TextInputType.visiblePassword,
-          ),
-
-          Row(
-            children: [
-
-              const Spacer(),
-
-              TextButton(onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const PasswordResetScreen(),
-                  ),
-                );
-              }, child: const CustomText(
-                text: 'パスワードをお忘れですか？',
-                color: CustomColors.themaBlue,
-                fontWeight: FontWeight.bold,
-                textSize: TextSize.S,
-              )),
-
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: CustomColors.themaBlue,
-                size: 18,
-              )
-            ],
-          ),
-
           CustomElevatedButton(
-              text: 'ログインする',
-              backgroundColor: state.isCompleted ? ThemaColor.blue.color : ThemaColor.gray.color,
-              onPressed: () {
-                viewModel.login();
+              text: '仮登録する',
+              backgroundColor: state.isCompleted && !state.isSend ? ThemaColor.blue.color : ThemaColor.gray.color,
+              onPressed: () async {
+                final state = ref.watch(authStateProvider);
+                if (!state.isLogin) {
+                  final result = await viewModel.registerSendEmail();
+                  if (result) {
+                    final _ = await AppDialog.show(
+                        context: context,
+                        message: '仮登録メールを送信しました。',
+                        type: DialogType.success
+                    );
+                  }
+                } else {
+                  final _ = await AppDialog.show(
+                      context: context,
+                      message: 'すでにログイン済みです。',
+                      type: DialogType.error
+                  );
+                }
               }
           )
         ],
       ),
     );
   }
-
 }

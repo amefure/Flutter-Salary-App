@@ -66,7 +66,7 @@ extension AsyncHandlingExtension on Ref {
         return e.message;
 
       case ApiErrorType.unauthorized:
-        return '認証に失敗しました。再度ログインしてください。';
+        return '認証に失敗しました。時間を空けてから再度お試しください。';
 
       case ApiErrorType.forbidden:
         return '更新権限のないユーザーです。何度も発生するようであれば一度ログアウトして再度ログインしてください。';

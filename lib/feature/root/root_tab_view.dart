@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
+import 'package:salary/core/deeplink/deep_link_destination.dart';
+import 'package:salary/core/deeplink/deep_link_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/feature/charts/presentation/chart_salary_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_screen.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
@@ -64,6 +69,8 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(rootTabProvider);
+    /// ディープリンク遷移ハンドリング観測
+    listenDeepLinkDestination();
     return CupertinoTabScaffold(
       controller: _tabController,
       tabBar: CupertinoTabBar(
@@ -149,5 +156,40 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
       default:
         return const SalaryListScreen();
     }
+  }
+
+  /// ディープリンク遷移ハンドリング観測
+  void listenDeepLinkDestination() {
+    ref.listen<DeepLinkDestination>(deepLinkProvider, (previous, next) {
+      /// 【MUST】バックグラウンドから起動する場合に備えてフレーム描画が終わった直後に実行するようにする
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        switch (next) {
+          case DeepLinkNone():
+            break;
+
+          case DeepLinkRegisterAccount():
+            final state = ref.watch(authStateProvider);
+            if (state.isLogin) {
+              final _ = await AppDialog.show(
+                context: context,
+                message: 'すでにログイン済みです。',
+                type: DialogType.error,
+              );
+            } else {
+              final navigator = Navigator.of(context, rootNavigator: true);
+              navigator.push<void>(
+                CupertinoPageRoute<void>(
+                  fullscreenDialog: true,
+                  builder: (modalContext) => RegisterAccountScreen(
+                    deepLinkRegisterAccount: next,
+                    onClose: () => navigator.pop(),
+                  ),
+                ),
+              ).then((_) => ref.read(deepLinkProvider.notifier).clear());
+            }
+            break;
+        }
+      });
+    });
   }
 }

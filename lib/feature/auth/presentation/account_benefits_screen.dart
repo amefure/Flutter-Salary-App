@@ -6,6 +6,7 @@ import 'package:salary/core/common/components/header_visual_view.dart';
 import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
+import 'package:salary/feature/auth/presentation/new_account_screen.dart';
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 
 class AccountBenefitsScreen extends StatelessWidget {
@@ -62,7 +63,7 @@ class AccountBenefitsScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
                       CupertinoPageRoute(
-                        builder: (context) => const RegisterAccountScreen(),
+                        builder: (context) => const NewAccountScreen(),
                       ),
                     );
                   }

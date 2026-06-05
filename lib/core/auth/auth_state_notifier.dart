@@ -43,26 +43,41 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   final SalaryRepository _salaryRepository;
   final CloudPaymentRepository _paymentRepository;
 
-  /// 新規登録
-  Future<void> registerAccount({
+  /// アプリVer3.0以降 新規登録処理(メール認証あり)
+  /// STEP1：メール送信
+  Future<void> registerSendEmail({
+    required String email,
+  }) async {
+    await _authRepository.registerSendEmail(
+        email: email,
+    );
+  }
+
+  /// アプリVer3.0以降 新規登録処理(メール認証あり)
+  /// STEP2：本登録
+  Future<void> registerFinalAccount({
     required String name,
     required String email,
+    required String signature,
+    required int expires,
     required String password,
     required String passwordConfirm,
     required String region,
     required DateTime birthday,
     required String job,
     required String jobCategory,
-}) async {
-    final user = await _authRepository.register(
-      name: name,
-      email: email,
-      password: password,
-      passwordConfirm: passwordConfirm,
-      region: region,
-      birthday: birthday,
-      job: job,
-      jobCategory: jobCategory
+  }) async {
+    final user = await _authRepository.registerFinal(
+        name: name,
+        email: email,
+        signature: signature,
+        expires: expires,
+        password: password,
+        passwordConfirm: passwordConfirm,
+        region: region,
+        birthday: birthday,
+        job: job,
+        jobCategory: jobCategory
     );
     // ローカルデータを他ユーザーのデータを削除
     _deleteOtherData(user.id);
