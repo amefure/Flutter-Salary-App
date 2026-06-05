@@ -4,17 +4,6 @@ import 'package:salary/feature/auth/domain/auth_user.dart';
 /// 実態：[AuthRepositoryImpl]
 abstract class AuthRepository {
 
-  /// 【OLD】アプリVer2.0以前 新規登録処理(メール認証なし)
-  Future<AuthUser> register({
-    required String name,
-    required String email,
-    required String password,
-    required String passwordConfirm,
-    required String region,
-    required DateTime birthday,
-    required String job,
-    required String jobCategory,
-  });
 
   /// アプリVer3.0以降 新規登録処理(メール認証あり)
   /// STEP1：メール送信

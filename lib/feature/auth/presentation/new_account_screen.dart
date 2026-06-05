@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -119,12 +120,21 @@ class _Body extends ConsumerState<_BodyWidget> {
 
                   const Spacer(),
 
-                  TextButton(onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
+                  TextButton(onPressed: () async {
+                    final state = ref.watch(authStateProvider);
+                    if (!state.isLogin) {
+                      Navigator.of(context).pushReplacement(
+                        CupertinoPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    } else {
+                      final _ = await AppDialog.show(
+                          context: context,
+                          message: 'すでにログイン済みです。',
+                          type: DialogType.error
+                      );
+                    }
                   }, child: const CustomText(
                     text: 'ログインはこちら',
                     color: CustomColors.themaBlue,
@@ -154,12 +164,21 @@ class _Body extends ConsumerState<_BodyWidget> {
               text: '仮登録する',
               backgroundColor: state.isCompleted && !state.isSend ? ThemaColor.blue.color : ThemaColor.gray.color,
               onPressed: () async {
-                final result = await viewModel.registerSendEmail();
-                if (result) {
+                final state = ref.watch(authStateProvider);
+                if (!state.isLogin) {
+                  final result = await viewModel.registerSendEmail();
+                  if (result) {
+                    final _ = await AppDialog.show(
+                        context: context,
+                        message: '仮登録メールを送信しました。',
+                        type: DialogType.success
+                    );
+                  }
+                } else {
                   final _ = await AppDialog.show(
                       context: context,
-                      message: '仮登録メールを送信しました。',
-                      type: DialogType.success
+                      message: 'すでにログイン済みです。',
+                      type: DialogType.error
                   );
                 }
               }

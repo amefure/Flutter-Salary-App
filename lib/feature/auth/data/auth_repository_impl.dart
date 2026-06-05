@@ -32,35 +32,6 @@ class AuthRepositoryImpl implements AuthRepository {
     await _tokenStorage.clear();
   }
 
-  /// 【OLD】アプリVer2.0以前 新規登録処理(メール認証なし)
-  @override
-  Future<AuthUser> register({
-    required String name,
-    required String email,
-    required String password,
-    required String passwordConfirm,
-    required String region,
-    required DateTime birthday,
-    required String job,
-    required String jobCategory,
-  }) async {
-    final formatted = DateFormat('yyyy-MM-dd').format(birthday);
-
-    final result = await _api.register({
-      AuthJsonKeys.name : name,
-      AuthJsonKeys.email: email,
-      AuthJsonKeys.password: password,
-      AuthJsonKeys.passwordConfirmation: passwordConfirm,
-      AuthProfileJsonKeys.region: region,
-      AuthProfileJsonKeys.birthday: formatted,
-      AuthProfileJsonKeys.job: job,
-      AuthProfileJsonKeys.jobCategory: jobCategory,
-    });
-
-    await saveToken(result);
-    return AuthUserDto.fromJson(result).toDomain();
-  }
-
   /// アプリVer3.0以降 新規登録処理(メール認証あり)
   /// STEP1：メール送信
   @override
