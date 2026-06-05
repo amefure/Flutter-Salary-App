@@ -11,8 +11,10 @@ sealed class DeepLinkDestination {
       _ when DeepLinkRegisterAccount.match(uri) => () {
         final email = params[DeepLinkRegisterAccount.parameterNames[0]];
         final signature = params[DeepLinkRegisterAccount.parameterNames[1]];
-        if (email != null && signature != null) {
-          return DeepLinkRegisterAccount(email: email, signature: signature);
+        final expires = params[DeepLinkRegisterAccount.parameterNames[2]];
+        if (email != null && signature != null && expires != null) {
+          final expiresInt = int.tryParse(expires) ?? 0;
+          return DeepLinkRegisterAccount(email: email, signature: signature, expires: expiresInt);
         }
         return const DeepLinkNone();
       }(),
@@ -31,15 +33,17 @@ class DeepLinkNone extends DeepLinkDestination {
 class DeepLinkRegisterAccount extends DeepLinkDestination {
   final String email;
   final String signature;
+  final int expires;
 
   static bool match(Uri uri) {
     final cleanPath = path.replaceFirst('/', '');
     return uri.path == path || uri.host == cleanPath;
   }
   static const String path = '/register';
-  static const List<String> parameterNames = ['email', 'signature'];
+  static const List<String> parameterNames = ['email', 'signature', 'expires'];
   const DeepLinkRegisterAccount({
     required this.email,
     required this.signature,
+    required this.expires,
   });
 }

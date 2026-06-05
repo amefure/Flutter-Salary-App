@@ -108,6 +108,10 @@ $ open coverage/html/index.html
 
 ▼ Scheme：salary
 ```
+/// アプリ起動
+/// 認証エラー(403)WebページからのアプリBack
+$ salary://
+
 /// 新規会員登録
 $ salary://register
 ```

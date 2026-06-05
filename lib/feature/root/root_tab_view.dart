@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
 import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/core/deeplink/deep_link_notifier.dart';
@@ -160,27 +162,35 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   void listenDeepLinkDestination() {
     ref.listen<DeepLinkDestination>(deepLinkProvider, (previous, next) {
       /// 【MUST】バックグラウンドから起動する場合に備えてフレーム描画が終わった直後に実行するようにする
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         switch (next) {
           case DeepLinkNone():
             break;
 
-          case DeepLinkRegisterAccount(email: final email, signature: final signature):
-            showCupertinoModalPopup<void>(
-              context: context,
-              barrierDismissible: false,
-              builder: (modalContext) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: RegisterAccountScreen(
-                    email: email,
-                    signature: signature,
-                    onClose: () => Navigator.of(modalContext).pop(),
-                  ),
-                );
-              },
-            ).then((_) => ref.read(deepLinkProvider.notifier).clear());
+          case DeepLinkRegisterAccount():
+            final state = ref.watch(authStateProvider);
+            if (state.isLogin) {
+              final _ = await AppDialog.show(
+                context: context,
+                message: 'すでにログイン済みです。',
+                type: DialogType.error,
+              );
+            } else {
+              showCupertinoModalPopup<void>(
+                context: context,
+                barrierDismissible: false,
+                builder: (modalContext) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: RegisterAccountScreen(
+                      deepLinkRegisterAccount: next,
+                      onClose: () => Navigator.of(modalContext).pop(),
+                    ),
+                  );
+                },
+              ).then((_) => ref.read(deepLinkProvider.notifier).clear());
+            }
             break;
         }
       });

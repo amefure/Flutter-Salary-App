@@ -4,6 +4,8 @@ class RegisterAccountState {
 
   final String name;
   final String email;
+  final String signature;
+  final int expires;
   final String password;
   final String passwordConfirm;
   final String region;
@@ -16,6 +18,8 @@ class RegisterAccountState {
   const RegisterAccountState({
     required this.name,
     required this.email,
+    required this.signature,
+    required this.expires,
     required this.password,
     required this.passwordConfirm,
     required this.region,
@@ -24,10 +28,16 @@ class RegisterAccountState {
     this.isCompleted = false,
   });
 
-  factory RegisterAccountState.initial() {
-    return const RegisterAccountState(
+  factory RegisterAccountState.initial({
+    required String email,
+    required String signature,
+    required int expires,
+  }) {
+    return RegisterAccountState(
       name: ProfileConfig.empty,
-      email: ProfileConfig.empty,
+      email: email,
+      signature: signature,
+      expires: expires,
       password: ProfileConfig.empty,
       passwordConfirm: ProfileConfig.empty,
       region: ProfileConfig.undefined,
@@ -38,7 +48,6 @@ class RegisterAccountState {
 
   RegisterAccountState copyWith({
     String? name,
-    String? email,
     String? password,
     String? passwordConfirm,
     String? region,
@@ -48,7 +57,9 @@ class RegisterAccountState {
   }) {
     return RegisterAccountState(
         name: name ?? this.name,
-        email: email ?? this.email,
+        email: email,
+        signature: signature,
+        expires: expires,
         password: password ?? this.password,
         passwordConfirm: passwordConfirm ?? this.passwordConfirm,
         region: region ?? this.region,

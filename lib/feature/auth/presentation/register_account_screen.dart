@@ -8,6 +8,7 @@ import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/feature/auth/presentation/components/user_info_row_tile.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/models/thema_color.dart';
@@ -20,13 +21,11 @@ import 'package:salary/feature/auth/presentation/login_screen.dart';
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({
     super.key,
-    required this.email,
-    required this.signature,
+    required this.deepLinkRegisterAccount,
     required this.onClose,
   });
 
-  final String email;
-  final String signature;
+  final DeepLinkRegisterAccount deepLinkRegisterAccount;
   final VoidCallback onClose;
 
   @override
@@ -47,10 +46,10 @@ class RegisterAccountScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             )
         ),
-        child: const SafeArea(
+        child: SafeArea(
             child: Padding(
-                padding: EdgeInsets.all(16),
-                child: _BodyWidget()
+                padding: const EdgeInsets.all(16),
+                child: _BodyWidget(deepLinkRegisterAccount: deepLinkRegisterAccount)
             )
         ),
     );
@@ -58,8 +57,10 @@ class RegisterAccountScreen extends StatelessWidget {
 }
 
 class _BodyWidget extends ConsumerStatefulWidget {
-  const _BodyWidget();
-
+  const _BodyWidget({
+    required this.deepLinkRegisterAccount,
+  });
+  final DeepLinkRegisterAccount deepLinkRegisterAccount;
   @override
   ConsumerState<_BodyWidget> createState() => _Body();
 }
@@ -85,7 +86,7 @@ class _Body extends ConsumerState<_BodyWidget> {
   /// ViewModel.State =>(変化) TextEditingControllerと同期
   void _bindStateToControllers() {
     _subscription = ref.listenManual<RegisterAccountState>(
-      registerAccountProvider,
+      registerAccountProvider(widget.deepLinkRegisterAccount),
       fireImmediately: true,
           (prev, next) {
         _syncController(_nameController, next.name);
@@ -98,13 +99,10 @@ class _Body extends ConsumerState<_BodyWidget> {
 
   /// TextEditingController =>(変化) ViewModel.Stateと同期
   void _bindControllersToState() {
-    final vm = ref.read(registerAccountProvider.notifier);
+    final vm = ref.read(registerAccountProvider(widget.deepLinkRegisterAccount).notifier);
     // 入力されたらViewModelに反映
     _nameController.addListener(() {
       vm.updateName(_nameController.text);
-    });
-    _emailController.addListener(() {
-      vm.updateEmail(_emailController.text);
     });
     _passWordController.addListener(() {
       vm.updatePassWord(_passWordController.text);
@@ -138,8 +136,8 @@ class _Body extends ConsumerState<_BodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(registerAccountProvider);
-    final viewModel = ref.read(registerAccountProvider.notifier);
+    final state = ref.watch(registerAccountProvider(widget.deepLinkRegisterAccount));
+    final viewModel = ref.read(registerAccountProvider(widget.deepLinkRegisterAccount).notifier);
 
     ref.listen(authStateProvider, (previous, next) async {
       if (previous?.isLogin == false && next.isLogin == true) {
@@ -158,49 +156,18 @@ class _Body extends ConsumerState<_BodyWidget> {
         spacing: 20,
         children: [
 
-          Column(
-            spacing: 0,
-            children: [
-              Row(
-                children: [
-
-                  const Spacer(),
-
-                  TextButton(onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      CupertinoPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  }, child: const CustomText(
-                    text: 'ログインはこちら',
-                    color: CustomColors.themaBlue,
-                    fontWeight: FontWeight.bold,
-                    textSize: TextSize.S,
-                  )),
-
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    color: CustomColors.themaBlue,
-                    size: 18,
-                  )
-                ],
-              ),
-
-              /// アカウント名
-              CustomTextField(
-                controller: _nameController,
-                labelText: 'アカウント名(公開用)',
-                prefixIcon: CupertinoIcons.person_crop_square_fill,
-                keyboardType: TextInputType.name,
-              ),
-            ],
+          /// アカウント名
+          CustomTextField(
+            controller: _nameController,
+            labelText: 'アカウント名(公開用)',
+            prefixIcon: CupertinoIcons.person_crop_square_fill,
+            keyboardType: TextInputType.name,
           ),
 
           /// メールアドレス入力ボックス
           CustomTextField(
             controller: _emailController,
-            labelText: 'メールアドレス',
+            labelText: 'メールアドレス(変更不可)',
             prefixIcon: CupertinoIcons.mail_solid,
             keyboardType: TextInputType.emailAddress,
             readOnly: true,

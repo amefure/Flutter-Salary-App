@@ -27,6 +27,8 @@ abstract class AuthRepository {
   Future<AuthUser> registerFinal({
     required String name,
     required String email,
+    required String signature,
+    required int expires,
     required String password,
     required String passwordConfirm,
     required String region,

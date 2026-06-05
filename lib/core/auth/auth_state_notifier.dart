@@ -86,6 +86,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   Future<void> registerFinalAccount({
     required String name,
     required String email,
+    required String signature,
+    required int expires,
     required String password,
     required String passwordConfirm,
     required String region,
@@ -96,6 +98,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     final user = await _authRepository.registerFinal(
         name: name,
         email: email,
+        signature: signature,
+        expires: expires,
         password: password,
         passwordConfirm: passwordConfirm,
         region: region,

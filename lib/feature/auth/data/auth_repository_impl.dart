@@ -79,6 +79,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthUser> registerFinal({
     required String name,
     required String email,
+    required String signature,
+    required int expires,
     required String password,
     required String passwordConfirm,
     required String region,
@@ -91,6 +93,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final result = await _api.registerFinal({
     AuthJsonKeys.name : name,
     AuthJsonKeys.email: email,
+    AuthJsonKeys.signature: signature,
+    AuthJsonKeys.expires: expires,
     AuthJsonKeys.password: password,
     AuthJsonKeys.passwordConfirmation: passwordConfirm,
     AuthProfileJsonKeys.region: region,
