@@ -131,20 +131,25 @@ class MyApp extends ConsumerWidget {
         // => Barが不透明扱いでUIに高さが認識されなくなりスクロールに食われる
         barBackgroundColor: CupertinoColors.systemBackground,
       ),
-      home: Stack(
-        children: [
-          startScreen,
+      home: startScreen,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            if (child != null) child,
 
-          if (loadingState.isLoading)
-            const GlobalLoadingOverlay(),
+            if (loadingState.isLoading)
+              const GlobalLoadingOverlay(),
 
-          if (errorMessage != null)
-            GlobalErrorOverlay(
-              message: errorMessage,
-              onDismissed: () { ref.read(globalErrorProvider.notifier).clear(); },
-            ),
-        ],
-      ),
+            if (errorMessage != null)
+              GlobalErrorOverlay(
+                message: errorMessage,
+                onDismissed: () {
+                  ref.read(globalErrorProvider.notifier).clear();
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 }

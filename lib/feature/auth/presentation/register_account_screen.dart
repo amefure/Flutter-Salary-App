@@ -16,7 +16,6 @@ import 'package:salary/feature/auth/application/register_account/register_accoun
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/auth/application/register_account/register_account_state.dart';
 import 'package:salary/feature/auth/presentation/components/job_picker_modal.dart';
-import 'package:salary/feature/auth/presentation/login_screen.dart';
 
 class RegisterAccountScreen extends StatelessWidget {
   const RegisterAccountScreen({

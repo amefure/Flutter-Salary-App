@@ -176,19 +176,15 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
                 type: DialogType.error,
               );
             } else {
-              showCupertinoModalPopup<void>(
-                context: context,
-                barrierDismissible: false,
-                builder: (modalContext) {
-                  return SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: RegisterAccountScreen(
-                      deepLinkRegisterAccount: next,
-                      onClose: () => Navigator.of(modalContext).pop(),
-                    ),
-                  );
-                },
+              final navigator = Navigator.of(context, rootNavigator: true);
+              navigator.push<void>(
+                CupertinoPageRoute<void>(
+                  fullscreenDialog: true,
+                  builder: (modalContext) => RegisterAccountScreen(
+                    deepLinkRegisterAccount: next,
+                    onClose: () => navigator.pop(),
+                  ),
+                ),
               ).then((_) => ref.read(deepLinkProvider.notifier).clear());
             }
             break;
