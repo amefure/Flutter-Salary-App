@@ -6,9 +6,11 @@ import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
 import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/core/deeplink/deep_link_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/feature/analysis/salary_analysis_screen.dart';
 import 'package:salary/feature/auth/presentation/register_account_screen.dart';
 import 'package:salary/feature/charts/presentation/chart_salary_screen.dart';
 import 'package:salary/feature/premium/premium_root/premium_root_screen.dart';
+import 'package:salary/feature/root/root_tab_state.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
 import 'package:salary/feature/settings/setting_screen.dart';
@@ -28,7 +30,6 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   void initState() {
     super.initState();
     _tabController = CupertinoTabController();
-
     _tabController.addListener(_onTabChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,8 +44,9 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   }
 
   void _onTabChanged() {
-    final currentIndex = _tabController.index;
-    if (currentIndex == 2) {
+    final currentTab = RootTabType.fromIndex(_tabController.index);
+    // 例として PublicHistory や特定タブに切り替わったときの処理
+    if (currentTab == RootTabType.publicHistory) {
       ref.read(rootTabProvider.notifier).markAsShownPremiumTab();
     }
   }
@@ -54,14 +56,15 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     final state = ref.read(rootTabProvider);
     if (state.shouldShowPremiumIntro == true) {
       NewPremiumFeatureDialog.show(
-          context,
-          onDetailButtonPressed: () {
-            viewModel.markAsShownPremiumIntro();
-            _tabController.index = 2;
-          },
-          onCloseButtonPressed: () {
-            viewModel.markAsShownPremiumIntro();
-          }
+        context,
+        onDetailButtonPressed: () {
+          viewModel.markAsShownPremiumIntro();
+          // Enum を使って安全にタブを指定して移動
+          _tabController.index = RootTabType.publicHistory.tabIndex;
+        },
+        onCloseButtonPressed: () {
+          viewModel.markAsShownPremiumIntro();
+        },
       );
     }
   }
@@ -69,26 +72,28 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(rootTabProvider);
-    /// ディープリンク遷移ハンドリング観測
     listenDeepLinkDestination();
+
     return CupertinoTabScaffold(
       controller: _tabController,
       tabBar: CupertinoTabBar(
         height: 60,
         items: [
-          /// 0
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
             label: 'MyHistory',
           ),
-          /// 1
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.chart_bar_alt_fill),
             label: 'MyData',
           ),
-          /// 2
-          state.shouldShowPremiumTabBadge == true ? _timeLineTabItemAddBadge() : _timeLineTabItem(),
-          /// 3
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.chart_pie_fill),
+            label: 'Analysis',
+          ),
+          state.shouldShowPremiumTabBadge == true
+              ? _timeLineTabItemAddBadge()
+              : _timeLineTabItem(),
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear_alt_fill),
             label: 'Settings',
@@ -98,7 +103,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
       tabBuilder: (context, index) {
         return CupertinoTabView(
           builder: (context) {
-            return _getPage(index);
+            return _getPage(RootTabType.fromIndex(index));
           },
         );
       },
@@ -117,9 +122,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
-
           const Icon(CupertinoIcons.globe),
-
           Positioned(
             top: -5,
             right: -25,
@@ -143,18 +146,19 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     );
   }
 
-  Widget _getPage(int index) {
-    switch (index) {
-      case 0:
+  /// Enum を引数に受け取ることで、どの画面を返すかが一目でわかるようにする
+  Widget _getPage(RootTabType tabType) {
+    switch (tabType) {
+      case RootTabType.history:
         return const SalaryListScreen();
-      case 1:
+      case RootTabType.data:
         return const ChartSalaryScreen();
-      case 2:
+      case RootTabType.analysis:
+        return const SalaryAnalysisScreen();
+      case RootTabType.publicHistory:
         return const PremiumRootScreen();
-      case 3:
+      case RootTabType.settings:
         return const SettingScreen();
-      default:
-        return const SalaryListScreen();
     }
   }
 
@@ -166,11 +170,10 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
         switch (next) {
           case DeepLinkNone():
             break;
-
           case DeepLinkRegisterAccount():
             final state = ref.watch(authStateProvider);
             if (state.isLogin) {
-              final _ = await AppDialog.show(
+              await AppDialog.show(
                 context: context,
                 message: 'すでにログイン済みです。',
                 type: DialogType.error,
