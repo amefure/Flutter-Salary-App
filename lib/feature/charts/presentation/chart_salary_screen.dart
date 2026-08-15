@@ -105,6 +105,7 @@ class ChartSalaryScreen extends StatelessWidget {
               ),
             ),
             const AdMobBannerWidget(),
+            const SizedBox(height: 100),
           ]
       ),
     );

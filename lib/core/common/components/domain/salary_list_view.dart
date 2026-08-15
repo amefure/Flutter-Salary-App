@@ -117,7 +117,7 @@ class _BaseSalaryListViewState<T>
             ),
           ),
         ),
-        if (widget.showAd) const AdMobBannerWidget(),
+        // if (widget.showAd) const AdMobBannerWidget(),
       ],
     );
   }

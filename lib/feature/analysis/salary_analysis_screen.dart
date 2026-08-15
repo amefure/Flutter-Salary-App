@@ -61,6 +61,7 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
               child: _selectedSegment == 0 ? const _ComparisonView() : const _ItemSummaryView(),
             ),
             const AdMobBannerWidget(),
+            const SizedBox(height: 16),
           ],
         ),
       ),

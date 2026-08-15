@@ -45,7 +45,6 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
 
   void _onTabChanged() {
     final currentTab = RootTabType.fromIndex(_tabController.index);
-    // 例として PublicHistory や特定タブに切り替わったときの処理
     if (currentTab == RootTabType.publicHistory) {
       ref.read(rootTabProvider.notifier).markAsShownPremiumTab();
     }
@@ -59,7 +58,6 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
         context,
         onDetailButtonPressed: () {
           viewModel.markAsShownPremiumIntro();
-          // Enum を使って安全にタブを指定して移動
           _tabController.index = RootTabType.publicHistory.tabIndex;
         },
         onCloseButtonPressed: () {
@@ -74,79 +72,163 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     final state = ref.watch(rootTabProvider);
     listenDeepLinkDestination();
 
-    return CupertinoTabScaffold(
-      controller: _tabController,
-      tabBar: CupertinoTabBar(
-        height: 60,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.list_bullet),
-            label: 'MyHistory',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chart_bar_alt_fill),
-            label: 'MyData',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chart_pie_fill),
-            label: 'Analysis',
-          ),
-          state.shouldShowPremiumTabBadge == true
-              ? _timeLineTabItemAddBadge()
-              : _timeLineTabItem(),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.gear_alt_fill),
-            label: 'Settings',
-          ),
-        ],
-      ),
-      tabBuilder: (context, index) {
-        return CupertinoTabView(
-          builder: (context) {
-            return _getPage(RootTabType.fromIndex(index));
-          },
-        );
-      },
-    );
-  }
-
-  BottomNavigationBarItem _timeLineTabItem() {
-    return const BottomNavigationBarItem(
-      icon: Icon(CupertinoIcons.globe),
-      label: 'PublicHistory',
-    );
-  }
-
-  BottomNavigationBarItem _timeLineTabItemAddBadge() {
-    return BottomNavigationBarItem(
-      icon: Stack(
-        clipBehavior: Clip.none,
+    return CupertinoPageScaffold(
+      backgroundColor: CustomColors.foundation(context),
+      child: Stack(
         children: [
-          const Icon(CupertinoIcons.globe),
+          // 各タブの画面コンテンツ
+          CupertinoTabScaffold(
+            controller: _tabController,
+            tabBar: CupertinoTabBar(
+              backgroundColor: CupertinoColors.transparent,
+              border: null,
+              items: const [
+                BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+                BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+                BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+                BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+                BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+              ],
+            ),
+            tabBuilder: (context, index) {
+              return CupertinoTabView(
+                builder: (context) {
+                  return _getPage(RootTabType.fromIndex(index));
+                },
+              );
+            },
+          ),
+
+          // 浮いているリキッドグラス風のカスタムフローティングタブバー
           Positioned(
-            top: -5,
-            right: -25,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: CustomColors.negative,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const CustomText(
-                text: 'NEW!',
-                color: CupertinoColors.white,
-                textSize: TextSize.SSS,
-                fontWeight: FontWeight.bold,
+            left: 20,
+            right: 20,
+            bottom: 24,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                height: 64,
+                decoration: BoxDecoration(
+                  color: CupertinoColors.systemBackground.resolveFrom(context).withAlpha(220),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: CupertinoColors.separator.resolveFrom(context).withAlpha(50),
+                    width: 0.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CupertinoColors.black.withAlpha(25),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(0, CupertinoIcons.list_bullet, 'History'),
+                    _buildNavItem(1, CupertinoIcons.chart_bar_alt_fill, 'Data'),
+                    _buildNavItem(2, CupertinoIcons.chart_pie_fill, 'Analysis'),
+                    _buildBadgeNavItem(3, CupertinoIcons.globe, 'Public', state.shouldShowPremiumTabBadge == true),
+                    _buildNavItem(4, CupertinoIcons.gear_alt_fill, 'Settings'),
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
-      label: 'PublicHistory',
     );
   }
 
-  /// Enum を引数に受け取ることで、どの画面を返すかが一目でわかるようにする
+  Widget _buildNavItem(int index, IconData iconData, String label) {
+    final isSelected = _tabController.index == index;
+    final color = isSelected ? CustomColors.thema : CupertinoColors.systemGrey;
+
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: () {
+        setState(() {
+          _tabController.index = index;
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconData, color: color, size: 22),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBadgeNavItem(int index, IconData iconData, String label, bool hasBadge) {
+    final isSelected = _tabController.index == index;
+    final color = isSelected ? CustomColors.thema : CupertinoColors.systemGrey;
+
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: () {
+        setState(() {
+          _tabController.index = index;
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(iconData, color: color, size: 22),
+              if (hasBadge)
+                Positioned(
+                  top: -6,
+                  right: -20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: CustomColors.negative,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: CustomColors.negative.withAlpha(100),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const CustomText(
+                      text: 'NEW!',
+                      color: CupertinoColors.white,
+                      textSize: TextSize.SSS,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _getPage(RootTabType tabType) {
     switch (tabType) {
       case RootTabType.history:
