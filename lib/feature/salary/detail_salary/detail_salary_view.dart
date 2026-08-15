@@ -98,7 +98,7 @@ class DetailSalaryView extends ConsumerWidget {
       ) async {
     final result = await AppDialog.show(
         context: context,
-        message: '「給料情報を本当に削除しますか？',
+        message: '給料情報を本当に削除しますか？',
         type: DialogType.confirm,
         positiveTitle: '削除',
         isPositiveNegativeType: true

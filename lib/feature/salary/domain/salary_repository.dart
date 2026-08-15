@@ -1,6 +1,6 @@
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/feature/salary/data/dto/salary_dto.dart';
 import 'package:salary/feature/salary/data/dto/salary_page_dto.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 
 /// 実態：[SalaryRepositoryImpl]
 abstract class SalaryRepository {

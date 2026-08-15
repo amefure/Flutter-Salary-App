@@ -6,6 +6,7 @@ import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/core/repository/user_settings_repository.dart';
 import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_state.dart';
 
 final listSalaryProvider =
@@ -62,12 +63,11 @@ class ListSalaryViewModel extends StateNotifier<ListSalaryState> {
 
   /// Realm から Salary を取得
   void _loadSalaries() {
-    final allSalaries = _localSalaryRepository.fetchAllSortCreatedAt();
-    // DEBUG：モック(確認用)
+    // DEBUG：モック(確認用) isMock = true
+    final allSalaries = _localSalaryRepository.fetchAllSortCreatedAt(isMock: false);
     // DEBUG：モックローカル保存処理
-    // for (var item in allSalaries) {
-    //   _repository.add(item);
-    // }
+    // final dataSource = RealmDataSource();
+    // dataSource.addAll(allSalaries);
     state = state.copyWith(
       salaries: allSalaries,
     );

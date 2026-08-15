@@ -7,7 +7,6 @@ import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
-import 'package:salary/core/utils/logger.dart';
 import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
@@ -185,8 +184,6 @@ class _Body extends ConsumerState<_BodyWidget> {
                 prefixIconColor: state.selectPaymentSource?.themaColorEnum
                     .color ?? CupertinoColors.systemGrey,
                 onTapped: () async {
-                  logger('ddd${state.selectPaymentSource?.isPublic}');
-                  logger('ddd${widget.salary}');
                   /// 更新処理かつ公開済みの場合は変更不可
                   if (state.selectPaymentSource?.isPublic == true && widget.salary != null) {
                     final _ = await AppDialog.show(
@@ -251,9 +248,19 @@ class _Body extends ConsumerState<_BodyWidget> {
                 const Spacer(),
                 TextButton(
                   onPressed: () async {
-                    // 詳細画面入力モーダルを表示
+                    // 総支給額の過去項目名を抽出（重複除外）
+                    final pastPaymentItemNames = state.historyList
+                        .expand((salary) => salary.paymentAmountItems)
+                        .map((item) => item.key)
+                        .toSet()
+                        .toList();
+
                     _showInputAmountItemModal(
-                        context, '総支給額', vm.addPaymentAmountItem);
+                      context,
+                      '総支給額',
+                      vm.addPaymentAmountItem,
+                      pastPaymentItemNames,
+                    );
                   },
                   child: const Row(
                     children: [
@@ -301,9 +308,19 @@ class _Body extends ConsumerState<_BodyWidget> {
                 const Spacer(),
                 TextButton(
                   onPressed: () async {
-                    // 詳細画面入力モーダルを表示
+                    // 控除額の過去項目名を抽出（重複除外）
+                    final pastDeductionItemNames = state.historyList
+                        .expand((salary) => salary.deductionAmountItems)
+                        .map((item) => item.key)
+                        .toSet()
+                        .toList();
+
                     _showInputAmountItemModal(
-                        context, '控除額', vm.addDeductionAmountItem);
+                      context,
+                      '控除額',
+                      vm.addDeductionAmountItem,
+                      pastDeductionItemNames,
+                    );
                   },
                   child: const Row(
                     children: [
@@ -396,13 +413,12 @@ class _Body extends ConsumerState<_BodyWidget> {
             prefixIconColor: prefixIconColor,
             readOnly: true,
             onTap: onTapped,
-          ),
-        ),
-
-        SizedBox(
-          child: IconButton(
-            onPressed: () => _showInputPaymentSourceModal(context),
-            icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+            suffix: SizedBox(
+              child: IconButton(
+                onPressed: () => _showInputPaymentSourceModal(context),
+                icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+              ),
+            ),
           ),
         ),
       ],
@@ -525,13 +541,14 @@ class _Body extends ConsumerState<_BodyWidget> {
       BuildContext context,
       String title,
       void Function(AmountItem source) onAdded,
+      List<String> pastItemNames,
       ) async {
     // 結果をawaitで同期的に取得する
     final AmountItem? newItem = await showModalBottomSheet<AmountItem?>(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return DetailInputView(title: title);
+        return DetailInputView(title: title, pastItemNames: pastItemNames);
       },
     );
     if (newItem != null) {
@@ -539,43 +556,69 @@ class _Body extends ConsumerState<_BodyWidget> {
     }
   }
 
-  /// 過去の給料情報表示ボタン
   Widget _historyCitingSalaryButton(
       BuildContext context,
       List<Salary> pastSalaries,
       PaymentSource? paymentSource,
-      void Function(Salary salary) onSelected
+      void Function(Salary salary) onSelected,
       ) {
-    return Row(
-      children: [
-        const Spacer(),
-        CupertinoButton(
-          child: const Row(
-            children: [
-              CustomText(
-                text: '過去から引用',
-                color: CustomColors.thema,
-                textSize: TextSize.S,
-                fontWeight: FontWeight.bold,
+    return Align(
+      alignment: Alignment.centerRight,
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: () async {
+          if (paymentSource?.isPublic == true && widget.salary != null) {
+            final _ = await AppDialog.show(
+              context: context,
+              message: '公開中の給料情報のため変更できません。',
+              type: DialogType.notify,
+            );
+            return;
+          }
+          _showSelectPastSalarySheet(context, pastSalaries, onSelected);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+          decoration: BoxDecoration(
+            // テーマカラーを活かしたグラデーション
+            gradient: LinearGradient(
+              colors: [
+                CustomColors.thema,
+                CustomColors.thema.withRed((CustomColors.thema.red + 50).clamp(0, 255)), // 少し明るいトーンへ変化
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(22),
+            // 軽く光るような効果を演出
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.thema.withAlpha(80),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              Icon(Icons.chevron_right),
             ],
           ),
-          onPressed: () async {
-            /// 更新処理かつ公開済みの場合は変更不可
-            if (paymentSource?.isPublic == true && widget.salary != null) {
-              final _ = await AppDialog.show(
-                context: context,
-                message: '公開中の給料情報のため支払い元を変更できません。\n変更したい場合は非公開に戻してから実行してください。',
-                type: DialogType.notify,
-              );
-              return;
-            }
-
-            _showSelectPastSalarySheet(context, pastSalaries, onSelected);
-          },
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(width: 8),
+              CustomText(
+                text: '過去のデータを引用',
+                color: CupertinoColors.white,
+                textSize: TextSize.S,
+                fontWeight: FontWeight.w700,
+              ),
+              SizedBox(width: 6),
+              Icon(
+                CupertinoIcons.chevron_right_circle_fill,
+                size: 16,
+                color: CupertinoColors.white,
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 

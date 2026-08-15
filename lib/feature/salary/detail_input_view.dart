@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/domain/amount_toggle_button_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -11,10 +12,16 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 /// 金額詳細項目画面
 /// Navigator経由でデータを受渡する
 class DetailInputView extends StatefulWidget {
-  const DetailInputView({super.key, required this.title, this.amountItem});
+  const DetailInputView({
+    super.key,
+    required this.title,
+    this.amountItem,
+    this.pastItemNames = const [],
+  });
 
   final String title;
   final AmountItem? amountItem;
+  final List<String> pastItemNames;
 
   @override
   State<DetailInputView> createState() => _DetailInputViewState();
@@ -92,7 +99,7 @@ class _DetailInputViewState extends State<DetailInputView> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      decoration:  BoxDecoration(
+      decoration: BoxDecoration(
         color: CustomColors.foundation(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -110,14 +117,49 @@ class _DetailInputViewState extends State<DetailInputView> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
+                // 項目名入力フィールド（suffixに履歴ボタンを配置）
                 CustomTextField(
                   controller: _nameController,
                   labelText: '項目名',
                   prefixIcon: CupertinoIcons.signature,
                   keyboardType: TextInputType.text,
+                  suffix: widget.pastItemNames.isNotEmpty
+                      ? CupertinoButton(
+                    padding: const EdgeInsets.only(right: 8),
+                    onPressed: () => _showSelectPastItemNameDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.systemGrey6,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: CupertinoColors.systemGrey4,
+                          width: 1,
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            CupertinoIcons.clock_fill,
+                            size: 13,
+                            color: CustomColors.thema,
+                          ),
+                          SizedBox(width: 4),
+                          CustomText(
+                            text: '履歴',
+                            textSize: TextSize.S,
+                            color: CustomColors.thema,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                      : null,
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
 
                 CustomTextField(
                   controller: _amountController,
@@ -126,7 +168,8 @@ class _DetailInputViewState extends State<DetailInputView> {
                   suffix: AmountToggleButtonView(controller: _amountController),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
                 CustomElevatedButton(
                   text: widget.amountItem == null ? '追加' : '更新',
                   onPressed: () {
@@ -138,6 +181,21 @@ class _DetailInputViewState extends State<DetailInputView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showSelectPastItemNameDialog(BuildContext context) {
+    CustomActionPicker.show<String>(
+      context: context,
+      title: '過去の項目名から選択',
+      items: widget.pastItemNames,
+      currentValue: null,
+      labelBuilder: (name) => name,
+      onSelected: (selectedName) {
+        setState(() {
+          _nameController.text = selectedName;
+        });
+      },
     );
   }
 }

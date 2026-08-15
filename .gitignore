@@ -62,3 +62,6 @@ ios/Runner/GoogleService-Info.plist
 
 # Test Coverage
 coverage/
+
+# BackUp
+db_backup/*
