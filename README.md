@@ -19,7 +19,7 @@
 追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
 
 ## 開発環境
-- Android Studio Panda 1 | 2025.3.1 Patch
+- Android Studio Quail 2 | 2026.1.2
 - Xcode：26.3 
 - Flutter：3.38.3(stable)
 - Dart：3.10.1
