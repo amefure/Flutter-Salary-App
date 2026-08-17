@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/header_visual_view.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/feature/premium/premium_lock_screen.dart';
 import 'package:salary/feature/public_salary/public_salary_screen.dart';
 
 class PublicUserCountLockScreen extends StatelessWidget {
@@ -29,7 +29,7 @@ class PublicUserCountLockScreen extends StatelessWidget {
           Consumer(
             builder: (context, ref, child) {
               final premiumState = ref.watch(premiumFunctionStateProvider);
-              return ReleaseProgressCard(
+              return _ReleaseProgressCard(
                 currentCount: premiumState.publicUserCount,
               );
             },
@@ -135,6 +135,85 @@ class _LockedFeatureTile extends StatelessWidget {
             ),
           ),
           const Icon(CupertinoIcons.lock_fill, size: 16, color: CupertinoColors.systemGrey4),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReleaseProgressCard extends StatelessWidget {
+  final int currentCount;
+  final int targetCount;
+  final String title;
+  final String messageTemplate;
+
+  const _ReleaseProgressCard({
+    super.key,
+    required this.currentCount,
+    this.targetCount = 10,
+    this.title = '機能の解放まで',
+    this.messageTemplate = '人の給料公開で、\nみんなの給料データが閲覧可能になります！',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final remaining = (targetCount - currentCount).clamp(0, targetCount);
+    final progress = (currentCount / targetCount).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemOrange.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: CustomColors.themaOrange.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(
+                CupertinoIcons.lock_open_fill,
+                size: 18,
+                color: CustomColors.themaOrange,
+              ),
+              const SizedBox(width: 8),
+              CustomText(
+                text: title,
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+              ),
+              const Spacer(),
+              CustomText(
+                text: '$currentCount / $targetCount人',
+                textSize: TextSize.S,
+                color: CustomColors.themaOrange,
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // プログレスバー
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: CupertinoColors.systemGrey5,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                CustomColors.themaOrange,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // 残り人数の強調メッセージ
+          CustomText(
+            text: 'あと $remaining $messageTemplate',
+            textSize: TextSize.SS,
+            color: CupertinoColors.label,
+            maxLines: 2,
+          ),
         ],
       ),
     );

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/number_utils.dart';
-import '../salary_analysis_view_model.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 
 class ItemSummaryView extends ConsumerWidget {
   const ItemSummaryView({super.key});

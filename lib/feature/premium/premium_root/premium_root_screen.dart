@@ -21,7 +21,7 @@ class PremiumRootScreen extends StatelessWidget {
       backgroundColor: CustomColors.foundation(context),
       navigationBar: CupertinoNavigationBar(
         middle: const CustomText(
-          text: 'プレミアム機能',
+          text: 'みんなの給料(プレミアム)',
           fontWeight: FontWeight.bold,
         ),
         trailing: Consumer(
@@ -50,7 +50,7 @@ class PremiumRootScreen extends StatelessWidget {
 
             /// 🔒 Lockは絶対ここで判定
             if (!isRelease) {
-              return const PremiumLockScreen();
+              return const PremiumLockScreen(isAnalytics: false);
             }
 
             /// 公開人数が一定数に達していないなら準備中とする
