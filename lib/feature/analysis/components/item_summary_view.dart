@@ -1,4 +1,6 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -12,11 +14,26 @@ class ItemSummaryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(salaryAnalysisProvider);
     final vm = ref.read(salaryAnalysisProvider.notifier);
-    final history = vm.getFilteredItemHistory();
-    final totalSum = history.values.fold(0, (sum, val) => sum + val);
+
+    // 選択項目が控除項目かどうかで色を分ける
+    final isDeduction = vm.isSelectedItemSelectedAsDeduction;
+    final chartColor = isDeduction ? CustomColors.negative : CustomColors.thema;
+
+    // 1年分の月次データを取得
+    final monthlyData = vm.getMonthlyDataForYear();
+    final totalSum = monthlyData.reduce((a, b) => a + b);
+
+    // スポットデータ作成（1月〜12月）
+    final spots = monthlyData.asMap().entries.map((e) {
+      return FlSpot((e.key + 1).toDouble(), e.value);
+    }).toList();
+
+    final values = spots.map((spot) => spot.y);
+    final maxY = vm.calculateMaxY(values);
 
     return Column(
       children: [
+        // 1. 項目選択用ピル型スクロールリスト
         SizedBox(
           height: 44,
           child: ListView.builder(
@@ -34,13 +51,15 @@ class ItemSummaryView extends ConsumerWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isSelected ? CustomColors.thema : CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
+                      color: isSelected
+                          ? chartColor
+                          : CustomColors.background(context),
                       borderRadius: BorderRadius.circular(20),
-                      border: isSelected ? null : Border.all(color: CupertinoColors.systemGrey5, width: 0.5),
+                      border: isSelected ? null : Border.all(color: CustomColors.themaGray, width: 0.5),
                     ),
                     child: CustomText(
                       text: itemName,
-                      color: isSelected ? CupertinoColors.white : CustomColors.text(context),
+                      color: isSelected ? CustomColors.textWhite : CustomColors.text(context),
                       fontWeight: FontWeight.w600,
                       textSize: TextSize.S,
                     ),
@@ -50,66 +69,160 @@ class ItemSummaryView extends ConsumerWidget {
             },
           ),
         ),
+
         const SizedBox(height: 16),
+
+        // 2. 年選択UI
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CupertinoButton(
+              padding: const EdgeInsets.all(8),
+              onPressed: () => vm.changeYear(-1),
+              child: const Icon(CupertinoIcons.chevron_back),
+            ),
+            CustomText(
+              text: '${state.selectedYear}年',
+              fontWeight: FontWeight.bold,
+              textSize: TextSize.M,
+            ),
+            CupertinoButton(
+              padding: const EdgeInsets.all(8),
+              onPressed: () => vm.changeYear(1),
+              child: const Icon(CupertinoIcons.chevron_forward),
+            ),
+          ],
+        ),
+
+        // 3. 年間累計額カード（支給か控除かのラベル＆色分け付き）
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: CustomColors.thema.withAlpha(51), width: 1), // withOpacity -> withAlpha (51)
+              color: CustomColors.background(context),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(
-                  text: '「${state.selectedItemName ?? "未選択"}」の累計',
-                  textSize: TextSize.S,
-                  color: CupertinoColors.systemGrey,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      text: '年間累計額',
+                      textSize: TextSize.S,
+                      color: CustomColors.themaGray,
+                    ),
+                    // 支給 / 控除の種別バッジ
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: chartColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: CustomText(
+                        text: isDeduction ? '控除項目' : '支給項目',
+                        textSize: TextSize.SS,
+                        color: chartColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 CustomText(
-                  text: '${NumberUtils.formatWithComma(totalSum)} 円',
+                  text: '${NumberUtils.formatWithComma(totalSum.toInt())} 円',
                   textSize: TextSize.L,
                   fontWeight: FontWeight.bold,
-                  color: CustomColors.thema,
+                  color: chartColor,
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: history.isEmpty
-              ? const Center(child: CustomText(text: '該当するデータがありません', color: CupertinoColors.systemGrey))
-              : ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: history.keys.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final key = history.keys.elementAt(index);
-              final value = history[key]!;
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
-                  borderRadius: BorderRadius.circular(12),
+
+        const SizedBox(height: 20),
+
+        // 4. 折れ線グラフエリア
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
+            width: double.infinity,
+            height: 300,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: CustomColors.background(context),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: LineChart(
+              LineChartData(
+                lineTouchData: LineTouchData(
+                  enabled: true,
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        return LineTooltipItem(
+                          '${spot.x.toInt()}月\n${NumberUtils.formatWithComma(spot.y.toInt())}円',
+                          const TextStyle(color: Colors.white),
+                        );
+                      }).toList();
+                    },
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomText(text: key, fontWeight: FontWeight.w600),
-                    CustomText(
-                      text: '${NumberUtils.formatWithComma(value)} 円',
-                      fontWeight: FontWeight.bold,
-                      color: CustomColors.thema,
+                maxY: maxY,
+                minY: 0,
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 70,
+                      getTitlesWidget: (value, meta) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            CustomText(
+                              text: '${NumberUtils.formatWithComma(value.toInt())}円',
+                              textSize: TextSize.SS,
+                            ),
+                            const SizedBox(width: 5),
+                          ],
+                        );
+                      },
                     ),
-                  ],
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: (value, meta) {
+                        return CustomText(
+                          text: '${value.toInt()}月',
+                          textSize: TextSize.SS,
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              );
-            },
+                gridData: const FlGridData(show: true),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: false, // 直線でカクつきを防止
+                    color: chartColor,
+                    barWidth: 3,
+                    dotData: const FlDotData(show: true),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: chartColor.withValues(alpha: 0.15),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],

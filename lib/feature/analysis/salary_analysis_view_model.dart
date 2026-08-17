@@ -20,17 +20,17 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     final salaries = _repository.fetchAll();
     salaries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    final itemNames = salaries
-        .expand((s) => [...s.paymentAmountItems, ...s.deductionAmountItems])
-        .map((item) => item.key)
-        .toSet()
-        .toList();
+    // 全ての支給・控除項目名を取得
+    final paymentNames = salaries.expand((s) => s.paymentAmountItems).map((i) => i.key).toSet();
+    final deductionNames = salaries.expand((s) => s.deductionAmountItems).map((i) => i.key).toSet();
+
+    final itemNames = [...paymentNames, ...deductionNames].toSet().toList();
 
     String? initialBaseId;
     String? initialTargetId;
 
     if (salaries.length >= 2) {
-      initialTargetId = salaries[0].id; // ※モデルにidプロパティがある前提 (ない場合はユニークなキー)
+      initialTargetId = salaries[0].id;
       initialBaseId = salaries[1].id;
     } else if (salaries.length == 1) {
       initialTargetId = salaries[0].id;
@@ -58,7 +58,6 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     state = state.copyWith(selectedItemName: name);
   }
 
-  // IDで給料データを完全に一意に取得する
   Salary? findSalaryById(String? id) {
     if (id == null) return null;
     try {
@@ -68,23 +67,53 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     }
   }
 
-  Map<String, int> getFilteredItemHistory() {
-    if (state.selectedItemName == null) return {};
+  double calculateMaxY(Iterable<double> values) {
+    if (values.isEmpty) return 10000;
+    final max = values.reduce((a, b) => a > b ? a : b);
+    if (max == 0) return 10000;
+    return max * 1.2;
+  }
 
-    final Map<String, int> history = {};
+  void changeYear(int delta) {
+    final newYear = state.selectedYear + delta;
+    state = state.copyWith(selectedYear: newYear);
+  }
+
+  /// 選択された項目が「控除項目」かどうかを判定する
+  bool get isSelectedItemSelectedAsDeduction {
+    if (state.selectedItemName == null) return false;
     for (var salary in state.allSalaries) {
-      final key = '${salary.createdAt.year}年${salary.createdAt.month}月';
-
-      int totalValue = 0;
-      for (var item in [...salary.paymentAmountItems, ...salary.deductionAmountItems]) {
-        if (item.key == state.selectedItemName) {
-          totalValue += item.value;
-        }
-      }
-      if (totalValue > 0) {
-        history[key] = totalValue;
+      if (salary.deductionAmountItems.any((i) => i.key == state.selectedItemName)) {
+        return true;
       }
     }
-    return history;
+    return false;
+  }
+
+  /// 選択された年・項目の12ヶ月分の推移データを取得
+  List<double> getMonthlyDataForYear() {
+    final monthlyData = List.generate(12, (_) => 0.0);
+
+    if (state.selectedItemName == null) return monthlyData;
+
+    for (var salary in state.allSalaries) {
+      if (salary.createdAt.year == state.selectedYear) {
+        final monthIndex = salary.createdAt.month - 1; // 0-11
+        if (monthIndex < 0 || monthIndex >= 12) continue;
+
+        // 支給か控除かによって参照先を明確に分ける
+        final targetItems = isSelectedItemSelectedAsDeduction
+            ? salary.deductionAmountItems
+            : salary.paymentAmountItems;
+
+        final item = targetItems.firstWhere(
+              (i) => i.key == state.selectedItemName,
+          orElse: () => AmountItem('id', '', 0),
+        );
+
+        monthlyData[monthIndex] += item.value.toDouble();
+      }
+    }
+    return monthlyData;
   }
 }

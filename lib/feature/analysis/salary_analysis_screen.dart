@@ -1,16 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
-import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
-import 'package:salary/core/utils/date_time_utils.dart';
-import 'package:salary/core/utils/number_utils.dart';
 import 'package:salary/feature/analysis/components/comparison_view.dart';
 import 'package:salary/feature/analysis/components/item_summary_view.dart';
-import 'salary_analysis_state.dart';
-import 'salary_analysis_view_model.dart';
 
 class SalaryAnalysisScreen extends ConsumerStatefulWidget {
   const SalaryAnalysisScreen({super.key});

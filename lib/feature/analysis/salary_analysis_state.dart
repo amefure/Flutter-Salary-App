@@ -6,6 +6,7 @@ class SalaryAnalysisState {
   final String? selectedItemName;
   final String? baseSalaryId;
   final String? targetSalaryId;
+  final int selectedYear;
 
   const SalaryAnalysisState({
     required this.allSalaries,
@@ -13,15 +14,18 @@ class SalaryAnalysisState {
     this.selectedItemName,
     this.baseSalaryId,
     this.targetSalaryId,
+    required this.selectedYear,
   });
 
   factory SalaryAnalysisState.initial() {
-    return const SalaryAnalysisState(
-      allSalaries: [],
-      availableItemNames: [],
+    int year = DateTime.now().year;
+    return SalaryAnalysisState(
+      allSalaries: const [],
+      availableItemNames: const [],
       selectedItemName: null,
       baseSalaryId: null,
       targetSalaryId: null,
+      selectedYear: year,
     );
   }
 
@@ -31,6 +35,7 @@ class SalaryAnalysisState {
     String? selectedItemName,
     String? baseSalaryId,
     String? targetSalaryId,
+    int? selectedYear,
   }) {
     return SalaryAnalysisState(
       allSalaries: allSalaries ?? this.allSalaries,
@@ -38,6 +43,7 @@ class SalaryAnalysisState {
       selectedItemName: selectedItemName ?? this.selectedItemName,
       baseSalaryId: baseSalaryId ?? this.baseSalaryId,
       targetSalaryId: targetSalaryId ?? this.targetSalaryId,
+      selectedYear: selectedYear ?? this.selectedYear,
     );
   }
 }
