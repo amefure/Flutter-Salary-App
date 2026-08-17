@@ -286,7 +286,7 @@ class _RequirementCard extends ConsumerWidget {
 
             StepItem(
               number: 3,
-              title: 'プレミアム登録(有料)',
+              title: 'プレミアム登録(有料) ※2',
               isCompleted: premiumState.isPremiumFullUnlocked,
               isEnabled: premiumState.isUnLimitedInAppPurchase,
               onTap: () async {
@@ -296,12 +296,33 @@ class _RequirementCard extends ConsumerWidget {
               },
             ),
 
+            const CustomText(
+              text: '※2 会員登録・データ公開をせずにプレミアム機能をご利用いただけます。購入後に会員登録・データ公開を行っていただいても払い戻し致しかねますのでご注意ください。',
+              textSize: TextSize.SS,
+              maxLines: 5,
+            ),
+
             if (!premiumState.isUnLimitedInAppPurchase)
-              const CustomText(
-                // ※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
-                text: '※ 有料プレミアム機能はまだご利用いただけません。\n給料データを公開して閲覧してください。',
-                textSize: TextSize.SS,
-                maxLines: 5,
+              const Row(
+                children: [
+
+                  Icon(
+                    CupertinoIcons.exclamationmark_circle_fill,
+                    size: 24,
+                    color: CustomColors.themaOrange,
+                  ),
+
+                  SizedBox(width: 24),
+
+                  CustomText(
+                    // ※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
+                    text: '有料プレミアム解放機能はまだご利用いただけません。\n給料データを公開して閲覧してください。',
+                    textSize: TextSize.SS,
+                    fontWeight: FontWeight.bold,
+                    color: CustomColors.themaOrange,
+                    maxLines: 5,
+                  ),
+                ],
               ),
           ],
         ],
