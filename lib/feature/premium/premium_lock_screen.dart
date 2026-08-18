@@ -257,7 +257,7 @@ class _RequirementCard extends ConsumerWidget {
           ),
 
           const CustomText(
-            text: '  ※1 一部機能はプレミアム登録しないと利用できません。',
+            text: '※ 1 一部機能はプレミアム登録しないと利用できません。',
             textSize: TextSize.SS,
             maxLines: 4,
           ),
@@ -297,32 +297,40 @@ class _RequirementCard extends ConsumerWidget {
             ),
 
             const CustomText(
-              text: '※2 会員登録・データ公開をせずにプレミアム機能をご利用いただけます。購入後に会員登録・データ公開を行っていただいても払い戻し致しかねますのでご注意ください。',
+              text: '※ 2 会員登録・データ公開をせずにプレミアム機能をご利用いただけます。購入後に会員登録・データ公開を行っていただいても払い戻し致しかねますのでご注意ください。',
               textSize: TextSize.SS,
               maxLines: 5,
             ),
 
             if (!premiumState.isUnLimitedInAppPurchase)
-              const Row(
-                children: [
-
-                  Icon(
-                    CupertinoIcons.exclamationmark_circle_fill,
-                    size: 24,
-                    color: CustomColors.themaOrange,
+              const SizedBox(height: 16),
+              Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: CustomColors.themaOrange.withAlpha(20),
                   ),
+                  child: const Row(
+                    children: [
 
-                  SizedBox(width: 24),
+                      Icon(
+                        CupertinoIcons.exclamationmark_circle_fill,
+                        size: 24,
+                        color: CustomColors.themaOrange,
+                      ),
 
-                  CustomText(
-                    // ※ 有料プレミアム機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
-                    text: '有料プレミアム解放機能はまだご利用いただけません。\n給料データを公開して閲覧してください。',
-                    textSize: TextSize.SS,
-                    fontWeight: FontWeight.bold,
-                    color: CustomColors.themaOrange,
-                    maxLines: 5,
-                  ),
-                ],
+                      SizedBox(width: 16),
+
+                      CustomText(
+                        // ※ 有料プレミアム解放機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
+                        text: '※ 有料プレミアム解放機能は\nユーザーが一定数に達すると解放されます。\n現在は給料データを公開して閲覧してください。',
+                        textSize: TextSize.SS,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.themaOrange,
+                        maxLines: 5,
+                      ),
+                    ],
+                  )
               ),
           ],
         ],
