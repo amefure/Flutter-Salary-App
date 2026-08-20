@@ -48,7 +48,7 @@ class DetailSalaryView extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
           backgroundColor: CustomColors.foundation(context),
-          trailing: !isPublic ? _controlButtonContainer(context, ref, state) : const Spacer(),
+          trailing: !isPublic ? _controlButtonContainer(context, ref, state) : const SizedBox.shrink(),
         ),
         child: _Body(state: state, isPublic: isPublic, jobName: jobName)
     );

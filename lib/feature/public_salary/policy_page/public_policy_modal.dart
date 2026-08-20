@@ -125,7 +125,8 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
                   );
                 }
             )
-          ]
+          ],
+          const SizedBox(height: 100),
         ],
       ),
     );
