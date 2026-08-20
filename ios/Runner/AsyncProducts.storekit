@@ -45,13 +45,13 @@
           "locale" : "en_US"
         },
         {
-          "description" : "給料を公開せずに公開されている給料と詳細情報の閲覧、職種等のフィルタリング機能を使用できるようになります。",
-          "displayName" : "TEST_プレミアム機能全解放",
+          "description" : "①給料を公開せずに「みんなの給料」を閲覧可能\n②アナリティクス機能の解放\n③「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放\n購入後に公開データを削除した場合でも返金等はできませんのでご了承ください",
+          "displayName" : "TEST_プレミアム機能解放 + みんなの給料閲覧権限",
           "locale" : "ja"
         }
       ],
       "productID" : "com.test.premium_full_unlocked",
-      "referenceName" : "プレミアム機能全解放",
+      "referenceName" : "プレミアム機能解放 + みんなの給料閲覧権限",
       "type" : "NonConsumable"
     },
     {
@@ -65,13 +65,13 @@
           "locale" : "en_US"
         },
         {
-          "description" : "【給料公開ユーザー限定】給料の詳細情報の閲覧、職種等のフィルタリング機能を使用できるようになります。購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。",
-          "displayName" : "TEST_プレミアム機能解放(公開済みユーザー限定)",
+          "description" : "①アナリティクス機能の解放\n②【給料公開ユーザー限定】「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放\n購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。",
+          "displayName" : "TEST_プレミアム機能解放",
           "locale" : "ja"
         }
       ],
       "productID" : "com.test.premium_features_enabled",
-      "referenceName" : "プレミアム機能解放(公開済みユーザー限定)",
+      "referenceName" : "プレミアム機能解放",
       "type" : "NonConsumable"
     }
   ],

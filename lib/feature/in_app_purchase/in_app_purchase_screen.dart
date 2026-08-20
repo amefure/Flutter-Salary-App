@@ -138,11 +138,12 @@ class InAppPurchaseScreen extends ConsumerWidget {
               text: title,
               textSize: TextSize.M,
               fontWeight: FontWeight.bold,
+              maxLines: 2,
             ),
             CustomText(
-              text: '・$description',
+              text: description,
               textSize: TextSize.SS,
-              maxLines: 3,
+              maxLines: 10,
             ),
             if (price.isNotEmpty)
               CustomText(

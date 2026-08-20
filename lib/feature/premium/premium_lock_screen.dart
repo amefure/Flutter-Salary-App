@@ -32,8 +32,8 @@ class PremiumLockScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          /// 必須条件カード
-          const _RequirementCard()
+          /// 必須条件カード（isAnalytics を渡す）
+          _RequirementCard(isAnalytics: isAnalytics),
         ],
       ),
     );
@@ -44,7 +44,7 @@ class PremiumLockScreen extends StatelessWidget {
 /// プレミアム機能説明カード
 class PremiumCard extends StatelessWidget {
   const PremiumCard({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -188,12 +188,14 @@ class AnalysisPremiumCard extends StatelessWidget {
 
 /// 必須条件カード
 class _RequirementCard extends ConsumerWidget {
-  const _RequirementCard();
+  const _RequirementCard({required this.isAnalytics});
+  final bool isAnalytics;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final premiumState = ref.watch(premiumFunctionStateProvider);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -217,7 +219,11 @@ class _RequirementCard extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           CustomText(
-            text: premiumState.isShowInAppPurchase ? 'アカウントを作成し、いずれかの条件を満たすと満たした条件により機能が解放されます。' : 'アカウントの作成と給料情報を公開することで機能が解放されます。',
+            text: isAnalytics
+                ? 'プレミアム登録を行うと機能が解放されます。'
+                : (premiumState.isShowInAppPurchase
+                ? 'アカウントを作成し、いずれかの条件を満たした条件により機能が解放されます。'
+                : 'アカウントの作成と給料情報を公開することで機能が解放されます。'),
             textSize: TextSize.S,
             fontWeight: FontWeight.w600,
             color: CupertinoColors.systemGrey,
@@ -225,86 +231,100 @@ class _RequirementCard extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // --- ステップ1: 必須項目 ---
-          StepItem(
-            number: 1,
-            title: '【必須】アカウント作成 / ログイン',
-            isCompleted: authState.isLogin,
-            onTap: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(builder: (context) => const LoginScreen()),
-              );
-            },
-          ),
-          // --- ステップ2 & 3: 選択項目 (ORグループ) ---
-          StepItem(
-            number: 2,
-            title: '給料データを公開 ※1',
-            isCompleted: premiumState.isPublicData,
-            onTap: () async {
-              if (!authState.isLogin) {
-                await AppDialog.show(
-                  context: context,
-                  message: '給料データを公開するには\n新規登録またはログインしてください。',
-                  type: DialogType.error,
-                );
-                return;
-              }
-              Navigator.of(context).push(
-                CupertinoPageRoute(builder: (context) => const PublicSalaryScreen()),
-              );
-            },
-          ),
-
-          const CustomText(
-            text: '※ 1 一部機能はプレミアム登録しないと利用できません。',
-            textSize: TextSize.SS,
-            maxLines: 4,
-          ),
-
-          /// アプリ内課金が条件に含まれることをユーザーに知らせるのは一定数を超えてから
-          if (premiumState.isShowInAppPurchase)...[
-            // OR の区切り
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: CustomText(
-                      text: 'または',
-                      textSize: TextSize.SSS,
-                      color: CupertinoColors.systemGrey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-            ),
-
+          if (isAnalytics) ...[
+            // isAnalytics の場合はプレミアム登録のみを表示（ログイン必須ステップは除外）
             StepItem(
-              number: 3,
-              title: 'プレミアム登録(有料) ※2',
+              number: 1,
+              title: 'プレミアム登録(有料)',
               isCompleted: premiumState.isPremiumFullUnlocked,
-              isEnabled: premiumState.isUnLimitedInAppPurchase,
               onTap: () async {
                 Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
                 );
               },
             ),
+          ] else ...[
+            // 通常時のステップ1: アカウント作成 / ログイン
+            StepItem(
+              number: 1,
+              title: '【必須】アカウント作成 / ログイン',
+              isCompleted: authState.isLogin,
+              onTap: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
 
-            const CustomText(
-              text: '※ 2 会員登録・データ公開をせずにプレミアム機能をご利用いただけます。購入後に会員登録・データ公開を行っていただいても払い戻し致しかねますのでご注意ください。',
-              textSize: TextSize.SS,
-              maxLines: 5,
+            // 通常時のステップ2: 給料データを公開
+            StepItem(
+              number: 2,
+              title: '給料データを公開 ※1',
+              isCompleted: premiumState.isPublicData,
+              onTap: () async {
+                if (!authState.isLogin) {
+                  await AppDialog.show(
+                    context: context,
+                    message: '給料データを公開するには\n新規登録またはログインしてください。',
+                    type: DialogType.error,
+                  );
+                  return;
+                }
+                Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (context) => const PublicSalaryScreen()),
+                );
+              },
             ),
 
-            if (!premiumState.isUnLimitedInAppPurchase)
-              const SizedBox(height: 16),
-              Container(
+            const CustomText(
+              text: '※ 1 一部機能はプレミアム登録しないと利用できません。',
+              textSize: TextSize.SS,
+              maxLines: 4,
+            ),
+
+            if (premiumState.isShowInAppPurchase)...[
+              // OR の区切り
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: CustomText(
+                        text: 'または',
+                        textSize: TextSize.SSS,
+                        color: CupertinoColors.systemGrey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+              ),
+
+              StepItem(
+                number: 3,
+                title: 'プレミアム登録(有料) ※2',
+                isCompleted: premiumState.isPremiumFullUnlocked,
+                isEnabled: premiumState.isUnLimitedInAppPurchase,
+                onTap: () async {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (context) => const InAppPurchaseScreen()),
+                  );
+                },
+              ),
+
+              const CustomText(
+                text: '※ 2 会員登録・データ公開をせずにプレミアム機能をご利用いただけます。購入後に会員登録・データ公開を行っていただいても払い戻し致しかねますのでご注意ください。',
+                textSize: TextSize.SS,
+                maxLines: 5,
+              ),
+
+              if (!premiumState.isUnLimitedInAppPurchase) ...[
+                const SizedBox(height: 16),
+                Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
@@ -312,17 +332,13 @@ class _RequirementCard extends ConsumerWidget {
                   ),
                   child: const Row(
                     children: [
-
                       Icon(
                         CupertinoIcons.exclamationmark_circle_fill,
                         size: 24,
                         color: CustomColors.themaOrange,
                       ),
-
                       SizedBox(width: 16),
-
                       CustomText(
-                        // ※ 有料プレミアム解放機能はユーザーが一定数に達すると解放されます。\n給料を公開せずに閲覧したい方は解放されるまでお待ちください
                         text: '※ 有料プレミアム解放機能は\nユーザーが一定数に達すると解放されます。\n現在は給料データを公開して閲覧してください。',
                         textSize: TextSize.SS,
                         fontWeight: FontWeight.bold,
@@ -330,15 +346,16 @@ class _RequirementCard extends ConsumerWidget {
                         maxLines: 5,
                       ),
                     ],
-                  )
-              ),
+                  ),
+                ),
+              ],
+            ],
           ],
         ],
       ),
     );
   }
 }
-
 class _PremiumPoint extends StatelessWidget {
   const _PremiumPoint({
     required this.icon,

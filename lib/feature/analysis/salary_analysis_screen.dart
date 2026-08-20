@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
@@ -32,12 +31,8 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
       child: SafeArea(
         child: Consumer(
           builder: (context, ref, _) {
-            final authState = ref.watch(authStateProvider);
             final premiumState = ref.watch(premiumFunctionStateProvider);
-
-            // プレミアム機能（または公開データ許可など）の判定
-            final isRelease = authState.isLogin &&
-                (premiumState.isPublicData || premiumState.isPremiumFullUnlocked);
+            final isRelease = (premiumState.isPremiumFullUnlocked || premiumState.isPremiumFeatureUnlocked);
 
             /// 🔒 未開放の場合はプレミアムロック画面を表示
             if (!isRelease) {

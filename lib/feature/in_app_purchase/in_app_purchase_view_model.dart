@@ -84,27 +84,28 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     });
   }
 
+
   PurchaseState fetchPurchaseState({
     required String productId,
+    /// アプリ内課金でのプレミアム機能解放購入可能条件：ユーザー50人を達成しているかどうか
     required bool isUnLimitedInAppPurchase,
+    /// 給料公開しているユーザーかどうか premiumState.isPublicData,
     required bool isPublicData,
+    /// プレムアム機能が全解放(公開しなくてもアクセス可能)されているかどうか
     required bool isPremiumFullUnlocked
 }) {
     /// 購入済みかどうか
     final isPurchased = state.purchasedIds.contains(productId);
 
     if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId && !isUnLimitedInAppPurchase && !isPurchased) {
-      /// プレミアム全解放 && アプリ内課金がアンロック中 && 未購入 なら未解放にする
+      /// 【プレミアム全解放】&& アプリ内課金がアンロック中 && 未購入 なら 未解放 にする
       /// 給料公開ユーザーなら購入不可にする
       return isPublicData ? PurchaseState.disabled : PurchaseState.locked;
-    } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId && !isPublicData && !isPurchased) {
-      /// プレミアム一部解放 && 給料公開していない && 未購入なら
-      return PurchaseState.disabled;
     } else if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId && isPublicData && !isPurchased) {
-      /// プレミアム全解放 && 給料公開ユーザー &&  未購入 なら未解放にする
+      /// 【プレミアム全解放】 && 給料公開ユーザー &&  未購入 なら 購入不可 にする
       return PurchaseState.disabled;
     } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId && isPremiumFullUnlocked && !isPurchased) {
-      /// プレミアム一部解放 && 全解放購入済み &&  未購入 なら未解放にする
+      /// 【プレミアム一部解放】 && 全解放購入済み &&  未購入 なら 購入不可 にする
       return PurchaseState.disabled;
     } else {
       return isPurchased ? PurchaseState.purchased : PurchaseState.available;

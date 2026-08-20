@@ -1,12 +1,10 @@
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
-import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/charts/domain/model/chart_display_mode.dart';
 import 'package:salary/feature/charts/domain/model/monthly_salary_summary_chart_item.dart';
 import 'package:salary/feature/charts/domain/model/pie_chart_sector_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dart';
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart';
-import 'package:salary/feature/charts/domain/utility/salary_aggregator.dart';
 
 class ChartSalaryState {
   /// 全てのSalary一覧(内部保持用)

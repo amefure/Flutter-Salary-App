@@ -104,7 +104,7 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   }
 
   void updateIsPremiumFeatureUnlocked(bool isPremiumFeatureUnlocked) {
-    _userSettingsRepository..savePremiumFeatureUnlocked(isPremiumFeatureUnlocked);
+    _userSettingsRepository.savePremiumFeatureUnlocked(isPremiumFeatureUnlocked);
     state = state.copyWith(
       isPremiumFeatureUnlocked: isPremiumFeatureUnlocked,
     );
