@@ -84,6 +84,19 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
     });
   }
 
+  /// ストアに設定できる説明は文字数制限があり、改行を含めれないためハードコードする
+  /// iOSの[AsyncProducts.storekit]には定義できるが本番では不可
+  String resolveDescription({required String productId}) {
+    if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId) {
+      return '①給料を公開せずに「みんなの給料」を閲覧可能\n②アナリティクス機能の解放\n③「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放\n※購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。';
+    } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId) {
+      return '①アナリティクス機能の解放\n②【給料公開ユーザー限定】「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放';
+    } else if (productId == StaticKey.inAppPurchaseRemoveAdsId) {
+      return 'アプリ内に表示されているバナー広告が非表示になります。';
+    }
+    return '';
+  }
+
 
   PurchaseState fetchPurchaseState({
     required String productId,

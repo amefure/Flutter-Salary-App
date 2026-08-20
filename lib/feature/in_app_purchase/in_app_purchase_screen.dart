@@ -106,7 +106,7 @@ class InAppPurchaseScreen extends ConsumerWidget {
               return _itemRowView(
                 context,
                 p.title.isEmpty ? '広告削除' : p.title,
-                p.description.isEmpty ? 'アプリ内に表示されているバナー広告が非表示になります。' : p.description,
+                vm.resolveDescription(productId: p.id),
                 p.price,
                 status,
                 status.isAvailable ? () => vm.buy(p) : () {},
