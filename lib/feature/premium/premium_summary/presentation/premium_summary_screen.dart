@@ -164,6 +164,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
     final selected = await showModalBottomSheet<Job>(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       builder: (_) => JobPickerModal(
         currentJob: state.selectedJob,
