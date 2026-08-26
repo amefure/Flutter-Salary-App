@@ -14,6 +14,7 @@ Future<bool?> showPublicPolicyModal(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    useRootNavigator: true,
     backgroundColor: CustomColors.background(context),
     builder: (_) => PublicPolicyModal(
       showAgreeButton: showAgreeButton,
@@ -126,7 +127,6 @@ class _PublicPolicyModalState extends State<PublicPolicyModal> {
                 }
             )
           ],
-          const SizedBox(height: 100),
         ],
       ),
     );

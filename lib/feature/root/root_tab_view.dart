@@ -74,6 +74,8 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
+      // キーボードでせり上がらないようにする
+      resizeToAvoidBottomInset: false,
       child: Stack(
         children: [
           // 各タブの画面コンテンツ

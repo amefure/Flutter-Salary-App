@@ -19,6 +19,10 @@ class ItemSummaryView extends ConsumerWidget {
     final isDeduction = vm.isSelectedItemSelectedAsDeduction;
     final chartColor = isDeduction ? CustomColors.negative : CustomColors.thema;
 
+    // ViewModelから支給・控除のリストを取得
+    final paymentNames = vm.paymentItemNames;
+    final deductionNames = vm.deductionItemNames;
+
     // 1年分の月次データを取得
     final monthlyData = vm.getMonthlyDataForYear();
     final totalSum = monthlyData.reduce((a, b) => a + b);
@@ -32,47 +36,109 @@ class ItemSummaryView extends ConsumerWidget {
     final maxY = vm.calculateMaxY(values);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1. 項目選択用ピル型スクロールリスト
-        SizedBox(
-          height: 44,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: state.availableItemNames.length,
-            itemBuilder: (context, index) {
-              final itemName = state.availableItemNames[index];
-              final isSelected = state.selectedItemName == itemName;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => vm.selectItemName(itemName),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? chartColor
-                          : CustomColors.background(context),
-                      borderRadius: BorderRadius.circular(20),
-                      border: isSelected ? null : Border.all(color: CustomColors.themaGray, width: 0.5),
-                    ),
-                    child: CustomText(
-                      text: itemName,
-                      color: isSelected ? CustomColors.textWhite : CustomColors.text(context),
-                      fontWeight: FontWeight.w600,
-                      textSize: TextSize.S,
+        // ==================== 1. 支給項目のカルーセル ====================
+        if (paymentNames.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: CustomText(
+              text: '支給項目',
+              textSize: TextSize.SS,
+              color: CustomColors.themaGray,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 40,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: paymentNames.length,
+              itemBuilder: (context, index) {
+                final itemName = paymentNames[index];
+                final isSelected = state.selectedItemName == itemName;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => vm.selectItemName(itemName),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? CustomColors.thema
+                            : CustomColors.background(context),
+                        borderRadius: BorderRadius.circular(20),
+                        border: isSelected ? null : Border.all(color: CustomColors.themaGray, width: 0.5),
+                      ),
+                      child: CustomText(
+                        text: itemName,
+                        color: isSelected ? CustomColors.textWhite : CustomColors.text(context),
+                        fontWeight: FontWeight.w600,
+                        textSize: TextSize.S,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
+          const SizedBox(height: 12),
+        ],
 
-        const SizedBox(height: 16),
+        // ==================== 2. 控除項目のカルーセル ====================
+        if (deductionNames.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: CustomText(
+              text: '控除項目',
+              textSize: TextSize.SS,
+              color: CustomColors.themaGray,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 40,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: deductionNames.length,
+              itemBuilder: (context, index) {
+                final itemName = deductionNames[index];
+                final isSelected = state.selectedItemName == itemName;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => vm.selectItemName(itemName),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? CustomColors.negative
+                            : CustomColors.background(context),
+                        borderRadius: BorderRadius.circular(20),
+                        border: isSelected ? null : Border.all(color: CustomColors.themaGray, width: 0.5),
+                      ),
+                      child: CustomText(
+                        text: itemName,
+                        color: isSelected ? CustomColors.textWhite : CustomColors.text(context),
+                        fontWeight: FontWeight.w600,
+                        textSize: TextSize.S,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
 
-        // 2. 年選択UI
+        // ==================== 3. 年選択UI ====================
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -94,7 +160,7 @@ class ItemSummaryView extends ConsumerWidget {
           ],
         ),
 
-        // 3. 年間累計額カード（支給か控除かのラベル＆色分け付き）
+        // ==================== 4. 年間累計額カード ====================
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
@@ -115,7 +181,6 @@ class ItemSummaryView extends ConsumerWidget {
                       textSize: TextSize.S,
                       color: CustomColors.themaGray,
                     ),
-                    // 支給 / 控除の種別バッジ
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
@@ -145,7 +210,7 @@ class ItemSummaryView extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // 4. 折れ線グラフエリア
+        // ==================== 5. 折れ線グラフエリア ====================
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
@@ -211,7 +276,7 @@ class ItemSummaryView extends ConsumerWidget {
                 lineBarsData: [
                   LineChartBarData(
                     spots: spots,
-                    isCurved: false, // 直線でカクつきを防止
+                    isCurved: false,
                     color: chartColor,
                     barWidth: 3,
                     dotData: const FlDotData(show: true),

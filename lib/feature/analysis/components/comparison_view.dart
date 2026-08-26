@@ -9,7 +9,6 @@ import 'package:salary/core/utils/number_utils.dart';
 import '../salary_analysis_state.dart';
 import '../salary_analysis_view_model.dart';
 
-
 class ComparisonView extends ConsumerWidget {
   const ComparisonView({super.key});
 
@@ -22,9 +21,20 @@ class ComparisonView extends ConsumerWidget {
     final baseSalary = vm.findSalaryById(state.baseSalaryId);
     final targetSalary = vm.findSalaryById(state.targetSalaryId);
 
+    // 手取り
     final baseNet = baseSalary?.netSalary ?? 0;
     final targetNet = targetSalary?.netSalary ?? 0;
     final diffNet = targetNet - baseNet;
+
+    // 総支給
+    final baseGross = baseSalary?.paymentAmount ?? 0;
+    final targetGross = targetSalary?.paymentAmount ?? 0;
+    final diffGross = targetGross - baseGross;
+
+    // 控除額（総支給 - 手取り または 控除項目の合計など）
+    final baseDeduction = baseSalary?.deductionAmount ?? 0;
+    final targetDeduction = targetSalary?.deductionAmount ?? 0;
+    final diffDeduction = targetDeduction - baseDeduction;
 
     final allKeys = <String>{
       ...?baseSalary?.paymentAmountItems.map((e) => e.key),
@@ -66,15 +76,124 @@ class ComparisonView extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
 
+        // ==================== 総支給額の増減差分カード ====================
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: CustomColors.thema.withAlpha(51), width: 1), // withOpacity -> withAlpha (0.2 = 51)
+            border: Border.all(color: CustomColors.thema.withAlpha(51), width: 1),
             boxShadow: [
               BoxShadow(
-                color: CustomColors.thema.withAlpha(13), // withOpacity -> withAlpha (0.05 = 13)
+                color: CustomColors.thema.withAlpha(13),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              const CustomText(text: '総支給額の増減差分', color: CupertinoColors.systemGrey, textSize: TextSize.S),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    diffGross >= 0 ? CupertinoIcons.arrow_up_right_circle_fill : CupertinoIcons.arrow_down_right_circle_fill,
+                    color: diffGross >= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 8),
+                  CustomText(
+                    text: '${diffGross >= 0 ? "+" : ""}${NumberUtils.formatWithComma(diffGross)} 円',
+                    textSize: TextSize.L,
+                    fontWeight: FontWeight.bold,
+                    color: diffGross >= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(height: 1, color: CupertinoColors.systemGrey5),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _amountColumn('基準月総支給', baseGross),
+                  Container(height: 30, width: 0.5, color: CupertinoColors.systemGrey5),
+                  _amountColumn('比較月総支給', targetGross),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ==================== 控除額の増減差分カード ====================
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: CustomColors.thema.withAlpha(51), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.thema.withAlpha(13),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              const CustomText(text: '控除額の増減差分', color: CupertinoColors.systemGrey, textSize: TextSize.S),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 控除は増えるとマイナス（手取りが減る）なので、色やアイコンの解釈を反転させるかお好みで調整可能
+                  // ここでは「控除が増えたら赤（マイナス）、減ったら緑（プラス）」で表現
+                  Icon(
+                    diffDeduction <= 0 ? CupertinoIcons.arrow_down_right_circle_fill : CupertinoIcons.arrow_up_right_circle_fill,
+                    color: diffDeduction <= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 8),
+                  CustomText(
+                    text: '${diffDeduction >= 0 ? "+" : ""}${NumberUtils.formatWithComma(diffDeduction)} 円',
+                    textSize: TextSize.L,
+                    fontWeight: FontWeight.bold,
+                    color: diffDeduction <= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(height: 1, color: CupertinoColors.systemGrey5),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _amountColumn('基準月控除', baseDeduction),
+                  Container(height: 30, width: 0.5, color: CupertinoColors.systemGrey5),
+                  _amountColumn('比較月控除', targetDeduction),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ==================== 手取り額の増減差分カード ====================
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: CustomColors.thema.withAlpha(51), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.thema.withAlpha(13),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -89,7 +208,7 @@ class ComparisonView extends ConsumerWidget {
                 children: [
                   Icon(
                     diffNet >= 0 ? CupertinoIcons.arrow_up_right_circle_fill : CupertinoIcons.arrow_down_right_circle_fill,
-                    color: diffNet >= 0 ? CupertinoColors.activeGreen : CupertinoColors.systemRed,
+                    color: diffNet >= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
                     size: 26,
                   ),
                   const SizedBox(width: 8),
@@ -97,7 +216,7 @@ class ComparisonView extends ConsumerWidget {
                     text: '${diffNet >= 0 ? "+" : ""}${NumberUtils.formatWithComma(diffNet)} 円',
                     textSize: TextSize.L,
                     fontWeight: FontWeight.bold,
-                    color: diffNet >= 0 ? CupertinoColors.activeGreen : CupertinoColors.systemRed,
+                    color: diffNet >= 0 ? CupertinoColors.activeGreen : CustomColors.negative,
                   ),
                 ],
               ),
@@ -140,6 +259,7 @@ class ComparisonView extends ConsumerWidget {
             final baseVal = _findItemValue(baseSalary, key);
             final targetVal = _findItemValue(targetSalary, key);
             final diff = targetVal - baseVal;
+            final isDeduction = _isDeductionItem(baseSalary, targetSalary, key);
 
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
@@ -155,8 +275,31 @@ class ComparisonView extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomText(text: key, fontWeight: FontWeight.w600),
-                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            // 支給(青) / 控除(赤) のラベルバッジ
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: isDeduction
+                                    ? CustomColors.negative.withAlpha(26)
+                                    : CustomColors.thema.withAlpha(26),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: CustomText(
+                                text: isDeduction ? '控除' : '支給',
+                                textSize: TextSize.SS,
+                                color: isDeduction ? CustomColors.negative : CustomColors.thema,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: CustomText(text: key, fontWeight: FontWeight.w600, maxLines: 1),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
                         Row(
                           children: [
                             CustomText(text: '${NumberUtils.formatWithComma(baseVal)}円', textSize: TextSize.SS, color: CupertinoColors.systemGrey),
@@ -174,9 +317,9 @@ class ComparisonView extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: diff > 0
-                          ? CupertinoColors.activeGreen.withAlpha(31) // withOpacity(0.12) -> withAlpha(31)
+                          ? CupertinoColors.activeGreen.withAlpha(31)
                           : diff < 0
-                          ? CupertinoColors.systemRed.withAlpha(31)
+                          ? CustomColors.negative.withAlpha(31)
                           : CupertinoColors.systemGrey6,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -187,7 +330,7 @@ class ComparisonView extends ConsumerWidget {
                       color: diff > 0
                           ? CupertinoColors.activeGreen
                           : diff < 0
-                          ? CupertinoColors.systemRed
+                          ? CustomColors.negative
                           : CupertinoColors.systemGrey,
                     ),
                   ),
@@ -207,7 +350,13 @@ class ComparisonView extends ConsumerWidget {
     return 0;
   }
 
-  // コールバックに日付ではなく一意のID（salary.id）を渡すよう変更
+  // 項目が控除項目かどうかを判定するヘルパー
+  bool _isDeductionItem(Salary? base, Salary? target, String key) {
+    final inBaseDeduction = base?.deductionAmountItems.any((e) => e.key == key) ?? false;
+    final inTargetDeduction = target?.deductionAmountItems.any((e) => e.key == key) ?? false;
+    return inBaseDeduction || inTargetDeduction;
+  }
+
   void _showSavedMonthActionSheet(
       BuildContext context, SalaryAnalysisState state, ValueChanged<String> onSelected) {
     showCupertinoModalPopup(
@@ -221,7 +370,7 @@ class ComparisonView extends ConsumerWidget {
 
           return CupertinoActionSheetAction(
             onPressed: () {
-              onSelected(salary.id); // 一意のIDを渡すことで同月の別データも正しく区別できる
+              onSelected(salary.id);
               Navigator.of(context).pop();
             },
             child: CustomText(text: '$dateStr$bonusStr - $sourceStr'),

@@ -46,6 +46,28 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     );
   }
 
+  /// 支給項目名のリスト（ViewModelで保持・提供）
+  List<String> get paymentItemNames {
+    final paymentNames = state.allSalaries.expand((s) => s.paymentAmountItems).map((i) => i.key).toSet();
+    return state.availableItemNames.where((name) => paymentNames.contains(name)).toList();
+  }
+
+  /// 控除項目名のリスト（ViewModelで保持・提供）
+  List<String> get deductionItemNames {
+    final deductionNames = state.allSalaries.expand((s) => s.deductionAmountItems).map((i) => i.key).toSet();
+    return state.availableItemNames.where((name) => deductionNames.contains(name)).toList();
+  }
+
+  /// 指定した項目名が控除項目かどうかを判定
+  bool isItemDeduction(String itemName) {
+    for (var salary in state.allSalaries) {
+      if (salary.deductionAmountItems.any((i) => i.key == itemName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void updateBaseSalaryId(String id) {
     state = state.copyWith(baseSalaryId: id);
   }
@@ -82,12 +104,7 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
   /// 選択された項目が「控除項目」かどうかを判定する
   bool get isSelectedItemSelectedAsDeduction {
     if (state.selectedItemName == null) return false;
-    for (var salary in state.allSalaries) {
-      if (salary.deductionAmountItems.any((i) => i.key == state.selectedItemName)) {
-        return true;
-      }
-    }
-    return false;
+    return isItemDeduction(state.selectedItemName!);
   }
 
   /// 選択された年・項目の12ヶ月分の推移データを取得
