@@ -44,19 +44,27 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
               children: [
                 const SizedBox(height: 12),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 100),
                   child: SizedBox(
                     width: double.infinity,
                     child: CupertinoSlidingSegmentedControl<int>(
                       groupValue: _selectedSegment,
                       children: const {
                         0: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text('月別比較', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: CustomText(
+                            text: '月別比較',
+                            textSize: TextSize.S,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         1: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text('項目別累計', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: CustomText(
+                            text: '項目別累計',
+                            textSize: TextSize.S,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       },
                       onValueChanged: (value) {
