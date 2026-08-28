@@ -10,7 +10,15 @@ enum SharedPreferencesKeys {
   themeMode('themeMode'),
   hasShownPremiumIntro('hasShownPremiumIntro'),
   hasShownPremiumTab('hasShownPremiumTab'),
-  sortOrder('sortOrder');
+  sortOrder('sortOrder'),
+  /// 通知日（例: 25日なら 25）
+  reminderDay('reminderDay'),
+  /// 通知メッセージ
+  reminderMessage('reminderMessage'),
+  /// 通知する「時」（0〜23）
+  reminderHour('reminderHour'),
+  /// 通知する「分」（0〜59）
+  reminderMinute('reminderMinute');
 
   final String key;
   const SharedPreferencesKeys(this.key);
@@ -120,5 +128,46 @@ class UserSettingsRepository {
   /// プレミアムタブを表示済みか取得
   bool fetchHasShownPremiumTab() {
     return _dataSource.getBool(SharedPreferencesKeys.hasShownPremiumTab);
+  }
+
+  // --------------------------------------------------
+  // リマインダー設定関連
+  // --------------------------------------------------
+
+  /// 通知日を保存
+  Future<void> saveReminderDay(int day) async {
+    await _dataSource.saveInt(SharedPreferencesKeys.reminderDay, day);
+  }
+
+  /// 通知日を取得（未設定時はデフォルトで25日を返す）
+  int fetchReminderDay() {
+    return _dataSource.getInt(SharedPreferencesKeys.reminderDay) ?? 25;
+  }
+
+  /// 通知メッセージを保存
+  Future<void> saveReminderMessage(String message) async {
+    await _dataSource.saveString(SharedPreferencesKeys.reminderMessage, message);
+  }
+
+  /// 通知メッセージを取得（未設定時はデフォルトメッセージを返す）
+  String fetchReminderMessage() {
+    return _dataSource.getString(SharedPreferencesKeys.reminderMessage) ??
+        '今月の給料データがまだ入力されていません。入力しましょう！';
+  }
+
+  Future<void> saveReminderHour(int hour) async {
+    await _dataSource.saveInt(SharedPreferencesKeys.reminderHour, hour);
+  }
+
+  int fetchReminderHour() {
+    return _dataSource.getInt(SharedPreferencesKeys.reminderHour) ?? 19;
+  }
+
+  Future<void> saveReminderMinute(int minute) async {
+    await _dataSource.saveInt(SharedPreferencesKeys.reminderMinute, minute);
+  }
+
+  int fetchReminderMinute() {
+    return _dataSource.getInt(SharedPreferencesKeys.reminderMinute) ?? 0;
   }
 }

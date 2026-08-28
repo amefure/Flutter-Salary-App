@@ -10,6 +10,7 @@ import 'package:salary/feature/auth/presentation/login_screen.dart';
 import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
+import 'package:salary/feature/reminder/reminder_settings_screen.dart';
 import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -95,11 +96,24 @@ class SettingScreen extends StatelessWidget {
 
         _settingListTile(
             context,
-            '広告削除 & プレミアム機能解放', CupertinoIcons.gift,
+            '広告削除 & プレミアム機能解放',
+            CupertinoIcons.gift,
                 () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
                   builder: (context) => const InAppPurchaseScreen(),
+                ),
+              );
+            }),
+
+        _settingListTile(
+            context,
+            '給料日リマインダー設定',
+            CupertinoIcons.app_badge,
+                () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => const ReminderSettingsScreen(),
                 ),
               );
             }),

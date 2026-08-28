@@ -8,6 +8,7 @@ import 'package:salary/core/data_source/shared_preferences_data_source.dart';
 import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/core/deeplink/deep_link_initializer.dart';
 import 'package:salary/core/deeplink/deep_link_notifier.dart';
+import 'package:salary/core/notify/notify_reminder_service.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
@@ -33,6 +34,8 @@ void main() async {
   MobileAds.instance.initialize();
   // 生体認証有効チェック
   BiometricsService().checkAvailability();
+  // 通知パーミッション
+  await NotifyReminderService().init();
   // Firebase初期化
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseAnalyticsのインスタンスを作成
