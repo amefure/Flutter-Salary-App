@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
@@ -14,7 +15,6 @@ import 'package:salary/feature/root/root_tab_state.dart';
 import 'package:salary/feature/root/root_tab_view_model.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_screen.dart';
 import 'package:salary/feature/settings/setting_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RootTabView extends ConsumerStatefulWidget {
   const RootTabView({super.key});
@@ -25,6 +25,15 @@ class RootTabView extends ConsumerStatefulWidget {
 
 class _RootTabViewViewState extends ConsumerState<RootTabView> {
   late CupertinoTabController _tabController;
+
+  // 各タブのNavigatorを制御するためのキー（5タブ分）
+  final List<GlobalKey<NavigatorState>> navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
 
   @override
   void initState() {
@@ -67,6 +76,17 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     }
   }
 
+  /// タブがタップされたときの処理（同じタブならスタックを先頭まで戻し、違うタブなら切り替える）
+  void _handleTabPressed(int index) {
+    if (_tabController.index == index) {
+      navigatorKeys[index]?.currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _tabController.index = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(rootTabProvider);
@@ -94,14 +114,13 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
             ),
             tabBuilder: (context, index) {
               return CupertinoTabView(
+                navigatorKey: navigatorKeys[index],
                 builder: (context) {
                   return _getPage(RootTabType.fromIndex(index));
                 },
               );
             },
           ),
-
-          // 浮いているリキッドグラス風のカスタムフローティングタブバー
           Positioned(
             left: 20,
             right: 20,
@@ -149,11 +168,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
 
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      onPressed: () {
-        setState(() {
-          _tabController.index = index;
-        });
-      },
+      onPressed: () => _handleTabPressed(index),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -178,11 +193,7 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
 
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      onPressed: () {
-        setState(() {
-          _tabController.index = index;
-        });
-      },
+      onPressed: () => _handleTabPressed(index),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

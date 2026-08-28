@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/reminder/reminder_settings_view_model.dart';
@@ -19,6 +20,50 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     super.initState();
     final initialState = ref.read(reminderSettingsProvider);
     _messageController = TextEditingController(text: initialState.reminderMessage);
+
+    // 画面が開いた直後に通知許可をチェック
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkNotificationPermission();
+    });
+  }
+
+  /// 通知許可をチェックし、OFFならアラートを表示する
+  Future<void> _checkNotificationPermission() async {
+    // 現在の通知権限の状態を取得
+    final status = await Permission.notification.status;
+
+    // 拒否されている、または永続的に拒否されている場合
+    if (status.isDenied || status.isPermanentlyDenied) {
+      if (!mounted) return;
+
+      showCupertinoDialog(
+        context: context,
+        builder: (dialogContext) => CupertinoAlertDialog(
+          title: const Text('通知が許可されていません'),
+          content: const Text('リマインダーを受け取るには、端末の設定から通知を許可してください。'),
+          actions: [
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              child: const Text('キャンセル'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text('設定を開く'),
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                // 端末のアプリ設定画面を開く
+                await openAppSettings();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override

@@ -65,3 +65,12 @@ coverage/
 
 # BackUp
 db_backup/*
+
+
+# APM dependencies
+apm_modules/
+apm.yml
+apm.lock.yaml
+.agents
+.github/agents/*
+.github/instructions/*
