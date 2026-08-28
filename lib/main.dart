@@ -35,7 +35,12 @@ void main() async {
   // 生体認証有効チェック
   BiometricsService().checkAvailability();
   // 通知パーミッション
-  await NotifyReminderService().init();
+  try {
+    await NotifyReminderService().init();
+  } catch (error) {
+    // 通知初期化に失敗しても、通知以外のアプリ機能は利用できるようにする。
+    logger('通知の初期化に失敗しました: $error');
+  }
   // Firebase初期化
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseAnalyticsのインスタンスを作成
@@ -77,6 +82,15 @@ void main() async {
       ),
     ),
   );
+
+  // Androidの権限ダイアログはActivityが表示された後でないと要求できない。
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    try {
+      await NotifyReminderService().requestPermissions();
+    } catch (error) {
+      logger('通知権限の要求に失敗しました: $error');
+    }
+  });
 }
 
 /// アプリのルートWidget
