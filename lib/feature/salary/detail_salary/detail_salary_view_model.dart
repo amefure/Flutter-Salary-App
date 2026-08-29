@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/models/exception/CommonException.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
@@ -101,6 +102,8 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
         _resetSalary();
         // 削除処理
         _localRepository.deleteById<Salary>(salary.id);
+        // 解析画面のリフレッシュ
+        _ref.read(salaryAnalysisProvider.notifier).refresh();
         // MyData画面のリフレッシュ
         _ref.read(chartSalaryProvider.notifier).refresh();
         // Homeリスト画面のリフレッシュ
@@ -111,6 +114,8 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
       _resetSalary();
       // 削除処理
       _localRepository.deleteById<Salary>(salary.id);
+      // 解析画面のリフレッシュ
+      _ref.read(salaryAnalysisProvider.notifier).refresh();
       // MyData画面のリフレッシュ
       _ref.read(chartSalaryProvider.notifier).refresh();
       // Homeリスト画面のリフレッシュ

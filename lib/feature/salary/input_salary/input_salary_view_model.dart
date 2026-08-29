@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
@@ -303,6 +304,8 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
       if (!result) { return false; }
     }
 
+    // 解析画面のリフレッシュ
+    _ref.read(salaryAnalysisProvider.notifier).refresh();
     // MyData画面のリフレッシュ
     _ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ

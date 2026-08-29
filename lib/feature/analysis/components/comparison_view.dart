@@ -410,7 +410,7 @@ class ComparisonView extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             CustomText(
-              text: date != null ? '${date.year}年${date.month}月 $bonusStr ${sourceStr != null ? "\n$sourceStr" : ""}' : '未選択',
+              text: date != null ? '${date.year}年${date.month}月 $bonusStr ${sourceStr != null ? "\n$sourceStr" : "\n未設定"}' : '未選択',
               fontWeight: FontWeight.bold,
               textSize: TextSize.S,
               color: CustomColors.thema,

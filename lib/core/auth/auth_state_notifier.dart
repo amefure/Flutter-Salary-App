@@ -5,6 +5,7 @@ import 'package:salary/core/config/public_policy_config.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/data_source/realm_data_source.dart';
 import 'package:salary/core/utils/logger.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/auth/data/auth_repository_impl.dart';
 import 'package:salary/feature/auth/domain/auth_repository.dart';
 import 'package:salary/feature/auth/domain/auth_user.dart';
@@ -121,6 +122,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       /// 支払い元と給料情報を削除する
       _realmRepository.deleteByIds<PaymentSource>(targetSourceIds);
       _realmRepository.deleteByIds<Salary>(targetSalaries.map((s) => s.id));
+      // 解析画面のリフレッシュ
+      _ref.read(salaryAnalysisProvider.notifier).refresh();
       // MyData画面のリフレッシュ
       _ref.read(chartSalaryProvider.notifier).refresh();
       // Homeリスト画面のリフレッシュ
@@ -139,6 +142,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
       logger('同期完了: PaymentSource：${cloudSources.length}件');
       logger('同期完了: Salary：${cloudSalaries.length}件');
+      // 解析画面のリフレッシュ
+      _ref.read(salaryAnalysisProvider.notifier).refresh();
       // MyData画面のリフレッシュ
       _ref.read(chartSalaryProvider.notifier).refresh();
       // Homeリスト画面のリフレッシュ

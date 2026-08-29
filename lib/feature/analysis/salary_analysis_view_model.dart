@@ -16,6 +16,11 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     _loadSalaries();
   }
 
+  void refresh() {
+    _loadSalaries();
+  }
+
+  /// データを再読み込み・リフレッシュする（外部からも呼び出し可能）
   void _loadSalaries() {
     final salaries = _repository.fetchAll();
     salaries.sort((a, b) => b.createdAt.compareTo(a.createdAt));

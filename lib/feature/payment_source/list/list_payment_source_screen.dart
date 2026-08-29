@@ -7,6 +7,7 @@ import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_view.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_view_model.dart';
@@ -228,6 +229,8 @@ class _DeleteButtonState extends State<_DeleteButton> {
     // クラウドの支払い元は非公開にされたタイミングで削除されるためここでは常にローカルのみ削除する
     // 削除
     ref.read(listPaymentSourceProvider.notifier).delete(paymentSource);
+    // 解析画面のリフレッシュ
+    ref.read(salaryAnalysisProvider.notifier).refresh();
     // MyData画面のリフレッシュ
     ref.read(chartSalaryProvider.notifier).refresh();
     // Homeリスト画面のリフレッシュ

@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:salary/core/common/components/custom/custom_label_view.dart';
+import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
+import 'package:salary/core/utils/logger.dart';
 import 'package:salary/feature/reminder/reminder_settings_view_model.dart';
 
 class ReminderSettingsScreen extends ConsumerStatefulWidget {
@@ -14,6 +18,7 @@ class ReminderSettingsScreen extends ConsumerStatefulWidget {
 
 class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen> {
   late TextEditingController _messageController;
+  bool _isNotificationGranted = true;
 
   @override
   void initState() {
@@ -27,42 +32,18 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     });
   }
 
-  /// 通知許可をチェックし、OFFならアラートを表示する
+  /// 通知許可をチェックし、状態を保持する
   Future<void> _checkNotificationPermission() async {
-    // 現在の通知権限の状態を取得
     final status = await Permission.notification.status;
 
-    // 拒否されている、または永続的に拒否されている場合
-    if (status.isDenied || status.isPermanentlyDenied) {
-      if (!mounted) return;
+    // デバッグ用ログ
+    logger('現在の通知権限ステータス: $status');
 
-      showCupertinoDialog(
-        context: context,
-        builder: (dialogContext) => CupertinoAlertDialog(
-          title: const Text('通知が許可されていません'),
-          content: const Text('リマインダーを受け取るには、端末の設定から通知を許可してください。'),
-          actions: [
-            CupertinoDialogAction(
-              isDestructiveAction: true,
-              child: const Text('キャンセル'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop();
-              },
-            ),
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: const Text('設定を開く'),
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                // 端末のアプリ設定画面を開く
-                await openAppSettings();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      );
+    if (mounted) {
+      setState(() {
+        // granted または limited であれば許可されているとみなす
+        _isNotificationGranted = status.isGranted || status.isLimited;
+      });
     }
   }
 
@@ -77,27 +58,67 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     final state = ref.watch(reminderSettingsProvider);
     final notifier = ref.read(reminderSettingsProvider.notifier);
 
-    // 時間の表示形式（例: 19:00）を綺麗にフォーマット
     final timeString = '${state.reminderHour.toString()}:${state.reminderMinute.toString().padLeft(2, '0')}';
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
         middle: CustomText(
-          text: '給料日リマインダー設定',
-          fontWeight: FontWeight.bold,
+            text: '給料日リマインダー設定',
+            fontWeight: FontWeight.bold,
         ),
       ),
       child: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            const CustomText(
-              text: '通知日時',
-              fontWeight: FontWeight.bold,
-              color: CupertinoColors.systemGrey,
-              textSize: TextSize.S,
-            ),
+            // 通知がOFFの場合のみ表示する注意喚起エリア
+            if (!_isNotificationGranted) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: CupertinoColors.systemYellow.withAlpha(50),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: CupertinoColors.systemYellow, width: 0.5),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(CupertinoIcons.exclamationmark_triangle, color: CupertinoColors.systemOrange, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CustomText(
+                            text: '端末の通知設定がオフになっています。',
+                            fontWeight: FontWeight.bold,
+                            textSize: TextSize.S,
+                          ),
+                          const SizedBox(height: 2),
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            minSize: 0,
+                            onPressed: () async {
+                              await openAppSettings();
+                            },
+                            child: const CustomText(
+                              text: '端末の設定から許可する ＞',
+                              color: CustomColors.thema,
+                              textSize: TextSize.SS,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            const CustomLabelView(labelText:'通知日時'),
+
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
@@ -106,9 +127,8 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
               ),
               child: Column(
                 children: [
-                  // 通知日選択タイル
                   CupertinoListTile(
-                    title: const CustomText(text: '毎月の通知日'),
+                    title: const CustomText(text: '毎月の通知日', fontWeight: FontWeight.bold, textSize: TextSize.S),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -125,9 +145,8 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
                       ],
                     ),
                   ),
-                  // 通知時間選択タイル（追加）
                   CupertinoListTile(
-                    title: const CustomText(text: '通知時間'),
+                    title: const CustomText(text: '通知時間', fontWeight: FontWeight.bold, textSize: TextSize.S),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -148,13 +167,9 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
               ),
             ),
             const SizedBox(height: 24),
-            const CustomText(
-              text: '通知メッセージ',
-              fontWeight: FontWeight.bold,
-              color: CupertinoColors.systemGrey,
-              textSize: TextSize.S,
-            ),
+            const CustomLabelView(labelText:'通知メッセージ'),
             const SizedBox(height: 8),
+
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -175,9 +190,10 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.0),
               child: CustomText(
-                text: '設定した日時に、上記メッセージでプッシュ通知が届きます。',
+                text: '設定した日時に、毎月上記メッセージでプッシュ通知が届きます。',
                 textSize: TextSize.SS,
                 color: CupertinoColors.systemGrey,
+                maxLines: 2,
               ),
             ),
           ],
@@ -186,7 +202,6 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     );
   }
 
-  /// 日付（1日〜31日）ピッカー
   void _showDayPicker(BuildContext context, int currentDay, ReminderSettingsViewModel notifier) {
     int selectedDay = currentDay;
 
@@ -233,7 +248,6 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     );
   }
 
-  /// 時間（時・分）ピッカー（追加）
   void _showTimePicker(BuildContext context, int currentHour, int currentMinute, ReminderSettingsViewModel notifier) {
     int selectedHour = currentHour;
     int selectedMinute = currentMinute;
@@ -264,7 +278,6 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
             Expanded(
               child: Row(
                 children: [
-                  // 時（0〜23）
                   Expanded(
                     child: CupertinoPicker(
                       scrollController: FixedExtentScrollController(initialItem: currentHour),
@@ -277,7 +290,6 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
                       }),
                     ),
                   ),
-                  // 分（0〜59）
                   Expanded(
                     child: CupertinoPicker(
                       scrollController: FixedExtentScrollController(initialItem: currentMinute),
