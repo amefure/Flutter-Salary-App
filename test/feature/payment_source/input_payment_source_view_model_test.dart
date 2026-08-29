@@ -5,6 +5,7 @@ import 'package:salary/core/models/thema_color.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/core/providers/global_loading_provider.dart';
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
+import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/payment_source/domain/cloud_payment_repository.dart';
 import 'package:salary/feature/payment_source/input/input_payment_source_view_model.dart';
@@ -15,6 +16,7 @@ import 'list_payment_source_view_model_test.dart';
 
 class MockLocalPaymentSourceRepository extends Mock implements LocalPaymentSourceRepository {}
 class MockCloudPaymentSourceRepository extends Mock implements CloudPaymentRepository {}
+class MockSalaryAnalysisNotifier extends Mock implements SalaryAnalysisViewModel {}
 class MockRef extends Mock implements Ref {}
 class MockChartSalaryNotifier extends Mock implements ChartSalaryViewModel {}
 class MockListSalaryNotifier extends Mock implements ListSalaryViewModel {}
@@ -95,11 +97,15 @@ void main() {
       final mockList = MockListSalaryNotifier();
       final mockLoading = MockGlobalLoadingNotifier();
       final mockError = MockGlobalErrorNotifier();
+      final mockSalaryAnalysis = MockSalaryAnalysisNotifier();
 
       when(() => mockRef.read(globalLoadingProvider.notifier)).thenReturn(mockLoading);
       when(() => mockRef.read(globalErrorProvider.notifier)).thenReturn(mockError);
       when(() => mockRef.read(chartSalaryProvider.notifier)).thenReturn(mockChart);
       when(() => mockRef.read(listSalaryProvider.notifier)).thenReturn(mockList);
+      when(() => mockRef.read(salaryAnalysisProvider.notifier)).thenReturn(mockSalaryAnalysis);
+
+      when(() => mockSalaryAnalysis.refresh()).thenReturn(null);
       when(() => mockChart.refresh()).thenReturn(null);
       when(() => mockList.refresh()).thenReturn(null);
 
@@ -116,6 +122,7 @@ void main() {
       verify(() => mockLocalRepo.add(any())).called(1);
       verify(() => mockChart.refresh()).called(1);
       verify(() => mockList.refresh()).called(1);
+      verify(() => mockSalaryAnalysis.refresh()).called(1);
     });
   });
 
@@ -127,11 +134,15 @@ void main() {
     final mockList = MockListSalaryNotifier();
     final mockLoading = MockGlobalLoadingNotifier();
     final mockError = MockGlobalErrorNotifier();
+    final mockSalaryAnalysis = MockSalaryAnalysisNotifier();
 
     when(() => mockRef.read(globalLoadingProvider.notifier)).thenReturn(mockLoading);
     when(() => mockRef.read(globalErrorProvider.notifier)).thenReturn(mockError);
     when(() => mockRef.read(chartSalaryProvider.notifier)).thenReturn(mockChart);
     when(() => mockRef.read(listSalaryProvider.notifier)).thenReturn(mockList);
+    when(() => mockRef.read(salaryAnalysisProvider.notifier)).thenReturn(mockSalaryAnalysis);
+
+    when(() => mockSalaryAnalysis.refresh()).thenReturn(null);
     when(() => mockChart.refresh()).thenReturn(null);
     when(() => mockList.refresh()).thenReturn(null);
     when(() => mockLocalRepo.fetchMainPaymentSource()).thenReturn(null);
@@ -168,6 +179,9 @@ void main() {
       memo: any(named: 'memo'),
       isMain: any(named: 'isMain'),
     ));
+    verify(() => mockChart.refresh()).called(1);
+    verify(() => mockList.refresh()).called(1);
+    verify(() => mockSalaryAnalysis.refresh()).called(1);
   });
 
   group('InputPaymentSourceViewModel - 状態更新メソッドのテスト', () {
