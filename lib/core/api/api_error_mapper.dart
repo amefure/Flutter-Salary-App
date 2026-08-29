@@ -27,16 +27,23 @@ class ApiErrorMapper {
       int statusCode,
       Map<String, dynamic> result,
       ) {
-    final error = result[ApiErrorJsonKeys.error] ?? {};
+    final errorRaw = result[ApiErrorJsonKeys.error];
+    final Map<String, dynamic> error = errorRaw is Map<String, dynamic>
+        ? errorRaw
+        : {};
+
     final code = error[ApiErrorJsonKeys.code] as String?;
     final message = _parseErrorMessage(result);
 
+    final title = error[ApiErrorJsonKeys.title];
+    final details = error[ApiErrorJsonKeys.details];
+
     return ApiException(
       statusCode: statusCode,
-      title: error[ApiErrorJsonKeys.title],
+      title: title is String ? title : null,
       code: code,
       message: message,
-      details: error[ApiErrorJsonKeys.details],
+      details: details,
       type: _mapCodeToErrorType(code),
     );
   }

@@ -26,7 +26,11 @@ enum ApiErrorCode {
   const ApiErrorCode(this.code);
 
   static ApiErrorCode? fromCode(String? code) {
-    return ApiErrorCode.values.firstWhere((e) => e.code == code);
+    try {
+      return ApiErrorCode.values.firstWhere((e) => e.code == code);
+    } catch (_) {
+      return null;
+    }
   }
 }
 class ApiException implements Exception {

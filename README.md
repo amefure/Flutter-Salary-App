@@ -91,7 +91,7 @@ $ fvm install
 ## テストコード
 テストコードは以下を対象として実装中
 
-coverage：47.2 %(現在)
+coverage：52.2 %(現在)
 
 - Repository
 - ViewModel
