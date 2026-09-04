@@ -132,6 +132,7 @@ class _ReminderSettingsScreenState
               ),
               trailing: CupertinoSwitch(
                 value: state.isReminderEnabled,
+                activeTrackColor: CustomColors.thema,
                 onChanged: (value) async {
                   await notifier.toggleReminderEnabled(value);
                 },

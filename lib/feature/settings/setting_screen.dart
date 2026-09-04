@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/providers/app_version_provider.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/account_benefits_screen.dart';
 import 'package:salary/feature/auth/presentation/change_email_screen.dart';
@@ -47,6 +48,7 @@ class SettingScreen extends StatelessWidget {
             _appSection(context),
             _myMenuSection(context),
             _linkSection(context),
+            _creditSection(context)
           ],
         ),
       ),
@@ -354,6 +356,95 @@ class SettingScreen extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  /// クレジット・バージョン情報セクション
+  Widget _creditSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // アプリアイコン画像（ダークモード対応 ＆ 影付き）
+            Consumer(
+              builder: (context, ref, _) {
+                final themeMode = ref.watch(themeModeProvider);
+                final isDark = themeMode == AppThemeMode.dark;
+
+                // モードに応じた画像パス
+                final assetPath = isDark
+                    ? 'assets/images/app_icon_dark.png'
+                    : 'assets/images/app_icon.png';
+
+                return Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: CustomColors.textWhite,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: CustomColors.text(context).withAlpha(60),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: Image.asset(
+                      assetPath,
+                      fit: BoxFit.cover,
+                      // 画像が見つからない場合のフォールバック（アイコン表示）
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          CupertinoIcons.money_dollar_circle_fill,
+                          color: CupertinoColors.white,
+                          size: 30,
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            const CustomText(
+              text: '『シンプルに給料を管理・記録するためのアプリ』',
+              textSize: TextSize.SS,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 4),
+            // バージョン情報を非同期で取得して表示
+            Consumer(
+              builder: (context, ref, _) {
+                final versionAsync = ref.watch(appVersionProvider);
+                return versionAsync.when(
+                  data: (version) => CustomText(
+                    text: 'シンプル給料記録 Ver $version',
+                    textSize: TextSize.SS,
+                  ),
+                  loading: () => const CustomText(
+                    text: 'シンプル給料記録 Ver ...',
+                    textSize: TextSize.SS,
+                  ),
+                  error: (_, __) => const CustomText(
+                    text: 'シンプル給料記録',
+                    textSize: TextSize.SS,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 4),
+            const CustomText(
+              text: 'Created by ame',
+              textSize: TextSize.SS,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
