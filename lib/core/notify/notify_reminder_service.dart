@@ -110,16 +110,29 @@ class NotifyReminderService {
     await ios?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
+  /// 毎月の給料日リマインダーをキャンセルする
+  Future<void> cancelMonthlyReminder() async {
+    await init();
+    await _notificationsPlugin.cancel(_reminderNotificationId);
+  }
+
   /// 毎月の給料日リマインダーをスケジュール設定
   /// [payDay]: 給料日（例: 25日なら 25）
   /// [body]: ユーザーがカスタマイズした通知メッセージ
   /// [hour], [minute]: 通知を送る時刻
+  /// [enabled]: 通知機能のON/OFF状態
   Future<void> scheduleMonthlyReminder({
     required int payDay,
     required String body,
     required int hour,
     int minute = 10,
+    bool enabled = true,
   }) async {
+    if (!enabled) {
+      await cancelMonthlyReminder();
+      return;
+    }
+
     await init();
     await requestPermissions();
 

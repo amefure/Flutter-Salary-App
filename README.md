@@ -138,6 +138,7 @@ $ salary://register
 - **[intl](https://pub.dev/packages/intl) (0.20.2)** - 日付・数値・通貨のフォーマット処理
 - **[connectivity_plus](https://pub.dev/packages/connectivity_plus) (6.1.5)** - ネットワーク環境
 - **[app_links](https://pub.dev/packages/app_links) (7.0.0)** - ディープリンク
+- **[package_info_plus](https://pub.dev/packages/package_info_plus) (9.0.1)** - パッケージ情報取得
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ / リマインダー設定等）
