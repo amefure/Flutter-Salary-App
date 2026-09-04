@@ -11,12 +11,19 @@ enum SharedPreferencesKeys {
   hasShownPremiumIntro('hasShownPremiumIntro'),
   hasShownPremiumTab('hasShownPremiumTab'),
   sortOrder('sortOrder'),
+
+  /// 通知の有効状態
+  reminderEnabled('reminderEnabled'),
+
   /// 通知日（例: 25日なら 25）
   reminderDay('reminderDay'),
+
   /// 通知メッセージ
   reminderMessage('reminderMessage'),
+
   /// 通知する「時」（0〜23）
   reminderHour('reminderHour'),
+
   /// 通知する「分」（0〜59）
   reminderMinute('reminderMinute');
 
@@ -49,7 +56,8 @@ class UserSettingsRepository {
   }
 
   /// 認証ユーザー情報を取得
-  String? fetchAuthUser() => _dataSource.getString(SharedPreferencesKeys.authUser);
+  String? fetchAuthUser() =>
+      _dataSource.getString(SharedPreferencesKeys.authUser);
 
   // --------------------------------------------------
   // 広告・プレミアム機能関連
@@ -65,7 +73,10 @@ class UserSettingsRepository {
 
   /// プレミアム機能（一部）のアンロック状態を保存
   Future<void> savePremiumFeatureUnlocked(bool value) async {
-    await _dataSource.saveBool(SharedPreferencesKeys.premiumFeatureUnlocked, value);
+    await _dataSource.saveBool(
+      SharedPreferencesKeys.premiumFeatureUnlocked,
+      value,
+    );
   }
 
   /// プレミアム機能（一部）のアンロック状態を取得
@@ -74,7 +85,10 @@ class UserSettingsRepository {
 
   /// プレミアムプラン（全機能）のアンロック状態を保存
   Future<void> savePremiumFullUnlocked(bool value) async {
-    await _dataSource.saveBool(SharedPreferencesKeys.premiumFullUnlocked, value);
+    await _dataSource.saveBool(
+      SharedPreferencesKeys.premiumFullUnlocked,
+      value,
+    );
   }
 
   /// プレミアムプラン（全機能）のアンロック状態を取得
@@ -112,7 +126,10 @@ class UserSettingsRepository {
 
   /// プレミアムプラン紹介ポップアップを表示済みか保存
   Future<void> saveHasShownPremiumIntro(bool value) async {
-    await _dataSource.saveBool(SharedPreferencesKeys.hasShownPremiumIntro, value);
+    await _dataSource.saveBool(
+      SharedPreferencesKeys.hasShownPremiumIntro,
+      value,
+    );
   }
 
   /// プレミアムプラン紹介ポップアップを表示済みか取得
@@ -134,6 +151,17 @@ class UserSettingsRepository {
   // リマインダー設定関連
   // --------------------------------------------------
 
+  /// 通知の有効状態を保存
+  Future<void> saveReminderEnabled(bool enabled) async {
+    await _dataSource.saveBool(SharedPreferencesKeys.reminderEnabled, enabled);
+  }
+
+  /// 通知の有効状態を取得（未設定時はデフォルトでtrueを返す）
+  bool fetchReminderEnabled() {
+    return _dataSource.getBoolNullable(SharedPreferencesKeys.reminderEnabled) ??
+        true;
+  }
+
   /// 通知日を保存
   Future<void> saveReminderDay(int day) async {
     await _dataSource.saveInt(SharedPreferencesKeys.reminderDay, day);
@@ -146,7 +174,10 @@ class UserSettingsRepository {
 
   /// 通知メッセージを保存
   Future<void> saveReminderMessage(String message) async {
-    await _dataSource.saveString(SharedPreferencesKeys.reminderMessage, message);
+    await _dataSource.saveString(
+      SharedPreferencesKeys.reminderMessage,
+      message,
+    );
   }
 
   /// 通知メッセージを取得（未設定時はデフォルトメッセージを返す）

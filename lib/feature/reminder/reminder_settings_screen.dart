@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
-import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/logger.dart';
@@ -13,10 +11,12 @@ class ReminderSettingsScreen extends ConsumerStatefulWidget {
   const ReminderSettingsScreen({super.key});
 
   @override
-  ConsumerState<ReminderSettingsScreen> createState() => _ReminderSettingsScreenState();
+  ConsumerState<ReminderSettingsScreen> createState() =>
+      _ReminderSettingsScreenState();
 }
 
-class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen> {
+class _ReminderSettingsScreenState
+    extends ConsumerState<ReminderSettingsScreen> {
   late TextEditingController _messageController;
   bool _isNotificationGranted = true;
 
@@ -24,7 +24,9 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
   void initState() {
     super.initState();
     final initialState = ref.read(reminderSettingsProvider);
-    _messageController = TextEditingController(text: initialState.reminderMessage);
+    _messageController = TextEditingController(
+      text: initialState.reminderMessage,
+    );
 
     // 画面が開いた直後に通知許可をチェック
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -58,15 +60,13 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     final state = ref.watch(reminderSettingsProvider);
     final notifier = ref.read(reminderSettingsProvider.notifier);
 
-    final timeString = '${state.reminderHour.toString()}:${state.reminderMinute.toString().padLeft(2, '0')}';
+    final timeString =
+        '${state.reminderHour.toString()}:${state.reminderMinute.toString().padLeft(2, '0')}';
 
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
-        middle: CustomText(
-            text: '給料日リマインダー設定',
-            fontWeight: FontWeight.bold,
-        ),
+        middle: CustomText(text: '給料日リマインダー設定', fontWeight: FontWeight.bold),
       ),
       child: SafeArea(
         child: ListView(
@@ -79,11 +79,18 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
                 decoration: BoxDecoration(
                   color: CupertinoColors.systemYellow.withAlpha(50),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: CupertinoColors.systemYellow, width: 0.5),
+                  border: Border.all(
+                    color: CupertinoColors.systemYellow,
+                    width: 0.5,
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(CupertinoIcons.exclamationmark_triangle, color: CupertinoColors.systemOrange, size: 20),
+                    const Icon(
+                      CupertinoIcons.exclamationmark_triangle,
+                      color: CupertinoColors.systemOrange,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -97,7 +104,7 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
                           const SizedBox(height: 2),
                           CupertinoButton(
                             padding: EdgeInsets.zero,
-                            minSize: 0,
+                            minimumSize: Size.zero,
                             onPressed: () async {
                               await openAppSettings();
                             },
@@ -117,73 +124,132 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
               const SizedBox(height: 20),
             ],
 
-            const CustomLabelView(labelText:'通知日時'),
+            CupertinoListTile(
+              title: const CustomText(
+                text: '給料日リマインダー',
+                fontWeight: FontWeight.bold,
+                textSize: TextSize.S,
+              ),
+              trailing: CupertinoSwitch(
+                value: state.isReminderEnabled,
+                onChanged: (value) async {
+                  await notifier.toggleReminderEnabled(value);
+                },
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            const CustomLabelView(labelText: '通知日時'),
 
             const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  CupertinoListTile(
-                    title: const CustomText(text: '毎月の通知日', fontWeight: FontWeight.bold, textSize: TextSize.S),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => _showDayPicker(context, state.reminderDay, notifier),
-                          child: CustomText(
-                            text: '${state.reminderDay}日',
-                            color: CustomColors.thema,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Icon(CupertinoIcons.chevron_right, size: 14, color: CupertinoColors.systemGrey),
-                      ],
-                    ),
+            IgnorePointer(
+              ignoring: !state.isReminderEnabled,
+              child: Opacity(
+                opacity: state.isReminderEnabled ? 1 : 0.5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.secondarySystemGroupedBackground
+                        .resolveFrom(context),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  CupertinoListTile(
-                    title: const CustomText(text: '通知時間', fontWeight: FontWeight.bold, textSize: TextSize.S),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => _showTimePicker(context, state.reminderHour, state.reminderMinute, notifier),
-                          child: CustomText(
-                            text: timeString,
-                            color: CustomColors.thema,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  child: Column(
+                    children: [
+                      CupertinoListTile(
+                        title: const CustomText(
+                          text: '毎月の通知日',
+                          fontWeight: FontWeight.bold,
+                          textSize: TextSize.S,
                         ),
-                        const Icon(CupertinoIcons.chevron_right, size: 14, color: CupertinoColors.systemGrey),
-                      ],
-                    ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              onPressed:
+                                  () => _showDayPicker(
+                                    context,
+                                    state.reminderDay,
+                                    notifier,
+                                  ),
+                              child: CustomText(
+                                text: '${state.reminderDay}日',
+                                color: CustomColors.thema,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Icon(
+                              CupertinoIcons.chevron_right,
+                              size: 14,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                          ],
+                        ),
+                      ),
+                      CupertinoListTile(
+                        title: const CustomText(
+                          text: '通知時間',
+                          fontWeight: FontWeight.bold,
+                          textSize: TextSize.S,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              onPressed:
+                                  () => _showTimePicker(
+                                    context,
+                                    state.reminderHour,
+                                    state.reminderMinute,
+                                    notifier,
+                                  ),
+                              child: CustomText(
+                                text: timeString,
+                                color: CustomColors.thema,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Icon(
+                              CupertinoIcons.chevron_right,
+                              size: 14,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
-            const CustomLabelView(labelText:'通知メッセージ'),
+            const CustomLabelView(labelText: '通知メッセージ'),
             const SizedBox(height: 8),
 
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: CupertinoTextField(
-                controller: _messageController,
-                placeholder: '通知メッセージを入力',
-                maxLines: 3,
-                decoration: const BoxDecoration(color: CupertinoColors.transparent),
-                onChanged: (value) {
-                  notifier.updateReminderMessage(value);
-                },
+            IgnorePointer(
+              ignoring: !state.isReminderEnabled,
+              child: Opacity(
+                opacity: state.isReminderEnabled ? 1 : 0.5,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.secondarySystemGroupedBackground
+                        .resolveFrom(context),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: CupertinoTextField(
+                    controller: _messageController,
+                    placeholder: '通知メッセージを入力',
+                    maxLines: 3,
+                    decoration: const BoxDecoration(
+                      color: CupertinoColors.transparent,
+                    ),
+                    enabled: state.isReminderEnabled,
+                    onChanged: (value) {
+                      notifier.updateReminderMessage(value);
+                    },
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -202,112 +268,136 @@ class _ReminderSettingsScreenState extends ConsumerState<ReminderSettingsScreen>
     );
   }
 
-  void _showDayPicker(BuildContext context, int currentDay, ReminderSettingsViewModel notifier) {
+  void _showDayPicker(
+    BuildContext context,
+    int currentDay,
+    ReminderSettingsViewModel notifier,
+  ) {
     int selectedDay = currentDay;
 
     showCupertinoModalPopup(
       context: context,
-      builder: (modalContext) => Container(
-        height: 250,
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder:
+          (modalContext) => Container(
+            height: 250,
+            color: CupertinoColors.systemBackground.resolveFrom(context),
+            child: Column(
               children: [
-                CupertinoButton(
-                  child: const CustomText(text: 'キャンセル'),
-                  onPressed: () => Navigator.of(modalContext).pop(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const CustomText(text: 'キャンセル'),
+                      onPressed: () => Navigator.of(modalContext).pop(),
+                    ),
+                    CupertinoButton(
+                      child: const CustomText(text: '完了'),
+                      onPressed: () {
+                        notifier.updateReminderDay(selectedDay);
+                        Navigator.of(modalContext).pop();
+                      },
+                    ),
+                  ],
                 ),
-                CupertinoButton(
-                  child: const CustomText(text: '完了'),
-                  onPressed: () {
-                    notifier.updateReminderDay(selectedDay);
-                    Navigator.of(modalContext).pop();
-                  },
+                Expanded(
+                  child: CupertinoPicker(
+                    scrollController: FixedExtentScrollController(
+                      initialItem: currentDay - 1,
+                    ),
+                    itemExtent: 32.0,
+                    onSelectedItemChanged: (int index) {
+                      selectedDay = index + 1;
+                    },
+                    children: List<Widget>.generate(31, (int index) {
+                      return Center(child: CustomText(text: '${index + 1}日'));
+                    }),
+                  ),
                 ),
               ],
             ),
-            Expanded(
-              child: CupertinoPicker(
-                scrollController: FixedExtentScrollController(initialItem: currentDay - 1),
-                itemExtent: 32.0,
-                onSelectedItemChanged: (int index) {
-                  selectedDay = index + 1;
-                },
-                children: List<Widget>.generate(31, (int index) {
-                  return Center(
-                    child: CustomText(text: '${index + 1}日'),
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
-  void _showTimePicker(BuildContext context, int currentHour, int currentMinute, ReminderSettingsViewModel notifier) {
+  void _showTimePicker(
+    BuildContext context,
+    int currentHour,
+    int currentMinute,
+    ReminderSettingsViewModel notifier,
+  ) {
     int selectedHour = currentHour;
     int selectedMinute = currentMinute;
 
     showCupertinoModalPopup(
       context: context,
-      builder: (modalContext) => Container(
-        height: 250,
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder:
+          (modalContext) => Container(
+            height: 250,
+            color: CupertinoColors.systemBackground.resolveFrom(context),
+            child: Column(
               children: [
-                CupertinoButton(
-                  child: const CustomText(text: 'キャンセル'),
-                  onPressed: () => Navigator.of(modalContext).pop(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const CustomText(text: 'キャンセル'),
+                      onPressed: () => Navigator.of(modalContext).pop(),
+                    ),
+                    CupertinoButton(
+                      child: const CustomText(text: '完了'),
+                      onPressed: () {
+                        notifier.updateReminderTime(
+                          selectedHour,
+                          selectedMinute,
+                        );
+                        Navigator.of(modalContext).pop();
+                      },
+                    ),
+                  ],
                 ),
-                CupertinoButton(
-                  child: const CustomText(text: '完了'),
-                  onPressed: () {
-                    notifier.updateReminderTime(selectedHour, selectedMinute);
-                    Navigator.of(modalContext).pop();
-                  },
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoPicker(
+                          scrollController: FixedExtentScrollController(
+                            initialItem: currentHour,
+                          ),
+                          itemExtent: 32.0,
+                          onSelectedItemChanged: (int index) {
+                            selectedHour = index;
+                          },
+                          children: List<Widget>.generate(24, (int index) {
+                            return Center(
+                              child: CustomText(text: '${index.toString()}時'),
+                            );
+                          }),
+                        ),
+                      ),
+                      Expanded(
+                        child: CupertinoPicker(
+                          scrollController: FixedExtentScrollController(
+                            initialItem: currentMinute,
+                          ),
+                          itemExtent: 32.0,
+                          onSelectedItemChanged: (int index) {
+                            selectedMinute = index;
+                          },
+                          children: List<Widget>.generate(60, (int index) {
+                            return Center(
+                              child: CustomText(
+                                text: '${index.toString().padLeft(2, '0')}分',
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CupertinoPicker(
-                      scrollController: FixedExtentScrollController(initialItem: currentHour),
-                      itemExtent: 32.0,
-                      onSelectedItemChanged: (int index) {
-                        selectedHour = index;
-                      },
-                      children: List<Widget>.generate(24, (int index) {
-                        return Center(child: CustomText(text: '${index.toString()}時'));
-                      }),
-                    ),
-                  ),
-                  Expanded(
-                    child: CupertinoPicker(
-                      scrollController: FixedExtentScrollController(initialItem: currentMinute),
-                      itemExtent: 32.0,
-                      onSelectedItemChanged: (int index) {
-                        selectedMinute = index;
-                      },
-                      children: List<Widget>.generate(60, (int index) {
-                        return Center(child: CustomText(text: '${index.toString().padLeft(2, '0')}分'));
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
