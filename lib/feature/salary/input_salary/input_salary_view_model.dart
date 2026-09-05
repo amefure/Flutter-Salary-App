@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/providers/app_review_provider.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
@@ -301,6 +302,8 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
       _ref.read(detailSalaryProvider(DetailSalaryArgsData(id: salary.id, isPublic: false)).notifier).loadLocalSalary(salary.id);
     } else {
       final result = await _add(newSalary);
+      // レビュー条件のチェック・呼び出し
+      await _ref.read(appReviewServiceProvider).checkAndRequestReviewOnSalaryAdded();
       if (!result) { return false; }
     }
 

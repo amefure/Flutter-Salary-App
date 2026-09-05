@@ -25,7 +25,13 @@ enum SharedPreferencesKeys {
   reminderHour('reminderHour'),
 
   /// 通知する「分」（0〜59）
-  reminderMinute('reminderMinute');
+  reminderMinute('reminderMinute'),
+
+  /// レビューをすでにリクエスト済みか
+  hasRequestedReview('hasRequestedReview'),
+
+  /// 給料データの累計登録回数
+  salaryRegistrationCount('salaryRegistrationCount');
 
   final String key;
   const SharedPreferencesKeys(this.key);
@@ -200,5 +206,21 @@ class UserSettingsRepository {
 
   int fetchReminderMinute() {
     return _dataSource.getInt(SharedPreferencesKeys.reminderMinute) ?? 0;
+  }
+
+  Future<void> saveHasRequestedReview(bool value) async {
+    await _dataSource.saveBool(SharedPreferencesKeys.hasRequestedReview, value);
+  }
+
+  bool fetchHasRequestedReview() {
+    return _dataSource.getBool(SharedPreferencesKeys.hasRequestedReview);
+  }
+
+  Future<void> saveSalaryRegistrationCount(int count) async {
+    await _dataSource.saveInt(SharedPreferencesKeys.salaryRegistrationCount, count);
+  }
+
+  int fetchSalaryRegistrationCount() {
+    return _dataSource.getInt(SharedPreferencesKeys.salaryRegistrationCount) ?? 0;
   }
 }

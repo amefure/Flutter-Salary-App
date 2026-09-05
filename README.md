@@ -139,6 +139,7 @@ $ salary://register
 - **[connectivity_plus](https://pub.dev/packages/connectivity_plus) (6.1.5)** - ネットワーク環境
 - **[app_links](https://pub.dev/packages/app_links) (7.0.0)** - ディープリンク
 - **[package_info_plus](https://pub.dev/packages/package_info_plus) (9.0.1)** - パッケージ情報取得
+- **[in_app_review](https://pub.dev/packages/in_app_review) (2.0.12)** - アプリレビュー機能
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ / リマインダー設定等）
