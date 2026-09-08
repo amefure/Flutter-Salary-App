@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/components/domain/source_selector.dart';
 import 'package:salary/feature/charts/presentation/parts/bar_chart_yearly_view.dart';
 import 'package:salary/feature/charts/presentation/parts/chart_mode_switcher.dart';
 import 'package:salary/feature/charts/presentation/parts/switch_charts_view.dart';
@@ -13,13 +14,16 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 
-class ChartSalaryScreen extends StatelessWidget {
+class ChartSalaryScreen extends ConsumerWidget {
   const ChartSalaryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // 画面サイズを取得
     final screen = MediaQuery.of(context).size;
+
+    final state = ref.watch(chartSalaryProvider);
+    final notifier = ref.read(chartSalaryProvider.notifier);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
@@ -38,9 +42,20 @@ class ChartSalaryScreen extends StatelessWidget {
                       SizedBox(width: screen.width),
 
                       // 支払い元選択UI
-                      SizedBox(
-                        width: screen.width * 0.5,
-                        child: const _SourceSelector(),
+                      SourceSelector(
+                        selectedSource: state.selectedSource,
+                        sourceList: state.sourceList,
+                        sourceName: (source) => source?.name ?? '',
+                        buildLabelView: (source) => PaymentSourceLabelView(
+                          paymentSource: source,
+                          isShowChevronDown: true,
+                        ),
+                        buildIconView: (source) => PaymentIconView(paymentSource: source),
+                        onChanged: (source) {
+                          if (source != null) {
+                            notifier.changeSource(source);
+                          }
+                        },
                       ),
 
                       const SizedBox(height: 20),
@@ -112,66 +127,6 @@ class ChartSalaryScreen extends StatelessWidget {
   }
 }
 
-
-/// 給与の支払い元を選択(MenuAnchor)
-class _SourceSelector extends ConsumerWidget {
-
-  const _SourceSelector();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(chartSalaryProvider);
-    final notifier = ref.read(chartSalaryProvider.notifier);
-
-    return MenuAnchor(
-      builder: (_, controller, __) {
-        return GestureDetector(
-          onTap: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
-          },
-          child: PaymentSourceLabelView(
-            paymentSource: state.selectedSource,
-            isShowChevronDown: true,
-          ),
-        );
-      },
-      style: MenuStyle(
-        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_){
-          return CustomColors.background(context);
-        }),
-      ),
-      menuChildren: state.sourceList.map((source) {
-        return MenuItemButton(
-          onPressed: () => notifier.changeSource(source),
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
-              return CustomColors.background(context);
-            }),
-          ),
-          child: SizedBox(
-            width: 200,
-            child: Row(
-              children: [
-                PaymentIconView(paymentSource: source),
-                const SizedBox(width: 8),
-                Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
-                if (state.selectedSource == source)
-                  Icon(
-                    CupertinoIcons.checkmark_alt,
-                    color: CustomColors.text(context),
-                  ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
 
 /// 年月選択
 class _YearSelector extends ConsumerWidget {
