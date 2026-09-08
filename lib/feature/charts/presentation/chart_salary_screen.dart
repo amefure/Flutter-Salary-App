@@ -13,13 +13,16 @@ import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 
-class ChartSalaryScreen extends StatelessWidget {
+class ChartSalaryScreen extends ConsumerWidget {
   const ChartSalaryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // 画面サイズを取得
     final screen = MediaQuery.of(context).size;
+
+    final state = ref.watch(chartSalaryProvider);
+    final notifier = ref.read(chartSalaryProvider.notifier);
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
@@ -40,7 +43,21 @@ class ChartSalaryScreen extends StatelessWidget {
                       // 支払い元選択UI
                       SizedBox(
                         width: screen.width * 0.5,
-                        child: const _SourceSelector(),
+                        child: SourceSelector(
+                          selectedSource: state.selectedSource,
+                          sourceList: state.sourceList,
+                          sourceName: (source) => source?.name ?? '',
+                          buildLabelView: (source) => PaymentSourceLabelView(
+                            paymentSource: source,
+                            isShowChevronDown: true,
+                          ),
+                          buildIconView: (source) => PaymentIconView(paymentSource: source),
+                          onChanged: (source) {
+                            if (source != null) {
+                              notifier.changeSource(source);
+                            }
+                          },
+                        ),
                       ),
 
                       const SizedBox(height: 20),
@@ -112,17 +129,26 @@ class ChartSalaryScreen extends StatelessWidget {
   }
 }
 
+/// 給与の支払い元を選択する汎用的なウィジェット（特定のProviderに依存しない）
+class SourceSelector<T> extends StatelessWidget {
+  final T? selectedSource;
+  final List<T> sourceList;
+  final String Function(T?) sourceName;
+  final Widget Function(T?) buildLabelView;
+  final Widget Function(T) buildIconView;
+  final ValueChanged<T?> onChanged;
 
-/// 給与の支払い元を選択(MenuAnchor)
-class _SourceSelector extends ConsumerWidget {
-
-  const _SourceSelector();
+  const SourceSelector({
+    required this.selectedSource,
+    required this.sourceList,
+    required this.sourceName,
+    required this.buildLabelView,
+    required this.buildIconView,
+    required this.onChanged,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(chartSalaryProvider);
-    final notifier = ref.read(chartSalaryProvider.notifier);
-
+  Widget build(BuildContext context) {
     return MenuAnchor(
       builder: (_, controller, __) {
         return GestureDetector(
@@ -133,20 +159,18 @@ class _SourceSelector extends ConsumerWidget {
               controller.open();
             }
           },
-          child: PaymentSourceLabelView(
-            paymentSource: state.selectedSource,
-            isShowChevronDown: true,
-          ),
+          child: buildLabelView(selectedSource),
         );
       },
       style: MenuStyle(
-        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_){
+        backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
           return CustomColors.background(context);
         }),
       ),
-      menuChildren: state.sourceList.map((source) {
+      menuChildren: sourceList.map((source) {
+        final isSelected = selectedSource == source;
         return MenuItemButton(
-          onPressed: () => notifier.changeSource(source),
+          onPressed: () => onChanged(source),
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.resolveWith<Color?>((_) {
               return CustomColors.background(context);
@@ -156,10 +180,15 @@ class _SourceSelector extends ConsumerWidget {
             width: 200,
             child: Row(
               children: [
-                PaymentIconView(paymentSource: source),
+                buildIconView(source),
                 const SizedBox(width: 8),
-                Expanded(child: CustomText(text: source.name, fontWeight: FontWeight.bold)),
-                if (state.selectedSource == source)
+                Expanded(
+                  child: CustomText(
+                    text: sourceName(source),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (isSelected)
                   Icon(
                     CupertinoIcons.checkmark_alt,
                     color: CustomColors.text(context),

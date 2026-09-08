@@ -265,7 +265,7 @@ class _RankingItem extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // 順位表示
+            // 順位バッジ（金・銀・銅カラー）
             Container(
               width: 32,
               height: 32,
@@ -274,7 +274,7 @@ class _RankingItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: index < 3 ? [
                   BoxShadow(
-                      color: medalColor.withOpacity(0.3),
+                      color: medalColor.withAlpha(30),
                       blurRadius: 4,
                       offset: const Offset(0, 2)
                   )

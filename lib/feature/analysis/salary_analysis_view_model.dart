@@ -1,24 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/core/models/salary.dart';
 import 'domain/salary_analysis_models.dart';
 import 'salary_analysis_state.dart';
 
 final salaryAnalysisProvider =
-    StateNotifierProvider<SalaryAnalysisViewModel, SalaryAnalysisState>((ref) {
-      final repository = ref.read(localSalaryRepositoryProvider);
-      return SalaryAnalysisViewModel(repository);
-    });
+StateNotifierProvider<SalaryAnalysisViewModel, SalaryAnalysisState>((ref) {
+  final repository = ref.read(localSalaryRepositoryProvider);
+  return SalaryAnalysisViewModel(repository);
+});
 
 class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
   final LocalSalaryRepository _repository;
   final SalaryAnalysisCalculator _calculator;
 
   SalaryAnalysisViewModel(
-    this._repository, {
-    SalaryAnalysisCalculator calculator = const SalaryAnalysisCalculator(),
-  }) : _calculator = calculator,
-       super(SalaryAnalysisState.initial()) {
+      this._repository, {
+        SalaryAnalysisCalculator calculator = const SalaryAnalysisCalculator(),
+      }) : _calculator = calculator,
+        super(SalaryAnalysisState.initial()) {
     _loadSalaries();
   }
 
@@ -26,19 +27,19 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     _loadSalaries();
   }
 
-  /// データを再読み込み・リフレッシュする（外部からも呼び出し可能）
+  /// データを再読み込み・リフレッシュする
   void _loadSalaries() {
     final salaries = _repository.fetchAll();
     salaries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     // 全ての支給・控除項目名を取得
     final paymentNames =
-        salaries.expand((s) => s.paymentAmountItems).map((i) => i.key).toSet();
+    salaries.expand((s) => s.paymentAmountItems).map((i) => i.key).toSet();
     final deductionNames =
-        salaries
-            .expand((s) => s.deductionAmountItems)
-            .map((i) => i.key)
-            .toSet();
+    salaries
+        .expand((s) => s.deductionAmountItems)
+        .map((i) => i.key)
+        .toSet();
 
     final itemNames = {...paymentNames, ...deductionNames}.toList();
     final sourcesById = <String, PaymentSource>{};
@@ -50,10 +51,11 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     }
     final sources = [...sourcesById.values]
       ..sort((a, b) => a.name.compareTo(b.name));
-    final sourceFilters = [
-      const SalarySourceFilter.all(),
-      ...sources.map((source) => SalarySourceFilter.source(source.id)),
-      const SalarySourceFilter.unspecified(),
+
+    // 先頭に「すべて」を表す DummySource.allDummySource を配置
+    final sourceList = [
+      DummySource.allDummySource,
+      ...sources,
     ];
 
     String? initialBaseId;
@@ -71,40 +73,37 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
       allSalaries: salaries,
       availableItemNames: itemNames,
       availableSources: sources,
-      sourceFilters: sourceFilters,
-      selectedSourceFilter: const SalarySourceFilter.all(),
-      summary: _calculator.summarize(salaries),
+      sourceList: sourceList,
+      selectedSource: DummySource.allDummySource,
+      summary: _calculator.summarize(salaries, selectedSource: DummySource.allDummySource),
       selectedItemName: itemNames.isNotEmpty ? itemNames.first : null,
       baseSalaryId: initialBaseId,
       targetSalaryId: initialTargetId,
     );
   }
 
-  /// 支給項目名のリスト（ViewModelで保持・提供）
   List<String> get paymentItemNames {
     final paymentNames =
-        state.allSalaries
-            .expand((s) => s.paymentAmountItems)
-            .map((i) => i.key)
-            .toSet();
+    state.allSalaries
+        .expand((s) => s.paymentAmountItems)
+        .map((i) => i.key)
+        .toSet();
     return state.availableItemNames
         .where((name) => paymentNames.contains(name))
         .toList();
   }
 
-  /// 控除項目名のリスト（ViewModelで保持・提供）
   List<String> get deductionItemNames {
     final deductionNames =
-        state.allSalaries
-            .expand((s) => s.deductionAmountItems)
-            .map((i) => i.key)
-            .toSet();
+    state.allSalaries
+        .expand((s) => s.deductionAmountItems)
+        .map((i) => i.key)
+        .toSet();
     return state.availableItemNames
         .where((name) => deductionNames.contains(name))
         .toList();
   }
 
-  /// 指定した項目名が控除項目かどうかを判定
   bool isItemDeduction(String itemName) {
     for (var salary in state.allSalaries) {
       if (salary.deductionAmountItems.any((i) => i.key == itemName)) {
@@ -126,10 +125,11 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     state = state.copyWith(selectedItemName: name);
   }
 
-  void selectSourceFilter(SalarySourceFilter filter) {
+  /// PaymentSource で絞り込みを更新
+  void selectSource(PaymentSource source) {
     state = state.copyWith(
-      selectedSourceFilter: filter,
-      summary: _calculator.summarize(state.allSalaries, filter: filter),
+      selectedSource: source,
+      summary: _calculator.summarize(state.allSalaries, selectedSource: source),
     );
   }
 
@@ -162,13 +162,11 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     state = state.copyWith(selectedYear: newYear);
   }
 
-  /// 選択された項目が「控除項目」かどうかを判定する
   bool get isSelectedItemSelectedAsDeduction {
     if (state.selectedItemName == null) return false;
     return isItemDeduction(state.selectedItemName!);
   }
 
-  /// 選択された年・項目の12ヶ月分の推移データを取得
   List<double> getMonthlyDataForYear() {
     final monthlyData = List.generate(12, (_) => 0.0);
 
@@ -176,17 +174,16 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
 
     for (var salary in state.allSalaries) {
       if (salary.createdAt.year == state.selectedYear) {
-        final monthIndex = salary.createdAt.month - 1; // 0-11
+        final monthIndex = salary.createdAt.month - 1;
         if (monthIndex < 0 || monthIndex >= 12) continue;
 
-        // 支給か控除かによって参照先を明確に分ける
         final targetItems =
-            isSelectedItemSelectedAsDeduction
-                ? salary.deductionAmountItems
-                : salary.paymentAmountItems;
+        isSelectedItemSelectedAsDeduction
+            ? salary.deductionAmountItems
+            : salary.paymentAmountItems;
 
         final item = targetItems.firstWhere(
-          (i) => i.key == state.selectedItemName,
+              (i) => i.key == state.selectedItemName,
           orElse: () => AmountItem('id', '', 0),
         );
 

@@ -1,34 +1,5 @@
+import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
-
-enum SalarySourceFilterKind { all, source, unspecified }
-
-class SalarySourceFilter {
-  final SalarySourceFilterKind kind;
-  final String? sourceId;
-
-  const SalarySourceFilter.all()
-    : kind = SalarySourceFilterKind.all,
-      sourceId = null;
-
-  const SalarySourceFilter.source(this.sourceId)
-    : kind = SalarySourceFilterKind.source,
-      assert(sourceId != '');
-
-  const SalarySourceFilter.unspecified()
-    : kind = SalarySourceFilterKind.unspecified,
-      sourceId = null;
-
-  String get label {
-    switch (kind) {
-      case SalarySourceFilterKind.all:
-        return 'すべて';
-      case SalarySourceFilterKind.source:
-        return sourceId ?? '';
-      case SalarySourceFilterKind.unspecified:
-        return '未設定';
-    }
-  }
-}
 
 class SalarySummary {
   final List<Salary> grossRanking;
@@ -52,15 +23,19 @@ class SalarySummary {
   bool get isEmpty => grossRanking.isEmpty && netRanking.isEmpty;
 }
 
+
 class SalaryAnalysisCalculator {
   const SalaryAnalysisCalculator();
 
   SalarySummary summarize(
-    Iterable<Salary> salaries, {
-    SalarySourceFilter filter = const SalarySourceFilter.all(),
-  }) {
+      Iterable<Salary> salaries, {
+        PaymentSource? selectedSource,
+      }) {
+    // null の場合はすべてを表す DummySource.allDummySource を使う
+    final source = selectedSource ?? DummySource.allDummySource;
+
     final filtered =
-        salaries.where((salary) => _matchesFilter(salary, filter)).toList();
+    salaries.where((salary) => _matchesFilter(salary, source)).toList();
     final monthTotals = <String, _MonthlyTotals>{};
 
     for (final salary in filtered) {
@@ -81,11 +56,11 @@ class SalaryAnalysisCalculator {
 
     final grossTotal = filtered.fold<int>(
       0,
-      (sum, salary) => sum + salary.paymentAmount,
+          (sum, salary) => sum + salary.paymentAmount,
     );
     final netTotal = filtered.fold<int>(
       0,
-      (sum, salary) => sum + salary.netSalary,
+          (sum, salary) => sum + salary.netSalary,
     );
     final monthCount = monthTotals.length;
 
@@ -100,15 +75,15 @@ class SalaryAnalysisCalculator {
     );
   }
 
-  bool _matchesFilter(Salary salary, SalarySourceFilter filter) {
-    switch (filter.kind) {
-      case SalarySourceFilterKind.all:
-        return true;
-      case SalarySourceFilterKind.source:
-        return salary.source?.id == filter.sourceId;
-      case SalarySourceFilterKind.unspecified:
-        return salary.source == null;
+  bool _matchesFilter(Salary salary, PaymentSource selectedSource) {
+    if (selectedSource == DummySource.allDummySource) {
+      return true;
     }
+    // 未設定（null）の扱いを合わせる場合
+    if (salary.source == null) {
+      return selectedSource.id == ''; // あるいは未設定用のID判定
+    }
+    return salary.source?.id == selectedSource.id;
   }
 }
 

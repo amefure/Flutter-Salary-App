@@ -1,3 +1,4 @@
+import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/models/salary.dart';
 import 'domain/salary_analysis_models.dart';
 
@@ -5,8 +6,8 @@ class SalaryAnalysisState {
   final List<Salary> allSalaries;
   final List<String> availableItemNames;
   final List<PaymentSource> availableSources;
-  final List<SalarySourceFilter> sourceFilters;
-  final SalarySourceFilter selectedSourceFilter;
+  final List<PaymentSource> sourceList;
+  final PaymentSource selectedSource;
   final SalarySummary summary;
   final String? selectedItemName;
   final String? baseSalaryId;
@@ -17,8 +18,8 @@ class SalaryAnalysisState {
     required this.allSalaries,
     required this.availableItemNames,
     required this.availableSources,
-    required this.sourceFilters,
-    required this.selectedSourceFilter,
+    required this.sourceList,
+    required this.selectedSource,
     required this.summary,
     this.selectedItemName,
     this.baseSalaryId,
@@ -32,8 +33,8 @@ class SalaryAnalysisState {
       allSalaries: const [],
       availableItemNames: const [],
       availableSources: const [],
-      sourceFilters: const [SalarySourceFilter.all()],
-      selectedSourceFilter: const SalarySourceFilter.all(),
+      sourceList: [DummySource.allDummySource],
+      selectedSource: DummySource.allDummySource,
       summary: const SalarySummary(
         grossRanking: [],
         netRanking: [],
@@ -54,8 +55,8 @@ class SalaryAnalysisState {
     List<Salary>? allSalaries,
     List<String>? availableItemNames,
     List<PaymentSource>? availableSources,
-    List<SalarySourceFilter>? sourceFilters,
-    SalarySourceFilter? selectedSourceFilter,
+    List<PaymentSource>? sourceList,
+    PaymentSource? selectedSource,
     SalarySummary? summary,
     String? selectedItemName,
     String? baseSalaryId,
@@ -66,8 +67,8 @@ class SalaryAnalysisState {
       allSalaries: allSalaries ?? this.allSalaries,
       availableItemNames: availableItemNames ?? this.availableItemNames,
       availableSources: availableSources ?? this.availableSources,
-      sourceFilters: sourceFilters ?? this.sourceFilters,
-      selectedSourceFilter: selectedSourceFilter ?? this.selectedSourceFilter,
+      sourceList: sourceList ?? this.sourceList,
+      selectedSource: selectedSource ?? this.selectedSource,
       summary: summary ?? this.summary,
       selectedItemName: selectedItemName ?? this.selectedItemName,
       baseSalaryId: baseSalaryId ?? this.baseSalaryId,
