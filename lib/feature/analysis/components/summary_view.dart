@@ -5,7 +5,7 @@ import 'package:salary/core/common/components/custom/custom_label_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/common/components/domain/payment_source_label_view.dart';
-import 'package:salary/core/models/dummy_source.dart';
+import 'package:salary/core/common/components/domain/source_selector.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
@@ -19,8 +19,6 @@ class SummaryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 画面サイズを取得
-    final screen = MediaQuery.of(context).size;
     final state = ref.watch(salaryAnalysisProvider);
     final vm = ref.read(salaryAnalysisProvider.notifier);
     final summary = state.summary;
@@ -31,9 +29,7 @@ class SummaryView extends ConsumerWidget {
 
         Align(
           alignment: Alignment.center,
-          child: SizedBox(
-            width: screen.width * 0.5,
-            child: SourceSelector(
+          child: SourceSelector(
               selectedSource: state.selectedSource,
               sourceList: state.sourceList,
               sourceName: (source) => source?.name ?? '未設定',
@@ -47,7 +43,6 @@ class SummaryView extends ConsumerWidget {
                   vm.selectSource(source);
                 }
               },
-            ),
           ),
         ),
         const SizedBox(height: 16),
