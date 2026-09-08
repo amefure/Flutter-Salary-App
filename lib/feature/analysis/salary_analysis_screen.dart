@@ -6,13 +6,15 @@ import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/analysis/components/comparison_view.dart';
 import 'package:salary/feature/analysis/components/item_summary_view.dart';
+import 'package:salary/feature/analysis/components/summary_view.dart';
 import 'package:salary/feature/premium/premium_lock_screen.dart';
 
 class SalaryAnalysisScreen extends ConsumerStatefulWidget {
   const SalaryAnalysisScreen({super.key});
 
   @override
-  ConsumerState<SalaryAnalysisScreen> createState() => _SalaryAnalysisScreenState();
+  ConsumerState<SalaryAnalysisScreen> createState() =>
+      _SalaryAnalysisScreenState();
 }
 
 class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
@@ -23,16 +25,15 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
-        middle: CustomText(
-          text: '給料解析(プレミアム)',
-          fontWeight: FontWeight.bold,
-        ),
+        middle: CustomText(text: '給料解析(プレミアム)', fontWeight: FontWeight.bold),
       ),
       child: SafeArea(
         child: Consumer(
           builder: (context, ref, _) {
             final premiumState = ref.watch(premiumFunctionStateProvider);
-            final isRelease = (premiumState.isPremiumFullUnlocked || premiumState.isPremiumFeatureUnlocked);
+            final isRelease =
+                (premiumState.isPremiumFullUnlocked ||
+                    premiumState.isPremiumFeatureUnlocked);
 
             /// 🔒 未開放の場合はプレミアムロック画面を表示
             if (!isRelease) {
@@ -44,7 +45,7 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
               children: [
                 const SizedBox(height: 12),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 100),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: SizedBox(
                     width: double.infinity,
                     child: CupertinoSlidingSegmentedControl<int>(
@@ -66,16 +67,30 @@ class _SalaryAnalysisScreenState extends ConsumerState<SalaryAnalysisScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        2: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: CustomText(
+                            text: 'サマリー',
+                            textSize: TextSize.S,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       },
                       onValueChanged: (value) {
-                        if (value != null) setState(() => _selectedSegment = value);
+                        if (value != null) {
+                          setState(() => _selectedSegment = value);
+                        }
                       },
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
-                  child: _selectedSegment == 0 ? const ComparisonView() : const ItemSummaryView(),
+                  child: switch (_selectedSegment) {
+                    0 => const ComparisonView(),
+                    1 => const ItemSummaryView(),
+                    _ => const SummaryView(),
+                  },
                 ),
                 const AdMobBannerWidget(),
                 const SizedBox(height: 16),

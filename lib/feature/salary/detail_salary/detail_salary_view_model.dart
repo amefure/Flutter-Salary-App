@@ -11,6 +11,7 @@ import 'package:salary/feature/premium/domain/model/public_salary.dart';
 import 'package:salary/feature/premium/domain/public_salary_repository.dart';
 import 'package:salary/feature/salary/data/salary_repository_impl.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_state.dart';
+import 'package:salary/feature/salary/detail_salary/domain/salary_comparison.dart';
 import 'package:salary/feature/salary/domain/salary_repository.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 import 'package:equatable/equatable.dart';
@@ -18,39 +19,38 @@ import 'package:equatable/equatable.dart';
 /// StateNotifierProviderの引数にしているためEquatableに準拠させておく
 class DetailSalaryArgsData extends Equatable {
   final String id;
+
   /// 公開されたものかどうか(trueならクラウドからデータをフェッチする)
   final bool isPublic;
 
-  const DetailSalaryArgsData({
-    required this.id,
-    required this.isPublic
-  });
+  const DetailSalaryArgsData({required this.id, required this.isPublic});
 
   @override
   List<Object?> get props => [id, isPublic];
 }
 
-final detailSalaryProvider =
-StateNotifierProvider.autoDispose.family<DetailSalaryViewModel, DetailSalaryState, DetailSalaryArgsData>(
-      (ref, args) {
-    final repository = RealmDataSource();
-    final salaryRepository = ref.read(salaryRepositoryProvider);
-    final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
-    final vm = DetailSalaryViewModel(
+final detailSalaryProvider = StateNotifierProvider.autoDispose
+    .family<DetailSalaryViewModel, DetailSalaryState, DetailSalaryArgsData>((
+      ref,
+      args,
+    ) {
+      final repository = RealmDataSource();
+      final salaryRepository = ref.read(salaryRepositoryProvider);
+      final publicSalaryRepository = ref.read(publicSalaryRepositoryProvider);
+      final vm = DetailSalaryViewModel(
         ref,
         repository,
         salaryRepository,
-        publicSalaryRepository
-    );
-    if (args.isPublic) {
-      /// build完了後に実行
-      Future.microtask(() => vm.loadCloudSalary(args.id));
-    } else {
-      vm.loadLocalSalary(args.id);
-    }
-    return vm;
-  },
-);
+        publicSalaryRepository,
+      );
+      if (args.isPublic) {
+        /// build完了後に実行
+        Future.microtask(() => vm.loadCloudSalary(args.id));
+      } else {
+        vm.loadLocalSalary(args.id);
+      }
+      return vm;
+    });
 
 class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   final Ref _ref;
@@ -61,11 +61,11 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
 
   /// 初期インスタンス化
   DetailSalaryViewModel(
-      this._ref,
-      this._localRepository,
-      this._salaryRepository,
-      this._publicSalaryRepository
-      ) : super(DetailSalaryState(salary: null));
+    this._ref,
+    this._localRepository,
+    this._salaryRepository,
+    this._publicSalaryRepository,
+  ) : super(DetailSalaryState(salary: null));
 
   /// クラウド から Salary を取得（Single Source of Truth設計)
   void loadCloudSalary(String id) async {
@@ -78,12 +78,22 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   /// Realm から Salary を取得（Single Source of Truth設計)
   void loadLocalSalary(String id) {
     final item = _localRepository.fetchById<Salary>(id);
-    state = state.copyWith(salary: item?.freeze());
+    final salary = item?.freeze();
+    state = DetailSalaryState(
+      salary: salary,
+      comparison:
+          salary == null
+              ? null
+              : SalaryComparison.forSalary(
+                salary,
+                _localRepository.fetchAll<Salary>(),
+              ),
+    );
   }
 
   /// 詳細画面で表示対象のデータをリセット
   void _resetSalary() {
-    state = state.copyWith(salary: null);
+    state = DetailSalaryState(salary: null);
   }
 
   /// 削除
@@ -139,10 +149,10 @@ class DetailSalaryViewModel extends StateNotifier<DetailSalaryState> {
   /// 全取得
   List<Salary> _fetchAllLocalSalaries(PaymentSource? target) {
     final allSalaries = _localRepository.fetchAll<Salary>();
+
     /// 対象PaymentSourceの給与のみ抽出
-    final targetSalaries = allSalaries
-        .where((salary) => salary.source?.id == target?.id)
-        .toList();
+    final targetSalaries =
+        allSalaries.where((salary) => salary.source?.id == target?.id).toList();
     return targetSalaries;
   }
 }
