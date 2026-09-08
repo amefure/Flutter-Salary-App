@@ -91,7 +91,7 @@ $ fvm install
 ## テストコード
 テストコードは以下を対象として実装中
 
-coverage：52.2 %(現在)
+coverage：63.9 %(現在)
 
 - Repository
 - ViewModel
@@ -99,13 +99,13 @@ coverage：52.2 %(現在)
 
 ```
 # 1.テストコードの実行 & カバレッジレポート作成
-$ fvm flutter test --coverage       
+$ fvm flutter test --coverage
 # 2.htmlに出力
 $ genhtml coverage/lcov.info -o coverage/html
 # 3.テスト対象外のディレクトリを除外
 $ fvm flutter pub run remove_from_coverage:remove_from_coverage -f coverage/lcov.info -r 'core/mock/'
 # 4.カバレッジレポートを表示
-$ open coverage/html/index.html        
+$ open coverage/html/index.html
 ```
 
 ## ディープリンク(Scheme)
