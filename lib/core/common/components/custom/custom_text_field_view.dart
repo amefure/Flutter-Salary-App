@@ -14,6 +14,8 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onFocusLost;
   final Widget? suffix;
+  final IconData labelIcon;
+  final Color labelIconColor;
 
   const CustomTextField({
     super.key,
@@ -28,7 +30,9 @@ class CustomTextField extends StatefulWidget {
     this.onTap,
     this.onSubmitted,
     this.onFocusLost,
-    this.suffix
+    this.suffix,
+    this.labelIcon = CupertinoIcons.circle,
+    this.labelIconColor = CustomColors.thema,
   });
 
   @override
@@ -62,7 +66,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomLabelView(labelText: widget.labelText),
+        CustomLabelView(labelText: widget.labelText, icon: widget.labelIcon, iconColor: widget.labelIconColor),
         const SizedBox(height: 8),
         CupertinoTextField(
           focusNode: _focusNode,

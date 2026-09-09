@@ -219,8 +219,8 @@ class SalaryCard extends StatelessWidget {
           CustomText(
             text: sourceName,
             textSize: TextSize.S,
-            color: CustomColors.text(context)
-                .withValues(alpha: 0.7),
+            color: CustomColors.text(context).withValues(alpha: 0.7),
+            fontWeight: FontWeight.bold,
           ),
       ],
     );
@@ -320,7 +320,7 @@ class _SalaryRow extends StatelessWidget {
     return Row(
       children: [
         const Spacer(),
-        CustomText(text: label, textSize: TextSize.S),
+        CustomText(text: label, textSize: TextSize.SS),
         const SizedBox(width: 15),
         Row(
           crossAxisAlignment:
@@ -329,7 +329,7 @@ class _SalaryRow extends StatelessWidget {
             CustomText(
               text:
               NumberUtils.formatWithComma(amount),
-              textSize: TextSize.L,
+              textSize: TextSize.ML,
               color: CustomColors.thema,
               fontWeight: FontWeight.bold,
             ),

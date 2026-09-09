@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/domain/amount_toggle_button_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
@@ -42,31 +43,10 @@ class _DetailInputViewState extends State<DetailInputView> {
 
   /// エラーダイアログを表示
   void _showErrorDialog(BuildContext context, String title) {
-    showCupertinoDialog(
+    final _ = AppDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const CustomText(
-            text: 'ERROR',
-            fontWeight: FontWeight.bold,
-          ),
-          content: CustomText(
-            text: title,
-            maxLines: 2,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const CustomText(
-                text: 'OK',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        );
-      },
+      message: title,
+      type: DialogType.error,
     );
   }
 
@@ -166,6 +146,7 @@ class _DetailInputViewState extends State<DetailInputView> {
                   labelText: '金額',
                   prefixIcon: CupertinoIcons.money_yen,
                   suffix: AmountToggleButtonView(controller: _amountController),
+                  labelIcon: CupertinoIcons.money_yen_circle,
                 ),
 
                 const SizedBox(height: 24),

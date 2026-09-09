@@ -247,19 +247,8 @@ class _RankingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color medalColor;
-    switch (index) {
-      case 0:
-        medalColor = const Color(0xFFD4AF37); // 金
-        break;
-      case 1:
-        medalColor = const Color(0xFFC0C0C0); // 銀
-        break;
-      case 2:
-      default:
-        medalColor = const Color(0xFFCD7F32); // 銅
-        break;
-    }
+    // 1, 2, 3位のメダルカラー判定
+    final medalColor = CustomColors.medalColor(index);
 
     final rank = index + 1;
 

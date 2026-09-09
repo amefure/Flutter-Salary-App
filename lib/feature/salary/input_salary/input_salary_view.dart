@@ -227,6 +227,7 @@ class _Body extends ConsumerState<_BodyWidget> {
                       state.createdAt,
                       vm.selectDate
                   ),
+              labelIcon: CupertinoIcons.calendar,
             ),
 
             const SizedBox(height: 20),
@@ -238,6 +239,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               prefixIcon: CupertinoIcons.money_yen,
               onSubmitted: (_) => vm.calcNetSalaryAmount(),
               onFocusLost: () => vm.calcNetSalaryAmount(),
+              labelIcon: CupertinoIcons.money_yen_circle,
             ),
 
             const SizedBox(height: 10),
@@ -283,7 +285,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               state.paymentAmountItems.map((item) {
                 return _amountItemListRowView(
                     item: item,
-                    title: '総支給額',
+                    isPaymentAmount: true,
                     onDismissed: vm.removePaymentAmountItem,
                     update: vm.updatePaymentAmountItem
                 );
@@ -300,6 +302,8 @@ class _Body extends ConsumerState<_BodyWidget> {
               onSubmitted: (_) => vm.calcNetSalaryAmount(),
               onFocusLost: () => vm.calcNetSalaryAmount(),
               suffix: AmountToggleButtonView(controller: _deductionAmountController),
+              labelIconColor: CustomColors.negative,
+              labelIcon: CupertinoIcons.money_yen_circle,
             ),
 
             // 控除額：詳細入力
@@ -326,11 +330,11 @@ class _Body extends ConsumerState<_BodyWidget> {
                     children: [
                       CustomText(
                         text: '控除額：詳細入力',
-                        color: CustomColors.thema,
+                        color: CustomColors.negative,
                         textSize: TextSize.S,
                         fontWeight: FontWeight.bold,
                       ),
-                      Icon(Icons.chevron_right),
+                      Icon(Icons.chevron_right, color: CustomColors.negative),
                     ],
                   ),
                 ),
@@ -343,7 +347,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               state.deductionAmountItems.map((item) {
                 return _amountItemListRowView(
                     item: item,
-                    title: '控除額',
+                    isPaymentAmount: false,
                     onDismissed: vm.removeDeductionAmountItem,
                     update: vm.updateDeductionAmountItem
                 );
@@ -355,6 +359,7 @@ class _Body extends ConsumerState<_BodyWidget> {
               controller: _netSalaryController,
               labelText: '手取り額',
               prefixIcon: CupertinoIcons.money_yen,
+              labelIcon: CupertinoIcons.money_yen_circle,
             ),
 
             const SizedBox(height: 20),
@@ -381,9 +386,10 @@ class _Body extends ConsumerState<_BodyWidget> {
             CustomTextField(
               controller: _memoController,
               labelText: 'MEMO',
-              prefixIcon: Icons.comment,
+              prefixIcon: CupertinoIcons.chat_bubble_text,
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              labelIcon: CupertinoIcons.chat_bubble_text,
             ),
 
             const SizedBox(height: 40),
@@ -419,6 +425,7 @@ class _Body extends ConsumerState<_BodyWidget> {
                 icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
               ),
             ),
+            labelIcon: CupertinoIcons.building_2_fill,
           ),
         ),
       ],
@@ -428,7 +435,7 @@ class _Body extends ConsumerState<_BodyWidget> {
   /// AmountItemのリスト行単位のView
   Widget _amountItemListRowView({
     required AmountItem item,
-    required String title,
+    required bool isPaymentAmount,
     required Function(AmountItem item) onDismissed,
     required Function({ required AmountItem oldItem, required AmountItem newItem }) update,
   }) {
@@ -444,7 +451,7 @@ class _Body extends ConsumerState<_BodyWidget> {
             context: context,
             isScrollControlled: true,
             builder: (context) {
-              return DetailInputView(title: title, amountItem: item);
+              return DetailInputView(title: isPaymentAmount ? '総支給額' : '控除額', amountItem: item);
             },
           );
 
@@ -473,7 +480,7 @@ class _Body extends ConsumerState<_BodyWidget> {
                     text: NumberUtils.formatWithComma(item.value),
                     fontWeight: FontWeight.bold,
                     textSize: TextSize.M,
-                    color: CustomColors.thema,
+                    color: isPaymentAmount ? CustomColors.thema : CustomColors.negative,
                   ),
                   const SizedBox(width: 2),
                   const CustomText(

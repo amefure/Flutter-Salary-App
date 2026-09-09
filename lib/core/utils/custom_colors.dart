@@ -54,4 +54,25 @@ abstract class CustomColors {
 
   /// 灰色
   static const Color themaGray = Color(0xFF90a2aa);
+
+  /// =============== アプリ内カラー =====================
+  /// 金
+  static const Color _gold = Color(0xFFD4AF37);
+  /// 銀
+  static const Color _silver = Color(0xFFC0C0C0);
+  /// 銅
+  static const Color _copper = Color(0xFFCD7F32);
+
+  /// メダルカラー
+  static Color medalColor(int index) {
+    Color medalColor;
+    switch (index) {
+      case 0: medalColor = CustomColors._gold; break;   // 金
+      case 1: medalColor = CustomColors._silver; break; // 銀
+      case 2: medalColor = CustomColors._copper; break; // 銅
+      default: medalColor = CustomColors._gold;
+    }
+    return medalColor;
+  }
+
 }
