@@ -12,6 +12,19 @@ class SalaryMockFactory {
     // 当年給料(メイン)
     salaries += _generateYear(year: DateTime.now().year);
 
+
+    // サブ過去
+    salaries += _generateYear(year: DateTime.now().year - 13, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 12, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 11, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 10, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 9, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 8, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 7, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 6, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 5, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 4, baseAmount: 8000, isMainSource: false);
+    salaries += _generateYear(year: DateTime.now().year - 3, baseAmount: 8000, isMainSource: false);
     // 一昨年給料(サブ)
     salaries += _generateYear(year: DateTime.now().year - 2, baseAmount: 8000, isMainSource: false);
     // 前年給料(サブ)
