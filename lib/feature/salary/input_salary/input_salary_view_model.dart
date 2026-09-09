@@ -303,7 +303,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
     } else {
       final result = await _add(newSalary);
       // レビュー条件のチェック・呼び出し
-      await _ref.read(appReviewServiceProvider).checkAndRequestReviewOnSalaryAdded();
+      _ref.read(appReviewServiceProvider).checkAndRequestReviewOnSalaryAdded();
       if (!result) { return false; }
     }
 
