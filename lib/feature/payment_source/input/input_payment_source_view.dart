@@ -138,14 +138,16 @@ class _Body extends ConsumerState<_BodyWidget> {
                 CustomTextField(
                   controller: _memoController,
                   labelText: 'MEMO',
-                  prefixIcon: Icons.comment,
+                  prefixIcon: CupertinoIcons.chat_bubble_text,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
+                  labelIcon: CupertinoIcons.chat_bubble_text,
                 ),
 
                 const SizedBox(height: 20),
 
-                const CustomLabelView(labelText: 'カラー'),
+                const CustomLabelView(labelText: 'カラー', icon: Icons.palette_outlined),
+                const SizedBox(height: 8),
                 // カラーピッカー
                 _ThemaColorPicker(paymentSource: widget.paymentSource),
 
@@ -212,37 +214,64 @@ class _ToggleIsMainSwitch extends ConsumerWidget {
 
 /// カラーピッカー
 class _ThemaColorPicker extends ConsumerWidget {
-
   const _ThemaColorPicker({required this.paymentSource});
-
   final PaymentSource? paymentSource;
-
-  List<DropdownMenuItem<ThemaColor>> _createItems() {
-    return ThemaColor.values.map((color) {
-      return DropdownMenuItem(
-        value: color,
-        child: Row(
-          children: [
-            Container(width: 20, height: 20, color: color.color),
-            const SizedBox(width: 8),
-            CustomText(text: color.toName()),
-          ],
-        ),
-      );
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedColor = ref.watch(inputPaymentSourceProvider(paymentSource).select((s) => s.selectedColor));
     final vm = ref.read(inputPaymentSourceProvider(paymentSource).notifier);
-    return DropdownButton<ThemaColor>(
-      value: selectedColor,
-      dropdownColor: CustomColors.background(context),
-      items: _createItems(),
-      onChanged: (color) {
-        vm.updateColor(color);
-      },
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: CustomColors.background(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: CupertinoColors.systemGrey.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: ThemaColor.values.map((color) {
+            final isSelected = selectedColor == color;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6), // 項目間のマージン
+              child: GestureDetector(
+                onTap: () => vm.updateColor(color),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: color.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? CupertinoColors.white : Colors.transparent,
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      if (isSelected)
+                        BoxShadow(
+                          color: color.color.withValues(alpha: 0.5),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
+                  ),
+                  child: isSelected
+                      ? const Icon(CupertinoIcons.check_mark, size: 16, color: CupertinoColors.white)
+                      : null,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }

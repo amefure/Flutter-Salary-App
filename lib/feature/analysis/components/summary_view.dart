@@ -6,11 +6,12 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/common/components/domain/payment_source_label_view.dart';
 import 'package:salary/core/common/components/domain/source_selector.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
 import 'package:salary/core/utils/number_utils.dart';
-import 'package:salary/feature/charts/presentation/chart_salary_screen.dart'; // SourceSelector が定義されている場所
+import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_view.dart';
 import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
 
@@ -47,15 +48,7 @@ class SummaryView extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         if (summary.isEmpty)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 80),
-            child: Center(
-              child: CustomText(
-                text: '集計できる給料データがありません',
-                color: CupertinoColors.systemGrey,
-              ),
-            ),
-          )
+          const EmptyChartView()
         else ...[
           _MetricCard(
             title: '平均月給',

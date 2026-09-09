@@ -31,7 +31,7 @@ class InputSalaryView extends ConsumerWidget {
         backgroundColor: CustomColors.foundation(context),
         navigationBar: CupertinoNavigationBar(
           middle:
-          salary == null ? const Text('給料登録画面') : const Text('給料更新画面'),
+          salary == null ? const CustomText(text: '給料登録画面', fontWeight: FontWeight.bold) : const CustomText(text: '給料更新画面', fontWeight: FontWeight.bold),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () async {
