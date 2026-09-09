@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -16,6 +18,10 @@ class BarChartYearlyView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chartData = ref.watch(chartSalaryProvider.select((s) => s.yearlyBarChartData));
     final vm = ref.read(chartSalaryProvider.notifier);
+
+    // プレミアム状態の取得
+    final premiumState = ref.watch(premiumFunctionStateProvider);
+    final isUnlocked = premiumState.isPremiumFullUnlocked || premiumState.isPremiumFeatureUnlocked;
 
     if (chartData.isEmpty) {
       return const EmptyChartView();
@@ -61,7 +67,13 @@ class BarChartYearlyView extends ConsumerWidget {
             children: [
               CupertinoButton(
                 padding: EdgeInsets.zero,
-                onPressed: () => vm.shiftBarChartYear(-1),
+                onPressed: () {
+                  if (isUnlocked) {
+                    vm.shiftBarChartYear(-1);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -78,7 +90,13 @@ class BarChartYearlyView extends ConsumerWidget {
               ),
               CupertinoButton(
                 padding: EdgeInsets.zero,
-                onPressed: () => vm.shiftBarChartYear(1),
+                onPressed: () {
+                  if (isUnlocked) {
+                    vm.shiftBarChartYear(1);
+                  } else {
+                    _showIsNotPremiumErrorAlert(context);
+                  }
+                },
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -162,6 +180,14 @@ class BarChartYearlyView extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showIsNotPremiumErrorAlert(BuildContext context) {
+    final _ = AppDialog.show(
+      context: context,
+      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      type: DialogType.notify,
     );
   }
 }
