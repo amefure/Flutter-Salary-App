@@ -81,13 +81,13 @@ class SwitchChartsView extends ConsumerWidget {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 70,
+                reservedSize: 60,
                 getTitlesWidget: (value, meta) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       CustomText(
-                        text: '${NumberUtils.formatWithComma(value.toInt())}円',
+                        text: '${NumberUtils.formatToMan(value.toInt())}万円',
                         textSize: TextSize.SS,
                       ),
                       const SizedBox(width: 5),

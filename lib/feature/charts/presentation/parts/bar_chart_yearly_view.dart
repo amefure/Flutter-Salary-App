@@ -78,7 +78,7 @@ class BarChartYearlyView extends ConsumerWidget {
                 showTitles: true,
                 reservedSize: 60,
                 getTitlesWidget: (value, meta) => CustomText(
-                  text: '${NumberUtils.formatWithComma(value.toInt())}円',
+                  text: '${NumberUtils.formatToMan(value.toInt())}万円',
                   textSize: TextSize.SS,
                 ),
               ),
