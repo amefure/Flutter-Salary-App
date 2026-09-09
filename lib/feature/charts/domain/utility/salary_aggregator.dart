@@ -9,8 +9,8 @@ import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart'; 
 
 class SalaryAggregator {
 
-  /// 棒グラフの最大表示年数：10年
-  static const int DISPLAY_BAR_CHARTS = 10;
+  /// 棒グラフの表示年数：10年
+  static const int DISPLAY_BAR_CHARTS = 5;
 
   /// 各グラフの計算元となる支払い元ベースの給料データを算出
   static Map<String, List<MonthlySalarySummaryItem>> groupBySourceAndMonth(
@@ -201,12 +201,13 @@ class SalaryAggregator {
     );
   }
 
-  /// 「③ 年別合計金額(10年間)棒グラフ用データ」の計算
+  /// 「③ 年別合計金額(5年間)棒グラフ用データ」の計算
   static YearlyPaymentChartData buildYearlyPaymentBarChartData({
     required PaymentSource selectedSource,
-    required Map<String, List<MonthlySalarySummaryItem>> groupedBySource
+    required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
+    required int endYear, // 基準となる終了年（例: 2026年なら 2022〜2026年を表示）
   }) {
-    // 年ごとの総支給額
+    // 年ごとの総支給額を算出
     final Map<int, int> yearlySums = {};
 
     // 支払い元でフィルタリング
@@ -221,20 +222,17 @@ class SalaryAggregator {
       }
     }
 
-    if (yearlySums.isEmpty) {
-      return const YearlyPaymentChartData(
-        years: [],
-        amounts: [],
-        maxY: 0,
-      );
+    // endYear から過去5年分の年のリストを作成（昇順）
+    final List<int> yearsToShow = [];
+    for (int i = DISPLAY_BAR_CHARTS - 1; i >= 0; i--) {
+      yearsToShow.add(endYear - i);
     }
 
-    // 年を昇順ソート → 最大10年
-    final years = yearlySums.keys.toList()..sort();
-    final yearsToShow = years.length > DISPLAY_BAR_CHARTS ? years.sublist(years.length - DISPLAY_BAR_CHARTS) : years;
+    // 該当する年の金額を取得（データがない年は0）
+    final amounts = yearsToShow.map((y) => yearlySums[y] ?? 0).toList();
 
-    final amounts = yearsToShow.map((y) => yearlySums[y]!).toList();
-    final maxY = calculateMaxY(amounts.map((e) => e.toDouble()),);
+    // ★この5年分のデータの中での最大値からmaxYを計算
+    final maxY = calculateMaxY(amounts.map((e) => e.toDouble()));
 
     return YearlyPaymentChartData(
       years: yearsToShow,

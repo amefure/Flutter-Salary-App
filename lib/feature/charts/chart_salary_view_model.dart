@@ -97,14 +97,23 @@ class ChartSalaryViewModel extends StateNotifier<ChartSalaryState> {
     );
   }
 
-  /// 「③ 年別合計金額(10年間)棒グラフ用データ」を計算し反映
+  /// 棒グラフの表示期間を1年ずつずらす（offset: -1で過去へ、+1で未来へ）
+  void shiftBarChartYear(int offset) {
+    state = state.copyWith(
+      barChartEndYear: state.barChartEndYear + offset,
+    );
+    _applyYearlyBarChart();
+  }
+
+  /// 「③ 年別合計金額(5年間)棒グラフ用データ」を計算し反映
   void _applyYearlyBarChart() {
     final chartData = SalaryAggregator.buildYearlyPaymentBarChartData(
-        selectedSource: state.selectedSource,
-        groupedBySource: state.groupedBySource
+      selectedSource: state.selectedSource,
+      groupedBySource: state.groupedBySource,
+      endYear: state.barChartEndYear,
     );
     state = state.copyWith(
-        yearlyBarChartData: chartData
+      yearlyBarChartData: chartData,
     );
   }
 

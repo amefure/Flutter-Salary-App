@@ -13,7 +13,7 @@ class ChartSalaryState {
   final List<PaymentSource> sourceList;
   /// 表示中の支払い元
   final PaymentSource selectedSource;
-  /// 表示中の年月
+  /// 表示中の年月(月単位のグラフ用)
   final int selectedYear;
   /// グラフ表示モード
   final ChartDisplayMode chartDisplayMode;
@@ -30,8 +30,11 @@ class ChartSalaryState {
   final List<PieChartSectorData> pieChartData;
   /// 「② 年収 & 賞与サマリーデータ」
   final YearlySalarySummary yearlySummaryData;
-  /// 「③ 年別合計金額(10年間)棒グラフ用データ」
+  /// 「③ 年別合計金額(5年間)棒グラフ用データ」
   final YearlyPaymentChartData yearlyBarChartData;
+
+  /// 年別合計金額表示中の年月
+  final int barChartEndYear;
 
   ChartSalaryState({
     required this.allSalaries,
@@ -45,6 +48,7 @@ class ChartSalaryState {
     required this.pieChartData,
     required this.yearlySummaryData,
     required this.yearlyBarChartData,
+    required this.barChartEndYear,
   });
 
   static ChartSalaryState initial() {
@@ -54,12 +58,12 @@ class ChartSalaryState {
         selectedSource: DummySource.allDummySource,
         selectedYear: DateTime.now().year,
         chartDisplayMode: ChartDisplayMode.line,
-
         groupedBySource: {},
         lineChartData: [],
         pieChartData: [],
         yearlySummaryData: YearlySalarySummary.initial(),
-        yearlyBarChartData: YearlyPaymentChartData.initial()
+        yearlyBarChartData: YearlyPaymentChartData.initial(),
+        barChartEndYear: DateTime.now().year
     );
   }
 
@@ -75,6 +79,7 @@ class ChartSalaryState {
     List<PieChartSectorData>? pieChartData,
     YearlySalarySummary? yearlySummaryData,
     YearlyPaymentChartData? yearlyBarChartData,
+    int? barChartEndYear,
   }) {
     return ChartSalaryState(
       allSalaries: allSalaries ?? this.allSalaries,
@@ -88,6 +93,7 @@ class ChartSalaryState {
       pieChartData: pieChartData ?? this.pieChartData,
       yearlySummaryData: yearlySummaryData ?? this.yearlySummaryData,
       yearlyBarChartData: yearlyBarChartData ?? this.yearlyBarChartData,
+      barChartEndYear: barChartEndYear ?? this.barChartEndYear,
     );
   }
 }
