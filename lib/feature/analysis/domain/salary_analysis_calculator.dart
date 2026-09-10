@@ -16,7 +16,7 @@ class SalaryAnalysisCalculator {
 
     final monthTotals = <String, _MonthlyTotals>{};
     final yearTotals = <int, int>{};
-
+    int bonusTotal = 0;
     for (final salary in filtered) {
       final monthKey = '${salary.createdAt.year}-${salary.createdAt.month}';
       final totals = monthTotals.putIfAbsent(monthKey, _MonthlyTotals.new);
@@ -25,6 +25,10 @@ class SalaryAnalysisCalculator {
 
       // 年ごとの総支給額・手取りを集計する場合
       yearTotals[salary.createdAt.year] = (yearTotals[salary.createdAt.year] ?? 0) + salary.paymentAmount;
+      // 賞与（ボーナス）の場合に加算
+      if (salary.isBonus) {
+        bonusTotal += salary.paymentAmount;
+      }
     }
 
     // 年ごとの手取りも含めて計算したい場合のマップ
@@ -69,6 +73,7 @@ class SalaryAnalysisCalculator {
       averageYearlyNet: yearCount == 0 ? 0 : yearlyNetSum / yearCount,
       monthCount: monthCount,
       yearCount: yearCount,
+      bonusTotal: bonusTotal
     );
   }
 

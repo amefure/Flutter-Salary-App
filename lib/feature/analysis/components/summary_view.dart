@@ -81,8 +81,44 @@ class SummaryView extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
+
+          // 1. 手取り率・総控除額カード
           _MetricCard(
-            title: '累計額(${summary.yearCount}年分)',
+            title: '控除と手取り率',
+            children: [
+              _MetricValue(
+                label: '累計控除額',
+                value: summary.grossTotal - summary.netTotal, // 総支給 - 手取り
+                color: CustomColors.negative,
+              ),
+              _MetricValue(
+                label: '平均手取り率',
+                value: summary.grossTotal == 0 ? 0 : ((summary.netTotal / summary.grossTotal) * 100).round(),
+                color: CustomColors.themaBlue,
+                unit: _MetricUnit.percent,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _MetricCard(
+            title: '賞与累計額',
+            children: [
+              _MetricValue(
+                label: '累計賞与額(総支給)',
+                value: summary.bonusTotal,
+                color: CustomColors.thema,
+              ),
+              _MetricValue(
+                label: '累計年収に対する比率',
+                value: summary.bonusRatio,
+                color: CustomColors.themaBlue,
+                unit: _MetricUnit.percent,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _MetricCard(
+            title: '総累計額(${summary.yearCount}年分)',
             children: [
               _MetricValue(
                 label: '総支給',
@@ -158,19 +194,34 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
+enum _MetricUnit {
+  yen('円'),
+  percent('%');
+
+  final String symbol;
+  const _MetricUnit(this.symbol);
+}
+
 class _MetricValue extends StatelessWidget {
   final String label;
-  final int value;
+  final num value;
   final Color color;
+  final _MetricUnit unit;
 
   const _MetricValue({
     required this.label,
     required this.value,
     required this.color,
+    this.unit = _MetricUnit.yen,
   });
 
   @override
   Widget build(BuildContext context) {
+    // 単位がパーセントの場合は小数点第1位まで、円の場合はカンマ区切りの整数にする
+    final formattedValue = unit == _MetricUnit.percent
+        ? value.toStringAsFixed(1)
+        : NumberUtils.formatWithComma(value.toInt());
+
     return Column(
       children: [
         CustomText(
@@ -181,11 +232,25 @@ class _MetricValue extends StatelessWidget {
         const SizedBox(height: 4),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: CustomText(
-            text: '${NumberUtils.formatWithComma(value)} 円',
-            textSize: TextSize.ML,
-            fontWeight: FontWeight.bold,
-            color: color,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              CustomText(
+                text: formattedValue,
+                textSize: TextSize.ML,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              const SizedBox(width: 2),
+              CustomText(
+                text: unit.symbol,
+                textSize: TextSize.S,
+                fontWeight: FontWeight.bold,
+                color: color.withValues(alpha: 0.8),
+              ),
+            ],
           ),
         ),
       ],
