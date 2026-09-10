@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/domain/source_selector.dart';
-import 'package:salary/core/common/overlay/app_dialog.dart';
-import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/feature/charts/presentation/parts/bar_chart_yearly_view.dart';
 import 'package:salary/feature/charts/presentation/parts/chart_mode_switcher.dart';
 import 'package:salary/feature/charts/presentation/parts/switch_charts_view.dart';

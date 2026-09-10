@@ -42,15 +42,15 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
         .toSet();
 
     final itemNames = {...paymentNames, ...deductionNames}.toList();
-    final sourcesById = <String, PaymentSource>{};
+    final sourcesMap = <String, PaymentSource>{};
     for (final salary in salaries) {
-      final source = salary.source;
-      if (source != null) {
-        sourcesById[source.id] = source;
-      }
+      final source = salary.source ?? DummySource.unSetDummySource;
+      sourcesMap[source.id] = source;
     }
-    final sources = [...sourcesById.values]
-      ..sort((a, b) => a.name.compareTo(b.name));
+    final sources = [...sourcesMap.values]
+      ..sort((a, b) {
+        return a.name.compareTo(b.name);
+      });
 
     // 先頭に「すべて」を表す DummySource.allDummySource を配置
     final sourceList = [

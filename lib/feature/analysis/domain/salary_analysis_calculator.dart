@@ -81,10 +81,9 @@ class SalaryAnalysisCalculator {
     if (selectedSource == DummySource.allDummySource) {
       return true;
     }
-    if (salary.source == null) {
-      return selectedSource.id == '';
-    }
-    return salary.source?.id == selectedSource.id;
+    // 給与側の source が null の場合は、未設定用のダミーソース（IDが空文字や専用のID）と一致するか判定
+    final source = salary.source ?? DummySource.unSetDummySource;
+    return source.id == selectedSource.id;
   }
 }
 

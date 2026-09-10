@@ -34,6 +34,8 @@ class PremiumLockScreen extends StatelessWidget {
 
           /// 必須条件カード（isAnalytics を渡す）
           _RequirementCard(isAnalytics: isAnalytics),
+
+          const SizedBox(height: 24),
         ],
       ),
     );
