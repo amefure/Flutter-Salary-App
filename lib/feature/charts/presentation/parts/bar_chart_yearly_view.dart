@@ -138,12 +138,12 @@ class BarChartYearlyView extends ConsumerWidget {
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 60, // 元のサイズに戻す
+                      reservedSize: 60,
                       getTitlesWidget: (value, meta) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 6),
                           child: CustomText(
-                            text: '${NumberUtils.formatToMan(value.toInt())}万',
+                            text: NumberUtils.formatToMan(value.toInt()),
                             textSize: TextSize.SS,
                             color: CupertinoColors.systemGrey,
                           ),
@@ -174,7 +174,6 @@ class BarChartYearlyView extends ConsumerWidget {
                   rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: const FlGridData(show: true),
-                borderData: FlBorderData(show: false),
               ),
             ),
           ),

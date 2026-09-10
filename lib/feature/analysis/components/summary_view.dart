@@ -6,7 +6,6 @@ import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
 import 'package:salary/core/common/components/domain/payment_source_label_view.dart';
 import 'package:salary/core/common/components/domain/source_selector.dart';
-import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/utils/date_time_utils.dart';
@@ -67,7 +66,23 @@ class SummaryView extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           _MetricCard(
-            title: '累計額',
+            title: '平均年収',
+            children: [
+              _MetricValue(
+                label: '総支給',
+                value: summary.averageYearlyGross.round(),
+                color: CustomColors.thema,
+              ),
+              _MetricValue(
+                label: '手取り',
+                value: summary.averageYearlyNet.round(),
+                color: CustomColors.themaBlue,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _MetricCard(
+            title: '累計額(${summary.yearCount}年分)',
             children: [
               _MetricValue(
                 label: '総支給',
@@ -92,7 +107,7 @@ class SummaryView extends ConsumerWidget {
           const SizedBox(height: 24),
           _RankingSection(
             title: '手取り額 TOP 3',
-            icon: CupertinoIcons.money_yen,
+            icon: CupertinoIcons.rosette,
             salaries: summary.netRanking,
             amount: (salary) => salary.netSalary,
             vm: vm,

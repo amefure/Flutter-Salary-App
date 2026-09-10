@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/models/dummy_source.dart';
 import 'package:salary/core/repository/domain/local_salary_repository.dart';
 import 'package:salary/core/models/salary.dart';
-import 'domain/salary_analysis_models.dart';
+import 'package:salary/feature/analysis/domain/salary_analysis_calculator.dart';
 import 'salary_analysis_state.dart';
 
 final salaryAnalysisProvider =

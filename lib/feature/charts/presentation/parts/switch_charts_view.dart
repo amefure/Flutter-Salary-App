@@ -87,7 +87,7 @@ class SwitchChartsView extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       CustomText(
-                        text: '${NumberUtils.formatToMan(value.toInt())}万円',
+                        text: NumberUtils.formatToMan(value.toInt()),
                         textSize: TextSize.SS,
                       ),
                       const SizedBox(width: 5),

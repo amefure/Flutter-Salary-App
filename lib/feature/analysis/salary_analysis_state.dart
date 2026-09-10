@@ -43,6 +43,9 @@ class SalaryAnalysisState {
         averageMonthlyGross: 0,
         averageMonthlyNet: 0,
         monthCount: 0,
+        averageYearlyGross: 0,
+        averageYearlyNet: 0,
+        yearCount: 0
       ),
       selectedItemName: null,
       baseSalaryId: null,
