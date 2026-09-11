@@ -128,7 +128,7 @@ class PremiumFunctionStateNotifier extends StateNotifier<PremiumFunctionState> {
   }
 
   Future<void> checkRelease() async {
-    await _fetchUserCount();
     _fetchIsPremiumUnlocked();
+    await _fetchUserCount();
   }
 }
