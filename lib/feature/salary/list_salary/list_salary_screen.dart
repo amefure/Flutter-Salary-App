@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/components/domain/salary_list_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
+import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/feature/premium/premium_lock_screen.dart';
 import 'package:salary/feature/salary/detail_salary/detail_salary_view.dart';
+import 'package:salary/feature/salary/export/application/salary_export_view_model.dart';
+import 'package:salary/feature/salary/export/domain/salary_export_labels.dart';
 import 'package:salary/feature/salary/input_salary/input_salary_view.dart';
 import 'package:salary/feature/salary/list_salary/list_salary_view_model.dart';
 
@@ -14,7 +18,6 @@ class SalaryListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final salaries = ref.watch(listSalaryProvider.select((s) => s.salaries));
 
     return Scaffold(
@@ -26,20 +29,22 @@ class SalaryListScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
           leading: const _SalaryDisplayOptionsButton(),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(
-              CupertinoIcons.add_circled_solid,
-              size: 28,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (_) =>
-                  const InputSalaryView(salary: null),
-                ),
-              );
-            },
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const _SalaryExportButton(),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (_) => const InputSalaryView(salary: null),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
 
@@ -48,13 +53,60 @@ class SalaryListScreen extends ConsumerWidget {
           onTap: (salary) {
             Navigator.of(context).push(
               CupertinoPageRoute(
-                builder: (_) =>
-                    DetailSalaryView(id: salary.id, isPublic: false),
+                builder:
+                    (_) => DetailSalaryView(id: salary.id, isPublic: false),
               ),
             );
           },
         ),
       ),
+    );
+  }
+}
+
+class _SalaryExportButton extends ConsumerWidget {
+  const _SalaryExportButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CupertinoButton(
+      padding: const EdgeInsets.only(right: 8),
+      child: const Icon(CupertinoIcons.square_arrow_up, size: 25),
+      onPressed: () async {
+        try {
+          final renderBox = context.findRenderObject() as RenderBox?;
+          final sharePositionOrigin =
+              renderBox == null
+                  ? null
+                  : renderBox.localToGlobal(Offset.zero) & renderBox.size;
+          final result = await ref
+              .read(salaryExportProvider)
+              .export(sharePositionOrigin: sharePositionOrigin);
+          if (!context.mounted) return;
+
+          if (result == SalaryExportResult.locked) {
+            await Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (_) => const PremiumLockScreen(isAnalytics: false),
+              ),
+            );
+            return;
+          }
+
+          await AppDialog.show(
+            context: context,
+            message: SalaryExportLabels.successMessage,
+            type: DialogType.success,
+          );
+        } catch (_) {
+          if (!context.mounted) return;
+          await AppDialog.show(
+            context: context,
+            message: SalaryExportLabels.errorMessage,
+            type: DialogType.error,
+          );
+        }
+      },
     );
   }
 }
@@ -65,16 +117,23 @@ class _SalaryDisplayOptionsButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sourceList = ref.watch(listSalaryProvider.select((s) => s.sourceList));
-    final selectedSource = ref.watch(listSalaryProvider.select((s) => s.selectedSource));
+    final sourceList = ref.watch(
+      listSalaryProvider.select((s) => s.sourceList),
+    );
+    final selectedSource = ref.watch(
+      listSalaryProvider.select((s) => s.selectedSource),
+    );
     // 現在の並び順を取得
-    final currentSort = ref.watch(listSalaryProvider.select((s) => s.sortOrder));
+    final currentSort = ref.watch(
+      listSalaryProvider.select((s) => s.sortOrder),
+    );
     final vm = ref.read(listSalaryProvider.notifier);
 
     return MenuAnchor(
       builder: (context, controller, child) {
         return GestureDetector(
-          onTap: () => controller.isOpen ? controller.close() : controller.open(),
+          onTap:
+              () => controller.isOpen ? controller.close() : controller.open(),
           child: const Icon(CupertinoIcons.slider_horizontal_3, size: 26),
         );
       },
@@ -137,10 +196,7 @@ class _MenuLabelWithCheck extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const _MenuLabelWithCheck({
-    required this.label,
-    required this.isSelected,
-  });
+  const _MenuLabelWithCheck({required this.label, required this.isSelected});
 
   @override
   Widget build(BuildContext context) {
