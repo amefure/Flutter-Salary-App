@@ -236,7 +236,7 @@ class _RankingItem extends StatelessWidget {
     final profile = ranking.user.profile;
 
     // 1, 2, 3位のメダルカラー判定
-    final medalColor = CustomColors.medalColor(index);
+    final medalColor = CustomColors.medalColor(context, index);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8, left: 4, right: 4),

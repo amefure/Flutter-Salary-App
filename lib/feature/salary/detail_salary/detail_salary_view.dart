@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'package:salary/core/common/components/domain/attribute_tag.dart';
-import 'package:salary/core/common/components/domain/step_item.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/common/components/domain/payment_source_label_view.dart';
 import 'package:salary/core/models/salary.dart';

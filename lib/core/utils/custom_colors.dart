@@ -64,13 +64,13 @@ abstract class CustomColors {
   static const Color _copper = Color(0xFFCD7F32);
 
   /// メダルカラー
-  static Color medalColor(int index) {
+  static Color medalColor(BuildContext context, int index) {
     Color medalColor;
     switch (index) {
       case 0: medalColor = CustomColors._gold; break;   // 金
       case 1: medalColor = CustomColors._silver; break; // 銀
       case 2: medalColor = CustomColors._copper; break; // 銅
-      default: medalColor = CustomColors._gold;
+      default: medalColor = CustomColors.foundation(context);
     }
     return medalColor;
   }

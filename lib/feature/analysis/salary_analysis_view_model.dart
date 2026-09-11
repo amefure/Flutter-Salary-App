@@ -49,7 +49,9 @@ class SalaryAnalysisViewModel extends StateNotifier<SalaryAnalysisState> {
     }
     final sources = [...sourcesMap.values]
       ..sort((a, b) {
-        return a.name.compareTo(b.name);
+        final aValue = a.isMain ? 1 : 0;
+        final bValue = b.isMain ? 1 : 0;
+        return bValue - aValue;
       });
 
     // 先頭に「すべて」を表す DummySource.allDummySource を配置

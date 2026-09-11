@@ -441,7 +441,7 @@ class _RankingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final medalColor = CustomColors.medalColor(index);
+    final medalColor = CustomColors.medalColor(context, index);
     final rank = index + 1;
 
     return Padding(
