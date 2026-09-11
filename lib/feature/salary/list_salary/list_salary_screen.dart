@@ -14,7 +14,6 @@ class SalaryListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final salaries = ref.watch(listSalaryProvider.select((s) => s.salaries));
 
     return Scaffold(
@@ -28,15 +27,11 @@ class SalaryListScreen extends ConsumerWidget {
           leading: const _SalaryDisplayOptionsButton(),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
-            child: const Icon(
-              CupertinoIcons.add_circled_solid,
-              size: 28,
-            ),
+            child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
             onPressed: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (_) =>
-                  const InputSalaryView(salary: null),
+                  builder: (_) => const InputSalaryView(salary: null),
                 ),
               );
             },
@@ -48,8 +43,8 @@ class SalaryListScreen extends ConsumerWidget {
           onTap: (salary) {
             Navigator.of(context).push(
               CupertinoPageRoute(
-                builder: (_) =>
-                    DetailSalaryView(id: salary.id, isPublic: false),
+                builder:
+                    (_) => DetailSalaryView(id: salary.id, isPublic: false),
               ),
             );
           },
@@ -65,16 +60,23 @@ class _SalaryDisplayOptionsButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sourceList = ref.watch(listSalaryProvider.select((s) => s.sourceList));
-    final selectedSource = ref.watch(listSalaryProvider.select((s) => s.selectedSource));
+    final sourceList = ref.watch(
+      listSalaryProvider.select((s) => s.sourceList),
+    );
+    final selectedSource = ref.watch(
+      listSalaryProvider.select((s) => s.selectedSource),
+    );
     // 現在の並び順を取得
-    final currentSort = ref.watch(listSalaryProvider.select((s) => s.sortOrder));
+    final currentSort = ref.watch(
+      listSalaryProvider.select((s) => s.sortOrder),
+    );
     final vm = ref.read(listSalaryProvider.notifier);
 
     return MenuAnchor(
       builder: (context, controller, child) {
         return GestureDetector(
-          onTap: () => controller.isOpen ? controller.close() : controller.open(),
+          onTap:
+              () => controller.isOpen ? controller.close() : controller.open(),
           child: const Icon(CupertinoIcons.slider_horizontal_3, size: 26),
         );
       },
@@ -137,10 +139,7 @@ class _MenuLabelWithCheck extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const _MenuLabelWithCheck({
-    required this.label,
-    required this.isSelected,
-  });
+  const _MenuLabelWithCheck({required this.label, required this.isSelected});
 
   @override
   Widget build(BuildContext context) {

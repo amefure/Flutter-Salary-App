@@ -14,7 +14,8 @@
 4. 副業やバイトなどの収益も別で管理可能
 5. アプリにロックもかけられる(生体認証(指紋/顔)でログイン)
 6. 毎月の給料日を自動でお知らせする「給料日リマインダー機能」
-7. 同年代や同業種の年収や給料を閲覧可能(年収TOP10や年収層なども確認)
+7. 確定申告等にも活用できるCSVエクスポート機能 
+8.同年代や同業種の年収や給料を閲覧可能(年収TOP10や年収層なども確認)
    ※ 給料データが勝手に公開されることはないのでご安心ください
 
 追加して欲しい機能や改善してほしい箇所がありましたら気軽にレビューから教えてください！
@@ -140,6 +141,7 @@ $ salary://register
 - **[app_links](https://pub.dev/packages/app_links) (7.0.0)** - ディープリンク
 - **[package_info_plus](https://pub.dev/packages/package_info_plus) (9.0.1)** - パッケージ情報取得
 - **[in_app_review](https://pub.dev/packages/in_app_review) (2.0.12)** - アプリレビュー機能
+- **[share_plus](https://pub.dev/packages/share_plus) (12.0.2)** - シェア機能
 
 ## Storage
 - **[shared_preferences](https://pub.dev/packages/shared_preferences) (2.5.2)** - 永続的なデータ保存（ローカルストレージ / リマインダー設定等）

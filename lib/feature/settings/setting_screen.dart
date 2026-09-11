@@ -12,6 +12,8 @@ import 'package:salary/feature/auth/presentation/user_info_screen.dart';
 import 'package:salary/feature/payment_source/list/list_payment_source_screen.dart';
 import 'package:salary/feature/public_salary/policy_page/public_policy_modal.dart';
 import 'package:salary/feature/reminder/reminder_settings_screen.dart';
+import 'package:salary/feature/settings/export/application/salary_export_view_model.dart';
+import 'package:salary/feature/settings/export/domain/salary_export_labels.dart';
 import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
@@ -45,6 +47,7 @@ class SettingScreen extends StatelessWidget {
       child: SafeArea(
         child: ListView(
           children: [
+            _appFunction(context),
             _appSection(context),
             _myMenuSection(context),
             _linkSection(context),
@@ -55,9 +58,9 @@ class SettingScreen extends StatelessWidget {
     );
   }
 
-  Widget _appSection(BuildContext context) {
+  Widget _appFunction(BuildContext context) {
     return  CupertinoListSection.insetGrouped(
-      header: const CustomText(text: 'アプリ設定'),
+      header: const CustomText(text: 'アプリ機能'),
       backgroundColor: CustomColors.foundation(context),
       children: [
         _settingListTile(
@@ -107,6 +110,26 @@ class SettingScreen extends StatelessWidget {
                 ),
               );
             }),
+
+        Consumer(
+            builder: (context, ref, _) {
+              return _settingListTile(
+                  context,
+                  '給料情報エクスポート(CSV)',
+                  CupertinoIcons.share,
+                      () {
+                    _actionExportCsv(context, ref);
+                  });
+            }),
+      ],
+    );
+  }
+
+  Widget _appSection(BuildContext context) {
+    return  CupertinoListSection.insetGrouped(
+      header: const CustomText(text: 'アプリ設定'),
+      backgroundColor: CustomColors.foundation(context),
+      children: [
 
         _settingListTile(
             context,
@@ -488,6 +511,39 @@ class SettingScreen extends StatelessWidget {
     Navigator.push(
       context,
       CupertinoPageRoute(builder: (context) => WebViewScreen(url: url)),
+    );
+  }
+
+  void _actionExportCsv(BuildContext context, WidgetRef ref) async {
+    try {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin =
+      renderBox == null
+          ? null
+          : renderBox.localToGlobal(Offset.zero) & renderBox.size;
+      final result = await ref
+          .read(salaryExportProvider)
+          .export(sharePositionOrigin: sharePositionOrigin);
+      if (!context.mounted) return;
+
+      if (result == SalaryExportResult.locked) {
+        _showIsNotPremiumErrorAlert(context);
+        return;
+      }
+    } catch (_) {
+      if (!context.mounted) return;
+      await AppDialog.show(
+        context: context,
+        message: SalaryExportLabels.errorMessage,
+        type: DialogType.error,
+      );
+    }
+  }
+  void _showIsNotPremiumErrorAlert(BuildContext context) {
+    final _ = AppDialog.show(
+      context: context,
+      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      type: DialogType.notify,
     );
   }
 }
