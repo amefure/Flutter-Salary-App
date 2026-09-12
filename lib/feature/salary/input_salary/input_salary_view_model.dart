@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/providers/app_review_provider.dart';
 import 'package:salary/core/providers/global_error_provider.dart';
 import 'package:salary/feature/analysis/salary_analysis_view_model.dart';
@@ -269,7 +270,7 @@ class InputSalaryViewModel extends StateNotifier<InputSalaryState> {
   Future<bool> addOrUpdate() async {
     // 桁数バリデーション
     if (_validationLength()) {
-      throw const ValidationException('19桁以上は入力できません。');
+      throw const ValidationException(AppString.errorOverIntMessage);
     }
 
     final int? paymentAmount = int.tryParse(state.paymentAmount);

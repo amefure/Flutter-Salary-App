@@ -8,6 +8,7 @@ import 'package:salary/core/common/components/custom_filter_chip.dart';
 import 'package:salary/core/common/components/domain/attribute_tag.dart';
 import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/config/profile_config.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -154,7 +155,7 @@ class PremiumSummaryScreen extends ConsumerWidget {
   void _showIsNotPremiumErrorAlert(BuildContext context) {
     final _ = AppDialog.show(
       context: context,
-      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      message: AppString.errorPremiumLockMessage,
       type: DialogType.notify,
     );
   }

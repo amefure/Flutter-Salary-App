@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 import 'package:salary/core/common/components/custom_action_picker.dart';
 import 'package:salary/core/common/components/domain/amount_toggle_button_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/models/salary.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
@@ -55,7 +56,7 @@ class _DetailInputViewState extends State<DetailInputView> {
     final int? amount = int.tryParse(_amountController.text);
 
     if (_amountController.text.length > 19) {
-      _showErrorDialog(context, '19桁以上は入力できません。');
+      _showErrorDialog(context, AppString.errorOverIntMessage);
       return;
     }
 

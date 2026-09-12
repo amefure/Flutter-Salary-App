@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
-import 'package:salary/core/common/overlay/new_premium_feature_dialog.dart';
 import 'package:salary/core/deeplink/deep_link_destination.dart';
 import 'package:salary/core/deeplink/deep_link_notifier.dart';
 import 'package:salary/core/utils/custom_colors.dart';
@@ -40,10 +39,6 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     super.initState();
     _tabController = CupertinoTabController();
     _tabController.addListener(_onTabChanged);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showUpdateInfoIfNeeded();
-    });
   }
 
   @override
@@ -59,27 +54,10 @@ class _RootTabViewViewState extends ConsumerState<RootTabView> {
     }
   }
 
-  void _showUpdateInfoIfNeeded() {
-    final viewModel = ref.read(rootTabProvider.notifier);
-    final state = ref.read(rootTabProvider);
-    if (state.shouldShowPremiumIntro == true) {
-      NewPremiumFeatureDialog.show(
-        context,
-        onDetailButtonPressed: () {
-          viewModel.markAsShownPremiumIntro();
-          _tabController.index = RootTabType.publicHistory.tabIndex;
-        },
-        onCloseButtonPressed: () {
-          viewModel.markAsShownPremiumIntro();
-        },
-      );
-    }
-  }
-
   /// タブがタップされたときの処理（同じタブならスタックを先頭まで戻し、違うタブなら切り替える）
   void _handleTabPressed(int index) {
     if (_tabController.index == index) {
-      navigatorKeys[index]?.currentState?.popUntil((route) => route.isFirst);
+      navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
     } else {
       setState(() {
         _tabController.index = index;

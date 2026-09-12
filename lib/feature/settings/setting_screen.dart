@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/auth/auth_state_notifier.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/providers/app_version_provider.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
 import 'package:salary/feature/auth/presentation/account_benefits_screen.dart';
@@ -542,7 +543,7 @@ class SettingScreen extends StatelessWidget {
   void _showIsNotPremiumErrorAlert(BuildContext context) {
     final _ = AppDialog.show(
       context: context,
-      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      message: AppString.errorPremiumLockMessage,
       type: DialogType.notify,
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salary/core/common/overlay/app_dialog.dart';
+import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/providers/premium_function_state_notifier.dart';
 import 'package:salary/feature/charts/chart_salary_view_model.dart';
 import 'package:salary/feature/charts/presentation/parts/empty_chart_view.dart';
@@ -185,7 +186,7 @@ class BarChartYearlyView extends ConsumerWidget {
   void _showIsNotPremiumErrorAlert(BuildContext context) {
     final _ = AppDialog.show(
       context: context,
-      message: 'この機能を使用するにはプレミアム機能を解放してください。\n設定から解放することが可能です。',
+      message: AppString.errorPremiumLockMessage,
       type: DialogType.notify,
     );
   }

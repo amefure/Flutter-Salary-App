@@ -88,11 +88,11 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
   /// iOSの[AsyncProducts.storekit]には定義できるが本番では不可
   String resolveDescription({required String productId}) {
     if (productId == StaticKey.inAppPurchasePremiumFullUnlockedId) {
-      return '①給料を公開せずに「みんなの給料」を閲覧可能\n②アナリティクス機能 & 詳細画面 / MyData画面の一部機能解放\n③「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放\n※購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。';
+      return _InAppPurchaseLabels.premiumFullUnlockedDescription;
     } else if (productId == StaticKey.inAppPurchasePremiumFeaturesEnabledId) {
-      return '①アナリティクス機能 & 詳細画面 / MyData画面の一部機能解放\n②【給料公開ユーザー限定】「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放';
+      return _InAppPurchaseLabels.premiumFeaturesEnabledDescription;
     } else if (productId == StaticKey.inAppPurchaseRemoveAdsId) {
-      return 'アプリ内に表示されているバナー広告が非表示になります。';
+      return _InAppPurchaseLabels.removeAdsDescription;
     }
     return '';
   }
@@ -194,6 +194,25 @@ class InAppPurchaseViewModel extends Notifier<InAppPurchaseState> {
       dialogMessage: ''
     );
   }
+}
+
+class _InAppPurchaseLabels {
+  const _InAppPurchaseLabels._();
+
+  static const String premiumFullUnlockedDescription =
+      '① 給料を公開せずに「みんなの給料」を閲覧可能\n'
+      '② アナリティクス機能 & 詳細画面 / MyData画面の一部機能解放\n'
+      '③ 給料情報CSVエクスポート機能開放\n'
+      '④「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放\n'
+      '※購入後に公開データを削除した場合でも返金等はできませんのでご了承ください。';
+
+  static const String premiumFeaturesEnabledDescription =
+      '① アナリティクス機能 & 詳細画面 / MyData画面の一部機能解放\n'
+      '② 給料情報CSVエクスポート機能開放\n'
+      '③【給料公開ユーザー限定】「みんなの給料」の詳細情報の閲覧、職種等のフィルタリング機能の解放';
+
+  static const String removeAdsDescription =
+      'アプリ内に表示されているバナー広告が非表示になります。';
 }
 
 enum PurchaseState {

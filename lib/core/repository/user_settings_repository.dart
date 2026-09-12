@@ -8,7 +8,8 @@ enum SharedPreferencesKeys {
   premiumFeatureUnlocked('premiumFeatureUnlocked'),
   premiumFullUnlocked('premiumFullUnlocked'),
   themeMode('themeMode'),
-  hasShownPremiumIntro('hasShownPremiumIntro'),
+  // 廃止
+  // hasShownPremiumIntro('hasShownPremiumIntro'),
   hasShownPremiumTab('hasShownPremiumTab'),
   sortOrder('sortOrder'),
 
@@ -129,19 +130,6 @@ class UserSettingsRepository {
   // --------------------------------------------------
   // オンボーディング・ガイド表示関連
   // --------------------------------------------------
-
-  /// プレミアムプラン紹介ポップアップを表示済みか保存
-  Future<void> saveHasShownPremiumIntro(bool value) async {
-    await _dataSource.saveBool(
-      SharedPreferencesKeys.hasShownPremiumIntro,
-      value,
-    );
-  }
-
-  /// プレミアムプラン紹介ポップアップを表示済みか取得
-  bool fetchHasShownPremiumIntro() {
-    return _dataSource.getBool(SharedPreferencesKeys.hasShownPremiumIntro);
-  }
 
   /// プレミアムタブを表示済みか保存
   Future<void> saveHasShownPremiumTab(bool value) async {
