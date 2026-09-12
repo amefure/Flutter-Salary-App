@@ -92,7 +92,7 @@ class SummaryView extends ConsumerWidget {
 
           // 手取り率＆控除額
           _ProgressMetricCard(
-            title: '手取り率・控除分析',
+            title: '控除・手取り率',
             percentage: netRate,
             icon: CupertinoIcons.percent,
             children: [
@@ -113,12 +113,12 @@ class SummaryView extends ConsumerWidget {
 
           // 賞与累計額
           _ProgressMetricCard(
-            title: '賞与実績',
+            title: '賞与累計額',
             percentage: summary.bonusRatio,
             icon: CupertinoIcons.gift,
             children: [
               _MetricValue(
-                label: '累計賞与額',
+                label: '総支給',
                 value: summary.bonusTotal,
                 color: CustomColors.thema,
               ),
@@ -134,7 +134,7 @@ class SummaryView extends ConsumerWidget {
 
           // 総累計額
           _MetricCard(
-            title: '総累計額 (${summary.yearCount}年分)',
+            title: '総累計額 (過去${summary.yearCount}年分)',
             icon: CupertinoIcons.chart_bar_alt_fill,
             children: [
               _MetricValue(

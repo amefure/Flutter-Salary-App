@@ -8,7 +8,7 @@ enum SharedPreferencesKeys {
   premiumFeatureUnlocked('premiumFeatureUnlocked'),
   premiumFullUnlocked('premiumFullUnlocked'),
   themeMode('themeMode'),
-  // 廃止
+  // プレミアム機能紹介ポップアップ表示フラグ 廃止：v2.5.7
   // hasShownPremiumIntro('hasShownPremiumIntro'),
   hasShownPremiumTab('hasShownPremiumTab'),
   sortOrder('sortOrder'),
@@ -150,10 +150,10 @@ class UserSettingsRepository {
     await _dataSource.saveBool(SharedPreferencesKeys.reminderEnabled, enabled);
   }
 
-  /// 通知の有効状態を取得（未設定時はデフォルトでtrueを返す）
+  /// 通知の有効状態を取得（未設定時はデフォルトでfalseを返す）
   bool fetchReminderEnabled() {
     return _dataSource.getBoolNullable(SharedPreferencesKeys.reminderEnabled) ??
-        true;
+        false;
   }
 
   /// 通知日を保存
