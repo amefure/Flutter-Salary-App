@@ -1,5 +1,6 @@
 import 'package:realm/realm.dart';
 import 'package:salary/core/config/realm_schema_config.dart';
+import 'package:salary/core/models/annual_target.dart';
 import 'package:salary/core/models/salary.dart';
 
 abstract class IRealmDataSource {
@@ -58,6 +59,7 @@ class RealmDataSource implements IRealmDataSource{
         Salary.schema,
         PaymentSource.schema,
         AmountItem.schema,
+        AnnualTarget.schema,
       ],
       schemaVersion: RealmSchemaConfig.schemaVersion,
     );
