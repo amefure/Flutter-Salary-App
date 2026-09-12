@@ -28,6 +28,9 @@ abstract class IRealmDataSource {
       void Function(T) updateCallback,
       );
 
+  /// 指定した年の AnnualTarget を削除
+  void deleteAnnualTargetByYear(int year);
+
   /// IDを指定してデータを削除
   void deleteById<T extends RealmObject>(String id);
 
@@ -129,6 +132,16 @@ class RealmDataSource implements IRealmDataSource{
         _realm.add(item, update: true); // 既存データを更新
       });
     }
+  }
+
+  @override
+  void deleteAnnualTargetByYear(int year) {
+    _realm.write(() {
+      final targets = _realm.query<AnnualTarget>(r'year == $0', [year]);
+      if (targets.isNotEmpty) {
+        _realm.delete(targets.first);
+      }
+    });
   }
 
   /// ジェネリクスで指定したデータを削除

@@ -158,6 +158,37 @@ class _AnnualTargetScreenState extends ConsumerState<AnnualTargetScreen> {
     FocusScope.of(context).unfocus();
   }
 
+  // 削除処理と確認ダイアログ
+  void _confirmAndDelete() {
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('目標の削除'),
+        content: Text('$_selectedYear 年の目標を削除しますか？'),
+        actions: [
+          CupertinoDialogAction(
+            isDestructiveAction: false,
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('キャンセル'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(annualTargetProvider.notifier).deleteTarget(_selectedYear);
+              // 削除後にフィールドをクリアして状態をリフレッシュ
+              setState(() {
+                _amountController.clear();
+                _errorMessage = null;
+              });
+            },
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(annualTargetProvider);
@@ -193,25 +224,47 @@ class _AnnualTargetScreenState extends ConsumerState<AnnualTargetScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: CustomColors.thema.withAlpha(20),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        CupertinoIcons.flag_fill,
-                        size: 18,
-                        color: CustomColors.thema,
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: CustomColors.thema.withAlpha(20),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            CupertinoIcons.flag_fill,
+                            size: 18,
+                            color: CustomColors.thema,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        CustomText(
+                          text: isAlreadyExists ? '$_selectedYear年の目標を編集' : AnnualTargetLabels.formHeading,
+                          textSize: TextSize.MS,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    CustomText(
-                      text: isAlreadyExists ? '$_selectedYear年の目標を編集' : AnnualTargetLabels.formHeading,
-                      textSize: TextSize.MS,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    if (isAlreadyExists)
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: isSaving ? null : _confirmAndDelete,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: CustomColors.negative.withAlpha(20),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            CupertinoIcons.trash,
+                            size: 18,
+                            color: CustomColors.negative,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 20),

@@ -58,6 +58,20 @@ class AnnualTargetViewModel extends StateNotifier<AnnualTargetState> {
     return true;
   }
 
+  /// 【追加】指定した年の目標を削除する
+  void deleteTarget(int year) {
+    state = state.copyWith(isSaving: true);
+
+    // リポジトリ側に削除用メソッドがあると仮定 (例: delete や remove など)
+    // リポジトリ側のメソッド名に合わせて調整してください（例: _localAnnualTargetRepository.delete(year)）
+    _localAnnualTargetRepository.delete(year);
+
+    // 削除後にデータを再取得して状態を更新
+    fetchAll();
+
+    state = state.copyWith(isSaving: false);
+  }
+
   AnnualTarget? targetForYear(int year) {
     for (final target in state.targets) {
       if (target.year == year) return target;
