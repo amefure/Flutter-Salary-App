@@ -6,6 +6,7 @@ import 'package:salary/feature/charts/presentation/parts/bar_chart_yearly_view.d
 import 'package:salary/feature/charts/presentation/parts/chart_mode_switcher.dart';
 import 'package:salary/feature/charts/presentation/parts/switch_charts_view.dart';
 import 'package:salary/feature/charts/presentation/parts/table_salary_info_view.dart';
+import 'package:salary/feature/charts/presentation/parts/annual_target_progress_view.dart';
 import 'package:salary/core/common/components/ad_banner_widget.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/core/common/components/domain/payment_icon_view.dart';
@@ -95,6 +96,10 @@ class ChartSalaryScreen extends ConsumerWidget {
                       ),
 
                       const SizedBox(height: 20),
+
+                      AnnualTargetProgressView(salaries: state.allSalaries),
+
+                      const SizedBox(height: 24),
 
                       SizedBox(
                           width: screen.width * 0.95,

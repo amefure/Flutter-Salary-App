@@ -6,6 +6,7 @@ import 'package:salary/core/common/overlay/app_dialog.dart';
 import 'package:salary/core/config/app_string.dart';
 import 'package:salary/core/providers/app_version_provider.dart';
 import 'package:salary/core/providers/theme_mode_notifier.dart';
+import 'package:salary/feature/annual_target/domain/annual_target_labels.dart';
 import 'package:salary/feature/auth/presentation/account_benefits_screen.dart';
 import 'package:salary/feature/auth/presentation/change_email_screen.dart';
 import 'package:salary/feature/auth/presentation/login_screen.dart';
@@ -16,6 +17,7 @@ import 'package:salary/feature/reminder/reminder_settings_screen.dart';
 import 'package:salary/feature/settings/export/application/salary_export_view_model.dart';
 import 'package:salary/feature/settings/export/domain/salary_export_labels.dart';
 import 'package:salary/feature/settings/setting_view_model.dart';
+import 'package:salary/feature/annual_target/annual_target_screen.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
@@ -75,6 +77,19 @@ class SettingScreen extends StatelessWidget {
                 ),
               );
             }
+        ),
+
+        _settingListTile(
+            context,
+            AnnualTargetLabels.menuTitle,
+            CupertinoIcons.chart_bar_fill,
+            () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => const AnnualTargetScreen(),
+                ),
+              );
+            },
         ),
 
         Consumer(
