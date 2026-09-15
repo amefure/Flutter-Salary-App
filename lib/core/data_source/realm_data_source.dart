@@ -1,6 +1,7 @@
 import 'package:realm/realm.dart';
 import 'package:salary/core/config/realm_schema_config.dart';
 import 'package:salary/core/models/annual_target.dart';
+import 'package:salary/core/models/annual_withholding.dart';
 import 'package:salary/core/models/salary.dart';
 
 abstract class IRealmDataSource {
@@ -14,7 +15,10 @@ abstract class IRealmDataSource {
   T? findFirst<T extends RealmObject>(String query, [List<Object?> args]);
 
   /// クエリ条件にマッチする全件を取得
-  List<T> findByQuery<T extends RealmObject>(String query, [List<Object?> args]);
+  List<T> findByQuery<T extends RealmObject>(
+    String query, [
+    List<Object?> args,
+  ]);
 
   /// 新しいデータを追加
   void add<T extends RealmObject>(T item);
@@ -24,9 +28,9 @@ abstract class IRealmDataSource {
 
   /// IDを指定してデータを更新
   void updateById<T extends RealmObject>(
-      String id,
-      void Function(T) updateCallback,
-      );
+    String id,
+    void Function(T) updateCallback,
+  );
 
   /// 指定した年の AnnualTarget を削除
   void deleteAnnualTargetByYear(int year);
@@ -47,7 +51,7 @@ abstract class IRealmDataSource {
 /// // 普通にインスタンス化するだけでシングルトンになる
 /// final repository = RealmDataSource();
 /// ```
-class RealmDataSource implements IRealmDataSource{
+class RealmDataSource implements IRealmDataSource {
   /// シングルトンインスタンスを保持
   static final RealmDataSource _instance = RealmDataSource._internal();
 
@@ -57,15 +61,13 @@ class RealmDataSource implements IRealmDataSource{
   /// Private Named constructor
   RealmDataSource._internal() {
     // 対象のモデルを設定
-    final config = Configuration.local(
-      [
-        Salary.schema,
-        PaymentSource.schema,
-        AmountItem.schema,
-        AnnualTarget.schema,
-      ],
-      schemaVersion: RealmSchemaConfig.schemaVersion,
-    );
+    final config = Configuration.local([
+      Salary.schema,
+      PaymentSource.schema,
+      AmountItem.schema,
+      AnnualTarget.schema,
+      AnnualWithholding.schema,
+    ], schemaVersion: RealmSchemaConfig.schemaVersion);
     _realm = Realm(config);
   }
 
@@ -80,9 +82,7 @@ class RealmDataSource implements IRealmDataSource{
 
   /// ジェネリクスで指定した対象IDのデータデータを取得
   @override
-  T? fetchById<T extends RealmObject>(
-      String id
-      ) {
+  T? fetchById<T extends RealmObject>(String id) {
     // ID で検索
     final item = _realm.find<T>(id);
     return item?.freeze() as T;
@@ -91,14 +91,20 @@ class RealmDataSource implements IRealmDataSource{
   /// クエリ条件にマッチする最初の1件を取得
   /// query例: "name == $0", args例: ["支払元A"]
   @override
-  T? findFirst<T extends RealmObject>(String query, [List<Object?> args = const []]) {
+  T? findFirst<T extends RealmObject>(
+    String query, [
+    List<Object?> args = const [],
+  ]) {
     final results = _realm.query<T>(query, args);
     return results.isEmpty ? null : results.first.freeze() as T;
   }
 
   /// クエリ条件にマッチする全件を取得
   @override
-  List<T> findByQuery<T extends RealmObject>(String query, [List<Object?> args = const []]) {
+  List<T> findByQuery<T extends RealmObject>(
+    String query, [
+    List<Object?> args = const [],
+  ]) {
     return _realm.query<T>(query, args).freeze().toList();
   }
 
