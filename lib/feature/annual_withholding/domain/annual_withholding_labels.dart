@@ -13,7 +13,7 @@ abstract class AnnualWithholdingLabels {
   static const save = '保存';
   static const totalPayment = '支払金額合計';
   static const totalTax = '源泉徴収税額合計';
-  static const emptyState = 'この年の源泉徴収票はまだありません';
+  static const emptyState = '登録済みの源泉徴収票はありません';
   static const selectSource = '支払元を選択';
   static const chooseYear = '対象年';
   static const yearSuffix = '年';
