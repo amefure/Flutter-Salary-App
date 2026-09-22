@@ -18,6 +18,8 @@ import 'package:salary/feature/settings/export/application/salary_export_view_mo
 import 'package:salary/feature/settings/export/domain/salary_export_labels.dart';
 import 'package:salary/feature/settings/setting_view_model.dart';
 import 'package:salary/feature/annual_target/annual_target_screen.dart';
+import 'package:salary/feature/annual_withholding/annual_withholding_screen.dart';
+import 'package:salary/feature/annual_withholding/domain/annual_withholding_labels.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
 import 'package:salary/feature/app_lock/app_lock_setting_screen.dart';
@@ -28,13 +30,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// abstractでインスタンス化できないクラスとして定義する
 abstract class _StaticUrl {
-  static const String termsOfService = 'https://appdev-room.com/app-terms-of-service';
-  static const String storeRequestReview = 'https://apps.apple.com/jp/app/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E7%B5%A6%E6%96%99%E8%A8%98%E9%8C%B2/id6744486398?action=write-review';
+  static const String termsOfService =
+      'https://appdev-room.com/app-terms-of-service';
+  static const String storeRequestReview =
+      'https://apps.apple.com/jp/app/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E7%B5%A6%E6%96%99%E8%A8%98%E9%8C%B2/id6744486398?action=write-review';
   static const String contact = 'https://appdev-room.com/contact';
 }
 
 class SettingScreen extends StatelessWidget {
-
   const SettingScreen({super.key});
 
   @override
@@ -42,10 +45,7 @@ class SettingScreen extends StatelessWidget {
     return CupertinoPageScaffold(
       backgroundColor: CustomColors.foundation(context),
       navigationBar: const CupertinoNavigationBar(
-          middle: CustomText(
-            text: '設定',
-            fontWeight: FontWeight.bold,
-          )
+        middle: CustomText(text: '設定', fontWeight: FontWeight.bold),
       ),
       child: SafeArea(
         child: ListView(
@@ -54,7 +54,7 @@ class SettingScreen extends StatelessWidget {
             _appSection(context),
             _myMenuSection(context),
             _linkSection(context),
-            _creditSection(context)
+            _creditSection(context),
           ],
         ),
       ),
@@ -62,34 +62,42 @@ class SettingScreen extends StatelessWidget {
   }
 
   Widget _appFunction(BuildContext context) {
-    return  CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       header: const CustomText(text: 'アプリ機能'),
       backgroundColor: CustomColors.foundation(context),
       children: [
+        _settingListTile(context, '支払い元管理', CupertinoIcons.building_2_fill, () {
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (context) => const ListPaymentSourceScreen(),
+            ),
+          );
+        }),
+
         _settingListTile(
-            context,
-            '支払い元管理',
-            CupertinoIcons.building_2_fill,
-                () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const ListPaymentSourceScreen(),
-                ),
-              );
-            }
+          context,
+          AnnualTargetLabels.menuTitle,
+          CupertinoIcons.chart_bar_fill,
+          () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => const AnnualTargetScreen(),
+              ),
+            );
+          },
         ),
 
         _settingListTile(
-            context,
-            AnnualTargetLabels.menuTitle,
-            CupertinoIcons.chart_bar_fill,
-            () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const AnnualTargetScreen(),
-                ),
-              );
-            },
+          context,
+          AnnualWithholdingLabels.menuTitle,
+          CupertinoIcons.doc_text_fill,
+          () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => const AnnualWithholdingScreen(),
+              ),
+            );
+          },
         ),
 
         Consumer(
@@ -103,11 +111,10 @@ class SettingScreen extends StatelessWidget {
               context,
               '給料公開設定',
               CupertinoIcons.globe,
-                  () {
+              () {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
-                    builder: (context) =>
-                    const PublicSalaryScreen(),
+                    builder: (context) => const PublicSalaryScreen(),
                   ),
                 );
               },
@@ -115,49 +122,42 @@ class SettingScreen extends StatelessWidget {
           },
         ),
 
-        _settingListTile(
-            context,
-            '広告削除 & プレミアム機能解放',
-            CupertinoIcons.gift,
-                () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const InAppPurchaseScreen(),
-                ),
-              );
-            }),
+        _settingListTile(context, '広告削除 & プレミアム機能解放', CupertinoIcons.gift, () {
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (context) => const InAppPurchaseScreen(),
+            ),
+          );
+        }),
 
         Consumer(
-            builder: (context, ref, _) {
-              return _settingListTile(
-                  context,
-                  '給料情報エクスポート(CSV)',
-                  CupertinoIcons.share,
-                      () {
-                    _actionExportCsv(context, ref);
-                  });
-            }),
+          builder: (context, ref, _) {
+            return _settingListTile(
+              context,
+              '給料情報エクスポート(CSV)',
+              CupertinoIcons.share,
+              () {
+                _actionExportCsv(context, ref);
+              },
+            );
+          },
+        ),
       ],
     );
   }
 
   Widget _appSection(BuildContext context) {
-    return  CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       header: const CustomText(text: 'アプリ設定'),
       backgroundColor: CustomColors.foundation(context),
       children: [
-
-        _settingListTile(
-            context,
-            '給料日リマインダー設定',
-            CupertinoIcons.app_badge,
-                () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => const ReminderSettingsScreen(),
-                ),
-              );
-            }),
+        _settingListTile(context, '給料日リマインダー設定', CupertinoIcons.app_badge, () {
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (context) => const ReminderSettingsScreen(),
+            ),
+          );
+        }),
 
         _settingListTile(
           context,
@@ -178,49 +178,50 @@ class SettingScreen extends StatelessWidget {
         ),
 
         _settingListTile(
-            context,
-            'アプリロック',
-            CupertinoIcons.lock_fill,
-            null,
-            Consumer(
-                builder: (context, ref, child) {
-                  final isAppLockEnabled = ref.watch(settingProvider.select((s) => s.isAppLockEnabled));
-                  return CupertinoSwitch(
-                    activeTrackColor: CustomColors.thema,
-                    value: isAppLockEnabled,
-                    onChanged: (bool value) async {
-                      final viewModel = ref.read(settingProvider.notifier);
-                      if (value) {
-                        // 結果を受け取りハンドリング
-                        final result = await showCupertinoModalPopup<bool>(
-                          context: context,
-                          builder: (_) => const AppLockSettingScreen(),
-                        );
+          context,
+          'アプリロック',
+          CupertinoIcons.lock_fill,
+          null,
+          Consumer(
+            builder: (context, ref, child) {
+              final isAppLockEnabled = ref.watch(
+                settingProvider.select((s) => s.isAppLockEnabled),
+              );
+              return CupertinoSwitch(
+                activeTrackColor: CustomColors.thema,
+                value: isAppLockEnabled,
+                onChanged: (bool value) async {
+                  final viewModel = ref.read(settingProvider.notifier);
+                  if (value) {
+                    // 結果を受け取りハンドリング
+                    final result = await showCupertinoModalPopup<bool>(
+                      context: context,
+                      builder: (_) => const AppLockSettingScreen(),
+                    );
 
-                        if (result == true) {
-                          viewModel.setAppLockEnabled(true);
-                        }
-                      } else {
-                        // 状態を更新
-                        viewModel.setAppLockEnabled(value);
-                        // OFFにされたらパスワードをリセット
-                        viewModel.resetPassword();
-                      }
-                    },
-                  );
-                }
-            )
+                    if (result == true) {
+                      viewModel.setAppLockEnabled(true);
+                    }
+                  } else {
+                    // 状態を更新
+                    viewModel.setAppLockEnabled(value);
+                    // OFFにされたらパスワードをリセット
+                    viewModel.resetPassword();
+                  }
+                },
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
   Widget _myMenuSection(BuildContext context) {
-    return  CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       header: const CustomText(text: 'マイメニュー'),
       backgroundColor: CustomColors.foundation(context),
       children: [
-
         Consumer(
           builder: (context, ref, child) {
             final state = ref.watch(authStateProvider);
@@ -228,122 +229,123 @@ class SettingScreen extends StatelessWidget {
               return Column(
                 children: [
                   _settingListTile(
-                      context,
-                      'アカウント情報',
-                      CupertinoIcons.person_crop_rectangle,
-                          () {
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) => const UserInfoScreen(),
-                              ),
-                            );
-                      }
+                    context,
+                    'アカウント情報',
+                    CupertinoIcons.person_crop_rectangle,
+                    () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => const UserInfoScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   _settingListTile(
-                      context,
-                      'メールアドレス変更',
-                      CupertinoIcons.mail_solid,
-                          () {
-                        Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (context) => const ChangeEmailScreen(),
-                          ),
-                        );
-                      }
+                    context,
+                    'メールアドレス変更',
+                    CupertinoIcons.mail_solid,
+                    () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => const ChangeEmailScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   _settingListTile(
-                      context,
-                      '公開規約ポリシー',
-                      CupertinoIcons.person_crop_circle_badge_checkmark,
-                          () {
-                        showPublicPolicyModal(context);
-                      }
+                    context,
+                    '公開規約ポリシー',
+                    CupertinoIcons.person_crop_circle_badge_checkmark,
+                    () {
+                      showPublicPolicyModal(context);
+                    },
                   ),
 
                   _settingListTile(
-                      context,
-                      'ログアウト',
-                      CupertinoIcons.person_badge_minus_fill,
-                          () async {
-                            final result = await AppDialog.show(
-                                context: context,
-                                message: '本当にログアウトしますか？',
-                                type: DialogType.confirm,
-                                positiveTitle: 'ログアウト',
-                                isPositiveNegativeType: true
-                            );
-                            if (result ?? false) {
-                              final viewModel = ref.read(settingProvider.notifier);
-                              final result = await viewModel.logout();
-                              if (result) {
-                                final _ = await AppDialog.show(
-                                    context: context,
-                                    message: 'ログアウトしました。',
-                                    type: DialogType.success,
-                                );
-                              }
-                            }
-
+                    context,
+                    'ログアウト',
+                    CupertinoIcons.person_badge_minus_fill,
+                    () async {
+                      final result = await AppDialog.show(
+                        context: context,
+                        message: '本当にログアウトしますか？',
+                        type: DialogType.confirm,
+                        positiveTitle: 'ログアウト',
+                        isPositiveNegativeType: true,
+                      );
+                      if (result ?? false) {
+                        final viewModel = ref.read(settingProvider.notifier);
+                        final result = await viewModel.logout();
+                        if (result) {
+                          final _ = await AppDialog.show(
+                            context: context,
+                            message: 'ログアウトしました。',
+                            type: DialogType.success,
+                          );
+                        }
                       }
+                    },
                   ),
                   _settingListTile(
-                      context,
-                      'アカウントを削除する',
-                      CupertinoIcons.delete_right_fill,
-                          () async {
-                            final result = await AppDialog.show(
-                                context: context,
-                                message: 'アカウントを削除しても、アプリ内のデータは消失しませんが、バックアップ機能は無効になります。\n本当にアカウント削除しますか？',
-                                type: DialogType.confirm,
-                                positiveTitle: '削除する',
-                                isPositiveNegativeType: true
-                            );
-                            if (result ?? false) {
-                              final viewModel = ref.read(settingProvider.notifier);
-                              viewModel.withdrawal();
-                              final result = await viewModel.withdrawal();
-                              if (result) {
-                                final _ = await AppDialog.show(
-                                  context: context,
-                                  message: 'アカウントを削除しました。',
-                                  type: DialogType.success,
-                                );
-                              }
-                            }
+                    context,
+                    'アカウントを削除する',
+                    CupertinoIcons.delete_right_fill,
+                    () async {
+                      final result = await AppDialog.show(
+                        context: context,
+                        message:
+                            'アカウントを削除しても、アプリ内のデータは消失しませんが、バックアップ機能は無効になります。\n本当にアカウント削除しますか？',
+                        type: DialogType.confirm,
+                        positiveTitle: '削除する',
+                        isPositiveNegativeType: true,
+                      );
+                      if (result ?? false) {
+                        final viewModel = ref.read(settingProvider.notifier);
+                        viewModel.withdrawal();
+                        final result = await viewModel.withdrawal();
+                        if (result) {
+                          final _ = await AppDialog.show(
+                            context: context,
+                            message: 'アカウントを削除しました。',
+                            type: DialogType.success,
+                          );
+                        }
                       }
-                  )
+                    },
+                  ),
                 ],
               );
             } else {
               return Column(
-                  children: [
-                    _settingListTile(
-                        context,
-                        'ログイン・アカウント作成',
-                        CupertinoIcons.person_add_solid,
-                            () {
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
-                        }),
+                children: [
+                  _settingListTile(
+                    context,
+                    'ログイン・アカウント作成',
+                    CupertinoIcons.person_add_solid,
+                    () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                  ),
 
-                    _settingListTile(
-                        context,
-                        'アカウント作成のメリット',
-                        CupertinoIcons.gift_alt_fill,
-                            () {
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => const AccountBenefitsScreen(),
-                            ),
-                          );
-                        }
-                    ),
-                  ]
+                  _settingListTile(
+                    context,
+                    'アカウント作成のメリット',
+                    CupertinoIcons.gift_alt_fill,
+                    () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => const AccountBenefitsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
             }
           },
@@ -366,31 +368,30 @@ class SettingScreen extends StatelessWidget {
         ),
       ),
       children: [
-
         if (Platform.isIOS)
           _settingListTile(
             context,
             'アプリをレビューする',
             CupertinoIcons.hand_thumbsup,
-                () {
+            () {
               _launchURL(_StaticUrl.storeRequestReview);
             },
           ),
 
         _settingListTile(
-            context,
-            'アプリの不具合 & ご要望はこちら',
-            CupertinoIcons.paperplane,
-                () {
-              _openWebView(context, _StaticUrl.contact);
-            }
+          context,
+          'アプリの不具合 & ご要望はこちら',
+          CupertinoIcons.paperplane,
+          () {
+            _openWebView(context, _StaticUrl.contact);
+          },
         ),
 
         _settingListTile(
           context,
           '利用規約とプライバシーポリシー',
           CupertinoIcons.calendar,
-              () {
+          () {
             _openWebView(context, _StaticUrl.termsOfService);
           },
         ),
@@ -413,9 +414,10 @@ class SettingScreen extends StatelessWidget {
                 final isDark = themeMode == AppThemeMode.dark;
 
                 // モードに応じた画像パス
-                final assetPath = isDark
-                    ? 'assets/images/app_icon_dark.png'
-                    : 'assets/images/app_icon.png';
+                final assetPath =
+                    isDark
+                        ? 'assets/images/app_icon_dark.png'
+                        : 'assets/images/app_icon.png';
 
                 return Container(
                   width: 50,
@@ -461,41 +463,40 @@ class SettingScreen extends StatelessWidget {
               builder: (context, ref, _) {
                 final versionAsync = ref.watch(appVersionProvider);
                 return versionAsync.when(
-                  data: (version) => CustomText(
-                    text: 'シンプル給料記録 Ver $version',
-                    textSize: TextSize.SS,
-                  ),
-                  loading: () => const CustomText(
-                    text: 'シンプル給料記録 Ver ...',
-                    textSize: TextSize.SS,
-                  ),
-                  error: (_, __) => const CustomText(
-                    text: 'シンプル給料記録',
-                    textSize: TextSize.SS,
-                  ),
+                  data:
+                      (version) => CustomText(
+                        text: 'シンプル給料記録 Ver $version',
+                        textSize: TextSize.SS,
+                      ),
+                  loading:
+                      () => const CustomText(
+                        text: 'シンプル給料記録 Ver ...',
+                        textSize: TextSize.SS,
+                      ),
+                  error:
+                      (_, __) => const CustomText(
+                        text: 'シンプル給料記録',
+                        textSize: TextSize.SS,
+                      ),
                 );
               },
             ),
             const SizedBox(height: 4),
-            const CustomText(
-              text: 'Created by ame',
-              textSize: TextSize.SS,
-            ),
+            const CustomText(text: 'Created by ame', textSize: TextSize.SS),
           ],
         ),
       ),
     );
   }
 
-
   /// 設定リスト行UI
   Widget _settingListTile(
-      BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback? action, [
-        Widget trailing = const CupertinoListTileChevron(),
-      ]) {
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback? action, [
+    Widget trailing = const CupertinoListTileChevron(),
+  ]) {
     return CupertinoListTile(
       padding: const EdgeInsets.all(15),
       backgroundColor: CustomColors.background(context),
@@ -534,9 +535,9 @@ class SettingScreen extends StatelessWidget {
     try {
       final renderBox = context.findRenderObject() as RenderBox?;
       final sharePositionOrigin =
-      renderBox == null
-          ? null
-          : renderBox.localToGlobal(Offset.zero) & renderBox.size;
+          renderBox == null
+              ? null
+              : renderBox.localToGlobal(Offset.zero) & renderBox.size;
       final result = await ref
           .read(salaryExportProvider)
           .export(sharePositionOrigin: sharePositionOrigin);
@@ -555,6 +556,7 @@ class SettingScreen extends StatelessWidget {
       );
     }
   }
+
   void _showIsNotPremiumErrorAlert(BuildContext context) {
     final _ = AppDialog.show(
       context: context,
