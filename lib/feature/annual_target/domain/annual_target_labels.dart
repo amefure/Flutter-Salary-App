@@ -4,7 +4,7 @@ abstract class AnnualTargetLabels {
   static const targetYear = '対象年';
   static const targetAmount = '目標年収';
   static const save = '保存';
-  static const history = '保存済みの目標';
+  static const history = '目標一覧';
   static const unset = '年間目標が未設定です';
   static const setTarget = '年間目標を設定する';
   static const invalidAmount = '目標金額を1円以上で入力してください';
@@ -14,7 +14,7 @@ abstract class AnnualTargetLabels {
   static const remaining = '目標まであと';
   static const achievement = '達成率';
   static const formHeading = '年ごとの目標を設定';
-  static const emptyHistory = '保存済みの目標はありません';
+  static const emptyHistory = '登録済みの目標はありません';
   static const pickerDone = '完了';
   static const yearSuffix = '年';
   static const yenSuffix = '円';

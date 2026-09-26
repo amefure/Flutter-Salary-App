@@ -150,13 +150,7 @@ class _AnnualWithholdingEditorModalState
           fontWeight: FontWeight.bold,
           textSize: TextSize.MS,
         ),
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => Navigator.of(context).pop(),
-          child: const CustomText(
-            text: AnnualWithholdingLabels.cancel,
-          ),
-        ),
+
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () {

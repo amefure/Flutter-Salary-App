@@ -10,6 +10,7 @@ abstract class AnnualWithholdingLabels {
   static const memo = 'メモ';
   static const placeholderMemo = '備考を入力';
   static const addNew = '新規追加';
+  static const addNewPaymentSourceConfirm = '支払い元が存在しません。\n新しく登録しますか？';
   static const save = '保存';
   static const totalPayment = '支払金額合計';
   static const totalTax = '源泉徴収税額合計';
