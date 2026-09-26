@@ -34,13 +34,22 @@ class _AnnualWithholdingEditorModalState
     extends ConsumerState<AnnualWithholdingEditorModal> {
   final _numberFormatter = NumberFormat('#,###');
   late int _selectedSourceIndex;
+  bool _showDetails = false; // 詳細入力欄の表示状態
 
+  // 基本コントロール
   late final TextEditingController _paymentSourceController;
   late final TextEditingController _paymentAmountController;
   late final TextEditingController _deductionAmountController;
   late final TextEditingController _exemptionAmountController;
   late final TextEditingController _taxAmountController;
   late final TextEditingController _memoController;
+
+  // 詳細コントロール
+  late final TextEditingController _socialInsuranceController;
+  late final TextEditingController _lifeInsuranceController;
+  late final TextEditingController _earthquakeInsuranceController;
+  late final TextEditingController _spouseDeductionController;
+  late final TextEditingController _housingLoanController;
 
   @override
   void initState() {
@@ -74,6 +83,45 @@ class _AnnualWithholdingEditorModalState
           : '',
     );
     _memoController = TextEditingController(text: widget.existing?.memo ?? '');
+
+    // 詳細項目の初期化
+    _socialInsuranceController = TextEditingController(
+      text: (widget.existing != null && (widget.existing as dynamic).socialInsuranceAmount > 0)
+          ? _numberFormatter.format((widget.existing as dynamic).socialInsuranceAmount)
+          : '',
+    );
+    _lifeInsuranceController = TextEditingController(
+      text: (widget.existing != null && (widget.existing as dynamic).lifeInsuranceDeduction > 0)
+          ? _numberFormatter.format((widget.existing as dynamic).lifeInsuranceDeduction)
+          : '',
+    );
+    _earthquakeInsuranceController = TextEditingController(
+      text: (widget.existing != null && (widget.existing as dynamic).earthquakeInsuranceDeduction > 0)
+          ? _numberFormatter.format((widget.existing as dynamic).earthquakeInsuranceDeduction)
+          : '',
+    );
+    _spouseDeductionController = TextEditingController(
+      text: (widget.existing != null && (widget.existing as dynamic).spouseDeductionAmount > 0)
+          ? _numberFormatter.format((widget.existing as dynamic).spouseDeductionAmount)
+          : '',
+    );
+    _housingLoanController = TextEditingController(
+      text: (widget.existing != null && (widget.existing as dynamic).housingLoanDeduction > 0)
+          ? _numberFormatter.format((widget.existing as dynamic).housingLoanDeduction)
+          : '',
+    );
+
+    // 既存データに詳細データの入力値があれば、最初から詳細を開いておく
+    if (widget.existing != null) {
+      final ext = widget.existing as dynamic;
+      if ((ext.socialInsuranceAmount ?? 0) > 0 ||
+          (ext.lifeInsuranceDeduction ?? 0) > 0 ||
+          (ext.earthquakeInsuranceDeduction ?? 0) > 0 ||
+          (ext.spouseDeductionAmount ?? 0) > 0 ||
+          (ext.housingLoanDeduction ?? 0) > 0) {
+        _showDetails = true;
+      }
+    }
   }
 
   @override
@@ -84,6 +132,11 @@ class _AnnualWithholdingEditorModalState
     _exemptionAmountController.dispose();
     _taxAmountController.dispose();
     _memoController.dispose();
+    _socialInsuranceController.dispose();
+    _lifeInsuranceController.dispose();
+    _earthquakeInsuranceController.dispose();
+    _spouseDeductionController.dispose();
+    _housingLoanController.dispose();
     super.dispose();
   }
 
@@ -102,35 +155,6 @@ class _AnnualWithholdingEditorModalState
     );
   }
 
-  /// 支払い元ピッカー
-  Widget _paymentSourcePicker({
-    required Color prefixIconColor,
-    required VoidCallback onTapped,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: CustomTextField(
-            controller: _paymentSourceController,
-            labelText: '支払い元',
-            prefixIcon: CupertinoIcons.building_2_fill,
-            prefixIconColor: prefixIconColor,
-            readOnly: true,
-            onTap: onTapped,
-            suffix: SizedBox(
-              child: IconButton(
-                onPressed: () => _showInputPaymentSourceModal(context),
-                icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
-              ),
-            ),
-            labelIcon: CupertinoIcons.building_2_fill,
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentSources = widget.paymentSources;
@@ -138,7 +162,6 @@ class _AnnualWithholdingEditorModalState
         ? currentSources[_selectedSourceIndex]
         : null;
 
-    // 選択中の支払い元のカラーを取得（定義されていない場合はデフォルトのグレー）
     final prefixIconColor =
         selectedSource?.themaColorEnum.color ?? CupertinoColors.systemGrey;
 
@@ -150,7 +173,6 @@ class _AnnualWithholdingEditorModalState
           fontWeight: FontWeight.bold,
           textSize: TextSize.MS,
         ),
-
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () {
@@ -164,6 +186,11 @@ class _AnnualWithholdingEditorModalState
               _parseNumber(_deductionAmountController),
               _parseNumber(_exemptionAmountController),
               _parseNumber(_taxAmountController),
+              _parseNumber(_socialInsuranceController),
+              _parseNumber(_lifeInsuranceController),
+              _parseNumber(_earthquakeInsuranceController),
+              _parseNumber(_spouseDeductionController),
+              _parseNumber(_housingLoanController),
               _memoController.text.trim(),
               widget.existing?.createdAt ?? DateTime.now(),
             );
@@ -186,31 +213,51 @@ class _AnnualWithholdingEditorModalState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _paymentSourcePicker(
-                prefixIconColor: prefixIconColor,
-                onTapped: () async {
-                  final paymentSources = widget.paymentSources;
-
-                  if (paymentSources.isEmpty) {
-                    _showInputPaymentSourceModal(context);
-                  } else {
-                    CustomActionPicker.show<PaymentSource>(
-                      context: context,
-                      title: '支払い元を選択してください',
-                      items: paymentSources,
-                      currentValue: selectedSource,
-                      labelBuilder: (source) => source.name,
-                      onSelected: (source) {
-                        setState(() {
-                          _selectedSourceIndex = paymentSources.indexOf(source);
-                          _paymentSourceController.text = source.name;
-                        });
+              // 支払い元選択
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _paymentSourceController,
+                      labelText: '支払い元',
+                      prefixIcon: CupertinoIcons.building_2_fill,
+                      prefixIconColor: prefixIconColor,
+                      readOnly: true,
+                      onTap: () async {
+                        final paymentSources = widget.paymentSources;
+                        if (paymentSources.isEmpty) {
+                          _showInputPaymentSourceModal(context);
+                        } else {
+                          CustomActionPicker.show<PaymentSource>(
+                            context: context,
+                            title: '支払い元を選択してください',
+                            items: paymentSources,
+                            currentValue: selectedSource,
+                            labelBuilder: (source) => source.name,
+                            onSelected: (source) {
+                              setState(() {
+                                _selectedSourceIndex = paymentSources.indexOf(source);
+                                _paymentSourceController.text = source.name;
+                              });
+                            },
+                          );
+                        }
                       },
-                    );
-                  }
-                },
+                      suffix: SizedBox(
+                        child: IconButton(
+                          onPressed: () => _showInputPaymentSourceModal(context),
+                          icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+                        ),
+                      ),
+                      labelIcon: CupertinoIcons.building_2_fill,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
+
+              // 支払金額
               CustomTextField(
                 controller: _paymentAmountController,
                 labelText: AnnualWithholdingLabels.paymentAmount,
@@ -219,6 +266,8 @@ class _AnnualWithholdingEditorModalState
                 labelIcon: CupertinoIcons.money_yen_circle,
               ),
               const SizedBox(height: 12),
+
+              // 給与所得控除後の金額
               CustomTextField(
                 controller: _deductionAmountController,
                 labelText: AnnualWithholdingLabels.deductionAmount,
@@ -227,6 +276,8 @@ class _AnnualWithholdingEditorModalState
                 labelIcon: CupertinoIcons.arrow_down_right_circle,
               ),
               const SizedBox(height: 12),
+
+              // 所得控除の額の合計額
               CustomTextField(
                 controller: _exemptionAmountController,
                 labelText: AnnualWithholdingLabels.exemptionAmount,
@@ -235,6 +286,8 @@ class _AnnualWithholdingEditorModalState
                 labelIcon: CupertinoIcons.minus_circle,
               ),
               const SizedBox(height: 12),
+
+              // 源泉徴収税額
               CustomTextField(
                 controller: _taxAmountController,
                 labelText: AnnualWithholdingLabels.incomeTaxAmount,
@@ -242,7 +295,87 @@ class _AnnualWithholdingEditorModalState
                 keyboardType: TextInputType.number,
                 labelIcon: CupertinoIcons.doc_checkmark,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
+
+              // --- 詳細入力欄の開閉ボタン ---
+              Center(
+                child: CupertinoButton(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  onPressed: () {
+                    setState(() {
+                      _showDetails = !_showDetails;
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomText(
+                        text: _showDetails ? '詳細を閉じる' : '詳細に入力する',
+                        color: CustomColors.thema,
+                        fontWeight: FontWeight.bold,
+                        textSize: TextSize.MS,
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        _showDetails ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
+                        color: CustomColors.thema,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // --- 詳細入力セクション（基本入力と同じ並びのUI） ---
+              if (_showDetails) ...[
+                CustomTextField(
+                  controller: _socialInsuranceController,
+                  labelText: '社会保険料等の金額',
+                  prefixIcon: CupertinoIcons.shield_lefthalf_fill,
+                  keyboardType: TextInputType.number,
+                  labelIcon: CupertinoIcons.shield_lefthalf_fill,
+                ),
+                const SizedBox(height: 12),
+
+                CustomTextField(
+                  controller: _lifeInsuranceController,
+                  labelText: '生命保険料の控除額',
+                  prefixIcon: CupertinoIcons.heart_fill,
+                  keyboardType: TextInputType.number,
+                  labelIcon: CupertinoIcons.heart_fill,
+                ),
+                const SizedBox(height: 12),
+
+                CustomTextField(
+                  controller: _earthquakeInsuranceController,
+                  labelText: '地震保険料の控除額',
+                  prefixIcon: CupertinoIcons.house_fill,
+                  keyboardType: TextInputType.number,
+                  labelIcon: CupertinoIcons.house_fill,
+                ),
+                const SizedBox(height: 12),
+
+                CustomTextField(
+                  controller: _spouseDeductionController,
+                  labelText: '配偶者（特別）控除の額',
+                  prefixIcon: CupertinoIcons.person_2_fill,
+                  keyboardType: TextInputType.number,
+                  labelIcon: CupertinoIcons.person_2_fill,
+                ),
+                const SizedBox(height: 12),
+
+                CustomTextField(
+                  controller: _housingLoanController,
+                  labelText: '住宅借入金等特別控除の額',
+                  prefixIcon: CupertinoIcons.building_2_fill,
+                  keyboardType: TextInputType.number,
+                  labelIcon: CupertinoIcons.building_2_fill,
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              // メモ欄
               CustomTextField(
                 controller: _memoController,
                 labelText: AnnualWithholdingLabels.placeholderMemo,

@@ -19,6 +19,12 @@ class _AnnualWithholding {
 
   late int incomeTaxAmount;
 
+  late int socialInsuranceAmount;
+  late int lifeInsuranceDeduction;
+  late int earthquakeInsuranceDeduction;
+  late int spouseDeductionAmount;
+  late int housingLoanDeduction;
+
   late String memo;
 
   late DateTime createdAt;

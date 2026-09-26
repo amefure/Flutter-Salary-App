@@ -3,9 +3,9 @@
 
 part of 'annual_withholding.dart';
 
-// ***************************************************************************
+// **************************************************************************
 // RealmObjectGenerator
-// ***************************************************************************
+// **************************************************************************
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -19,6 +19,11 @@ class AnnualWithholding extends _AnnualWithholding
     int deductionAmount,
     int totalExemptionAmount,
     int incomeTaxAmount,
+    int socialInsuranceAmount,
+    int lifeInsuranceDeduction,
+    int earthquakeInsuranceDeduction,
+    int spouseDeductionAmount,
+    int housingLoanDeduction,
     String memo,
     DateTime createdAt,
   ) {
@@ -29,6 +34,15 @@ class AnnualWithholding extends _AnnualWithholding
     RealmObjectBase.set(this, 'deductionAmount', deductionAmount);
     RealmObjectBase.set(this, 'totalExemptionAmount', totalExemptionAmount);
     RealmObjectBase.set(this, 'incomeTaxAmount', incomeTaxAmount);
+    RealmObjectBase.set(this, 'socialInsuranceAmount', socialInsuranceAmount);
+    RealmObjectBase.set(this, 'lifeInsuranceDeduction', lifeInsuranceDeduction);
+    RealmObjectBase.set(
+      this,
+      'earthquakeInsuranceDeduction',
+      earthquakeInsuranceDeduction,
+    );
+    RealmObjectBase.set(this, 'spouseDeductionAmount', spouseDeductionAmount);
+    RealmObjectBase.set(this, 'housingLoanDeduction', housingLoanDeduction);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'createdAt', createdAt);
   }
@@ -81,6 +95,41 @@ class AnnualWithholding extends _AnnualWithholding
       RealmObjectBase.set(this, 'incomeTaxAmount', value);
 
   @override
+  int get socialInsuranceAmount =>
+      RealmObjectBase.get<int>(this, 'socialInsuranceAmount') as int;
+  @override
+  set socialInsuranceAmount(int value) =>
+      RealmObjectBase.set(this, 'socialInsuranceAmount', value);
+
+  @override
+  int get lifeInsuranceDeduction =>
+      RealmObjectBase.get<int>(this, 'lifeInsuranceDeduction') as int;
+  @override
+  set lifeInsuranceDeduction(int value) =>
+      RealmObjectBase.set(this, 'lifeInsuranceDeduction', value);
+
+  @override
+  int get earthquakeInsuranceDeduction =>
+      RealmObjectBase.get<int>(this, 'earthquakeInsuranceDeduction') as int;
+  @override
+  set earthquakeInsuranceDeduction(int value) =>
+      RealmObjectBase.set(this, 'earthquakeInsuranceDeduction', value);
+
+  @override
+  int get spouseDeductionAmount =>
+      RealmObjectBase.get<int>(this, 'spouseDeductionAmount') as int;
+  @override
+  set spouseDeductionAmount(int value) =>
+      RealmObjectBase.set(this, 'spouseDeductionAmount', value);
+
+  @override
+  int get housingLoanDeduction =>
+      RealmObjectBase.get<int>(this, 'housingLoanDeduction') as int;
+  @override
+  set housingLoanDeduction(int value) =>
+      RealmObjectBase.set(this, 'housingLoanDeduction', value);
+
+  @override
   String get memo => RealmObjectBase.get<String>(this, 'memo') as String;
   @override
   set memo(String value) => RealmObjectBase.set(this, 'memo', value);
@@ -114,13 +163,17 @@ class AnnualWithholding extends _AnnualWithholding
       'deductionAmount': deductionAmount.toEJson(),
       'totalExemptionAmount': totalExemptionAmount.toEJson(),
       'incomeTaxAmount': incomeTaxAmount.toEJson(),
+      'socialInsuranceAmount': socialInsuranceAmount.toEJson(),
+      'lifeInsuranceDeduction': lifeInsuranceDeduction.toEJson(),
+      'earthquakeInsuranceDeduction': earthquakeInsuranceDeduction.toEJson(),
+      'spouseDeductionAmount': spouseDeductionAmount.toEJson(),
+      'housingLoanDeduction': housingLoanDeduction.toEJson(),
       'memo': memo.toEJson(),
       'createdAt': createdAt.toEJson(),
     };
   }
 
   static EJsonValue _toEJson(AnnualWithholding value) => value.toEJson();
-
   static AnnualWithholding _fromEJson(EJsonValue ejson) {
     if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
@@ -132,6 +185,11 @@ class AnnualWithholding extends _AnnualWithholding
         'deductionAmount': EJsonValue deductionAmount,
         'totalExemptionAmount': EJsonValue totalExemptionAmount,
         'incomeTaxAmount': EJsonValue incomeTaxAmount,
+        'socialInsuranceAmount': EJsonValue socialInsuranceAmount,
+        'lifeInsuranceDeduction': EJsonValue lifeInsuranceDeduction,
+        'earthquakeInsuranceDeduction': EJsonValue earthquakeInsuranceDeduction,
+        'spouseDeductionAmount': EJsonValue spouseDeductionAmount,
+        'housingLoanDeduction': EJsonValue housingLoanDeduction,
         'memo': EJsonValue memo,
         'createdAt': EJsonValue createdAt,
       } =>
@@ -143,6 +201,11 @@ class AnnualWithholding extends _AnnualWithholding
           fromEJson(deductionAmount),
           fromEJson(totalExemptionAmount),
           fromEJson(incomeTaxAmount),
+          fromEJson(socialInsuranceAmount),
+          fromEJson(lifeInsuranceDeduction),
+          fromEJson(earthquakeInsuranceDeduction),
+          fromEJson(spouseDeductionAmount),
+          fromEJson(housingLoanDeduction),
           fromEJson(memo),
           fromEJson(createdAt),
         ),
@@ -165,6 +228,11 @@ class AnnualWithholding extends _AnnualWithholding
         SchemaProperty('deductionAmount', RealmPropertyType.int),
         SchemaProperty('totalExemptionAmount', RealmPropertyType.int),
         SchemaProperty('incomeTaxAmount', RealmPropertyType.int),
+        SchemaProperty('socialInsuranceAmount', RealmPropertyType.int),
+        SchemaProperty('lifeInsuranceDeduction', RealmPropertyType.int),
+        SchemaProperty('earthquakeInsuranceDeduction', RealmPropertyType.int),
+        SchemaProperty('spouseDeductionAmount', RealmPropertyType.int),
+        SchemaProperty('housingLoanDeduction', RealmPropertyType.int),
         SchemaProperty('memo', RealmPropertyType.string),
         SchemaProperty('createdAt', RealmPropertyType.timestamp),
       ],
