@@ -4,31 +4,31 @@ import 'package:salary/core/repository/domain/local_annual_withholding_repositor
 import 'package:salary/core/repository/domain/local_payment_source_repository.dart';
 import 'package:salary/feature/annual_withholding/annual_withholding_state.dart';
 
-final annualWithholdingProvider =
-    StateNotifierProvider<AnnualWithholdingViewModel, AnnualWithholdingState>((
-      ref,
+final annualWithholdingProvider = StateNotifierProvider.autoDispose<
+    AnnualWithholdingViewModel, AnnualWithholdingState>((
+    ref,
     ) {
-      return AnnualWithholdingViewModel(
-        ref.read(localAnnualWithholdingRepositoryProvider),
-        ref.read(localPaymentSourceRepositoryProvider),
-      );
-    });
+  return AnnualWithholdingViewModel(
+    ref.read(localAnnualWithholdingRepositoryProvider),
+    ref.read(localPaymentSourceRepositoryProvider),
+  );
+});
 
 class AnnualWithholdingViewModel extends StateNotifier<AnnualWithholdingState> {
   final LocalAnnualWithholdingRepository _annualWithholdingRepository;
   final LocalPaymentSourceRepository _paymentSourceRepository;
 
   AnnualWithholdingViewModel(
-    this._annualWithholdingRepository,
-    this._paymentSourceRepository,
-  ) : super(AnnualWithholdingState.initial()) {
+      this._annualWithholdingRepository,
+      this._paymentSourceRepository,
+      ) : super(AnnualWithholdingState.initial()) {
     fetchAll();
   }
 
   void fetchAll() {
     final items = _annualWithholdingRepository.fetchAll();
     final paymentSources =
-        _paymentSourceRepository.fetchSortedAllPaymentSources();
+    _paymentSourceRepository.fetchSortedAllPaymentSources();
 
     state = state.copyWith(items: items, paymentSources: paymentSources);
   }

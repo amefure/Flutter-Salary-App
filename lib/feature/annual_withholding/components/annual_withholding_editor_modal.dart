@@ -54,9 +54,12 @@ class _AnnualWithholdingEditorModalState
   @override
   void initState() {
     super.initState();
-    final sourceIndex = widget.paymentSources.indexWhere(
-          (source) => source.id == (widget.existing?.paymentSourceId ?? widget.paymentSources.first.id),
-    );
+    int sourceIndex = -1;
+    if (widget.existing != null && widget.existing!.paymentSourceId.isNotEmpty) {
+      sourceIndex = widget.paymentSources.indexWhere(
+            (source) => source.id == widget.existing!.paymentSourceId,
+      );
+    }
     _selectedSourceIndex = sourceIndex >= 0 ? sourceIndex : 0;
 
     _paymentSourceController = TextEditingController(
@@ -144,17 +147,6 @@ class _AnnualWithholdingEditorModalState
     return int.tryParse(controller.text.replaceAll(',', '').trim()) ?? 0;
   }
 
-  /// 支払い元追加画面を表示
-  Future<void> _showInputPaymentSourceModal(BuildContext context) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return const InputPaymentSourceView();
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentSources = widget.paymentSources;
@@ -226,30 +218,20 @@ class _AnnualWithholdingEditorModalState
                       readOnly: true,
                       onTap: () async {
                         final paymentSources = widget.paymentSources;
-                        if (paymentSources.isEmpty) {
-                          _showInputPaymentSourceModal(context);
-                        } else {
-                          CustomActionPicker.show<PaymentSource>(
-                            context: context,
-                            title: '支払い元を選択してください',
-                            items: paymentSources,
-                            currentValue: selectedSource,
-                            labelBuilder: (source) => source.name,
-                            onSelected: (source) {
-                              setState(() {
-                                _selectedSourceIndex = paymentSources.indexOf(source);
-                                _paymentSourceController.text = source.name;
-                              });
-                            },
-                          );
-                        }
+                        CustomActionPicker.show<PaymentSource>(
+                          context: context,
+                          title: '支払い元を選択してください',
+                          items: paymentSources,
+                          currentValue: selectedSource,
+                          labelBuilder: (source) => source.name,
+                          onSelected: (source) {
+                            setState(() {
+                              _selectedSourceIndex = paymentSources.indexOf(source);
+                              _paymentSourceController.text = source.name;
+                            });
+                          },
+                        );
                       },
-                      suffix: SizedBox(
-                        child: IconButton(
-                          onPressed: () => _showInputPaymentSourceModal(context),
-                          icon: const Icon(CupertinoIcons.add_circled_solid, size: 28),
-                        ),
-                      ),
                       labelIcon: CupertinoIcons.building_2_fill,
                     ),
                   ),
@@ -381,6 +363,7 @@ class _AnnualWithholdingEditorModalState
                 labelText: AnnualWithholdingLabels.placeholderMemo,
                 prefixIcon: CupertinoIcons.text_alignleft,
                 maxLines: 3,
+                keyboardType: TextInputType.text,
                 labelIcon: CupertinoIcons.text_alignleft,
               ),
               const SizedBox(height: 8),

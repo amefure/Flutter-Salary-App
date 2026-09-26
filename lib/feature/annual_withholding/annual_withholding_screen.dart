@@ -29,6 +29,9 @@ class _AnnualWithholdingScreenState
   late int _selectedYear;
   late final TextEditingController _yearController;
 
+  // 各カードの開閉状態をIDで管理するマップ
+  final Map<String, bool> _expandedCards = {};
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +47,6 @@ class _AnnualWithholdingScreenState
     super.dispose();
   }
 
-  // ★ ref.read から ref.watch に変更して状態の変更を検知できるようにする
   List<AnnualWithholding> get _itemsForSelectedYear {
     final state = ref.watch(annualWithholdingProvider);
     final items =
@@ -225,7 +227,6 @@ class _AnnualWithholdingScreenState
 
   @override
   Widget build(BuildContext context) {
-    // buildメソッド内でも watch を通して状態変化を検知させるため一度呼び出しておく
     final items = _itemsForSelectedYear;
 
     return CupertinoPageScaffold(
@@ -343,93 +344,240 @@ class _AnnualWithholdingScreenState
               )
             else
               ...items.map((item) {
-                return GestureDetector(
-                  onTap: () => _showEditor(existing: item),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: CustomColors.background(context),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: CupertinoColors.systemGrey.withAlpha(35),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: CustomColors.text(context).withAlpha(12),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                final isExpanded = _expandedCards[item.id] ?? false;
+                final ext = item as dynamic;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: CustomColors.background(context),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: CupertinoColors.systemGrey.withAlpha(35),
+                      width: 1,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: CustomColors.text(context).withAlpha(12),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ヘッダー（支払い元名 ＆ 編集・削除ボタン）
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: CustomColors.thema.withAlpha(20),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  CupertinoIcons.building_2_fill,
+                                  size: 16,
+                                  color: CustomColors.thema,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              CustomText(
+                                text: _paymentSourceName(item.paymentSourceId),
+                                textSize: TextSize.MS,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              // 編集ボタン
+                              CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () => _showEditor(existing: item),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     color: CustomColors.thema.withAlpha(20),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(
-                                    CupertinoIcons.building_2_fill,
+                                    CupertinoIcons.pencil_circle_fill,
                                     size: 16,
                                     color: CustomColors.thema,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                CustomText(
-                                  text: _paymentSourceName(item.paymentSourceId),
-                                  textSize: TextSize.MS,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ],
-                            ),
-                            CupertinoButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () => _confirmDelete(item.id),
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.negative.withAlpha(20),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  CupertinoIcons.trash,
-                                  size: 16,
-                                  color: CustomColors.negative,
+                              ),
+                              // 削除ボタン
+                              CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () => _confirmDelete(item.id),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.negative.withAlpha(20),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    CupertinoIcons.trash,
+                                    size: 16,
+                                    color: CustomColors.negative,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // 基本の金額ブロック（支払金額 ＆ 源泉徴収税額）
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _SummaryAmountBlock(
+                              label: AnnualWithholdingLabels.paymentAmount,
+                              amountText: _numberFormatter.format(item.paymentAmount),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _SummaryAmountBlock(
+                              label: AnnualWithholdingLabels.incomeTaxAmount,
+                              amountText: _numberFormatter.format(item.incomeTaxAmount),
+                              isPrimary: true,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // 展開時のみ表示される詳細項目ブロック
+                      if (isExpanded) ...[
+                        const SizedBox(height: 12),
+                        const Divider(height: 1, color: CupertinoColors.systemGrey3),
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
                               child: _SummaryAmountBlock(
-                                label: AnnualWithholdingLabels.paymentAmount,
-                                amountText: _numberFormatter.format(item.paymentAmount),
+                                label: AnnualWithholdingLabels.deductionAmount,
+                                amountText: _numberFormatter.format(item.deductionAmount),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: _SummaryAmountBlock(
-                                label: AnnualWithholdingLabels.incomeTaxAmount,
-                                amountText: _numberFormatter.format(item.incomeTaxAmount),
-                                isPrimary: true,
+                                label: AnnualWithholdingLabels.exemptionAmount,
+                                amountText: _numberFormatter.format(item.totalExemptionAmount),
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _SummaryAmountBlock(
+                                label: '社会保険料等の金額',
+                                amountText: _numberFormatter.format(ext.socialInsuranceAmount ?? 0),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _SummaryAmountBlock(
+                                label: '生命保険料の控除額',
+                                amountText: _numberFormatter.format(ext.lifeInsuranceDeduction ?? 0),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _SummaryAmountBlock(
+                                label: '地震保険料の控除額',
+                                amountText: _numberFormatter.format(ext.earthquakeInsuranceDeduction ?? 0),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _SummaryAmountBlock(
+                                label: '配偶者（特別）控除の額',
+                                amountText: _numberFormatter.format(ext.spouseDeductionAmount ?? 0),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _SummaryAmountBlock(
+                                label: '住宅借入金等特別控除の額',
+                                amountText: _numberFormatter.format(ext.housingLoanDeduction ?? 0),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(child: SizedBox()),
+                          ],
+                        ),
+                        if (item.memo.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.systemGrey.withAlpha(10),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: CustomText(
+                              text: 'メモ: ${item.memo}',
+                              textSize: TextSize.SS,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                          ),
+                        ],
                       ],
-                    ),
+
+                      const SizedBox(height: 8),
+
+                      // 開閉トグルボタン
+                      Center(
+                        child: CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            setState(() {
+                              _expandedCards[item.id] = !isExpanded;
+                            });
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CustomText(
+                                text: isExpanded ? '詳細を閉じる' : '詳細を表示',
+                                textSize: TextSize.SS,
+                                color: CustomColors.thema,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              const SizedBox(width: 2),
+                              Icon(
+                                isExpanded
+                                    ? CupertinoIcons.chevron_up
+                                    : CupertinoIcons.chevron_down,
+                                size: 14,
+                                color: CustomColors.thema,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }),
