@@ -1,4 +1,3 @@
-
 class RealmSchemaConfig {
   /// 1・・・初回
   /// 2・・・[_PaymentSource]に[memo]プロパティを追加
@@ -6,5 +5,6 @@ class RealmSchemaConfig {
   /// 4・・・[_PaymentSource]に[isMain]プロパティを追加
   /// 5・・・[_PaymentSource]に[publicUserId],[isPublicName]プロパティを追加
   /// 6・・・[_AnnualTarget]モデルを追加
-  static int schemaVersion = 6;
+  /// 7・・・[_AnnualWithholding]モデルを追加
+  static int schemaVersion = 7;
 }

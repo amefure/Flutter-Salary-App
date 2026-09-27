@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:salary/core/common/components/custom/custom_elevated_button.dart';
 import 'package:salary/core/common/components/custom/custom_text_field_view.dart';
 import 'package:salary/core/common/components/custom/custom_text_view.dart';
+import 'package:salary/core/common/components/empty_state_view.dart';
 import 'package:salary/core/utils/custom_colors.dart';
 import 'package:salary/feature/annual_target/annual_target_view_model.dart';
 import 'package:salary/feature/annual_target/domain/annual_target_labels.dart';
@@ -342,20 +343,9 @@ class _AnnualTargetScreenState extends ConsumerState<AnnualTargetScreen> {
             // 履歴リスト
             if (targets.isEmpty)
               Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: CustomColors.background(context),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: CupertinoColors.systemGrey.withAlpha(30),
-                    width: 1,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: const Center(
-                  child: CustomText(
-                    text: AnnualTargetLabels.emptyHistory,
-                    color: CupertinoColors.systemGrey,
-                  ),
+                  child: EmptyStateView(message: AnnualTargetLabels.emptyHistory, icon: CupertinoIcons.collections),
                 ),
               )
             else
