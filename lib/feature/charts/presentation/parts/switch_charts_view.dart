@@ -13,12 +13,13 @@ import 'package:salary/feature/charts/chart_salary_view_model.dart';
 /// 「① 月別合計金額グラフ」
 /// 折れ線 or 円グラフに切り替え可能
 class SwitchChartsView extends ConsumerWidget {
-
   const SwitchChartsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayMode = ref.watch(chartSalaryProvider.select((s) => s.chartDisplayMode));
+    final displayMode = ref.watch(
+      chartSalaryProvider.select((s) => s.chartDisplayMode),
+    );
 
     switch (displayMode) {
       case ChartDisplayMode.line:
@@ -30,11 +31,13 @@ class SwitchChartsView extends ConsumerWidget {
   }
 
   /// グラフ描画 & NoData UI
-  Widget _buildYearSalaryChart(
-      BuildContext context,
-      WidgetRef ref
-      ) {
-    final selectedSource = ref.watch(chartSalaryProvider.select((s) => s.selectedSource));
+  Widget _buildYearSalaryChart(BuildContext context, WidgetRef ref) {
+    final selectedSources = ref.watch(
+      chartSalaryProvider.select((s) => s.selectedSources),
+    );
+    final isAllSelected = selectedSources.any(
+      (source) => source.id == DummySource.allDummySource.id,
+    );
     final vm = ref.read(chartSalaryProvider.notifier);
 
     List<LineChartBarData> lines = _buildLines(ref);
@@ -57,7 +60,7 @@ class SwitchChartsView extends ConsumerWidget {
         LineChartData(
           /// ツールチップ設定
           lineTouchData: LineTouchData(
-            enabled: selectedSource != DummySource.allDummySource ? true : false,
+            enabled: !isAllSelected,
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 touchedSpots.removeLast();
@@ -76,8 +79,12 @@ class SwitchChartsView extends ConsumerWidget {
           minY: 0,
           // 各方向のラベル(目盛り)制御
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -116,7 +123,9 @@ class SwitchChartsView extends ConsumerWidget {
   }
 
   List<LineChartBarData> _buildLines(WidgetRef ref) {
-    final lineChartData = ref.watch(chartSalaryProvider.select((s) => s.lineChartData));
+    final lineChartData = ref.watch(
+      chartSalaryProvider.select((s) => s.lineChartData),
+    );
 
     return lineChartData.expand((monthlyDataList) {
       final source = monthlyDataList.first.source;
@@ -124,7 +133,15 @@ class SwitchChartsView extends ConsumerWidget {
 
       /// 総支給の線
       final paymentLine = LineChartBarData(
-        spots: monthlyDataList.map((d) => FlSpot(d.createdAt.month.toDouble(), d.paymentAmount.toDouble())).toList(),
+        spots:
+            monthlyDataList
+                .map(
+                  (d) => FlSpot(
+                    d.createdAt.month.toDouble(),
+                    d.paymentAmount.toDouble(),
+                  ),
+                )
+                .toList(),
         isCurved: true,
         color: baseColor,
         barWidth: 3,
@@ -133,7 +150,15 @@ class SwitchChartsView extends ConsumerWidget {
 
       /// 手取りの線
       final netLine = LineChartBarData(
-        spots: monthlyDataList.map((d) => FlSpot(d.createdAt.month.toDouble(), d.netSalary.toDouble())).toList(),
+        spots:
+            monthlyDataList
+                .map(
+                  (d) => FlSpot(
+                    d.createdAt.month.toDouble(),
+                    d.netSalary.toDouble(),
+                  ),
+                )
+                .toList(),
         isCurved: true,
         color: baseColor.withValues(alpha: 0.4),
         barWidth: 3,
@@ -145,28 +170,32 @@ class SwitchChartsView extends ConsumerWidget {
   }
 
   Widget _buildPieChart(BuildContext context, WidgetRef ref) {
-    final sectors = ref.watch(chartSalaryProvider.select((s) => s.pieChartData));
+    final sectors = ref.watch(
+      chartSalaryProvider.select((s) => s.pieChartData),
+    );
 
     if (sectors.isEmpty) {
       return const EmptyChartView();
     }
+
     /// 円グラフのサイズは端末横幅から計算する
     final screenWidth = MediaQuery.of(context).size.width;
     final dynamicRadius = (screenWidth / 4.5).clamp(60.0, 120.0);
 
-    final sections = sectors.map((data) {
-      return PieChartSectionData(
-        value: data.amount.toDouble(),
-        title: '${data.percentage.toStringAsFixed(0)}%',
-        color: data.color,
-        radius: dynamicRadius,
-        titleStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      );
-    }).toList();
+    final sections =
+        sectors.map((data) {
+          return PieChartSectionData(
+            value: data.amount.toDouble(),
+            title: '${data.percentage.toStringAsFixed(0)}%',
+            color: data.color,
+            radius: dynamicRadius,
+            titleStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList();
 
     return Container(
       height: 300,
@@ -196,7 +225,8 @@ class SwitchChartsView extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: sectors.map((data) => _buildLegendItem(data)).toList(),
+                children:
+                    sectors.map((data) => _buildLegendItem(data)).toList(),
               ),
             ),
           ),

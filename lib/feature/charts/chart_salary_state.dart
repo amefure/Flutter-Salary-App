@@ -9,15 +9,21 @@ import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart';
 class ChartSalaryState {
   /// 全てのSalary一覧(内部保持用)
   final List<Salary> allSalaries;
+
   /// 支払い元選択ピッカーに表示するリスト
   final List<PaymentSource> sourceList;
-  /// 表示中の支払い元
+
+  /// 折れ線・円グラフと年次サマリーの表示対象（All または複数の個別支払元）
+  final List<PaymentSource> selectedSources;
+
+  /// 5年間の棒グラフの表示対象（既存の単一支払元選択を維持）
   final PaymentSource selectedSource;
+
   /// 表示中の年月(月単位のグラフ用)
   final int selectedYear;
+
   /// グラフ表示モード
   final ChartDisplayMode chartDisplayMode;
-
 
   /// 各グラフの計算元となる支払い元ベースの給料データ
   /// Keyは支払い元のID
@@ -26,10 +32,13 @@ class ChartSalaryState {
   /// 「① 月別合計金額折れ線グラフ」
   /// 支払い元の数の中に月ごとのプロットを指すデータを保持
   final List<List<MonthlySalarySummaryItem>> lineChartData;
+
   /// 「① 月別合計金額円グラフ」
   final List<PieChartSectorData> pieChartData;
+
   /// 「② 年収 & 賞与サマリーデータ」
   final YearlySalarySummary yearlySummaryData;
+
   /// 「③ 年別合計金額(5年間)棒グラフ用データ」
   final YearlyPaymentChartData yearlyBarChartData;
 
@@ -39,6 +48,7 @@ class ChartSalaryState {
   ChartSalaryState({
     required this.allSalaries,
     required this.sourceList,
+    required this.selectedSources,
     required this.selectedSource,
     required this.selectedYear,
     required this.chartDisplayMode,
@@ -53,23 +63,25 @@ class ChartSalaryState {
 
   static ChartSalaryState initial() {
     return ChartSalaryState(
-        allSalaries: [],
-        sourceList: [],
-        selectedSource: DummySource.allDummySource,
-        selectedYear: DateTime.now().year,
-        chartDisplayMode: ChartDisplayMode.line,
-        groupedBySource: {},
-        lineChartData: [],
-        pieChartData: [],
-        yearlySummaryData: YearlySalarySummary.initial(),
-        yearlyBarChartData: YearlyPaymentChartData.initial(),
-        barChartEndYear: DateTime.now().year
+      allSalaries: [],
+      sourceList: [],
+      selectedSources: [DummySource.allDummySource],
+      selectedSource: DummySource.allDummySource,
+      selectedYear: DateTime.now().year,
+      chartDisplayMode: ChartDisplayMode.line,
+      groupedBySource: {},
+      lineChartData: [],
+      pieChartData: [],
+      yearlySummaryData: YearlySalarySummary.initial(),
+      yearlyBarChartData: YearlyPaymentChartData.initial(),
+      barChartEndYear: DateTime.now().year,
     );
   }
 
   ChartSalaryState copyWith({
     List<Salary>? allSalaries,
     List<PaymentSource>? sourceList,
+    List<PaymentSource>? selectedSources,
     PaymentSource? selectedSource,
     int? selectedYear,
     ChartDisplayMode? chartDisplayMode,
@@ -84,6 +96,7 @@ class ChartSalaryState {
     return ChartSalaryState(
       allSalaries: allSalaries ?? this.allSalaries,
       sourceList: sourceList ?? this.sourceList,
+      selectedSources: selectedSources ?? this.selectedSources,
       selectedSource: selectedSource ?? this.selectedSource,
       selectedYear: selectedYear ?? this.selectedYear,
       chartDisplayMode: chartDisplayMode ?? this.chartDisplayMode,
