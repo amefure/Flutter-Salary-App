@@ -19,9 +19,7 @@ void main() {
     when(() => mockRepo.fetchAll()).thenReturn([]);
 
     container = ProviderContainer(
-      overrides: [
-        localSalaryRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [localSalaryRepositoryProvider.overrideWithValue(mockRepo)],
     );
   });
 
@@ -41,6 +39,15 @@ void main() {
 
     test('changeSourceを実行したとき、StateのselectedSourceが更新され、グラフデータが再計算されること', () {
       final source = fakePaymentSource(id: 'new_id');
+      final otherSource = fakePaymentSource(id: 'other_id');
+      when(() => mockRepo.fetchAll()).thenReturn([
+        fakeSalary(id: 'salary', date: DateTime.now(), source: source),
+        fakeSalary(
+          id: 'other-salary',
+          date: DateTime.now(),
+          source: otherSource,
+        ),
+      ]);
       final viewModel = container.read(chartSalaryProvider.notifier);
 
       // 実行
@@ -49,7 +56,128 @@ void main() {
       // 検証
       final state = container.read(chartSalaryProvider);
       expect(state.selectedSource.id, 'new_id');
-      // ※内部で_applyMonthlyLineChartなどが呼ばれ、Stateが適切に更新されていることを期待
+      expect(state.selectedSources.map((item) => item.id), ['new_id']);
+      expect(state.lineChartData, hasLength(1));
+      expect(state.pieChartData.map((sector) => sector.name), ['株式会社Ame']);
+    });
+
+    test('Allから個別選択に入り、複数選択を追加・解除できること', () {
+      final sourceA = fakePaymentSource(id: 'A', name: 'A');
+      final sourceB = fakePaymentSource(id: 'B', name: 'B');
+      final sourceC = fakePaymentSource(id: 'C', name: 'C');
+      when(() => mockRepo.fetchAll()).thenReturn([
+        fakeSalary(
+          id: 'salary-a',
+          paymentAmount: 1000,
+          date: DateTime.now(),
+          source: sourceA,
+        ),
+        fakeSalary(
+          id: 'salary-b',
+          paymentAmount: 2000,
+          date: DateTime.now(),
+          source: sourceB,
+        ),
+        fakeSalary(
+          id: 'salary-c',
+          paymentAmount: 4000,
+          date: DateTime.now(),
+          source: sourceC,
+        ),
+      ]);
+      final viewModel = container.read(chartSalaryProvider.notifier);
+
+      viewModel.changeSource(sourceA);
+      var state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), ['A']);
+      expect(state.lineChartData, hasLength(1));
+      expect(state.yearlySummaryData.paymentAmount, 1000);
+      expect(state.pieChartData.map((sector) => sector.name), ['A']);
+
+      viewModel.changeSource(sourceB);
+      state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id).toSet(), {
+        'A',
+        'B',
+      });
+      expect(state.lineChartData, hasLength(2));
+      expect(state.yearlySummaryData.paymentAmount, 3000);
+      expect(state.pieChartData.map((sector) => sector.name).toSet(), {
+        'A',
+        'B',
+      });
+      // The five-year chart retains its legacy single-source selection.
+      expect(state.selectedSource.id, 'B');
+
+      viewModel.changeSource(sourceA);
+      state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), ['B']);
+      expect(state.yearlySummaryData.paymentAmount, 2000);
+    });
+
+    test('全個別支払元の選択と最後の解除をAllに正規化すること', () {
+      final sourceA = fakePaymentSource(id: 'A');
+      final sourceB = fakePaymentSource(id: 'B');
+      when(() => mockRepo.fetchAll()).thenReturn([
+        fakeSalary(
+          id: 'salary-a',
+          paymentAmount: 1000,
+          date: DateTime.now(),
+          source: sourceA,
+        ),
+        fakeSalary(
+          id: 'salary-b',
+          paymentAmount: 2000,
+          date: DateTime.now(),
+          source: sourceB,
+        ),
+      ]);
+      final viewModel = container.read(chartSalaryProvider.notifier);
+
+      viewModel.changeSource(sourceA);
+      viewModel.changeSource(sourceB);
+      var state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), [
+        DummySource.allDummySource.id,
+      ]);
+      expect(state.selectedSource.id, DummySource.allDummySource.id);
+      expect(state.yearlySummaryData.paymentAmount, 3000);
+      expect(state.lineChartData, hasLength(2));
+      expect(state.pieChartData, hasLength(2));
+
+      viewModel.changeSource(sourceA);
+      state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), ['A']);
+      viewModel.changeSource(sourceA);
+      state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), [
+        DummySource.allDummySource.id,
+      ]);
+      expect(state.yearlySummaryData.paymentAmount, 3000);
+    });
+
+    test('更新後に存在しなくなった選択元をAllへ戻すこと', () {
+      final sourceA = fakePaymentSource(id: 'A');
+      final sourceB = fakePaymentSource(id: 'B');
+      final sourceC = fakePaymentSource(id: 'C');
+      when(() => mockRepo.fetchAll()).thenReturn([
+        fakeSalary(id: 'salary-a', date: DateTime.now(), source: sourceA),
+        fakeSalary(id: 'salary-b', date: DateTime.now(), source: sourceB),
+      ]);
+      final viewModel = container.read(chartSalaryProvider.notifier);
+      viewModel.changeSource(sourceA);
+
+      when(() => mockRepo.fetchAll()).thenReturn([
+        fakeSalary(id: 'salary-b', date: DateTime.now(), source: sourceB),
+        fakeSalary(id: 'salary-c', date: DateTime.now(), source: sourceC),
+      ]);
+      viewModel.refresh();
+
+      final state = container.read(chartSalaryProvider);
+      expect(state.selectedSources.map((source) => source.id), [
+        DummySource.allDummySource.id,
+      ]);
+      expect(state.sourceList.any((source) => source.id == 'A'), isFalse);
     });
 
     test('changeYear(+1)を実行したとき、selectedYearがインクリメントされること', () {
@@ -89,7 +217,10 @@ void main() {
 
       viewModel.toggleChartDisplayMode();
 
-      expect(container.read(chartSalaryProvider).chartDisplayMode, isNot(firstMode));
+      expect(
+        container.read(chartSalaryProvider).chartDisplayMode,
+        isNot(firstMode),
+      );
     });
   });
 }

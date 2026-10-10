@@ -8,24 +8,29 @@ import 'package:salary/feature/charts/domain/model/yearly_payment_chart_data.dar
 import 'package:salary/feature/charts/domain/model/yearly_salary_summary.dart'; // 型定義参照用
 
 class SalaryAggregator {
-
   /// 棒グラフの表示年数：10年
   static const int DISPLAY_BAR_CHARTS = 5;
 
   /// 各グラフの計算元となる支払い元ベースの給料データを算出
   static Map<String, List<MonthlySalarySummaryItem>> groupBySourceAndMonth(
-      List<Salary> salaries,
-      ) {
+    List<Salary> salaries,
+  ) {
     final Map<String, List<MonthlySalarySummaryItem>> result = {};
 
     for (final salary in salaries) {
       final sourceId = salary.source?.id ?? DummySource.unSetDummySource.id;
       result.putIfAbsent(sourceId, () => []);
 
-      final createdAt = DateTime(salary.createdAt.year, salary.createdAt.month, 1);
+      final createdAt = DateTime(
+        salary.createdAt.year,
+        salary.createdAt.month,
+        1,
+      );
 
       final index = result[sourceId]!.indexWhere(
-            (s) => s.createdAt.year == createdAt.year && s.createdAt.month == createdAt.month,
+        (s) =>
+            s.createdAt.year == createdAt.year &&
+            s.createdAt.month == createdAt.month,
       );
 
       if (index == -1) {
@@ -54,22 +59,29 @@ class SalaryAggregator {
   /// 折れ線グラフ用のデータを生成
   static List<List<MonthlySalarySummaryItem>> buildLineChartData({
     required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
-    required PaymentSource selectedSource,
+    required List<PaymentSource> selectedSources,
     required int selectedYear,
   }) {
     final List<List<MonthlySalarySummaryItem>> result = [];
 
     /// 選択中の支払い元でフィルタリング
-    final filteredMap = selectedSource.id == DummySource.allDummySource.id
-        ? groupedBySource
-        : {selectedSource.id: groupedBySource[selectedSource.id] ?? []};
+    final filteredMap =
+        _includesAllSources(selectedSources)
+            ? groupedBySource
+            : Map.fromEntries(
+              selectedSources.map(
+                (source) => MapEntry(
+                  source.id,
+                  groupedBySource[source.id] ?? <MonthlySalarySummaryItem>[],
+                ),
+              ),
+            );
 
     for (final salaries in filteredMap.values) {
       /// 選択年でフィルタリング & ソート
-      final filtered = salaries
-          .where((s) => s.createdAt.year == selectedYear)
-          .toList()
-        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      final filtered =
+          salaries.where((s) => s.createdAt.year == selectedYear).toList()
+            ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
       if (filtered.isNotEmpty) {
         result.add(filtered);
@@ -77,16 +89,25 @@ class SalaryAggregator {
     }
     return result;
   }
+
   /// 円グラフ用のデータを生成
   static List<PieChartSectorData> buildPieChartData({
     required Map<String, List<MonthlySalarySummaryItem>> groupedBySource,
+    required List<PaymentSource> selectedSources,
     required int selectedYear,
   }) {
     final List<PieChartSectorData> sectors = [];
     int totalAmount = 0;
+    final selectedSourceIds =
+        selectedSources.map((source) => source.id).toSet();
 
     // 1. 各支払い元の合計額を算出
-    for (final entries in groupedBySource.values) {
+    for (final entry in groupedBySource.entries) {
+      if (!_includesAllSources(selectedSources) &&
+          !selectedSourceIds.contains(entry.key)) {
+        continue;
+      }
+      final entries = entry.value;
       final yearlyList = entries.where((s) => s.createdAt.year == selectedYear);
       if (yearlyList.isEmpty) continue;
 
@@ -96,54 +117,64 @@ class SalaryAggregator {
       totalAmount += sum;
       final source = yearlyList.first.source;
 
-      sectors.add(PieChartSectorData(
-        name: source?.name ?? DummySource.UNSET_TITLE,
-        amount: sum,
-        percentage: 0, // 後で計算
-        color: source?.themaColorEnum.color ?? Colors.grey,
-      ));
+      sectors.add(
+        PieChartSectorData(
+          name: source?.name ?? DummySource.UNSET_TITLE,
+          amount: sum,
+          percentage: 0, // 後で計算
+          color: source?.themaColorEnum.color ?? Colors.grey,
+        ),
+      );
     }
 
     if (totalAmount == 0) return [];
 
     // 2. 割合（%）を計算して返却
-    return sectors.map((s) => PieChartSectorData(
-      name: s.name,
-      amount: s.amount,
-      percentage: (s.amount / totalAmount) * 100,
-      color: s.color,
-    )).toList();
+    return sectors
+        .map(
+          (s) => PieChartSectorData(
+            name: s.name,
+            amount: s.amount,
+            percentage: (s.amount / totalAmount) * 100,
+            color: s.color,
+          ),
+        )
+        .toList();
   }
 
   /// グループ化されたデータから表示用の支払い元リストを抽出・ソート
   static List<PaymentSource> fetchExtractSortedSources(
-      Map<String, List<MonthlySalarySummaryItem>> grouped,
-      ) {
+    Map<String, List<MonthlySalarySummaryItem>> grouped,
+  ) {
     final List<PaymentSource> sources = [
       ...grouped.values.map(
-            (e) => e.firstOrNull?.source ?? DummySource.unSetDummySource,
-      )
+        (e) => e.firstOrNull?.source ?? DummySource.unSetDummySource,
+      ),
     ]..sort((a, b) {
       // メイン設定を優先してソート
       final aValue = a.isMain ? 1 : 0;
       final bValue = b.isMain ? 1 : 0;
       return bValue - aValue;
     });
+
     /// ALLを追加
     return [DummySource.allDummySource, ...sources];
   }
 
   /// 「② 年収 & 賞与サマリーデータ」の計算
   static YearlySalarySummary calculateYearlySummary({
-    required PaymentSource selectedSource,
+    required List<PaymentSource> selectedSources,
     required int selectedYear,
     required List<Salary> allSalaries,
   }) {
-    final filtered = selectedSource.name == DummySource.ALL_TITLE
-        ? allSalaries
-        : allSalaries.where((s) =>
-    (s.source?.name ?? DummySource.UNSET_TITLE) == selectedSource.name,
-    ).toList();
+    final filtered =
+        _includesAllSources(selectedSources)
+            ? allSalaries
+            : allSalaries.where((salary) {
+              final sourceId =
+                  salary.source?.id ?? DummySource.unSetDummySource.id;
+              return selectedSources.any((source) => source.id == sourceId);
+            }).toList();
 
     // 当年(総支給)
     int payment = 0;
@@ -211,9 +242,10 @@ class SalaryAggregator {
     final Map<int, int> yearlySums = {};
 
     // 支払い元でフィルタリング
-    final filtered = selectedSource.id == DummySource.allDummySource.id
-        ? groupedBySource
-        : { selectedSource.id: groupedBySource[selectedSource.id] ?? [] };
+    final filtered =
+        selectedSource.id == DummySource.allDummySource.id
+            ? groupedBySource
+            : {selectedSource.id: groupedBySource[selectedSource.id] ?? []};
 
     for (final list in filtered.values) {
       for (final s in list) {
@@ -242,12 +274,22 @@ class SalaryAggregator {
   }
 
   /// 数値配列の最大値を[paddingRate]係数で増長して丸めた値を取得
-  static double calculateMaxY(Iterable<double> values, {double paddingRate = 0.1}) {
+  static double calculateMaxY(
+    Iterable<double> values, {
+    double paddingRate = 0.1,
+  }) {
     if (values.isEmpty) return 0;
     final maxValue = values.reduce(max);
     final padded = maxValue * (1 + paddingRate);
     // 例: 14532 → 15000
     final magnitude = pow(10, padded.toInt().toString().length - 1);
     return (padded / magnitude).ceil() * magnitude.toDouble();
+  }
+
+  static bool _includesAllSources(List<PaymentSource> selectedSources) {
+    return selectedSources.isEmpty ||
+        selectedSources.any(
+          (source) => source.id == DummySource.allDummySource.id,
+        );
   }
 }
