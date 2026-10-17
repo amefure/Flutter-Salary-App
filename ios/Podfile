@@ -45,6 +45,12 @@ post_install do |installer|
         '$(inherited)',
         'PERMISSION_NOTIFICATIONS=1',
       ]
+
+      # 強制的にすべてのターゲットのデプロイターゲットを iOS 15.0 以上に引き上げる
+      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if deployment_target.nil? || deployment_target.to_f < 15.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
     end
   end
 end
